@@ -62,8 +62,6 @@
 - 實戰工具：
   - `startup_template_pack/H_實戰工具/29_客戶訪談紀錄模板.md`
   - `startup_template_pack/H_實戰工具/30_報價與合約簡版模板.md`
-  - `startup_template_pack/H_實戰工具/31_每週戰情會議程與紀錄模板.md`
-  - `startup_template_pack/H_實戰工具/32_新成員30分鐘Onboarding_Checklist模板.md`
 - 角色導覽：
   - `ROLE_GUIDE.md`
 - 全部文件索引（正式入口）：
