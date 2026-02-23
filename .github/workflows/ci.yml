@@ -1,0 +1,77 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+        cache-dependency-path: './backend/package-lock.json'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Generate Prisma Client
+      run: npx prisma generate
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Build
+      run: npm run build
+
+    - name: Type Check
+      run: npx tsc --noEmit
+
+    - name: Setup Test DB
+      run: npx prisma migrate deploy
+      env:
+        DATABASE_URL: "file:./test.db"
+
+    - name: Run Tests
+      run: npm test
+      env:
+        DATABASE_URL: "file:./test.db"
+        JWT_ACCESS_SECRET: "test-secret"
+        JWT_ACCESS_EXPIRES_IN: "1h"
+        JWT_REFRESH_SECRET: "test-refresh-secret"
+        JWT_REFRESH_EXPIRES_IN: "7d"
+
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./admin-ui
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+        cache-dependency-path: './admin-ui/package-lock.json'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Build and Type Check
+      run: npm run build

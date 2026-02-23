@@ -1,0 +1,18 @@
+# Phase 3 Next Steps: Inventory & Supplier Management
+
+## 1. Goal Description
+The core CRM module has been successfully implemented and verified! Based on our [ROADMAP.md](file:///c:/Users/User/OneDrive%20-%20MSFT%20%281%29/0.%E5%B0%88%E6%A1%88/startup/systems/enterprise-admin/ROADMAP.md), the next logical step for a startup pharmacy/retail business is **Module 1: Product & Supply Chain Management** (商品與供應鏈管理). 
+
+This integration will handle:
+- **Products/SKUs**: Tracking costs, retail prices, gross margins, and safety stock levels.
+- **Suppliers**: Managing vendor information, tracking delivery reliability, and handling defective return rates.
+- **Inventory Alerts**: Creating visual dashboards that notify staff when critical products dip below their safety stock threshold.
+
+## 2. User Review Required
+> [!IMPORTANT]
+> **Action Required**: Before I begin coding the inventory module, I would like you to confirm:
+> 1. Are you satisfied with the newly created **ADR-004** documenting our CRM Identity design?
+> 2. Would you like to proceed with **Products/Suppliers Management** next, or would you prefer to build the **Dashboard & KPIs** first?
+> 3. Does the system need to track exact expiry dates (批號/效期) for pharmacy products at this stage, or just raw stock quantities?
+
+*(Once approved, I will immediately move to EXECUTION mode to implement the Prisma schema updates and Backend API routes.)*

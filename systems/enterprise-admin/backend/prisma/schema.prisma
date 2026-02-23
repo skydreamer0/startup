@@ -1,0 +1,178 @@
+// This is your Prisma schema file.
+// Aligned with infrastructure/backend/database_schema.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── IAM & RBAC ──────────────────────────────────────────
+
+model User {
+  id                   String    @id @default(uuid())
+  email                String    @unique
+  passwordHash         String    @map("password_hash")
+  fullName             String    @map("full_name")
+  status               String    @default("active") // active | suspended | pending_verification
+  lastLoginAt          DateTime? @map("last_login_at")
+  failedLoginAttempts  Int       @default(0) @map("failed_login_attempts")
+  totpSecret           String?   @map("totp_secret")
+
+  // Audit fields
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  // Relations
+  userRoles  UserRole[]
+  auditLogs  AuditLog[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  isSystem    Boolean @default(false) @map("is_system")
+
+  // Audit fields
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  // Relations
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String  @id @default(uuid())
+  action      String // read, create, update, delete, approve
+  resource    String // users, roles, audit_logs
+  description String?
+
+  // Audit fields
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  rolePermissions RolePermission[]
+
+  @@unique([action, resource])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  userId String @map("user_id")
+  roleId String @map("role_id")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+// ─── Security & Auditing ─────────────────────────────────
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?  @map("user_id")
+  action       String // e.g., UPDATE_USER_ROLE, CREATE_USER
+  resourceType String   @map("resource_type")
+  resourceId   String   @map("resource_id")
+  oldValue     String?  @map("old_value") // JSON string (SQLite doesn't support JSONB)
+  newValue     String?  @map("new_value") // JSON string
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+// ─── CRM (Phase 3) ───────────────────────────────────────
+
+model Customer {
+  id                  String    @id @default(uuid())
+  name                String?
+  phone               String?   @unique
+  lineUid             String?   @unique @map("line_uid")
+  gender              String?
+  birthday            DateTime?
+  
+  // Cache fields for Dashboard / Quick access
+  totalSpent          Int       @default(0) @map("total_spent")
+  purchaseCount       Int       @default(0) @map("purchase_count")
+  lastPurchaseDate    DateTime? @map("last_purchase_date")
+  lastInteractionDate DateTime? @map("last_interaction_date")
+
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  tags         CustomerTag[]
+  interactions Interaction[]
+
+  @@map("customers")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  color     String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  customers CustomerTag[]
+
+  @@map("tags")
+}
+
+model CustomerTag {
+  customerId String @map("customer_id")
+  tagId      String @map("tag_id")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([customerId, tagId])
+  @@map("customer_tags")
+}
+
+model Interaction {
+  id          String   @id @default(uuid())
+  customerId  String   @map("customer_id")
+  type        String   // LINE_MESSAGE, STORE_VISIT, PHONE_CALL, SYSTEM_NOTICE
+  content     String?  // The text content or notes
+  interactedAt DateTime @default(now()) @map("interacted_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([interactedAt])
+  @@map("interactions")
+}
+
