@@ -22,7 +22,7 @@ export class AuthController {
                     resourceId: result.user.id,
                     ipAddress: req.ip || null,
                     userAgent: req.headers['user-agent'] || null,
-                },
+                } as any,
             });
 
             res.json({
@@ -79,7 +79,7 @@ export class AuthController {
                     resourceId: req.user.userId,
                     ipAddress: req.ip || null,
                     userAgent: req.headers['user-agent'] || null,
-                },
+                } as any,
             });
         }
 

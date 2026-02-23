@@ -14,32 +14,55 @@ export default function AdminLayout() {
         <div className="admin-layout">
             {/* Sidebar */}
             <aside className="sidebar">
-                <div className="sidebar-brand">⚡ Admin Panel</div>
+                <div className="sidebar-logo">STARTER ADMIN</div>
 
                 <nav className="sidebar-nav">
-                    <NavLink to="/dashboard" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-                        <span className="icon">📊</span> Dashboard
+                    <NavLink to="/dashboard" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📊</span> <span>Dashboard</span>
                     </NavLink>
-                    <NavLink to="/users" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-                        <span className="icon">👥</span> Users
+
+                    <div className="sidebar-section">Business Operations</div>
+                    <NavLink to="/crm" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">👤</span> <span>CRM</span>
                     </NavLink>
-                    <NavLink to="/roles" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-                        <span className="icon">🛡️</span> Roles & Permissions
+                    <NavLink to="/inventory" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📦</span> <span>Inventory</span>
                     </NavLink>
-                    <NavLink to="/audit-logs" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-                        <span className="icon">📋</span> Audit Logs
+                    <NavLink to="/suppliers" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">🏢</span> <span>Suppliers</span>
                     </NavLink>
-                    <NavLink to="/crm" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-                        <span className="icon">🤝</span> CRM (Customers)
+                    <NavLink to="/orders" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">🛒</span> <span>Orders</span>
+                    </NavLink>
+
+                    <div className="sidebar-section">Financial Reports</div>
+                    <NavLink to="/reports/margin" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📈</span> <span>Margin Analysis</span>
+                    </NavLink>
+                    <NavLink to="/reports/cashflow" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">💰</span> <span>Cash Flow</span>
+                    </NavLink>
+                    <NavLink to="/reports/sales-ranking" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">🏆</span> <span>Sales Ranking</span>
+                    </NavLink>
+                    <div className="sidebar-section">System Admin</div>
+                    <NavLink to="/users" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">👥</span> <span>Users</span>
+                    </NavLink>
+                    <NavLink to="/roles" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">🔐</span> <span>Roles</span>
+                    </NavLink>
+                    <NavLink to="/audit-logs" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📋</span> <span>Audit Logs</span>
                     </NavLink>
                 </nav>
 
                 <div className="sidebar-footer">
                     <div className="sidebar-user">
                         <strong>{user?.fullName}</strong>
-                        <span>{user?.roles[0]}</span>
+                        <span>{user?.roles?.[0] || 'User'}</span>
                     </div>
-                    <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+                    <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ marginTop: '12px', width: '100%', justifyContent: 'center' }}>
                         Logout
                     </button>
                 </div>

@@ -19,10 +19,42 @@ const PERMISSIONS = [
     // CRM
     { action: 'read', resource: 'crm', description: 'View customers and interactions' },
     { action: 'manage', resource: 'crm', description: 'Manage customer profiles' },
+    // Products
+    { action: 'read', resource: 'products', description: 'View products and stock levels' },
+    { action: 'create', resource: 'products', description: 'Create new products/SKUs' },
+    { action: 'update', resource: 'products', description: 'Update product information' },
+    // Suppliers
+    { action: 'read', resource: 'suppliers', description: 'View suppliers' },
+    { action: 'create', resource: 'suppliers', description: 'Add new suppliers' },
+    { action: 'update', resource: 'suppliers', description: 'Update supplier information' },
+    // Dashboard
+    { action: 'read', resource: 'dashboard', description: 'View operations dashboard KPIs' },
+    // Orders
+    { action: 'read', resource: 'orders', description: 'View and list customer orders' },
+    { action: 'create', resource: 'orders', description: 'Create new orders' },
+    { action: 'update', resource: 'orders', description: 'Update order status and payment' },
+    // Analytics (Phase 5)
+    { action: 'read', resource: 'analytics', description: 'View KPI engine metrics' },
+    { action: 'manage', resource: 'analytics', description: 'Manage KPI settings' },
+    // Reports (Phase 5)
+    { action: 'read', resource: 'reports', description: 'View financial and sales reports' },
 ];
 
 async function main() {
     console.log('🌱 Seeding database...');
+
+    // 0. Create Default Tenant
+    const tenant = await prisma.tenant.upsert({
+        where: { slug: 'default' },
+        update: {},
+        create: {
+            name: 'System Default',
+            slug: 'default',
+            plan: 'pro'
+        }
+    });
+    console.log(`  ✅ Default tenant "${tenant.name}" seeded`);
+    const tenantId = tenant.id;
 
     // 1. Create permissions
     const createdPermissions = [];
@@ -44,6 +76,7 @@ async function main() {
             name: 'SUPER_ADMIN',
             description: 'Full system access — all permissions granted',
             isSystem: true,
+            tenantId,
         },
     });
     console.log(`  ✅ Role "${superAdminRole.name}" seeded`);
@@ -66,6 +99,7 @@ async function main() {
             name: 'CONTENT_EDITOR',
             description: 'Can view users and roles but cannot modify',
             isSystem: true,
+            tenantId,
         },
     });
     const readPermissions = createdPermissions.filter((p) => p.action === 'read');
@@ -88,6 +122,7 @@ async function main() {
             passwordHash,
             fullName: 'System Administrator',
             status: 'active',
+            tenantId,
         },
     });
     console.log(`  ✅ Admin user "${adminUser.email}" seeded`);
@@ -103,12 +138,12 @@ async function main() {
     // 7. Seed CRM Data
     const tagVIP = await prisma.tag.upsert({
         where: { name: 'VIP' },
-        create: { name: 'VIP', color: '#FFD700' },
+        create: { name: 'VIP', color: '#FFD700', tenantId },
         update: {},
     });
     const tagNew = await prisma.tag.upsert({
         where: { name: 'Newbie' },
-        create: { name: 'Newbie', color: '#ADFF2F' },
+        create: { name: 'Newbie', color: '#ADFF2F', tenantId },
         update: {},
     });
 
@@ -120,6 +155,7 @@ async function main() {
             totalSpent: 15000,
             purchaseCount: 5,
             lastInteractionDate: new Date(),
+            tenantId,
         },
         {
             name: '陳小華',
@@ -128,6 +164,7 @@ async function main() {
             totalSpent: 800,
             purchaseCount: 1,
             lastInteractionDate: new Date(Date.now() - 86400000 * 3), // 3 days ago
+            tenantId,
         },
     ];
 
@@ -145,6 +182,7 @@ async function main() {
                 type: 'STORE_VISIT',
                 content: '客戶詢問保健品優惠，對魚油感興趣。',
                 interactedAt: new Date(),
+                tenantId,
             }
         });
 
@@ -156,6 +194,96 @@ async function main() {
         });
     }
     console.log(`  ✅ CRM dummy data seeded`);
+
+    // 8. Seed Inventory Data
+    const catHealth = await prisma.productCategory.upsert({
+        where: { name: 'Health Supplements' },
+        create: { name: 'Health Supplements', description: '保健品類', tenantId },
+        update: {},
+    });
+    const catDrug = await prisma.productCategory.upsert({
+        where: { name: 'OTC Drugs' },
+        create: { name: 'OTC Drugs', description: '非處方藥品', tenantId },
+        update: {},
+    });
+
+    const supplier1 = await prisma.supplier.upsert({
+        where: { id: 'seed-supplier-1' },
+        create: {
+            id: 'seed-supplier-1',
+            name: '永信藥品',
+            contactName: '王經理',
+            phone: '04-2345-6789',
+            email: 'wang@yungshin.com',
+            deliveryReliability: 96.5,
+            defectRate: 0.3,
+            rating: 92,
+            tenantId,
+        },
+        update: {},
+    });
+    const supplier2 = await prisma.supplier.upsert({
+        where: { id: 'seed-supplier-2' },
+        create: {
+            id: 'seed-supplier-2',
+            name: '台灣大塚',
+            contactName: '林小姐',
+            phone: '02-8765-4321',
+            email: 'lin@otsuka.tw',
+            deliveryReliability: 91.2,
+            defectRate: 1.1,
+            rating: 85,
+            tenantId,
+        },
+        update: {},
+    });
+
+    const products = [
+        { sku: 'HS-FISH-01', name: '深海魚油 Omega-3 (120粒)', costPrice: 450, retailPrice: 890, stockQuantity: 8, safetyStock: 15, categoryId: catHealth.id, supplierId: supplier1.id, tenantId },
+        { sku: 'HS-VITA-C1', name: '維他命C 1000mg (60粒)', costPrice: 180, retailPrice: 350, stockQuantity: 52, safetyStock: 20, categoryId: catHealth.id, supplierId: supplier1.id, tenantId },
+        { sku: 'OTC-PAIN-01', name: '普拿疼 加強錠 (10粒)', costPrice: 65, retailPrice: 120, stockQuantity: 3, safetyStock: 10, categoryId: catDrug.id, supplierId: supplier2.id, tenantId },
+        { sku: 'HS-PROB-01', name: '益生菌粉 (30包)', costPrice: 520, retailPrice: 980, stockQuantity: 25, safetyStock: 10, categoryId: catHealth.id, supplierId: supplier1.id, tenantId },
+    ];
+
+    for (const p of products) {
+        await prisma.product.upsert({
+            where: { sku: p.sku },
+            create: p,
+            update: {},
+        });
+    }
+    console.log(`  ✅ Inventory dummy data seeded (${products.length} products, 2 suppliers)`);
+
+    // 9. Seed Orders
+    console.log('  🛒 Seeding dummy orders...');
+    const dbCustomers = await prisma.customer.findMany();
+    const dbProducts = await prisma.product.findMany();
+
+    if (dbCustomers.length > 0 && dbProducts.length > 0) {
+        const order1 = await prisma.order.create({
+            data: {
+                customerId: dbCustomers[0].id,
+                status: 'completed',
+                paymentStatus: 'paid',
+                totalAmount: 1890,
+                tenantId,
+                items: {
+                    create: [
+                        { productId: dbProducts[0].id, quantity: 2, unitPrice: 890 },
+                        { productId: dbProducts[1].id, quantity: 1, unitPrice: 110 }
+                    ]
+                }
+            }
+        });
+
+        // Add corresponding transactions
+        await prisma.inventoryTransaction.createMany({
+            data: [
+                { productId: dbProducts[0].id, type: 'OUT', quantity: 2, referenceId: order1.id, notes: 'Order Sale', tenantId },
+                { productId: dbProducts[1].id, type: 'OUT', quantity: 1, referenceId: order1.id, notes: 'Order Sale', tenantId }
+            ]
+        });
+    }
 
     console.log('\n🎉 Database seeding completed!');
 }

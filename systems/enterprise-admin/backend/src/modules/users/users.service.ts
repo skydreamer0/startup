@@ -121,7 +121,7 @@ export class UsersService {
                         create: data.roleIds.map((roleId: string) => ({ roleId })),
                     },
                 }),
-            },
+            } as any,
             select: { id: true, email: true, fullName: true, status: true, createdAt: true },
         });
 
@@ -133,7 +133,7 @@ export class UsersService {
                 resourceType: 'users',
                 resourceId: user.id,
                 newValue: JSON.stringify({ email: data.email, fullName: data.fullName }),
-            },
+            } as any,
         });
 
         return user;
@@ -175,7 +175,7 @@ export class UsersService {
                 resourceId: id,
                 oldValue: JSON.stringify(oldValue),
                 newValue: JSON.stringify(data),
-            },
+            } as any,
         });
 
         return updated;
@@ -201,7 +201,7 @@ export class UsersService {
                 resourceType: 'users',
                 resourceId: id,
                 oldValue: JSON.stringify({ email: user.email, status: user.status }),
-            },
+            } as any,
         });
 
         return { message: 'User deactivated successfully' };

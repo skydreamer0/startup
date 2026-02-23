@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { CrmController } from './crm.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
+import { requirePermission } from '../../middleware/rbac.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { createCustomerSchema, updateCustomerSchema, createInteractionSchema } from './crm.schema';
 
@@ -9,17 +10,21 @@ const router = Router();
 // Protect all CRM routes
 router.use(authMiddleware);
 
-// Customers
-router.get('/customers', CrmController.getCustomers);
-router.post('/customers', validate(createCustomerSchema), CrmController.createCustomer);
+// CRM Metrics
+router.get('/metrics', requirePermission('read:crm'), CrmController.getMetrics);
 
-router.get('/customers/:id', CrmController.getCustomerById);
-router.put('/customers/:id', validate(updateCustomerSchema), CrmController.updateCustomer);
+// Customers
+router.get('/customers', requirePermission('read:crm'), CrmController.getCustomers);
+router.post('/customers', requirePermission('manage:crm'), validate({ body: createCustomerSchema }), CrmController.createCustomer);
+
+router.get('/customers/:id', requirePermission('read:crm'), CrmController.getCustomerById);
+router.put('/customers/:id', requirePermission('manage:crm'), validate({ body: updateCustomerSchema }), CrmController.updateCustomer);
 
 // Interactions
 router.post(
     '/customers/:id/interactions',
-    validate(createInteractionSchema),
+    requirePermission('manage:crm'),
+    validate({ body: createInteractionSchema }),
     CrmController.addInteraction
 );
 

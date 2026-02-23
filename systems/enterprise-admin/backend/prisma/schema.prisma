@@ -10,17 +10,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── SaaS Foundation (Phase 5) ───────────────────────────
+
+model Tenant {
+  id       String  @id @default(uuid())
+  name     String
+  slug     String  @unique
+  plan     String  @default("free") // free | starter | pro
+  settings String? // JSON string for tenant-specific configs
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  users        User[]
+  roles        Role[]
+  auditLogs    AuditLog[]
+  customers    Customer[]
+  tags         Tag[]
+  suppliers    Supplier[]
+  categories   ProductCategory[]
+  products     Product[]
+  orders       Order[]
+  transactions InventoryTransaction[]
+  expenses     Expense[]
+  interactions Interaction[]
+
+  @@map("tenants")
+}
+
 // ─── IAM & RBAC ──────────────────────────────────────────
 
 model User {
-  id                   String    @id @default(uuid())
-  email                String    @unique
-  passwordHash         String    @map("password_hash")
-  fullName             String    @map("full_name")
-  status               String    @default("active") // active | suspended | pending_verification
-  lastLoginAt          DateTime? @map("last_login_at")
-  failedLoginAttempts  Int       @default(0) @map("failed_login_attempts")
-  totpSecret           String?   @map("totp_secret")
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  passwordHash        String    @map("password_hash")
+  fullName            String    @map("full_name")
+  status              String    @default("active") // active | suspended | pending_verification
+  lastLoginAt         DateTime? @map("last_login_at")
+  failedLoginAttempts Int       @default(0) @map("failed_login_attempts")
+  totpSecret          String?   @map("totp_secret")
+  tenantId            String    @map("tenant_id")
 
   // Audit fields
   createdAt DateTime  @default(now()) @map("created_at")
@@ -28,9 +57,11 @@ model User {
   deletedAt DateTime? @map("deleted_at")
 
   // Relations
-  userRoles  UserRole[]
-  auditLogs  AuditLog[]
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userRoles UserRole[]
+  auditLogs AuditLog[]
 
+  @@index([tenantId])
   @@map("users")
 }
 
@@ -39,6 +70,7 @@ model Role {
   name        String  @unique
   description String?
   isSystem    Boolean @default(false) @map("is_system")
+  tenantId    String? @map("tenant_id") // Optional because system roles can be global
 
   // Audit fields
   createdAt DateTime  @default(now()) @map("created_at")
@@ -46,9 +78,11 @@ model Role {
   deletedAt DateTime? @map("deleted_at")
 
   // Relations
+  tenant          Tenant?          @relation(fields: [tenantId], references: [id])
   rolePermissions RolePermission[]
   userRoles       UserRole[]
 
+  @@index([tenantId])
   @@map("roles")
 }
 
@@ -103,39 +137,46 @@ model AuditLog {
   newValue     String?  @map("new_value") // JSON string
   ipAddress    String?  @map("ip_address")
   userAgent    String?  @map("user_agent")
+  tenantId     String   @map("tenant_id")
   createdAt    DateTime @default(now()) @map("created_at")
 
   // Relations
-  user User? @relation(fields: [userId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id])
 
   @@index([createdAt])
   @@index([userId])
+  @@index([tenantId])
   @@map("audit_logs")
 }
 
 // ─── CRM (Phase 3) ───────────────────────────────────────
 
 model Customer {
-  id                  String    @id @default(uuid())
-  name                String?
-  phone               String?   @unique
-  lineUid             String?   @unique @map("line_uid")
-  gender              String?
-  birthday            DateTime?
-  
+  id       String    @id @default(uuid())
+  name     String?
+  phone    String?   @unique
+  lineUid  String?   @unique @map("line_uid")
+  gender   String?
+  birthday DateTime?
+  tenantId String    @map("tenant_id")
+
   // Cache fields for Dashboard / Quick access
   totalSpent          Int       @default(0) @map("total_spent")
   purchaseCount       Int       @default(0) @map("purchase_count")
   lastPurchaseDate    DateTime? @map("last_purchase_date")
   lastInteractionDate DateTime? @map("last_interaction_date")
 
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   tags         CustomerTag[]
   interactions Interaction[]
+  orders       Order[]
 
+  @@index([tenantId])
   @@map("customers")
 }
 
@@ -143,10 +184,13 @@ model Tag {
   id        String   @id @default(uuid())
   name      String   @unique
   color     String?
+  tenantId  String   @map("tenant_id")
   createdAt DateTime @default(now()) @map("created_at")
 
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customers CustomerTag[]
 
+  @@index([tenantId])
   @@map("tags")
 }
 
@@ -162,17 +206,163 @@ model CustomerTag {
 }
 
 model Interaction {
-  id          String   @id @default(uuid())
-  customerId  String   @map("customer_id")
-  type        String   // LINE_MESSAGE, STORE_VISIT, PHONE_CALL, SYSTEM_NOTICE
-  content     String?  // The text content or notes
+  id           String   @id @default(uuid())
+  customerId   String   @map("customer_id")
+  type         String // LINE_MESSAGE, STORE_VISIT, PHONE_CALL, SYSTEM_NOTICE
+  content      String? // The text content or notes
+  tenantId     String   @map("tenant_id")
   interactedAt DateTime @default(now()) @map("interacted_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt    DateTime @default(now()) @map("created_at")
 
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@index([customerId])
+  @@index([tenantId])
   @@index([interactedAt])
   @@map("interactions")
 }
 
+// ─── Inventory & Suppliers (Phase 3) ──────────────────────
+
+model Supplier {
+  id          String  @id @default(uuid())
+  name        String
+  contactName String? @map("contact_name")
+  email       String?
+  phone       String?
+  address     String?
+  tenantId    String  @map("tenant_id")
+
+  // Performance metrics
+  rating              Int? // 1-5 scale or 0-100
+  deliveryReliability Float? @map("delivery_reliability") // Percentage
+  defectRate          Float? @map("defect_rate") // Percentage
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@index([tenantId])
+  @@map("suppliers")
+}
+
+model ProductCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  tenantId    String   @map("tenant_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@index([tenantId])
+  @@map("product_categories")
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  sku         String  @unique
+  name        String
+  description String?
+  tenantId    String  @map("tenant_id")
+
+  categoryId String? @map("category_id")
+  supplierId String? @map("supplier_id")
+
+  costPrice   Float @map("cost_price")
+  retailPrice Float @map("retail_price")
+
+  stockQuantity Int @default(0) @map("stock_quantity")
+  safetyStock   Int @default(10) @map("safety_stock")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category     ProductCategory?       @relation(fields: [categoryId], references: [id])
+  supplier     Supplier?              @relation(fields: [supplierId], references: [id])
+  orderItems   OrderItem[]
+  transactions InventoryTransaction[]
+
+  @@index([tenantId])
+  @@index([categoryId])
+  @@index([supplierId])
+  @@map("products")
+}
+
+// ─── Orders & Transactions (Phase 4) ──────────────────────
+
+model Order {
+  id              String  @id @default(uuid())
+  customerId      String  @map("customer_id")
+  status          String  @default("pending") // pending | paid | shipped | completed | cancelled
+  totalAmount     Float   @map("total_amount")
+  paymentStatus   String  @default("unpaid") @map("payment_status")
+  shippingAddress String? @map("shipping_address")
+  tenantId        String  @map("tenant_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer    @relation(fields: [customerId], references: [id])
+  items    OrderItem[]
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  orderId   String @map("order_id")
+  productId String @map("product_id")
+  quantity  Int
+  unitPrice Float  @map("unit_price")
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model InventoryTransaction {
+  id          String   @id @default(uuid())
+  productId   String   @map("product_id")
+  type        String // IN (Purchase/Restock) | OUT (Sale/Order) | ADJUSTMENT
+  quantity    Int
+  referenceId String?  @map("reference_id") // Order ID or Purchase ID
+  notes       String?
+  tenantId    String   @map("tenant_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([productId])
+  @@map("inventory_transactions")
+}
+
+// ─── Financial Tracking (Phase 5) ─────────────────────────
+
+model Expense {
+  id          String   @id @default(uuid())
+  type        String // RENT | SALARY | MARKETING | LOGISTICS | OTHER
+  amount      Float
+  description String?
+  period      String // YYYY-MM
+  tenantId    String   @map("tenant_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([period])
+  @@map("expenses")
+}

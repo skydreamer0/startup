@@ -18,6 +18,7 @@ Reviewers should focus on:
 - **Security**: Any obvious vulnerabilities?
 - **Style**: Does it follow the established patterns?
 - **Maintainability**: Is the code clear?
+- **Testing & API Spec**: 🔴 **MANDATORY**: Are there unit/integration tests (`__tests__/`) for new endpoints? Is `api_spec.md` updated? If not, the PR is NOT complete.
 
 ## 4. Documentation
 If an architectural decision was made, it **must** be accompanied by an ADR update in the `infrastructure/adr/` directory.

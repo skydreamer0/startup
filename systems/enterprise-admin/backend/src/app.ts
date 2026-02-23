@@ -10,6 +10,13 @@ import usersRoutes from './modules/users/users.routes';
 import rolesRoutes from './modules/roles/roles.routes';
 import auditLogsRoutes from './modules/audit-logs/audit-logs.routes';
 import crmRoutes from './modules/crm/crm.routes';
+import inventoryRoutes from './modules/inventory/inventory.routes';
+import dashboardRoutes from './modules/dashboard/dashboard.routes';
+import orderRoutes from './modules/orders/order.routes';
+import analyticsRoutes from './modules/analytics/analytics.routes';
+import expensesRoutes from './modules/expenses/expenses.routes';
+import reportsRoutes from './modules/reports/reports.routes';
+import { setTenantContext } from './middleware/tenant.middleware';
 
 const app = express();
 
@@ -26,11 +33,21 @@ app.get('/health', (_req, res) => {
 
 // ─── API Routes (Base: /api/v1/admin) ────────────────────
 const apiRouter = express.Router();
+
+// Establish tenant context for ALL API routes
+apiRouter.use(setTenantContext);
+
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', usersRoutes);
 apiRouter.use('/roles', rolesRoutes);
 apiRouter.use('/audit-logs', auditLogsRoutes);
 apiRouter.use('/crm', crmRoutes);
+apiRouter.use('/inventory', inventoryRoutes);
+apiRouter.use('/dashboard', dashboardRoutes);
+apiRouter.use('/orders', orderRoutes);
+apiRouter.use('/analytics', analyticsRoutes);
+apiRouter.use('/expenses', expensesRoutes);
+apiRouter.use('/reports', reportsRoutes);
 
 app.use('/api/v1/admin', apiRouter);
 

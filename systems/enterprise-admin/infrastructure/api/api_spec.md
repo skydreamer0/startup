@@ -85,6 +85,27 @@ HTTP Status Code 需精確映射錯誤類別：
 | ------ | ------------- | ----------------------------------------- | ------------------- |
 | `GET`  | `/audit-logs` | 查詢全站操作紀錄 (依賴 `created_at` 區間) | `audit_logs:read`   |
 
+### 3.5 客戶管理 (CRM)
+資源名稱: `customers`, `interactions`
+| Method | Endpoint                        | Description                        | Required Permission |
+| ------ | ------------------------------- | ---------------------------------- | ------------------- |
+| `GET`  | `/crm/customers`                | 客戶列表 (支援 `?type=new/repeat`) | `customers:read`    |
+| `GET`  | `/crm/customers/:id`            | 客戶詳情與互動時間軸               | `customers:read`    |
+| `POST` | `/crm/customers`                | 建立新客戶                         | `customers:create`  |
+| `PUT`  | `/crm/customers/:id`            | 更新客戶屬性                       | `customers:update`  |
+| `POST` | `/crm/customers/:id/interactions` | 新增手動互動紀錄                 | `interactions:write`|
+
+### 3.6 供應鏈與庫存 (Inventory & Suppliers)
+資源名稱: `products`, `suppliers`
+| Method | Endpoint                        | Description                                  | Required Permission |
+| ------ | ------------------------------- | -------------------------------------------- | ------------------- |
+| `GET`  | `/inventory/products`           | 庫存列表 (支援 `?lowStock=true`)             | `products:read`     |
+| `POST` | `/inventory/products`           | 新增 SKU (包含安全庫存與成本價)              | `products:create`   |
+| `PUT`  | `/inventory/products/:id`       | 變更商品內容                                 | `products:update`   |
+| `GET`  | `/inventory/suppliers`          | 供應商列表                                   | `suppliers:read`    |
+| `POST` | `/inventory/suppliers`          | 新增供應商                                   | `suppliers:create`  |
+| `PUT`  | `/inventory/suppliers/:id`      | 更新供應商評比與狀態                         | `suppliers:update`  |
+
 ## 4. API 開發防呆規範 (Best Practices)
 1. **輸入過濾 (Input Sanitization)**: 所有外部輸入 `body`, `query`, `params` 皆須經 Schema Validator (如 Zod, Class-Validator) 的過濾，防止 SQL Injection 與 XSS。
 2. **分頁參數 (Pagination)**: `GET` 列表類型 API 強制支援 `?page=1&limit=20` 或 `cursor`，並限制 最大 `limit` (避免撈取整表拖垮 DB)。

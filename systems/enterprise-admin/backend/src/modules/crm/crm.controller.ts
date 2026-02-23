@@ -11,7 +11,7 @@ export class CrmController {
                 limit: req.query.limit as string | undefined,
             };
             const result = await CrmService.getCustomers(queryParams);
-            res.status(200).json({ status: 'success', data: result });
+            res.status(200).json({ success: true, data: result });
         } catch (err) {
             next(err);
         }
@@ -20,7 +20,7 @@ export class CrmController {
     static async getCustomerById(req: Request, res: Response, next: NextFunction) {
         try {
             const customer = await CrmService.getCustomerById(req.params.id as string);
-            res.status(200).json({ status: 'success', data: customer });
+            res.status(200).json({ success: true, data: customer });
         } catch (err) {
             next(err);
         }
@@ -29,7 +29,7 @@ export class CrmController {
     static async createCustomer(req: Request, res: Response, next: NextFunction) {
         try {
             const customer = await CrmService.createCustomer(req.body);
-            res.status(201).json({ status: 'success', data: customer });
+            res.status(201).json({ success: true, data: customer });
         } catch (err) {
             next(err);
         }
@@ -38,7 +38,7 @@ export class CrmController {
     static async updateCustomer(req: Request, res: Response, next: NextFunction) {
         try {
             const customer = await CrmService.updateCustomer(req.params.id as string, req.body);
-            res.status(200).json({ status: 'success', data: customer });
+            res.status(200).json({ success: true, data: customer });
         } catch (err) {
             next(err);
         }
@@ -47,7 +47,16 @@ export class CrmController {
     static async addInteraction(req: Request, res: Response, next: NextFunction) {
         try {
             const interaction = await CrmService.addInteraction(req.params.id as string, req.body);
-            res.status(201).json({ status: 'success', data: interaction });
+            res.status(201).json({ success: true, data: interaction });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async getMetrics(_req: Request, res: Response, next: NextFunction) {
+        try {
+            const metrics = await CrmService.getRetentionMetrics();
+            res.status(200).json({ success: true, data: metrics });
         } catch (err) {
             next(err);
         }

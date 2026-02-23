@@ -7,6 +7,12 @@ import RolesPage from './pages/RolesPage';
 import AuditLogsPage from './pages/AuditLogsPage';
 import CustomerListPage from './pages/CRM/CustomerListPage';
 import CustomerDetailPage from './pages/CRM/CustomerDetailPage';
+import ProductListPage from './pages/Inventory/ProductListPage';
+import SupplierListPage from './pages/Inventory/SupplierListPage';
+import OrderListPage from './pages/Orders/OrderListPage';
+import MarginAnalysisPage from './pages/Reports/MarginAnalysisPage';
+import CashFlowPage from './pages/Reports/CashFlowPage';
+import SalesRankingPage from './pages/Reports/SalesRankingPage';
 import AdminLayout from './layouts/AdminLayout';
 
 function ProtectedRoute() {
@@ -41,6 +47,15 @@ export default function App() {
                             {/* CRM Phase 3 */}
                             <Route path="/crm" element={<CustomerListPage />} />
                             <Route path="/crm/:id" element={<CustomerDetailPage />} />
+                            {/* Inventory Phase 3 */}
+                            <Route path="/inventory" element={<ProductListPage />} />
+                            <Route path="/suppliers" element={<SupplierListPage />} />
+                            {/* Orders Phase 4 */}
+                            <Route path="/orders" element={<OrderListPage />} />
+                            {/* Financial Reports Phase 5 */}
+                            <Route path="/reports/margin" element={<MarginAnalysisPage />} />
+                            <Route path="/reports/cashflow" element={<CashFlowPage />} />
+                            <Route path="/reports/sales-ranking" element={<SalesRankingPage />} />
                         </Route>
                     </Route>
 

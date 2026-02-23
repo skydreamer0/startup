@@ -8,6 +8,7 @@ export interface Customer {
     totalSpent: number;
     purchaseCount: number;
     lastInteractionDate?: string;
+    lastPurchaseDate?: string;
 }
 
 export const crmApi = {

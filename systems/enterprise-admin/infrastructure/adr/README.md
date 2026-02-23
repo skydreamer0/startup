@@ -16,3 +16,4 @@ Each ADR should follow the standard format:
 - [ADR-002: Token-Based Authentication Standard (JWT)](adr_002_authentication_standard.md)
 - [ADR-003: Backend Framework Choice (Express vs NestJS)](adr_003_backend_framework_choice.md)
 - [ADR-004: CRM Identity Resolution and Timeline Modeling](adr_004_crm_identity_resolution.md)
+- [ADR-005: Phase 3 Technical Debt Assessment & Service Layer Standardization](adr_005_phase3_technical_debt.md)
