@@ -1,0 +1,27 @@
+# AI Ignore File
+# 這些是請 AI (如 Cursor, Cline 等輔助工具) 或自動化腳本不要去讀取或分析的資料夾，
+# 避免浪費 token 或是花費無謂的運算資源。
+
+# Node / JS 相關
+node_modules/
+dist/
+build/
+.npm/
+
+# 環境變數與機密資訊
+.env
+.env.*
+*.pem
+*.key
+
+# Git 相關
+.git/
+
+# 資料庫或日誌
+*.log
+*.sqlite
+*.sqlite3
+
+# 各大子系統的快取
+systems/enterprise-admin/admin-ui/dist/
+systems/enterprise-admin/backend/dist/
