@@ -1,5 +1,14 @@
 # 11_營運KPI與儀表板模板
 
+## Metadata
+| 欄位 | 內容 |
+| --- | --- |
+| Owner | Ops Lead |
+| Update Frequency | 每週一次；重大活動前後加更 |
+| Input From | A_戰略層定位、H_實戰工具紀錄、店務數據 |
+| Output To | D_財務模型、F_執行驗證計畫、G_治理會議 |
+
+
 ## 用途
 定義週/月營運 KPI、公式與警戒值，作為決策會議固定依據。
 

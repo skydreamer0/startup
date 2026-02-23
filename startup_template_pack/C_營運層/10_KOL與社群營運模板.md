@@ -1,5 +1,14 @@
 # 10_KOL與社群營運模板
 
+## Metadata
+| 欄位 | 內容 |
+| --- | --- |
+| Owner | Ops Lead |
+| Update Frequency | 每週一次；重大活動前後加更 |
+| Input From | A_戰略層定位、H_實戰工具紀錄、店務數據 |
+| Output To | D_財務模型、F_執行驗證計畫、G_治理會議 |
+
+
 ## 用途
 建立員工/KOL 內容與社群運營節奏，將觸及轉換為首購與回購。
 

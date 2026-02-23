@@ -1,5 +1,14 @@
 # 03_市場規模_TAM_SAM_SOM模板
 
+## Metadata
+| 欄位 | 內容 |
+| --- | --- |
+| Owner | Founder |
+| Update Frequency | 每月一次；重大策略調整時即時更新 |
+| Input From | 客戶訪談、競品研究、市場數據 |
+| Output To | C_營運層、D_財務層、E_對外送件、F_執行與驗證 |
+
+
 ## 用途
 建立市場規模估算框架（TAM/SAM/SOM），用於募資與補助的市場可行性說明。
 

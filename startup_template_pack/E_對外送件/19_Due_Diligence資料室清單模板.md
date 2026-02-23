@@ -1,5 +1,14 @@
 # 19_Due_Diligence資料室清單模板
 
+## Metadata
+| 欄位 | 內容 |
+| --- | --- |
+| Owner | Founder / BD Lead |
+| Update Frequency | 雙週更新；對外送件前完整校稿 |
+| Input From | A~D 最新版本、F_驗證結果、G_治理紀錄 |
+| Output To | 投資人、補助單位、合作方、審查單位 |
+
+
 ## 用途
 整理投資人/補助審查所需文件清單、版本與狀態，建立可追蹤的資料室索引。
 
