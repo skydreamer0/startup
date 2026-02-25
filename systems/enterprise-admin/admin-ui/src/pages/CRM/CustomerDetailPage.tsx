@@ -1,44 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { crmApi, Customer } from '../../api/crm';
 
 export default function CustomerDetailPage() {
     const { id } = useParams<{ id: string }>();
-    const [customer, setCustomer] = useState<Customer | null>(null);
-    const [loading, setLoading] = useState(true);
     const [newInteraction, setNewInteraction] = useState({ type: 'STORE_VISIT', content: '' });
-    const [submitting, setSubmitting] = useState(false);
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        if (id) fetchCustomer(id);
-    }, [id]);
+    const { data: customer, isLoading: loading } = useQuery<Customer | null>({
+        queryKey: ['crm', 'customer', id],
+        queryFn: () => id ? crmApi.getCustomerById(id) : Promise.resolve(null),
+        enabled: !!id,
+    });
 
-    const fetchCustomer = async (customerId: string) => {
-        try {
-            setLoading(true);
-            const data = await crmApi.getCustomerById(customerId);
-            setCustomer(data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const addInteractionMutation = useMutation({
+        mutationFn: (data: { type: string; content: string }) =>
+            crmApi.addInteraction(id!, data),
+        onSuccess: () => {
+            setNewInteraction({ ...newInteraction, content: '' });
+            queryClient.invalidateQueries({ queryKey: ['crm', 'customer', id] });
+        },
+    });
 
-    const handleAddInteraction = async (e: React.FormEvent) => {
+    const handleAddInteraction = (e: React.FormEvent) => {
         e.preventDefault();
         if (!id || !newInteraction.content) return;
-
-        try {
-            setSubmitting(true);
-            await crmApi.addInteraction(id, newInteraction);
-            setNewInteraction({ ...newInteraction, content: '' });
-            fetchCustomer(id); // refresh timeline
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setSubmitting(false);
-        }
+        addInteractionMutation.mutate(newInteraction);
     };
 
     if (loading) return (
@@ -134,11 +122,11 @@ export default function CustomerDetailPage() {
                             />
                             <button
                                 type="submit"
-                                disabled={submitting || !newInteraction.content}
+                                disabled={addInteractionMutation.isPending || !newInteraction.content}
                                 className="btn btn-primary"
                                 style={{ padding: '0 24px' }}
                             >
-                                {submitting ? 'Saving...' : 'Log Note'}
+                                {addInteractionMutation.isPending ? 'Saving...' : 'Log Note'}
                             </button>
                         </form>
                     </section>

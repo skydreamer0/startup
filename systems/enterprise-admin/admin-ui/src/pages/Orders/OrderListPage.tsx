@@ -1,27 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { ordersApi, Order } from '../../api/orders';
 import { Link } from 'react-router-dom';
 
 export default function OrderListPage() {
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('');
 
-    useEffect(() => {
-        fetchOrders();
-    }, [statusFilter]);
+    const { data: ordersData, isLoading: loading } = useQuery({
+        queryKey: ['orders', statusFilter],
+        queryFn: () => ordersApi.getOrders({ status: statusFilter || undefined }),
+    });
 
-    const fetchOrders = async () => {
-        try {
-            setLoading(true);
-            const res = await ordersApi.getOrders({ status: statusFilter || undefined });
-            setOrders(res.data || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const orders: Order[] = ordersData?.data || [];
 
     const getStatusBadgeClass = (status: string) => {
         switch (status) {

@@ -1,26 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { inventoryApi, Product } from '../../api/inventory';
 
 export default function ProductListPage() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({ lowStock: '' });
 
-    useEffect(() => {
-        fetchProducts();
-    }, [filter]);
+    const { data: productsData, isLoading: loading } = useQuery({
+        queryKey: ['inventory', 'products', filter],
+        queryFn: () => inventoryApi.getProducts(filter),
+    });
 
-    const fetchProducts = async () => {
-        try {
-            setLoading(true);
-            const res = await inventoryApi.getProducts(filter);
-            setProducts(res.data || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const products: Product[] = productsData?.data || [];
 
     return (
         <div className="page-container fade-in">

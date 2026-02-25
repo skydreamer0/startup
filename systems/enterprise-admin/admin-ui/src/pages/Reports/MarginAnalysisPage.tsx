@@ -1,25 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { reportsApi, MarginAnalysis } from '../../api/reports';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function MarginAnalysisPage() {
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7)); // YYYY-MM
-    const [data, setData] = useState<MarginAnalysis | null>(null);
-    const [trend, setTrend] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        setLoading(true);
-        Promise.all([
-            reportsApi.getMarginAnalysis(period),
-            reportsApi.getMarginTrend(period)
-        ]).then(([analysis, trendData]) => {
-            setData(analysis);
-            setTrend(trendData);
-        }).catch(console.error).finally(() => setLoading(false));
-    }, [period]);
+    const { data, isLoading } = useQuery<MarginAnalysis>({
+        queryKey: ['reports', 'margin', period],
+        queryFn: () => reportsApi.getMarginAnalysis(period),
+    });
 
-    if (loading && !data) return <div className="p-20 text-center text-dim">Loading margin data...</div>;
+    const { data: trend } = useQuery({
+        queryKey: ['reports', 'margin-trend', period],
+        queryFn: () => reportsApi.getMarginTrend(period),
+    });
+
+    if (isLoading && !data) return <div className="p-20 text-center text-dim">Loading margin data...</div>;
 
     const targetMargin = 28.6; // Doc #13 Reference
     const currentMargin = data?.summary.totalMarginPct || 0;
@@ -81,7 +78,7 @@ export default function MarginAnalysisPage() {
                     <h3 className="text-lg font-semibold mb-6">6-Month Margin Trend</h3>
                     <div style={{ width: '100%', height: '300px' }}>
                         <ResponsiveContainer>
-                            <LineChart data={trend}>
+                            <LineChart data={trend || []}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                                 <XAxis dataKey="period" stroke="var(--text-dim)" />
                                 <YAxis yAxisId="left" stroke="var(--text-dim)" />

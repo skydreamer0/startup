@@ -12,5 +12,6 @@ router.use(requirePermission('read:analytics'));
 
 // The KPI dashboard requires at least the 'starter' plan to view advanced metrics
 router.get('/kpis', requirePlan('starter'), AnalyticsController.getKpis);
+router.get('/trends', requirePlan('starter'), AnalyticsController.getTrends);
 
 export default router;

@@ -1,25 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reportsApi, CashFlowStatement } from '../../api/reports';
+import { expensesApi } from '../../api/expenses';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function CashFlowPage() {
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7)); // YYYY-MM
-    const [data, setData] = useState<CashFlowStatement | null>(null);
-    const [trend, setTrend] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [showExpenseModal, setShowExpenseModal] = useState(false);
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        setLoading(true);
-        Promise.all([
-            reportsApi.getCashFlowStatement(period),
-            reportsApi.getCashFlowTrend(period)
-        ]).then(([statement, trendData]) => {
-            setData(statement);
-            setTrend(trendData);
-        }).catch(console.error).finally(() => setLoading(false));
-    }, [period]);
+    const { data, isLoading } = useQuery<CashFlowStatement>({
+        queryKey: ['reports', 'cashflow', period],
+        queryFn: () => reportsApi.getCashFlowStatement(period),
+    });
 
-    if (loading && !data) return <div className="p-20 text-center text-dim">Loading cash flow data...</div>;
+    const { data: trend } = useQuery({
+        queryKey: ['reports', 'cashflow-trend', period],
+        queryFn: () => reportsApi.getCashFlowTrend(period),
+    });
+
+    if (isLoading && !data) return <div className="p-20 text-center text-dim">Loading cash flow data...</div>;
 
     const opCfsColor = (data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0) >= 0 ? '#10b981' : '#f87171';
 
@@ -82,7 +82,7 @@ export default function CashFlowPage() {
                     <h3 className="text-lg font-semibold mb-6">Cash Position & Net Cash Flow Trend</h3>
                     <div style={{ width: '100%', height: '350px' }}>
                         <ResponsiveContainer>
-                            <BarChart data={trend} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <BarChart data={trend || []} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                                 <XAxis dataKey="period" stroke="var(--text-dim)" />
                                 <YAxis stroke="var(--text-dim)" />
@@ -100,18 +100,18 @@ export default function CashFlowPage() {
                     <h3 className="text-lg font-semibold mb-6">Operating Expenses (OPEX)</h3>
 
                     {(!data?.expensesBreakdown || data.expensesBreakdown.length === 0) ? (
-                        <div className="text-center text-dim p-10 border border-dashed border-[var(--border-light)] rounded-lg">
+                        <div style={{ textAlign: 'center', color: 'var(--text-dim)', padding: '40px 20px', border: '1px dashed var(--border-light)', borderRadius: '12px' }}>
                             No manual expenses registered for this period.
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-4">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {data.expensesBreakdown.map((exp, idx) => (
-                                <div key={idx} className="flex justify-between items-center p-4 bg-[rgba(255,255,255,0.02)] border border-[var(--border-light)] rounded-lg">
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-light)', borderRadius: '10px' }}>
                                     <div>
-                                        <div className="font-semibold">{exp.type}</div>
-                                        <div className="text-sm text-dim">{exp.description || 'General'}</div>
+                                        <div style={{ fontWeight: 600 }}>{exp.type}</div>
+                                        <div style={{ fontSize: '13px', color: 'var(--text-dim)' }}>{exp.description || 'General'}</div>
                                     </div>
-                                    <div className="text-lg font-bold" style={{ color: '#f87171' }}>
+                                    <div style={{ fontSize: '18px', fontWeight: 700, color: '#f87171' }}>
                                         -${exp.amount.toLocaleString()}
                                     </div>
                                 </div>
@@ -120,10 +120,122 @@ export default function CashFlowPage() {
                     )}
 
                     {/* Quick Add Expense Action */}
-                    <button className="btn btn-outline w-full mt-6 flex justify-center items-center gap-2">
+                    <button
+                        className="btn btn-outline"
+                        style={{ width: '100%', marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px' }}
+                        onClick={() => setShowExpenseModal(true)}
+                    >
                         <span>+</span> Log New Expense
                     </button>
                 </section>
+            </div>
+
+            {/* Expense Modal */}
+            {showExpenseModal && (
+                <ExpenseModal
+                    defaultPeriod={period}
+                    onClose={() => setShowExpenseModal(false)}
+                    onSuccess={() => {
+                        setShowExpenseModal(false);
+                        queryClient.invalidateQueries({ queryKey: ['reports', 'cashflow'] });
+                    }}
+                />
+            )}
+        </div>
+    );
+}
+
+/** Expense Entry Modal */
+function ExpenseModal({ defaultPeriod, onClose, onSuccess }: { defaultPeriod: string; onClose: () => void; onSuccess: () => void }) {
+    const [type, setType] = useState('OPERATING');
+    const [amount, setAmount] = useState('');
+    const [description, setDescription] = useState('');
+    const [period, setPeriod] = useState(defaultPeriod);
+
+    const mutation = useMutation({
+        mutationFn: (data: { type: string; amount: number; description?: string; period: string }) =>
+            expensesApi.createExpense(data),
+        onSuccess,
+    });
+
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        const numAmount = parseFloat(amount);
+        if (isNaN(numAmount) || numAmount <= 0) return;
+
+        mutation.mutate({
+            type,
+            amount: numAmount,
+            description: description || undefined,
+            period,
+        });
+    }
+
+    const expenseTypes = ['OPERATING', 'MARKETING', 'PAYROLL', 'RENT', 'UTILITIES', 'OTHER'];
+
+    return (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={onClose} />
+            <div className="glass-card" style={{ position: 'relative', width: '440px', padding: '32px', borderRadius: '16px' }}>
+                <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '24px' }}>Log New Expense</h2>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Type</label>
+                        <select
+                            value={type}
+                            onChange={e => setType(e.target.value)}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        >
+                            {expenseTypes.map(t => (
+                                <option key={t} value={t} style={{ background: 'var(--bg-card)' }}>{t}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Amount ($)</label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={amount}
+                            onChange={e => setAmount(e.target.value)}
+                            placeholder="0.00"
+                            required
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        />
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Period (YYYY-MM)</label>
+                        <input
+                            type="month"
+                            value={period}
+                            onChange={e => setPeriod(e.target.value)}
+                            required
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        />
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Description (optional)</label>
+                        <input
+                            type="text"
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            placeholder="e.g. Facebook Ad campaign"
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                        <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
+                        <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={mutation.isPending}>
+                            {mutation.isPending ? 'Saving...' : 'Save Expense'}
+                        </button>
+                    </div>
+                    {mutation.isError && (
+                        <div style={{ color: '#f87171', fontSize: '13px', marginTop: '4px' }}>
+                            Failed to save expense. Please try again.
+                        </div>
+                    )}
+                </form>
             </div>
         </div>
     );

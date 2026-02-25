@@ -1,25 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { inventoryApi, Supplier } from '../../api/inventory';
 
 export default function SupplierListPage() {
-    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: suppliersData, isLoading: loading } = useQuery({
+        queryKey: ['inventory', 'suppliers'],
+        queryFn: () => inventoryApi.getSuppliers(),
+    });
 
-    useEffect(() => {
-        fetchSuppliers();
-    }, []);
-
-    const fetchSuppliers = async () => {
-        try {
-            setLoading(true);
-            const res = await inventoryApi.getSuppliers();
-            setSuppliers(res.data || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const suppliers: Supplier[] = suppliersData?.data || [];
 
     return (
         <div className="page-container fade-in">

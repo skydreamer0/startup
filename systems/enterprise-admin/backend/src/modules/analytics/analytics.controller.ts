@@ -35,4 +35,24 @@ export class AnalyticsController {
             });
         }
     }
+
+    static async getTrends(req: Request, res: Response) {
+        try {
+            const to = req.query.to as string;
+            const period = to || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+
+            const trends = await AnalyticsService.getKpiTrend(period);
+
+            res.json({
+                success: true,
+                data: trends
+            });
+        } catch (error) {
+            console.error('[AnalyticsController] getTrends Error:', error);
+            res.status(500).json({
+                success: false,
+                error: { code: 'INTERNAL_SERVER_ERROR', message: 'Failed to calculate KPI trends' }
+            });
+        }
+    }
 }

@@ -1,27 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { crmApi, Customer } from '../../api/crm';
 import { Link } from 'react-router-dom';
 
 export default function CustomerListPage() {
-    const [customers, setCustomers] = useState<Customer[]>([]);
-    const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({ type: '', hasLine: '' });
 
-    useEffect(() => {
-        fetchCustomers();
-    }, [filter]);
+    const { data: customersData, isLoading: loading } = useQuery({
+        queryKey: ['crm', 'customers', filter],
+        queryFn: () => crmApi.getCustomers(filter),
+    });
 
-    const fetchCustomers = async () => {
-        try {
-            setLoading(true);
-            const res = await crmApi.getCustomers(filter);
-            setCustomers(res.data || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const customers: Customer[] = customersData?.data || [];
 
     return (
         <div className="crm-list-page">

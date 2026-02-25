@@ -1,26 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { reportsApi, SalesRankingProduct } from '../../api/reports';
 import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function SalesRankingPage() {
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7)); // YYYY-MM
     const [sortBy, setSortBy] = useState<'revenue' | 'quantity'>('revenue');
-    const [products, setProducts] = useState<SalesRankingProduct[]>([]);
-    const [categories, setCategories] = useState<{ category: string; revenue: number; quantity: number }[]>([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        setLoading(true);
-        reportsApi.getSalesRanking(period, sortBy, 20)
-            .then(data => {
-                setProducts(data.topProducts);
-                setCategories(data.categories);
-            })
-            .catch(console.error)
-            .finally(() => setLoading(false));
-    }, [period, sortBy]);
+    const { data, isLoading } = useQuery({
+        queryKey: ['reports', 'sales-ranking', period, sortBy],
+        queryFn: () => reportsApi.getSalesRanking(period, sortBy, 20),
+    });
 
-    if (loading && products.length === 0) return <div className="p-20 text-center text-dim">Loading sales ranking...</div>;
+    const products: SalesRankingProduct[] = data?.topProducts ?? [];
+    const categories = data?.categories ?? [];
+
+    if (isLoading && products.length === 0) return <div className="p-20 text-center text-dim">Loading sales ranking...</div>;
 
     const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#f87171', '#14b8a6', '#6366f1'];
 

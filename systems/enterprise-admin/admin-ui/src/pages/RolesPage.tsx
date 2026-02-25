@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 
 interface Permission { id: string; action: string; resource: string; }
@@ -11,20 +12,22 @@ interface Role {
 }
 
 export default function RolesPage() {
-    const [roles, setRoles] = useState<Role[]>([]);
-    const [allPermissions, setAllPermissions] = useState<Permission[]>([]);
     const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+    const queryClient = useQueryClient();
 
-    useEffect(() => { loadData(); }, []);
+    const { data: rolesData } = useQuery({
+        queryKey: ['roles'],
+        queryFn: async () => {
+            const [rolesRes, permsRes] = await Promise.all([
+                api.get('/roles'),
+                api.get('/roles/permissions'),
+            ]);
+            return { roles: rolesRes.data.data as Role[], permissions: permsRes.data.data as Permission[] };
+        },
+    });
 
-    async function loadData() {
-        const [rolesRes, permsRes] = await Promise.all([
-            api.get('/roles'),
-            api.get('/roles/permissions'),
-        ]);
-        setRoles(rolesRes.data.data);
-        setAllPermissions(permsRes.data.data);
-    }
+    const roles = rolesData?.roles || [];
+    const allPermissions = rolesData?.permissions || [];
 
     function isAssigned(role: Role, perm: Permission) {
         return role.permissions.some((p) => p.action === perm.action && p.resource === perm.resource);
@@ -45,7 +48,7 @@ export default function RolesPage() {
         }
 
         await api.put(`/roles/${role.id}/permissions`, { permissionIds: newIds });
-        loadData();
+        queryClient.invalidateQueries({ queryKey: ['roles'] });
     }
 
     // Group permissions by resource

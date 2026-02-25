@@ -39,6 +39,16 @@ export interface AnalyticsKPIs {
     periodEnd: string;
 }
 
+export interface AnalyticsTrend {
+    period: string;
+    gross_margin_pct: number;
+    cac_twd: number;
+    aov_twd: number;
+    ccc_days: number;
+    ltv_twd: number;
+    bonus_gate_pass: boolean;
+}
+
 export const dashboardApi = {
     getKPIs: async (): Promise<DashboardKPIs> => {
         const { data } = await api.get('/dashboard/kpis');
@@ -50,6 +60,11 @@ export const dashboardApi = {
     },
     getAnalyticsKpis: async (period?: string): Promise<AnalyticsKPIs> => {
         const url = period ? `/analytics/kpis?period=${period}` : '/analytics/kpis';
+        const { data } = await api.get(url);
+        return data.data;
+    },
+    getAnalyticsTrends: async (to?: string): Promise<AnalyticsTrend[]> => {
+        const url = to ? `/analytics/trends?to=${to}` : '/analytics/trends';
         const { data } = await api.get(url);
         return data.data;
     },

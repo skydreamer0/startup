@@ -17,3 +17,4 @@ Each ADR should follow the standard format:
 - [ADR-003: Backend Framework Choice (Express vs NestJS)](adr_003_backend_framework_choice.md)
 - [ADR-004: CRM Identity Resolution and Timeline Modeling](adr_004_crm_identity_resolution.md)
 - [ADR-005: Phase 3 Technical Debt Assessment & Service Layer Standardization](adr_005_phase3_technical_debt.md)
+- [ADR-006: SaaS Multi-Tenancy Architecture](adr_006_saas_multi_tenancy.md)

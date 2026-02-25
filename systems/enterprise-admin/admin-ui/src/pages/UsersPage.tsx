@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 
 interface Role { id: string; name: string; }
@@ -13,10 +14,8 @@ interface User {
 }
 
 export default function UsersPage() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [allRoles, setAllRoles] = useState<Role[]>([]);
-    const [total, setTotal] = useState(0);
     const [search, setSearch] = useState('');
+    const queryClient = useQueryClient();
 
     // Create modal
     const [showCreate, setShowCreate] = useState(false);
@@ -28,21 +27,27 @@ export default function UsersPage() {
 
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => { loadUsers(); loadRoles(); }, []);
-    useEffect(() => { loadUsers(); }, [search]);
+    const { data: usersData } = useQuery({
+        queryKey: ['users', search],
+        queryFn: async () => {
+            const params: Record<string, string> = {};
+            if (search) params.search = search;
+            const res = await api.get('/users', { params });
+            return { users: res.data.data as User[], total: res.data.meta?.total || 0 };
+        },
+    });
 
-    async function loadUsers() {
-        const params: Record<string, string> = {};
-        if (search) params.search = search;
-        const res = await api.get('/users', { params });
-        setUsers(res.data.data);
-        setTotal(res.data.meta?.total || 0);
-    }
+    const { data: rolesData } = useQuery({
+        queryKey: ['allRoles'],
+        queryFn: async () => {
+            const res = await api.get('/roles');
+            return res.data.data.map((r: any) => ({ id: r.id, name: r.name })) as Role[];
+        },
+    });
 
-    async function loadRoles() {
-        const res = await api.get('/roles');
-        setAllRoles(res.data.data.map((r: any) => ({ id: r.id, name: r.name })));
-    }
+    const users = usersData?.users || [];
+    const total = usersData?.total || 0;
+    const allRoles = rolesData || [];
 
     async function createUser(e: React.FormEvent) {
         e.preventDefault();
@@ -51,7 +56,7 @@ export default function UsersPage() {
             await api.post('/users', createForm);
             setShowCreate(false);
             setCreateForm({ email: '', password: '', fullName: '' });
-            loadUsers();
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         } catch (err: any) {
             alert(err.response?.data?.error?.message || 'Failed to create user');
         } finally {
@@ -79,7 +84,7 @@ export default function UsersPage() {
                 roleIds: editForm.roleIds,
             });
             setEditUser(null);
-            loadUsers();
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         } catch (err: any) {
             alert(err.response?.data?.error?.message || 'Failed to update user');
         } finally {
@@ -91,7 +96,7 @@ export default function UsersPage() {
         if (!confirm(`Are you sure you want to deactivate ${email}?`)) return;
         try {
             await api.delete(`/users/${id}`);
-            loadUsers();
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         } catch (err: any) {
             alert(err.response?.data?.error?.message || 'Failed');
         }

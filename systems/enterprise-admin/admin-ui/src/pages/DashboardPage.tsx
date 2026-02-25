@@ -1,25 +1,29 @@
-import { useEffect, useState } from 'react';
-import { dashboardApi, DashboardKPIs, CrmMetrics, AnalyticsKPIs } from '../api/dashboard';
+import { useQuery } from '@tanstack/react-query';
+import { dashboardApi, DashboardKPIs, CrmMetrics, AnalyticsKPIs, AnalyticsTrend } from '../api/dashboard';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 export default function DashboardPage() {
-    const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
-    const [crm, setCrm] = useState<CrmMetrics | null>(null);
-    const [analytics, setAnalytics] = useState<AnalyticsKPIs | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: kpis, isLoading: kpisLoading } = useQuery<DashboardKPIs>({
+        queryKey: ['dashboard', 'kpis'],
+        queryFn: dashboardApi.getKPIs,
+    });
 
-    useEffect(() => {
-        Promise.all([
-            dashboardApi.getKPIs(),
-            dashboardApi.getCrmMetrics(),
-            dashboardApi.getAnalyticsKpis()
-        ]).then(([kpiData, crmData, analyticsData]) => {
-            setKpis(kpiData);
-            setCrm(crmData);
-            setAnalytics(analyticsData);
-        }).catch(console.error).finally(() => setLoading(false));
-    }, []);
+    const { data: crm } = useQuery<CrmMetrics>({
+        queryKey: ['dashboard', 'crm'],
+        queryFn: dashboardApi.getCrmMetrics,
+    });
 
-    if (loading) {
+    const { data: analytics } = useQuery<AnalyticsKPIs>({
+        queryKey: ['dashboard', 'analytics'],
+        queryFn: () => dashboardApi.getAnalyticsKpis(),
+    });
+
+    const { data: trends } = useQuery<AnalyticsTrend[]>({
+        queryKey: ['dashboard', 'trends'],
+        queryFn: () => dashboardApi.getAnalyticsTrends(),
+    });
+
+    if (kpisLoading) {
         return (
             <div className="flex items-center justify-center p-20">
                 <div className="shimmer glass-card" style={{ width: '100%', height: '400px' }}></div>
@@ -101,6 +105,49 @@ export default function DashboardPage() {
                     <div className="text-sm" style={{ color: 'var(--text-dim)' }}>SKUs below safety stock</div>
                 </div>
             </div>
+
+            {/* KPI Trend Chart */}
+            {trends && trends.length > 0 && (
+                <section className="glass-card" style={{ padding: '28px', marginBottom: '32px' }}>
+                    <h3 style={{ fontSize: '18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '20px' }}>📉</span> KPI 6-Month Trend
+                    </h3>
+                    <div style={{ width: '100%', height: '300px' }}>
+                        <ResponsiveContainer>
+                            <AreaChart data={trends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="gradMargin" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                    </linearGradient>
+                                    <linearGradient id="gradAov" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                                <XAxis dataKey="period" stroke="var(--text-dim)" fontSize={12} />
+                                <YAxis yAxisId="left" stroke="var(--text-dim)" fontSize={12} domain={[0, 100]} />
+                                <YAxis yAxisId="right" orientation="right" stroke="#8b5cf6" fontSize={12} />
+                                <Tooltip
+                                    contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: '10px', color: 'var(--text-main)' }}
+                                    labelStyle={{ color: 'var(--text-dim)', marginBottom: '4px' }}
+                                />
+                                <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--text-dim)' }} />
+                                <Area yAxisId="left" type="monotone" dataKey="gross_margin_pct" name="Gross Margin (%)" stroke="#10b981" fillOpacity={1} fill="url(#gradMargin)" strokeWidth={2} />
+                                <Area yAxisId="right" type="monotone" dataKey="aov_twd" name="AOV ($)" stroke="#8b5cf6" fillOpacity={1} fill="url(#gradAov)" strokeWidth={2} />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                    {/* KPI Traffic Light */}
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
+                        <KpiLight label="Gross Margin" value={`${analytics?.gross_margin_pct ?? 0}%`} status={(analytics?.gross_margin_pct ?? 0) >= 30 ? 'green' : (analytics?.gross_margin_pct ?? 0) >= 20 ? 'amber' : 'red'} />
+                        <KpiLight label="CCC" value={`${analytics?.ccc_days ?? 0}d`} status={(analytics?.ccc_days ?? 99) <= 30 ? 'green' : (analytics?.ccc_days ?? 99) <= 45 ? 'amber' : 'red'} />
+                        <KpiLight label="LTV/CAC" value={((analytics?.ltv_twd ?? 0) / Math.max(analytics?.cac_twd ?? 1, 1)).toFixed(1) + 'x'} status={((analytics?.ltv_twd ?? 0) / Math.max(analytics?.cac_twd ?? 1, 1)) >= 3 ? 'green' : ((analytics?.ltv_twd ?? 0) / Math.max(analytics?.cac_twd ?? 1, 1)) >= 1.5 ? 'amber' : 'red'} />
+                        <KpiLight label="Bonus Gate" value={analytics?.bonus_gate_pass ? 'PASS' : 'FAIL'} status={analytics?.bonus_gate_pass ? 'green' : 'red'} />
+                    </div>
+                </section>
+            )}
 
             {/* Secondary Sections */}
             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px' }}>
@@ -216,6 +263,24 @@ export default function DashboardPage() {
                     </div>
                 </section>
             </div>
+        </div>
+    );
+}
+
+/** KPI Traffic Light Indicator */
+function KpiLight({ label, value, status }: { label: string; value: string; status: 'green' | 'amber' | 'red' }) {
+    const colors = {
+        green: { bg: 'rgba(16, 185, 129, 0.1)', dot: '#10b981', text: '#10b981' },
+        amber: { bg: 'rgba(245, 158, 11, 0.1)', dot: '#f59e0b', text: '#f59e0b' },
+        red: { bg: 'rgba(239, 68, 68, 0.1)', dot: '#ef4444', text: '#ef4444' },
+    };
+    const c = colors[status];
+
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '10px', background: c.bg, border: `1px solid ${c.dot}22` }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: c.dot, boxShadow: `0 0 8px ${c.dot}66` }} />
+            <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>{label}</span>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: c.text }}>{value}</span>
         </div>
     );
 }

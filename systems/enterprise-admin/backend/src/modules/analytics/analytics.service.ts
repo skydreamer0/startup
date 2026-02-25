@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma';
-import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { startOfMonth, endOfMonth, subMonths, format, parseISO, isValid } from 'date-fns';
 
 export class AnalyticsService {
     /**
@@ -124,5 +124,41 @@ export class AnalyticsService {
             periodStart: periodStart.toISOString(),
             periodEnd: periodEnd.toISOString()
         };
+    }
+
+    /**
+     * Get KPI trend data over a 6-month rolling window ending at the given period.
+     * Returns an array of monthly snapshots suitable for trend charting.
+     */
+    static async getKpiTrend(endPeriodStr: string) {
+        const endDateObj = parseISO(`${endPeriodStr}-01`);
+        if (!isValid(endDateObj)) throw new Error('Invalid end period');
+
+        const periods: { label: string; start: Date; end: Date }[] = [];
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(endDateObj.getFullYear(), endDateObj.getMonth() - i, 1);
+            periods.push({
+                label: format(d, 'yyyy-MM'),
+                start: startOfMonth(d),
+                end: endOfMonth(d)
+            });
+        }
+
+        const results = await Promise.all(
+            periods.map(async (p) => {
+                const snapshot = await this.getKpiSnapshot(p.start, p.end);
+                return {
+                    period: p.label,
+                    gross_margin_pct: snapshot.gross_margin_pct,
+                    cac_twd: snapshot.cac_twd,
+                    aov_twd: snapshot.aov_twd,
+                    ccc_days: snapshot.ccc_days,
+                    ltv_twd: snapshot.ltv_twd,
+                    bonus_gate_pass: snapshot.bonus_gate_pass
+                };
+            })
+        );
+
+        return results;
     }
 }

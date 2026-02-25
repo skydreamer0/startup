@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import api from '../api/client';
 
 interface AuditLog {
@@ -12,20 +13,21 @@ interface AuditLog {
 }
 
 export default function AuditLogsPage() {
-    const [logs, setLogs] = useState<AuditLog[]>([]);
-    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [actionFilter, setActionFilter] = useState('');
 
-    useEffect(() => { loadLogs(); }, [page, actionFilter]);
+    const { data: logsData } = useQuery({
+        queryKey: ['audit-logs', page, actionFilter],
+        queryFn: async () => {
+            const params: Record<string, string | number> = { page, limit: 20 };
+            if (actionFilter) params.action = actionFilter;
+            const res = await api.get('/audit-logs', { params });
+            return { logs: res.data.data as AuditLog[], total: res.data.meta?.total || 0 };
+        },
+    });
 
-    async function loadLogs() {
-        const params: Record<string, string | number> = { page, limit: 20 };
-        if (actionFilter) params.action = actionFilter;
-        const res = await api.get('/audit-logs', { params });
-        setLogs(res.data.data);
-        setTotal(res.data.meta?.total || 0);
-    }
+    const logs = logsData?.logs || [];
+    const total = logsData?.total || 0;
 
     function actionColor(action: string) {
         if (action.includes('LOGIN')) return 'var(--accent-green)';

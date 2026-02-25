@@ -72,7 +72,7 @@
 
 ### 🟢 P2 — Phase 4 Sprint 2 解決 (一致性與體驗)
 - [x] **DEBT-06**: 統一所有 API 回應格式為 `{ success: true/false, data, error }` (移除 `status: 'success'` 變體)。
-- [ ] **DEBT-07**: 前端導入 `@tanstack/react-query` (TanStack Query)，取代 `useEffect + useState` 資料獲取模式。
+- [x] **DEBT-07**: 前端資料層遷移至 TanStack Query（所有頁面統一 cache + refetch）-query` (TanStack Query)，取代 `useEffect + useState` 資料獲取模式。
 
 ---
 
@@ -95,22 +95,22 @@
 - [ ] **SAAS-03**: Plan-based feature gating (`free`/`starter`/`pro`)。
 
 ### 模組二：營運 KPI 引擎 (對應 11_營運KPI / 12_單位經濟)
-- [ ] **KPI-01**: 統一 Analytics Service，計算 gross_margin / CCC / CAC / AOV / LTV / bonus_gate_pass。
-- [ ] **KPI-02**: `GET /analytics/kpis` 與 `GET /analytics/trends` API。
-- [ ] **UI-15**: `/dashboard` 升級 — 整合 KPI 燈號警示與趨勢折線圖 (Chart.js)。
+- [x] **KPI-01**: 統一 Analytics Service，計算 gross_margin / CCC / CAC / AOV / LTV / bonus_gate_pass。
+- [x] **KPI-02**: `GET /analytics/kpis` 與 `GET /analytics/trends` API。
+- [x] **UI-15**: `/dashboard` 升級 — 整合 KPI 燈號警示與趨勢折線圖 (Chart.js)。
 
 ### 模組三：毛利分析報表
-- [ ] **FIN-01**: Margin Service — 按商品/分類/月度計算毛利率。
-- [ ] **UI-16**: `/reports/margin` 毛利分析頁（當月儀表盤 + 逐品毛利表 + 趨勢圖）。
+- [x] **FIN-01**: Margin Service — 按商品/分類/月度計算毛利率。
+- [x] **UI-16**: `/reports/margin` 毛利分析頁（當月儀表盤 + 逐品毛利表 + 趨勢圖）。
 
 ### 模組四：現金流追蹤
-- [ ] **FIN-02**: `Expense` Model 與 CRUD API（營業費用手動登記）。
-- [ ] **FIN-03**: CashFlow Service — 對齊 13_三年財務模型 格式產出月度現金流表。
-- [ ] **UI-17**: `/reports/cashflow` 現金流頁（瀑布圖 + 月度滾算表）。
+- [x] **FIN-02**: `Expense` Model 與 CRUD API（營業費用手動登記）。
+- [x] **FIN-03**: CashFlow Service — 對齊 13_三年財務模型 格式產出月度現金流表。
+- [x] **UI-17**: `/reports/cashflow` 現金流頁（瀑布圖 + 月度滾算表）。
 
 ### 模組五：產品銷售排行
-- [ ] **FIN-04**: Sales Ranking Service — 按營收/數量/毛利貢獻排名。
-- [ ] **UI-18**: `/reports/sales-ranking` 銷售排行頁（Top 10 排行榜 + 分類圓餅圖）。
+- [x] **FIN-04**: Sales Ranking Service — 按營收/數量/毛利貢獻排名。
+- [x] **UI-18**: `/reports/sales-ranking` 銷售排行頁（Top 10 排行榜 + 分類圓餅圖）。
 
 ---
 
