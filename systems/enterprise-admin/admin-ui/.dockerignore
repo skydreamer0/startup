@@ -1,9 +1,0 @@
-node_modules
-dist
-.env
-.env.*.local
-.git
-.gitignore
-.dockerignore
-Dockerfile
-nginx.conf
