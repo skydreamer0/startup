@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./systems/enterprise-admin/backend
 
     steps:
     - uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
       with:
         node-version: 18
         cache: 'npm'
-        cache-dependency-path: './backend/package-lock.json'
+        cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
 
     - name: Install Dependencies
       run: npm ci
@@ -35,9 +35,6 @@ jobs:
 
     - name: Build
       run: npm run build
-
-    - name: Type Check
-      run: npx tsc --noEmit
 
     - name: Setup Test DB
       run: npx prisma migrate deploy
@@ -58,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./admin-ui
+        working-directory: ./systems/enterprise-admin/admin-ui
 
     steps:
     - uses: actions/checkout@v4
@@ -68,7 +65,7 @@ jobs:
       with:
         node-version: 18
         cache: 'npm'
-        cache-dependency-path: './admin-ui/package-lock.json'
+        cache-dependency-path: './systems/enterprise-admin/admin-ui/package-lock.json'
 
     - name: Install Dependencies
       run: npm ci

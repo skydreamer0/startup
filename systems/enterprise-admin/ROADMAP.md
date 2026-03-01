@@ -114,6 +114,26 @@
 
 ---
 
+## Phase 5.5: CI/CD & Technical Debt Remediation (架構品質強化 II)
+**目標：修復 CI/CD Pipeline 失敗、移除殘留技術債、提升開發體驗與代碼品質。**
+
+### 🔴 P0 — CI/CD 阻塞性修復
+- [x] **CICD-01**: 修正 `ci.yml` 中 `working-directory` 路徑錯誤（`./backend` → `./systems/enterprise-admin/backend`，`./admin-ui` → `./systems/enterprise-admin/admin-ui`）。
+- [x] **CICD-02**: 修正 `cache-dependency-path` 指向正確的 `package-lock.json` 位置。
+- [x] **CICD-03**: 移除重複的 `tsc --noEmit` Step（`npm run build` 已包含 type check）。
+
+### 🟡 P1 — 殘留依賴清理
+- [x] **DEBT-08**: 移除 `package.json` 中 Jest 殘留依賴（`jest`, `ts-jest`, `@types/jest`），專案已全面使用 Vitest。
+- [x] **DEBT-09**: 刪除 `jest.config.js`、`test.js`、`test.ts`、`tsc-errors.txt` 殘留檔案。
+- [x] **DEBT-10**: 移除 `docker-compose.yml` 棄用的 `version: '3.8'` 欄位。
+
+### 🟢 P2 — 架構品質提升（規劃中）
+- [ ] **DEBT-11**: ESLint 9 flat config 遷移 — 將 `.eslintrc.cjs` 遷移至 `eslint.config.mjs`（需建立 ADR）。
+- [ ] **DEBT-12**: 前端加入 ESLint + Vitest 基礎測試覆蓋。
+- [ ] **DEBT-13**: 開發環境 SQLite → Docker PostgreSQL 切換（對齊架構文件規範，需建立 ADR）。
+
+---
+
 ## Phase 6: External Integrations & Advanced Automation (規劃中)
 - **INT-01**: LINE Messaging API (行銷推播與互動)
 - **INT-02**: 批次匯入匯出 (Excel/CSV)
