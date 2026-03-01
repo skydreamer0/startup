@@ -1,4 +1,20 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_dev_password
+      POSTGRES_DB: enterprise_admin
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d enterprise_admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -10,11 +26,14 @@ services:
       - URL=http://localhost:3000
       - FRONTEND_URL=http://localhost
       - CORS_ORIGIN=http://localhost
-      - DATABASE_URL=file:./dev.db
+      - DATABASE_URL=postgresql://admin:admin_dev_password@postgres:5432/enterprise_admin
       - JWT_ACCESS_SECRET=local-dev-access-secret-32-chars!
       - JWT_ACCESS_EXPIRES_IN=15m
       - JWT_REFRESH_SECRET=local-dev-refresh-secret-32-chars!
       - JWT_REFRESH_EXPIRES_IN=7d
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - ./backend/prisma:/app/prisma
 
@@ -26,3 +45,6 @@ services:
       - "80:80"
     depends_on:
       - backend
+
+volumes:
+  pgdata:

@@ -10,9 +10,28 @@ jobs:
   backend:
     name: Backend CI
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         working-directory: ./systems/enterprise-admin/backend
+
+    env:
+      DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
 
     steps:
     - uses: actions/checkout@v4
@@ -38,16 +57,13 @@ jobs:
 
     - name: Setup Test DB
       run: npx prisma migrate deploy
-      env:
-        DATABASE_URL: "file:./test.db"
 
     - name: Run Tests
       run: npm test
       env:
-        DATABASE_URL: "file:./test.db"
-        JWT_ACCESS_SECRET: "test-secret"
+        JWT_ACCESS_SECRET: "test-secret-that-is-at-least-32-chars-long"
         JWT_ACCESS_EXPIRES_IN: "1h"
-        JWT_REFRESH_SECRET: "test-refresh-secret"
+        JWT_REFRESH_SECRET: "test-refresh-secret-at-least-32-chars!"
         JWT_REFRESH_EXPIRES_IN: "7d"
 
   frontend:
@@ -69,6 +85,9 @@ jobs:
 
     - name: Install Dependencies
       run: npm ci
+
+    - name: Lint
+      run: npm run lint
 
     - name: Build and Type Check
       run: npm run build

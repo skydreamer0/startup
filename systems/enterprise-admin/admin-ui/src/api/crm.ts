@@ -1,5 +1,14 @@
 import api from './client';
 
+export interface Interaction {
+    id: string;
+    customerId: string;
+    type: string;
+    content?: string;
+    interactedAt: string;
+    createdAt: string;
+}
+
 export interface Customer {
     id: string;
     name?: string;
@@ -9,6 +18,7 @@ export interface Customer {
     purchaseCount: number;
     lastInteractionDate?: string;
     lastPurchaseDate?: string;
+    interactions?: Interaction[];
 }
 
 export const crmApi = {

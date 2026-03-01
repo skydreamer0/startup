@@ -45,7 +45,7 @@ export class SalesRankingService {
             productMap.set(item.productId, existing);
         }
 
-        let results = Array.from(productMap.values());
+        const results = Array.from(productMap.values());
 
         if (sortBy === 'revenue') {
             results.sort((a, b) => b.revenue - a.revenue);

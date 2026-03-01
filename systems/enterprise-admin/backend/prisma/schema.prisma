@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -133,8 +133,8 @@ model AuditLog {
   action       String // e.g., UPDATE_USER_ROLE, CREATE_USER
   resourceType String   @map("resource_type")
   resourceId   String   @map("resource_id")
-  oldValue     String?  @map("old_value") // JSON string (SQLite doesn't support JSONB)
-  newValue     String?  @map("new_value") // JSON string
+  oldValue     String?  @map("old_value") @db.Text
+  newValue     String?  @map("new_value") @db.Text
   ipAddress    String?  @map("ip_address")
   userAgent    String?  @map("user_agent")
   tenantId     String   @map("tenant_id")

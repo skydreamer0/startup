@@ -134,14 +134,12 @@ export default function CustomerDetailPage() {
                     <section className="glass-card" style={{ padding: '28px' }}>
                         <h3 style={{ fontSize: '18px', marginBottom: '24px' }}>Engagement History</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
-                            {/* @ts-ignore */}
                             {customer.interactions?.length === 0 ? (
                                 <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>
                                     No records found in historical timeline.
                                 </div>
                             ) : (
-                                /* @ts-ignore */
-                                [...customer.interactions].reverse().map((int) => (
+                                [...(customer.interactions ?? [])].reverse().map((int) => (
                                     <div key={int.id} style={{
                                         padding: '16px',
                                         background: 'rgba(255,255,255,0.02)',
