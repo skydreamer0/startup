@@ -27,7 +27,7 @@ export default function OrderListPage() {
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <div>
                     <h1 className="page-title">Sales Orders</h1>
-                    <p className="page-subtitle" style={{ color: 'var(--text-dim)' }}>Track customer purchases and fulfillment status</p>
+                    <p className="page-subtitle" style={{ color: 'var(--text-muted)' }}>Track customer purchases and fulfillment status</p>
                 </div>
                 <div className="flex gap-12">
                     <select
@@ -63,7 +63,7 @@ export default function OrderListPage() {
                         <tbody>
                             {orders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>
+                                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                                         No orders found matching your criteria.
                                     </td>
                                 </tr>
@@ -71,22 +71,22 @@ export default function OrderListPage() {
                                 orders.map((o) => (
                                     <tr key={o.id}>
                                         <td>
-                                            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '12px', color: 'var(--text-main)', fontWeight: 600 }}>
+                                            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '12px', color: 'var(--text-primary)', fontWeight: 600 }}>
                                                 #{o.id.slice(0, 8).toUpperCase()}
                                             </div>
-                                            <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                                                 {new Date(o.createdAt).toLocaleString()}
                                             </div>
                                         </td>
                                         <td>
                                             <div style={{ fontWeight: 600 }}>{o.customer?.name || 'Walk-in'}</div>
-                                            <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>{o.customer?.phone}</div>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{o.customer?.phone}</div>
                                         </td>
                                         <td>
-                                            <span style={{ color: 'var(--text-dim)' }}>{o._count?.items || 0} items</span>
+                                            <span style={{ color: 'var(--text-muted)' }}>{o._count?.items || 0} items</span>
                                         </td>
                                         <td>
-                                            <div style={{ fontWeight: 800, color: 'var(--text-main)' }}>
+                                            <div style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
                                                 ${o.totalAmount.toLocaleString()}
                                             </div>
                                             <div style={{ fontSize: '11px', color: o.paymentStatus === 'paid' ? '#10b981' : '#f59e0b' }}>

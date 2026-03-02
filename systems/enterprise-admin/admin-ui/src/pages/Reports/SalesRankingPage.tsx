@@ -31,7 +31,7 @@ export default function SalesRankingPage() {
                         value={sortBy}
                         onChange={e => setSortBy(e.target.value as any)}
                         className="input"
-                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                     >
                         <option value="revenue" style={{ background: 'var(--bg-card)' }}>Sort by Revenue</option>
                         <option value="quantity" style={{ background: 'var(--bg-card)' }}>Sort by Quantity</option>
@@ -41,7 +41,7 @@ export default function SalesRankingPage() {
                         value={period}
                         onChange={e => setPeriod(e.target.value)}
                         className="input"
-                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                     />
                     <button className="btn btn-primary" onClick={() => setPeriod(period)}>Refresh</button>
                 </div>
@@ -71,9 +71,9 @@ export default function SalesRankingPage() {
                                 </Pie>
                                 <PieTooltip
                                     formatter={(value: any) => `$${Number(value).toLocaleString()}`}
-                                    contentStyle={{ background: 'var(--bg-card)', border: 'none', borderRadius: '8px', color: 'var(--text-main)' }}
+                                    contentStyle={{ background: 'var(--bg-card)', border: 'none', borderRadius: '8px', color: 'var(--text-primary)' }}
                                 />
-                                <Legend wrapperStyle={{ color: 'var(--text-main)', fontSize: '12px' }} />
+                                <Legend wrapperStyle={{ color: 'var(--text-primary)', fontSize: '12px' }} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
@@ -107,14 +107,14 @@ export default function SalesRankingPage() {
                                             <div className="text-xs text-dim font-mono mt-1">{p.sku}</div>
                                         </td>
                                         <td className="text-center">
-                                            <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-dim)' }}>
+                                            <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}>
                                                 {p.categoryName}
                                             </span>
                                         </td>
-                                        <td className="text-right font-semibold" style={{ color: sortBy === 'quantity' ? '#8b5cf6' : 'var(--text-main)' }}>
+                                        <td className="text-right font-semibold" style={{ color: sortBy === 'quantity' ? '#8b5cf6' : 'var(--text-primary)' }}>
                                             {p.quantity.toLocaleString()}
                                         </td>
-                                        <td className="text-right font-semibold" style={{ color: sortBy === 'revenue' ? '#10b981' : 'var(--text-main)' }}>
+                                        <td className="text-right font-semibold" style={{ color: sortBy === 'revenue' ? '#10b981' : 'var(--text-primary)' }}>
                                             ${p.revenue.toLocaleString()}
                                         </td>
                                         <td className="text-right" style={{ color: p.marginPct >= 30 ? '#10b981' : '#f59e0b' }}>

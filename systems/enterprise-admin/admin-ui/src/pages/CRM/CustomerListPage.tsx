@@ -18,7 +18,7 @@ export default function CustomerListPage() {
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <div>
                     <h1 className="page-title">Customer Directory</h1>
-                    <p className="page-subtitle" style={{ color: 'var(--text-dim)' }}>Manage customer relationships and interaction history</p>
+                    <p className="page-subtitle" style={{ color: 'var(--text-muted)' }}>Manage customer relationships and interaction history</p>
                 </div>
                 <div className="flex gap-12">
                     <select
@@ -62,7 +62,7 @@ export default function CustomerListPage() {
                         <tbody>
                             {customers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>
+                                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                                         No matching customers found.
                                     </td>
                                 </tr>
@@ -70,14 +70,14 @@ export default function CustomerListPage() {
                                 customers.map((c) => (
                                     <tr key={c.id}>
                                         <td>
-                                            <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{c.name || 'Unknown'}</div>
-                                            <div style={{ fontSize: '13px', color: 'var(--text-dim)' }}>{c.phone || 'No phone'}</div>
+                                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{c.name || 'Unknown'}</div>
+                                            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{c.phone || 'No phone'}</div>
                                         </td>
                                         <td>
                                             {c.lineUid ? (
                                                 <span className="badge badge-success">Connected</span>
                                             ) : (
-                                                <span style={{ color: 'var(--text-dim)', fontSize: '12px' }}>Inactive</span>
+                                                <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Inactive</span>
                                             )}
                                         </td>
                                         <td>

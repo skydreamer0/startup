@@ -45,22 +45,22 @@ export default function CustomerDetailPage() {
     return (
         <div className="customer-detail-page">
             <header className="page-header" style={{ marginBottom: '32px' }}>
-                <Link to="/crm" style={{ color: 'var(--text-dim)', fontSize: '14px', textDecoration: 'none', display: 'block', marginBottom: '8px' }}>
+                <Link to="/crm" style={{ color: 'var(--text-muted)', fontSize: '14px', textDecoration: 'none', display: 'block', marginBottom: '8px' }}>
                     ← Back to Directory
                 </Link>
                 <h1 className="page-title">{customer.name || 'Anonymous Customer'}</h1>
-                <p className="page-subtitle" style={{ color: 'var(--text-dim)' }}>Comprehensive customer profile and engagement timeline</p>
+                <p className="page-subtitle" style={{ color: 'var(--text-muted)' }}>Comprehensive customer profile and engagement timeline</p>
             </header>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '32px' }}>
                 {/* Left: Stats Card */}
                 <aside className="space-y-24">
                     <section className="glass-card" style={{ padding: '24px' }}>
-                        <h3 style={{ fontSize: '16px', marginBottom: '20px', color: 'var(--text-main)' }}>Contact Details</h3>
+                        <h3 style={{ fontSize: '16px', marginBottom: '20px', color: 'var(--text-primary)' }}>Contact Details</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div>
                                 <label className="stat-label">Phone Number</label>
-                                <div style={{ color: 'var(--text-main)', fontWeight: 600 }}>{customer.phone || 'N/A'}</div>
+                                <div style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{customer.phone || 'N/A'}</div>
                             </div>
                             <div>
                                 <label className="stat-label">LINE Connectivity</label>
@@ -68,7 +68,7 @@ export default function CustomerDetailPage() {
                                     {customer.lineUid ? (
                                         <span className="badge badge-success">Connected</span>
                                     ) : (
-                                        <span style={{ color: 'var(--text-dim)', fontSize: '13px' }}>Not Linked</span>
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Not Linked</span>
                                     )}
                                 </div>
                             </div>
@@ -76,7 +76,7 @@ export default function CustomerDetailPage() {
                     </section>
 
                     <section className="glass-card" style={{ padding: '24px' }}>
-                        <h3 style={{ fontSize: '16px', marginBottom: '20px', color: 'var(--text-main)' }}>Commerce Summary</h3>
+                        <h3 style={{ fontSize: '16px', marginBottom: '20px', color: 'var(--text-primary)' }}>Commerce Summary</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div className="flex justify-between">
                                 <span className="stat-label">Lifetime Value</span>
@@ -135,7 +135,7 @@ export default function CustomerDetailPage() {
                         <h3 style={{ fontSize: '18px', marginBottom: '24px' }}>Engagement History</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
                             {customer.interactions?.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>
+                                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                                     No records found in historical timeline.
                                 </div>
                             ) : (
@@ -144,14 +144,14 @@ export default function CustomerDetailPage() {
                                         padding: '16px',
                                         background: 'rgba(255,255,255,0.02)',
                                         borderRadius: '12px',
-                                        border: '1px solid var(--border-light)',
+                                        border: '1px solid var(--border)',
                                         display: 'flex',
                                         gap: '16px'
                                     }}>
                                         <div style={{
                                             width: '40px',
                                             height: '40px',
-                                            background: 'var(--bg-glass)',
+                                            background: 'var(--bg-hover)',
                                             borderRadius: '10px',
                                             display: 'flex',
                                             alignItems: 'center',
@@ -162,10 +162,10 @@ export default function CustomerDetailPage() {
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>
+                                                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                                                     {int.type.replace('_', ' ')}
                                                 </span>
-                                                <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
+                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                                     {new Date(int.interactedAt).toLocaleString()}
                                                 </span>
                                             </div>

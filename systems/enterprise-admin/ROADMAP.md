@@ -128,9 +128,9 @@
 - [x] **DEBT-10**: 移除 `docker-compose.yml` 棄用的 `version: '3.8'` 欄位。
 
 ### 🟢 P2 — 架構品質提升（規劃中）
-- [ ] **DEBT-11**: ESLint 9 flat config 遷移 — 將 `.eslintrc.cjs` 遷移至 `eslint.config.mjs`（需建立 ADR）。
-- [ ] **DEBT-12**: 前端加入 ESLint + Vitest 基礎測試覆蓋。
-- [ ] **DEBT-13**: 開發環境 SQLite → Docker PostgreSQL 切換（對齊架構文件規範，需建立 ADR）。
+- [x] **DEBT-11**: ESLint 9 flat config 遷移 — 將 `.eslintrc.cjs` 遷移至 `eslint.config.mjs`（ADR-007）。
+- [x] **DEBT-12**: 前端加入 ESLint + Vitest 基礎測試覆蓋。
+- [x] **DEBT-13**: 開發環境 SQLite → Docker PostgreSQL 切換（對齊架構文件規範，ADR-007）。
 
 ---
 
@@ -139,4 +139,12 @@
 - **INT-02**: 批次匯入匯出 (Excel/CSV)
 - **INT-03**: 外部會計系統拋轉 (QuickBooks/Xero)
 
+---
+
+## Phase 6.2: Frontend UI Structure Refinement (UI 細節結構優化)
+**目標：將 Phase 6 建立的設計系統徹底落實到所有次要頁面，確保所有表格、按鈕與輸入框的一致性高級感。**
+
+- [ ] **UI-19**: 重構 **Audit Logs** 與 **Users/Roles** 頁面 (套用標準 `.table`, `.btn`, `.input-field`)。
+- [ ] **UI-20**: 重構 **Inventory (Products)** 與 **Suppliers** 頁面 (修復表格標題擠壓，統一按鈕樣式)。
+- [ ] **UI-21**: 重構 **Orders** 與其他報表頁面的基礎控制項。
 

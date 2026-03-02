@@ -92,7 +92,7 @@ export default function AuditLogsPage() {
                                 </td>
                                 <td className="text-sm">
                                     <span className="text-muted">{log.resourceType}</span>
-                                    {log.resourceId && <span style={{ marginLeft: 6, fontFamily: 'monospace', fontSize: 11 }}>{log.resourceId.slice(0, 8)}…</span>}
+                                    {log.resourceId && <span style={{ marginLeft: 6, fontFamily: 'monospace', fontSize: 11 }}>{log.resourceId.slice(0, 8)}</span>}
                                 </td>
                                 <td className="text-muted text-sm">{log.ipAddress || '—'}</td>
                             </tr>

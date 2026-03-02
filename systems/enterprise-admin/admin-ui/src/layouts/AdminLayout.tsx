@@ -12,7 +12,6 @@ export default function AdminLayout() {
 
     return (
         <div className="admin-layout">
-            {/* Sidebar */}
             <aside className="sidebar">
                 <div className="sidebar-logo">STARTER ADMIN</div>
 
@@ -45,6 +44,7 @@ export default function AdminLayout() {
                     <NavLink to="/reports/sales-ranking" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">🏆</span> <span>Sales Ranking</span>
                     </NavLink>
+
                     <div className="sidebar-section">System Admin</div>
                     <NavLink to="/users" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">👥</span> <span>Users</span>
@@ -62,13 +62,12 @@ export default function AdminLayout() {
                         <strong>{user?.fullName}</strong>
                         <span>{user?.roles?.[0] || 'User'}</span>
                     </div>
-                    <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ marginTop: '12px', width: '100%', justifyContent: 'center' }}>
+                    <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ width: '100%', justifyContent: 'center' }}>
                         Logout
                     </button>
                 </div>
             </aside>
 
-            {/* Main Content */}
             <main className="main-content">
                 <Outlet />
             </main>

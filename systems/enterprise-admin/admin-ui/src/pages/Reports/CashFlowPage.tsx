@@ -36,7 +36,7 @@ export default function CashFlowPage() {
                         value={period}
                         onChange={e => setPeriod(e.target.value)}
                         className="input"
-                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                     />
                     <button className="btn btn-primary" onClick={() => setPeriod(period)}>Refresh</button>
                 </div>
@@ -55,7 +55,7 @@ export default function CashFlowPage() {
                     <div className="stat-value mt-4" style={{ color: opCfsColor }}>
                         ${((data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0)).toLocaleString()}
                     </div>
-                    <div className="text-sm mt-2" style={{ color: 'var(--text-dim)' }}>
+                    <div className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
                         Inflows: ${data?.operatingInflows.toLocaleString() ?? 0}
                     </div>
                 </div>
@@ -64,7 +64,7 @@ export default function CashFlowPage() {
                     <div className="stat-value mt-4" style={{ color: '#f59e0b' }}>
                         -${data?.investingOutflows.toLocaleString() ?? 0}
                     </div>
-                    <div className="text-sm mt-2" style={{ color: 'var(--text-dim)' }}>
+                    <div className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
                         Inventory & Assets
                     </div>
                 </div>
@@ -84,8 +84,8 @@ export default function CashFlowPage() {
                         <ResponsiveContainer>
                             <BarChart data={trend || []} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey="period" stroke="var(--text-dim)" />
-                                <YAxis stroke="var(--text-dim)" />
+                                <XAxis dataKey="period" stroke="var(--text-muted)" />
+                                <YAxis stroke="var(--text-muted)" />
                                 <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ background: 'var(--bg-card)', border: 'none', borderRadius: '8px' }} />
                                 <Legend />
                                 <Bar dataKey="endingCash" name="Ending Balance" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
@@ -100,16 +100,16 @@ export default function CashFlowPage() {
                     <h3 className="text-lg font-semibold mb-6">Operating Expenses (OPEX)</h3>
 
                     {(!data?.expensesBreakdown || data.expensesBreakdown.length === 0) ? (
-                        <div style={{ textAlign: 'center', color: 'var(--text-dim)', padding: '40px 20px', border: '1px dashed var(--border-light)', borderRadius: '12px' }}>
+                        <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '40px 20px', border: '1px dashed var(--border)', borderRadius: '12px' }}>
                             No manual expenses registered for this period.
                         </div>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {data.expensesBreakdown.map((exp, idx) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-light)', borderRadius: '10px' }}>
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: '10px' }}>
                                     <div>
                                         <div style={{ fontWeight: 600 }}>{exp.type}</div>
-                                        <div style={{ fontSize: '13px', color: 'var(--text-dim)' }}>{exp.description || 'General'}</div>
+                                        <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{exp.description || 'General'}</div>
                                     </div>
                                     <div style={{ fontSize: '18px', fontWeight: 700, color: '#f87171' }}>
                                         -${exp.amount.toLocaleString()}
@@ -180,11 +180,11 @@ function ExpenseModal({ defaultPeriod, onClose, onSuccess }: { defaultPeriod: st
                 <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '24px' }}>Log New Expense</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Type</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>Type</label>
                         <select
                             value={type}
                             onChange={e => setType(e.target.value)}
-                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                         >
                             {expenseTypes.map(t => (
                                 <option key={t} value={t} style={{ background: 'var(--bg-card)' }}>{t}</option>
@@ -192,7 +192,7 @@ function ExpenseModal({ defaultPeriod, onClose, onSuccess }: { defaultPeriod: st
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Amount ($)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>Amount ($)</label>
                         <input
                             type="number"
                             step="0.01"
@@ -201,27 +201,27 @@ function ExpenseModal({ defaultPeriod, onClose, onSuccess }: { defaultPeriod: st
                             onChange={e => setAmount(e.target.value)}
                             placeholder="0.00"
                             required
-                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                         />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Period (YYYY-MM)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>Period (YYYY-MM)</label>
                         <input
                             type="month"
                             value={period}
                             onChange={e => setPeriod(e.target.value)}
                             required
-                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                         />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-dim)', marginBottom: '6px' }}>Description (optional)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>Description (optional)</label>
                         <input
                             type="text"
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             placeholder="e.g. Facebook Ad campaign"
-                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>

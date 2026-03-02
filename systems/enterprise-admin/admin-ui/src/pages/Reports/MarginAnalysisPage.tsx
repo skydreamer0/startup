@@ -35,7 +35,7 @@ export default function MarginAnalysisPage() {
                         value={period}
                         onChange={e => setPeriod(e.target.value)}
                         className="input"
-                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-glass)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}
+                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                     />
                     <button className="btn btn-primary" onClick={() => setPeriod(period)}>Refresh</button>
                 </div>
@@ -66,7 +66,7 @@ export default function MarginAnalysisPage() {
                     <div className="stat-value mt-4" style={{ color: isTargetMet ? '#10b981' : '#f59e0b' }}>
                         {currentMargin}%
                     </div>
-                    <div className="text-sm mt-2" style={{ color: 'var(--text-dim)' }}>
+                    <div className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
                         Target: {targetMargin}% ({isTargetMet ? 'PASSED' : 'MISSED'})
                     </div>
                 </div>
@@ -80,8 +80,8 @@ export default function MarginAnalysisPage() {
                         <ResponsiveContainer>
                             <LineChart data={trend || []}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                                <XAxis dataKey="period" stroke="var(--text-dim)" />
-                                <YAxis yAxisId="left" stroke="var(--text-dim)" />
+                                <XAxis dataKey="period" stroke="var(--text-muted)" />
+                                <YAxis yAxisId="left" stroke="var(--text-muted)" />
                                 <YAxis yAxisId="right" orientation="right" stroke="#10b981" domain={[0, 100]} />
                                 <Tooltip contentStyle={{ background: 'var(--bg-card)', border: 'none', borderRadius: '8px' }} />
                                 <Line yAxisId="left" type="monotone" dataKey="revenue" stroke="#8b5cf6" name="Revenue ($)" strokeWidth={2} />
