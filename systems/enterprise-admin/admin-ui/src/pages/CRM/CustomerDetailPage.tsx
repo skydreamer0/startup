@@ -31,7 +31,7 @@ export default function CustomerDetailPage() {
 
     if (loading) return (
         <div className="p-20 flex justify-center">
-            <div className="shimmer glass-card" style={{ width: '100%', height: '400px' }}></div>
+            <div className="shimmer card" style={{ width: '100%', height: '400px' }}></div>
         </div>
     );
 
@@ -55,7 +55,7 @@ export default function CustomerDetailPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '32px' }}>
                 {/* Left: Stats Card */}
                 <aside className="space-y-24">
-                    <section className="glass-card" style={{ padding: '24px' }}>
+                    <section className="card" style={{ padding: '24px' }}>
                         <h3 style={{ fontSize: '16px', marginBottom: '20px', color: 'var(--text-primary)' }}>Contact Details</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div>
@@ -75,7 +75,7 @@ export default function CustomerDetailPage() {
                         </div>
                     </section>
 
-                    <section className="glass-card" style={{ padding: '24px' }}>
+                    <section className="card" style={{ padding: '24px' }}>
                         <h3 style={{ fontSize: '16px', marginBottom: '20px', color: 'var(--text-primary)' }}>Commerce Summary</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div className="flex justify-between">
@@ -98,7 +98,7 @@ export default function CustomerDetailPage() {
 
                 {/* Right: Timeline & Activities */}
                 <main className="space-y-24">
-                    <section className="glass-card" style={{ padding: '28px' }}>
+                    <section className="card" style={{ padding: '28px' }}>
                         <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>Log New Interaction</h3>
                         <form onSubmit={handleAddInteraction} style={{ display: 'flex', gap: '12px' }}>
                             <select
@@ -131,7 +131,7 @@ export default function CustomerDetailPage() {
                         </form>
                     </section>
 
-                    <section className="glass-card" style={{ padding: '28px' }}>
+                    <section className="card" style={{ padding: '28px' }}>
                         <h3 style={{ fontSize: '18px', marginBottom: '24px' }}>Engagement History</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
                             {customer.interactions?.length === 0 ? (

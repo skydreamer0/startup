@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -24,7 +25,10 @@ export default function LoginPage() {
 
     return (
         <div className="login-page">
-            <div className="login-box glass-card">
+            <div style={{ position: 'absolute', top: '24px', right: '24px' }}>
+                <ThemeToggle />
+            </div>
+            <div className="login-box card">
                 <h1 className="login-logo">⚡ Admin</h1>
                 <p className="login-subtitle">Enterprise Management Console</p>
 

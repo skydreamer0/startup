@@ -144,7 +144,7 @@
 ## Phase 6.2: Frontend UI Structure Refinement (UI 細節結構優化)
 **目標：將 Phase 6 建立的設計系統徹底落實到所有次要頁面，確保所有表格、按鈕與輸入框的一致性高級感。**
 
-- [ ] **UI-19**: 重構 **Audit Logs** 與 **Users/Roles** 頁面 (套用標準 `.table`, `.btn`, `.input-field`)。
-- [ ] **UI-20**: 重構 **Inventory (Products)** 與 **Suppliers** 頁面 (修復表格標題擠壓，統一按鈕樣式)。
-- [ ] **UI-21**: 重構 **Orders** 與其他報表頁面的基礎控制項。
+- [x] **UI-19**: 重構 **Audit Logs** 與 **Users/Roles** 頁面 (套用標準 `.table`, `.btn`, `.input-field`)。
+- [x] **UI-20**: 重構 **Inventory (Products)** 與 **Suppliers** 頁面 (修復表格標題擠壓，統一按鈕樣式)。
+- [x] **UI-21**: 重構 **Orders** 與其他報表頁面的基礎控制項。
 

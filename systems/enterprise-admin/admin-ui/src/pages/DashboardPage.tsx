@@ -1,8 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { dashboardApi, DashboardKPIs, CrmMetrics, AnalyticsKPIs, AnalyticsTrend } from '../api/dashboard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import DashboardSkeleton from '../components/Skeleton';
+import { useToast } from '../components/Toast';
 
 export default function DashboardPage() {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
     const { data: kpis, isLoading: kpisLoading } = useQuery<DashboardKPIs>({
         queryKey: ['dashboard', 'kpis'],
         queryFn: dashboardApi.getKPIs,
@@ -23,73 +28,74 @@ export default function DashboardPage() {
         queryFn: () => dashboardApi.getAnalyticsTrends(),
     });
 
+    function handleRefresh() {
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+        toast.info('Refreshing dashboard data…');
+    }
+
     if (kpisLoading) {
-        return (
-            <div className="flex items-center justify-center p-20">
-                <div className="shimmer card" style={{ width: '100%', height: '400px' }}></div>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     return (
         <div className="dashboard-content">
             <header className="page-header">
                 <div>
-                    <h1 className="page-title" style={{ fontSize: '32px', marginBottom: '4px' }}>Operations Overview</h1>
-                    <p className="page-subtitle" style={{ color: 'var(--text-muted)' }}>Real-time business intelligence & operational health</p>
+                    <h1 className="page-title">Operations Overview</h1>
+                    <p className="page-subtitle">Real-time business intelligence &amp; operational health</p>
                 </div>
                 <div className="flex gap-12">
                     <button className="btn btn-ghost">Export Report</button>
-                    <button className="btn btn-primary">Refresh Data</button>
+                    <button className="btn btn-primary" onClick={handleRefresh}>Refresh Data</button>
                 </div>
             </header>
 
-            {/* KPI Cards Grid */}
-            <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px' }}>
+            {/* ── KPI Cards Grid ── */}
+            <div className="stat-grid stagger-fade">
                 <div className="stat-card card">
                     <div className="stat-header">
                         <span className="stat-label">Lifetime Revenue</span>
-                        <div className="stat-icon" style={{ color: '#818cf8', background: 'rgba(99, 102, 241, 0.1)' }}>💰</div>
+                        <div className="stat-icon" style={{ color: 'var(--accent)', background: 'var(--accent-subtle)' }}>💰</div>
                     </div>
-                    <div className="stat-value" style={{ color: 'var(--text-primary)' }}>
+                    <div className="stat-value">
                         ${kpis?.revenue.totalLifetime.toLocaleString() ?? 0}
                     </div>
-                    <div className="text-sm" style={{ color: '#10b981' }}>+12.5% from last month</div>
+                    <div className="text-sm text-success">+12.5% from last month</div>
                 </div>
 
                 <div className="stat-card card">
                     <div className="stat-header">
                         <span className="stat-label">Total Customers</span>
-                        <div className="stat-icon" style={{ color: '#34d399', background: 'rgba(52, 211, 153, 0.1)' }}>👤</div>
+                        <div className="stat-icon" style={{ color: 'var(--success)', background: 'var(--success-bg)' }}>👤</div>
                     </div>
                     <div className="stat-value">
                         {kpis?.customers.total ?? 0}
                     </div>
-                    <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                        <span style={{ color: '#818cf8' }}>{kpis?.customers.newThisMonth ?? 0}</span> new this month
+                    <div className="text-sm text-muted">
+                        <span className="text-accent">{kpis?.customers.newThisMonth ?? 0}</span> new this month
                     </div>
                 </div>
 
                 <div className="stat-card card">
                     <div className="stat-header">
                         <span className="stat-label">Gross Margin</span>
-                        <div className="stat-icon" style={{ color: '#10b981', background: 'rgba(16, 185, 129, 0.1)' }}>📈</div>
+                        <div className="stat-icon" style={{ color: 'var(--success)', background: 'var(--success-bg)' }}>📈</div>
                     </div>
-                    <div className="stat-value" style={{ color: (analytics?.gross_margin_pct ?? 0) >= 30 ? '#10b981' : '#f59e0b' }}>
+                    <div className="stat-value" style={{ color: (analytics?.gross_margin_pct ?? 0) >= 30 ? 'var(--success)' : 'var(--warning)' }}>
                         {analytics?.gross_margin_pct ?? 0}%
                     </div>
-                    <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Target: 30.0%</div>
+                    <div className="text-sm text-muted">Target: 30.0%</div>
                 </div>
 
                 <div className="stat-card card">
                     <div className="stat-header">
                         <span className="stat-label">LTV (per Customer)</span>
-                        <div className="stat-icon" style={{ color: '#8b5cf6', background: 'rgba(139, 92, 246, 0.1)' }}>💎</div>
+                        <div className="stat-icon" style={{ color: 'var(--chart-5)', background: 'rgba(139, 92, 246, 0.08)' }}>💎</div>
                     </div>
-                    <div className="stat-value" style={{ color: 'var(--text-primary)' }}>
+                    <div className="stat-value">
                         ${analytics?.ltv_twd?.toLocaleString() ?? 0}
                     </div>
-                    <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                    <div className="text-sm text-muted">
                         CAC: ${analytics?.cac_twd?.toLocaleString() ?? 0}
                     </div>
                 </div>
@@ -97,22 +103,22 @@ export default function DashboardPage() {
                 <div className="stat-card card">
                     <div className="stat-header">
                         <span className="stat-label">Inventory Alerts</span>
-                        <div className="stat-icon" style={{ color: '#f87171', background: 'rgba(248, 113, 113, 0.1)' }}>⚠️</div>
+                        <div className="stat-icon" style={{ color: 'var(--danger)', background: 'var(--danger-bg)' }}>⚠️</div>
                     </div>
-                    <div className="stat-value" style={{ color: (kpis?.inventory.lowStockCount ?? 0) > 0 ? '#ef4444' : '#10b981' }}>
+                    <div className="stat-value" style={{ color: (kpis?.inventory.lowStockCount ?? 0) > 0 ? 'var(--danger)' : 'var(--success)' }}>
                         {kpis?.inventory.lowStockCount ?? 0}
                     </div>
-                    <div className="text-sm" style={{ color: 'var(--text-muted)' }}>SKUs below safety stock</div>
+                    <div className="text-sm text-muted">SKUs below safety stock</div>
                 </div>
             </div>
 
-            {/* KPI Trend Chart */}
+            {/* ── KPI Trend Chart ── */}
             {trends && trends.length > 0 && (
-                <section className="card" style={{ padding: '28px', marginBottom: '32px' }}>
-                    <h3 style={{ fontSize: '18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '20px' }}>📉</span> KPI 6-Month Trend
+                <section className="card section-card" style={{ marginBottom: 32 }}>
+                    <h3 className="section-title">
+                        <span className="section-icon">📉</span> KPI 6-Month Trend
                     </h3>
-                    <div style={{ width: '100%', height: '300px' }}>
+                    <div style={{ width: '100%', height: 300 }}>
                         <ResponsiveContainer>
                             <AreaChart data={trends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                 <defs>
@@ -125,7 +131,7 @@ export default function DashboardPage() {
                                         <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                                 <XAxis dataKey="period" stroke="var(--text-muted)" fontSize={12} />
                                 <YAxis yAxisId="left" stroke="var(--text-muted)" fontSize={12} domain={[0, 100]} />
                                 <YAxis yAxisId="right" orientation="right" stroke="#8b5cf6" fontSize={12} />
@@ -140,7 +146,7 @@ export default function DashboardPage() {
                         </ResponsiveContainer>
                     </div>
                     {/* KPI Traffic Light */}
-                    <div style={{ display: 'flex', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
+                    <div className="kpi-lights">
                         <KpiLight label="Gross Margin" value={`${analytics?.gross_margin_pct ?? 0}%`} status={(analytics?.gross_margin_pct ?? 0) >= 30 ? 'green' : (analytics?.gross_margin_pct ?? 0) >= 20 ? 'amber' : 'red'} />
                         <KpiLight label="CCC" value={`${analytics?.ccc_days ?? 0}d`} status={(analytics?.ccc_days ?? 99) <= 30 ? 'green' : (analytics?.ccc_days ?? 99) <= 45 ? 'amber' : 'red'} />
                         <KpiLight label="LTV/CAC" value={((analytics?.ltv_twd ?? 0) / Math.max(analytics?.cac_twd ?? 1, 1)).toFixed(1) + 'x'} status={((analytics?.ltv_twd ?? 0) / Math.max(analytics?.cac_twd ?? 1, 1)) >= 3 ? 'green' : ((analytics?.ltv_twd ?? 0) / Math.max(analytics?.cac_twd ?? 1, 1)) >= 1.5 ? 'amber' : 'red'} />
@@ -149,36 +155,36 @@ export default function DashboardPage() {
                 </section>
             )}
 
-            {/* Secondary Sections */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px' }}>
+            {/* ── Secondary Sections ── */}
+            <div className="dashboard-grid-main">
 
                 {/* CRM & Customer Health */}
-                <section className="card" style={{ padding: '28px' }}>
-                    <h3 style={{ fontSize: '18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '20px' }}>📊</span> Customer Health Metrics
+                <section className="card section-card">
+                    <h3 className="section-title">
+                        <span className="section-icon">📊</span> Customer Health Metrics
                     </h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                        <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
+                        <div className="metric-box">
                             <div className="stat-label">Avg. Customer LTV</div>
-                            <div style={{ fontSize: '24px', fontWeight: 700, marginTop: '8px', color: '#818cf8' }}>
+                            <div className="metric-value" style={{ color: 'var(--accent-text)' }}>
                                 ${crm?.averageLTV.toLocaleString() ?? 0}
                             </div>
                         </div>
-                        <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                        <div className="metric-box">
                             <div className="stat-label">90d Churn Risk</div>
-                            <div style={{ fontSize: '24px', fontWeight: 700, marginTop: '8px', color: (crm?.churnRate90d ?? 0) > 20 ? '#ef4444' : '#f59e0b' }}>
+                            <div className="metric-value" style={{ color: (crm?.churnRate90d ?? 0) > 20 ? 'var(--danger)' : 'var(--warning)' }}>
                                 {crm?.churnRate90d ?? 0}%
                             </div>
                         </div>
-                        <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                        <div className="metric-box">
                             <div className="stat-label">Repurchase Rate</div>
-                            <div style={{ fontSize: '24px', fontWeight: 700, marginTop: '8px', color: (crm?.repurchaseRate ?? 0) > 30 ? '#10b981' : '#f59e0b' }}>
+                            <div className="metric-value" style={{ color: (crm?.repurchaseRate ?? 0) > 30 ? 'var(--success)' : 'var(--warning)' }}>
                                 {crm?.repurchaseRate ?? 0}%
                             </div>
                         </div>
-                        <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                        <div className="metric-box">
                             <div className="stat-label">Average Order Value (AOV)</div>
-                            <div style={{ fontSize: '24px', fontWeight: 700, marginTop: '8px', color: '#10b981' }}>
+                            <div className="metric-value" style={{ color: 'var(--success)' }}>
                                 ${analytics?.aov_twd?.toLocaleString() ?? 0}
                             </div>
                         </div>
@@ -186,20 +192,20 @@ export default function DashboardPage() {
                 </section>
 
                 {/* Supply Chain Stats */}
-                <section className="card" style={{ padding: '28px' }}>
-                    <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>🏢 Supply Chain</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div className="flex justify-between items-center" style={{ paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
+                <section className="card section-card">
+                    <h3 className="section-title">🏢 Supply Chain</h3>
+                    <div className="flex flex-col gap-16">
+                        <div className="supply-row">
                             <span className="stat-label">Total SKUs</span>
-                            <span style={{ fontWeight: 600 }}>{kpis?.inventory.totalProducts ?? 0}</span>
+                            <span className="font-semibold">{kpis?.inventory.totalProducts ?? 0}</span>
                         </div>
-                        <div className="flex justify-between items-center" style={{ paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
+                        <div className="supply-row">
                             <span className="stat-label">Avg. Delivery Rate</span>
                             <span className="badge badge-success" style={{ background: (kpis?.suppliers.avgDeliveryReliability ?? 0) >= 95 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }}>
                                 {kpis?.suppliers.avgDeliveryReliability ?? '--'}%
                             </span>
                         </div>
-                        <div className="flex justify-between items-center">
+                        <div className="supply-row">
                             <span className="stat-label">Avg. Defect Rate</span>
                             <span className="badge" style={{ background: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? '#ef4444' : '#10b981' }}>
                                 {kpis?.suppliers.avgDefectRate ?? '--'}%
@@ -209,53 +215,61 @@ export default function DashboardPage() {
                 </section>
             </div>
 
-            {/* Bottom Row: Interactions & Alerts */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '24px' }}>
+            {/* ── Bottom Row: Low-stock & Interactions ── */}
+            <div className="dashboard-grid-half">
 
                 {/* Low Stock Alerts */}
-                <section className="card" style={{ padding: '28px' }}>
-                    <h3 style={{ fontSize: '18px', marginBottom: '16px', color: '#f87171' }}>⚠️ Low Stock Inventory</h3>
-                    <div className="table-container">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Stock</th>
-                                    <th>Safety</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {kpis?.inventory.lowStockItems.length === 0 ? (
-                                    <tr><td colSpan={3} style={{ textAlign: 'center' }}>All inventory levels healthy.</td></tr>
-                                ) : (
-                                    kpis?.inventory.lowStockItems.map((item, idx) => (
+                <section className="card section-card">
+                    <h3 className="section-title" style={{ color: 'var(--danger)' }}>⚠️ Low Stock Inventory</h3>
+                    {kpis?.inventory.lowStockItems.length === 0 ? (
+                        <div className="empty-state">
+                            <div className="empty-state-icon">✅</div>
+                            <div className="empty-state-title">All Clear</div>
+                            <div className="empty-state-text">All inventory levels are healthy. No products below safety stock.</div>
+                        </div>
+                    ) : (
+                        <div className="table-container">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Stock</th>
+                                        <th>Safety</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {kpis?.inventory.lowStockItems.map((item, idx) => (
                                         <tr key={idx}>
-                                            <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{item.name}</td>
-                                            <td style={{ color: '#ef4444', fontWeight: 700 }}>{item.stockQuantity}</td>
+                                            <td className="font-semibold">{item.name}</td>
+                                            <td style={{ color: 'var(--danger)', fontWeight: 700 }}>{item.stockQuantity}</td>
                                             <td>{item.safetyStock}</td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </section>
 
                 {/* Interactions */}
-                <section className="card" style={{ padding: '28px' }}>
-                    <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>🕐 Recent Interactions</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <section className="card section-card">
+                    <h3 className="section-title">🕐 Recent Interactions</h3>
+                    <div className="flex flex-col gap-12">
                         {kpis?.recentInteractions.length === 0 ? (
-                            <p className="text-dim">No recent activity.</p>
+                            <div className="empty-state">
+                                <div className="empty-state-icon">💤</div>
+                                <div className="empty-state-title">No Activity</div>
+                                <div className="empty-state-text">No recent customer interactions recorded.</div>
+                            </div>
                         ) : (
                             kpis?.recentInteractions.map((i) => (
-                                <div key={i.id} style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', display: 'flex', gap: '12px' }}>
-                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>
+                                <div key={i.id} className="interaction-item">
+                                    <div className="interaction-avatar">
                                         {i.type === 'STORE_VISIT' ? '🏪' : i.type === 'LINE_MESSAGE' ? '💬' : i.type === 'PHONE_CALL' ? '📞' : '🔔'}
                                     </div>
                                     <div>
-                                        <div style={{ fontSize: '14px', fontWeight: 600 }}>{i.customer?.name}</div>
-                                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{i.content || i.type}</div>
+                                        <div className="font-semibold">{i.customer?.name}</div>
+                                        <div className="text-sm text-muted">{i.content || i.type}</div>
                                     </div>
                                 </div>
                             ))
@@ -270,17 +284,17 @@ export default function DashboardPage() {
 /** KPI Traffic Light Indicator */
 function KpiLight({ label, value, status }: { label: string; value: string; status: 'green' | 'amber' | 'red' }) {
     const colors = {
-        green: { bg: 'rgba(16, 185, 129, 0.1)', dot: '#10b981', text: '#10b981' },
-        amber: { bg: 'rgba(245, 158, 11, 0.1)', dot: '#f59e0b', text: '#f59e0b' },
-        red: { bg: 'rgba(239, 68, 68, 0.1)', dot: '#ef4444', text: '#ef4444' },
+        green: { bg: 'var(--success-bg)', dot: 'var(--success)', text: 'var(--success)' },
+        amber: { bg: 'var(--warning-bg)', dot: 'var(--warning)', text: 'var(--warning)' },
+        red: { bg: 'var(--danger-bg)', dot: 'var(--danger)', text: 'var(--danger)' },
     };
     const c = colors[status];
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '10px', background: c.bg, border: `1px solid ${c.dot}22` }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: c.dot, boxShadow: `0 0 8px ${c.dot}66` }} />
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{label}</span>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: c.text }}>{value}</span>
+        <div className="kpi-light" style={{ background: c.bg }}>
+            <div className="kpi-dot" style={{ background: c.dot }} />
+            <span className="kpi-light-label">{label}</span>
+            <span className="kpi-light-value" style={{ color: c.text }}>{value}</span>
         </div>
     );
 }

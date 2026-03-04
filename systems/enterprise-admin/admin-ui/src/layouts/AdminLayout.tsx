@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function AdminLayout() {
     const { user, logout } = useAuth();
@@ -62,6 +63,7 @@ export default function AdminLayout() {
                         <strong>{user?.fullName}</strong>
                         <span>{user?.roles?.[0] || 'User'}</span>
                     </div>
+                    <ThemeToggle />
                     <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ width: '100%', justifyContent: 'center' }}>
                         Logout
                     </button>

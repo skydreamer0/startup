@@ -4,7 +4,7 @@ import { reportsApi, MarginAnalysis } from '../../api/reports';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function MarginAnalysisPage() {
-    const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7)); // YYYY-MM
+    const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7));
 
     const { data, isLoading } = useQuery<MarginAnalysis>({
         queryKey: ['reports', 'margin', period],
@@ -16,57 +16,59 @@ export default function MarginAnalysisPage() {
         queryFn: () => reportsApi.getMarginTrend(period),
     });
 
-    if (isLoading && !data) return <div className="p-20 text-center text-dim">Loading margin data...</div>;
+    if (isLoading && !data) {
+        return <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading margin data...</div>;
+    }
 
-    const targetMargin = 28.6; // Doc #13 Reference
+    const targetMargin = 28.6;
     const currentMargin = data?.summary.totalMarginPct || 0;
     const isTargetMet = currentMargin >= targetMargin;
 
     return (
-        <div className="dashboard-content">
-            <header className="page-header">
+        <div>
+            <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Gross Margin Analysis</h1>
-                    <p className="page-subtitle text-dim">SKU-level profitability and historical margin trends</p>
+                    <p className="page-subtitle">SKU-level profitability and historical margin trends</p>
                 </div>
-                <div className="flex gap-12 items-center">
+                <div className="flex gap-12" style={{ alignItems: 'center' }}>
                     <input
                         type="month"
                         value={period}
                         onChange={e => setPeriod(e.target.value)}
-                        className="input"
-                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
+                        className="input-field"
+                        style={{ width: '180px' }}
                     />
                     <button className="btn btn-primary" onClick={() => setPeriod(period)}>Refresh</button>
                 </div>
             </header>
 
             {/* Top Summary Cards */}
-            <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px' }}>
-                <div className="stat-card glass-card">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
+                <div className="stat-card">
                     <div className="stat-label">Total Revenue</div>
-                    <div className="stat-value text-main lg:text-3xl mt-4">
+                    <div className="stat-value" style={{ marginTop: '12px' }}>
                         ${data?.summary.totalRevenue.toLocaleString() ?? 0}
                     </div>
                 </div>
-                <div className="stat-card glass-card">
+                <div className="stat-card">
                     <div className="stat-label">Total COGS</div>
-                    <div className="stat-value mt-4" style={{ color: '#f87171' }}>
+                    <div className="stat-value" style={{ marginTop: '12px', color: '#f87171' }}>
                         ${data?.summary.totalCogs.toLocaleString() ?? 0}
                     </div>
                 </div>
-                <div className="stat-card glass-card">
+                <div className="stat-card">
                     <div className="stat-label">Gross Margin ($)</div>
-                    <div className="stat-value mt-4" style={{ color: '#10b981' }}>
+                    <div className="stat-value" style={{ marginTop: '12px', color: '#10b981' }}>
                         ${data?.summary.totalMargin.toLocaleString() ?? 0}
                     </div>
                 </div>
-                <div className="stat-card glass-card" style={{ border: isTargetMet ? '1px solid #10b981' : '1px solid #f59e0b' }}>
+                <div className="stat-card" style={{ border: isTargetMet ? '1px solid #10b981' : '1px solid #f59e0b' }}>
                     <div className="stat-label">Gross Margin (%)</div>
-                    <div className="stat-value mt-4" style={{ color: isTargetMet ? '#10b981' : '#f59e0b' }}>
+                    <div className="stat-value" style={{ marginTop: '12px', color: isTargetMet ? '#10b981' : '#f59e0b' }}>
                         {currentMargin}%
                     </div>
-                    <div className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '12px', marginTop: '8px', color: 'var(--text-muted)' }}>
                         Target: {targetMargin}% ({isTargetMet ? 'PASSED' : 'MISSED'})
                     </div>
                 </div>
@@ -74,8 +76,8 @@ export default function MarginAnalysisPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                 {/* Trend Chart */}
-                <section className="glass-card" style={{ padding: '24px' }}>
-                    <h3 className="text-lg font-semibold mb-6">6-Month Margin Trend</h3>
+                <section className="card" style={{ padding: '24px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>6-Month Margin Trend</h3>
                     <div style={{ width: '100%', height: '300px' }}>
                         <ResponsiveContainer>
                             <LineChart data={trend || []}>
@@ -83,7 +85,7 @@ export default function MarginAnalysisPage() {
                                 <XAxis dataKey="period" stroke="var(--text-muted)" />
                                 <YAxis yAxisId="left" stroke="var(--text-muted)" />
                                 <YAxis yAxisId="right" orientation="right" stroke="#10b981" domain={[0, 100]} />
-                                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: 'none', borderRadius: '8px' }} />
+                                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }} />
                                 <Line yAxisId="left" type="monotone" dataKey="revenue" stroke="#8b5cf6" name="Revenue ($)" strokeWidth={2} />
                                 <Line yAxisId="right" type="monotone" dataKey="marginPct" stroke="#10b981" name="Margin (%)" strokeWidth={2} />
                             </LineChart>
@@ -92,32 +94,32 @@ export default function MarginAnalysisPage() {
                 </section>
 
                 {/* SKU Breakdown Table */}
-                <section className="glass-card" style={{ padding: '24px', overflowY: 'auto', maxHeight: '500px' }}>
-                    <h3 className="text-lg font-semibold mb-6">SKU Profitability Breakdown</h3>
+                <section className="card" style={{ padding: '24px', overflowY: 'auto', maxHeight: '500px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>SKU Profitability Breakdown</h3>
                     <div className="table-container">
-                        <table className="table w-full">
+                        <table className="table">
                             <thead>
                                 <tr>
-                                    <th className="text-left">Product</th>
-                                    <th className="text-right">Qty</th>
-                                    <th className="text-right">Revenue</th>
-                                    <th className="text-right">Margin %</th>
-                                    <th className="text-right">Contrib. %</th>
+                                    <th>Product</th>
+                                    <th style={{ textAlign: 'right' }}>Qty</th>
+                                    <th style={{ textAlign: 'right' }}>Revenue</th>
+                                    <th style={{ textAlign: 'right' }}>Margin %</th>
+                                    <th style={{ textAlign: 'right' }}>Contrib. %</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data?.products.map(p => (
                                     <tr key={p.id}>
-                                        <td className="py-3">
-                                            <div className="font-semibold">{p.name}</div>
-                                            <div className="text-xs text-dim">{p.sku}</div>
+                                        <td>
+                                            <div style={{ fontWeight: 600 }}>{p.name}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.sku}</div>
                                         </td>
-                                        <td className="text-right">{p.qty}</td>
-                                        <td className="text-right">${p.revenue.toLocaleString()}</td>
-                                        <td className="text-right" style={{ color: p.marginPct >= targetMargin ? '#10b981' : '#f87171' }}>
+                                        <td style={{ textAlign: 'right' }}>{p.qty}</td>
+                                        <td style={{ textAlign: 'right' }}>${p.revenue.toLocaleString()}</td>
+                                        <td style={{ textAlign: 'right', color: p.marginPct >= targetMargin ? '#10b981' : '#f87171' }}>
                                             {p.marginPct}%
                                         </td>
-                                        <td className="text-right">{p.contributionPct}%</td>
+                                        <td style={{ textAlign: 'right' }}>{p.contributionPct}%</td>
                                     </tr>
                                 ))}
                             </tbody>
