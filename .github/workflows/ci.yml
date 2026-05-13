@@ -56,7 +56,10 @@ jobs:
       run: npm run build
 
     - name: Setup Test DB
-      run: npx prisma migrate deploy
+      run: npx prisma db push --force-reset
+
+    - name: Seed Test DB
+      run: npx prisma db seed
 
     - name: Run Tests
       run: npm test

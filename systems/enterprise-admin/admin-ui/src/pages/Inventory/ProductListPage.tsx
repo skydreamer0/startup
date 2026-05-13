@@ -13,85 +13,86 @@ export default function ProductListPage() {
     const products: Product[] = productsData?.data || [];
 
     return (
-        <div>
-            <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                    <h1 className="page-title">Inventory (Products)</h1>
-                    <p className="page-subtitle">{products.length} SKUs in catalog</p>
-                </div>
-                <div className="flex gap-12">
+        <div className="page-container fade-in">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-500">
+                    Inventory (Products)
+                </h1>
+                <div className="flex gap-4">
                     <select
                         className="input-field"
-                        style={{ width: '180px' }}
                         value={filter.lowStock}
                         onChange={(e) => setFilter({ lowStock: e.target.value })}
                     >
                         <option value="">All Inventory</option>
-                        <option value="true">{'\u26A0\uFE0F'} Low Stock Alerts</option>
+                        <option value="true">⚠️ Low Stock Alerts</option>
                     </select>
-                    <button className="btn btn-primary">Add Product</button>
+                    <button className="btn-primary">Add Product</button>
                 </div>
-            </header>
+            </div>
 
-            <div className="table-container">
+            <div className="card overflow-hidden">
                 {loading ? (
-                    <div className="shimmer" style={{ height: '300px' }}></div>
+                    <div className="p-8 text-center text-gray-500">Loading inventory...</div>
                 ) : (
-                    <table className="table">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr>
-                                <th>SKU / Name</th>
-                                <th>Supplier</th>
-                                <th>Cost / Retail</th>
-                                <th>Stock Qty</th>
-                                <th>Status</th>
-                                <th style={{ textAlign: 'right' }}>Actions</th>
+                            <tr className="border-b border-gray-100 bg-gray-50/50">
+                                <th className="p-4 font-medium text-gray-600">SKU / Name</th>
+                                <th className="p-4 font-medium text-gray-600">Supplier</th>
+                                <th className="p-4 font-medium text-gray-600">Cost / Retail</th>
+                                <th className="p-4 font-medium text-gray-600">Stock Qty</th>
+                                <th className="p-4 font-medium text-gray-600">Status</th>
+                                <th className="p-4 font-medium text-gray-600 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {products.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                                        No products found
-                                    </td>
+                                    <td colSpan={6} className="p-8 text-center text-gray-500">No products found</td>
                                 </tr>
                             ) : (
                                 products.map((p) => {
                                     const isLowStock = p.stockQuantity <= p.safetyStock;
                                     return (
-                                        <tr key={p.id}>
-                                            <td>
-                                                <div style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>{p.sku}</div>
-                                                <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</div>
+                                        <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                                            <td className="p-4">
+                                                <div className="font-mono text-xs text-gray-400 mb-0.5">{p.sku}</div>
+                                                <div className="font-semibold text-gray-800">{p.name}</div>
                                             </td>
-                                            <td className="text-muted">{p.supplier?.name || '--'}</td>
-                                            <td>
-                                                <div style={{ fontSize: '13px' }}>
-                                                    <span className="text-muted">Cost: </span>${p.costPrice}
+                                            <td className="p-4 text-sm text-gray-600">
+                                                {p.supplier?.name || '--'}
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="text-sm">
+                                                    <span className="text-gray-500">Cost: </span>${p.costPrice}
                                                 </div>
-                                                <div style={{ fontSize: '13px' }}>
-                                                    <span className="text-muted">Retail: </span>
-                                                    <span style={{ color: 'var(--accent)', fontWeight: 600 }}>${p.retailPrice}</span>
+                                                <div className="text-sm">
+                                                    <span className="text-gray-500">Retail: </span><span className="text-indigo-600 font-medium">${p.retailPrice}</span>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <span style={{ fontWeight: 700, color: isLowStock ? 'var(--danger)' : 'var(--text-primary)' }}>
+                                            <td className="p-4">
+                                                <span className={`font-semibold ${isLowStock ? 'text-red-600' : 'text-gray-900'}`}>
                                                     {p.stockQuantity}
                                                 </span>
-                                                <span className="text-muted" style={{ fontSize: '11px', marginLeft: '4px' }}>/ {p.safetyStock} limit</span>
+                                                <span className="text-xs text-gray-400 ml-1">/ {p.safetyStock} limit</span>
                                             </td>
-                                            <td>
+                                            <td className="p-4">
                                                 {isLowStock ? (
-                                                    <span className="badge badge-danger">Low Stock</span>
+                                                    <span className="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
+                                                        Low Stock
+                                                    </span>
                                                 ) : (
-                                                    <span className="badge badge-success">Healthy</span>
+                                                    <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                                                        Healthy
+                                                    </span>
                                                 )}
                                             </td>
-                                            <td style={{ textAlign: 'right' }}>
-                                                <button className="btn btn-ghost btn-sm">Edit</button>
+                                            <td className="p-4 text-right">
+                                                <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Edit</button>
                                             </td>
                                         </tr>
-                                    );
+                                    )
                                 })
                             )}
                         </tbody>

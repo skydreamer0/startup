@@ -45,7 +45,7 @@ export default function OrderListPage() {
                 </div>
             </header>
 
-            <div className="card table-container">
+            <div className="glass-card table-container">
                 {loading ? (
                     <div className="p-20 text-center shimmer" style={{ height: '300px' }}></div>
                 ) : (

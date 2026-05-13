@@ -139,8 +139,8 @@ export default function UsersPage() {
                 />
             </div>
 
-            <div className="card" style={{ overflow: 'hidden' }}>
-                <table className="table">
+            <div className="glass-card" style={{ overflow: 'hidden' }}>
+                <table className="data-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -177,15 +177,7 @@ export default function UsersPage() {
                             </tr>
                         ))}
                         {users.length === 0 && (
-                            <tr><td colSpan={6}>
-                                <div className="empty-state">
-                                    <div className="empty-state-icon">👥</div>
-                                    <div className="empty-state-title">No Users Found</div>
-                                    <div className="empty-state-text">
-                                        {search ? 'No users match your search criteria. Try a different keyword.' : 'No users have been created yet. Click "+ New User" to get started.'}
-                                    </div>
-                                </div>
-                            </td></tr>
+                            <tr><td colSpan={6} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>No users found</td></tr>
                         )}
                     </tbody>
                 </table>
@@ -194,7 +186,7 @@ export default function UsersPage() {
             {/* Create User Modal */}
             {showCreate && (
                 <div className="modal-overlay" onClick={() => setShowCreate(false)}>
-                    <div className="modal-content card" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content glass-card" onClick={(e) => e.stopPropagation()}>
                         <h2 className="modal-title">Create New User</h2>
                         <form onSubmit={createUser}>
                             <div className="login-form">
@@ -228,7 +220,7 @@ export default function UsersPage() {
             {/* Edit User Modal */}
             {editUser && (
                 <div className="modal-overlay" onClick={() => setEditUser(null)}>
-                    <div className="modal-content card" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content glass-card" onClick={(e) => e.stopPropagation()}>
                         <h2 className="modal-title">Edit User</h2>
                         <p className="text-muted text-sm" style={{ marginTop: -16, marginBottom: 20 }}>{editUser.email}</p>
                         <form onSubmit={saveEdit}>
