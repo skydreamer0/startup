@@ -1,19 +1,18 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../app';
-import { prisma } from '../lib/prisma';
+import { basePrisma } from '../lib/prisma';
 
 // Ensure DB is seeded before tests
 beforeAll(async () => {
-    // Verify we have the admin user from the seed
-    const admin = await prisma.user.findUnique({ where: { email: 'admin@system.local' } });
+    const admin = await basePrisma.user.findFirst({ where: { email: 'admin@system.local' } });
     if (!admin) {
         throw new Error('Database is not seeded. Run `npm run db:seed` first.');
     }
 });
 
 afterAll(async () => {
-    await prisma.$disconnect();
+    await basePrisma.$disconnect();
 });
 
 describe('Auth API (Integration)', () => {
