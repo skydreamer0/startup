@@ -70,7 +70,7 @@ async function main() {
 
     // 2. Create SUPER_ADMIN role
     const superAdminRole = await prisma.role.upsert({
-        where: { name: 'SUPER_ADMIN' },
+        where: { name_tenantId: { name: 'SUPER_ADMIN', tenantId } },
         update: {},
         create: {
             name: 'SUPER_ADMIN',
@@ -93,7 +93,7 @@ async function main() {
 
     // 4. Create CONTENT_EDITOR role (example non-admin role)
     const editorRole = await prisma.role.upsert({
-        where: { name: 'CONTENT_EDITOR' },
+        where: { name_tenantId: { name: 'CONTENT_EDITOR', tenantId } },
         update: {},
         create: {
             name: 'CONTENT_EDITOR',
@@ -137,12 +137,12 @@ async function main() {
 
     // 7. Seed CRM Data
     const tagVIP = await prisma.tag.upsert({
-        where: { name: 'VIP' },
+        where: { name_tenantId: { name: 'VIP', tenantId } },
         create: { name: 'VIP', color: '#FFD700', tenantId },
         update: {},
     });
     const tagNew = await prisma.tag.upsert({
-        where: { name: 'Newbie' },
+        where: { name_tenantId: { name: 'Newbie', tenantId } },
         create: { name: 'Newbie', color: '#ADFF2F', tenantId },
         update: {},
     });
@@ -170,7 +170,7 @@ async function main() {
 
     for (const c of customers) {
         const customer = await prisma.customer.upsert({
-            where: { phone: c.phone },
+            where: { phone_tenantId: { phone: c.phone!, tenantId } },
             update: {},
             create: c,
         });
@@ -197,12 +197,12 @@ async function main() {
 
     // 8. Seed Inventory Data
     const catHealth = await prisma.productCategory.upsert({
-        where: { name: 'Health Supplements' },
+        where: { name_tenantId: { name: 'Health Supplements', tenantId } },
         create: { name: 'Health Supplements', description: '保健品類', tenantId },
         update: {},
     });
     const catDrug = await prisma.productCategory.upsert({
-        where: { name: 'OTC Drugs' },
+        where: { name_tenantId: { name: 'OTC Drugs', tenantId } },
         create: { name: 'OTC Drugs', description: '非處方藥品', tenantId },
         update: {},
     });
@@ -247,7 +247,7 @@ async function main() {
 
     for (const p of products) {
         await prisma.product.upsert({
-            where: { sku: p.sku },
+            where: { sku_tenantId: { sku: p.sku, tenantId } },
             create: p,
             update: {},
         });

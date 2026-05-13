@@ -1,9 +1,15 @@
-# Startup Template Pack 使用說明（先看這份）
+# 越南族群健康補給站 — 藥局 SaaS 創業計畫
 
-這個 repo 是**越南族群健康補給站**創業計畫的完整文件包，包含：
+這個 repo 同時涵蓋**業務營運文件**與**技術系統**，目標是以單店藥局為起點，最終建立可賣給多家藥局的 SaaS 平台。
+
+**業務文件包含：**
 1. **模板型文件（01-26）**：系統化整理商業、合規、營運與財務資料。
 2. **落地執行文件（27-28）**：以藥局出發，鎖定越南族群，30 天內啟動試點。
 3. **實戰工具（29-30）**：訪談紀錄、報價合約等可直接使用的格式。
+
+**技術系統包含：**
+- 多租戶企業後台管理系統（Admin SPA）
+- 觸控收銀終端（POS PWA，開發中）
 
 ---
 
@@ -82,32 +88,63 @@
 - `README.md` & `ROLE_GUIDE.md`：全域導覽與角色負責範圍。
 
 ### 2. 技術子系統 (Technical Subsystems)
-- 由於此 Repository 核心為業務營運文件，所有具體的技術系統皆收攏於 `systems/` 目錄下隔離。
-- `systems/enterprise-admin/`：企業後台管理系統
-  - `admin-ui/`：前端管理介面 (React/Vite)
-  - `backend/`：後端伺服器 (Node/Express/Prisma)
-  - `infrastructure/`：該子系統的架構、資料庫結構與開發規範
+
+所有技術系統收攏於 `systems/` 目錄下。
+
+#### 架構概覽
+
+```
+systems/
+├── DESIGN.md                  ← PharmaSaaS 統一設計系統（Stripe-inspired）
+└── enterprise-admin/
+    ├── admin-ui/              ← Admin SPA（老闆/管理員，React + Vite）
+    ├── backend/               ← API 後端（Node.js / Express / Prisma / PostgreSQL）
+    │   └── prisma/
+    │       ├── schema.prisma  ← 多租戶資料庫 schema
+    │       └── seed.ts
+    └── infrastructure/        ← 架構文件、資料庫規格、開發規範
+```
+
+> **POS PWA（收銀終端）**即將加入 `systems/pos-ui/`，設計規格已定義於 `systems/DESIGN.md`。
+
+#### 技術棧
+
+| 層 | 技術 |
+|---|---|
+| Admin 前端 | React + Vite + TypeScript |
+| POS 前端（規劃中）| React PWA + Workbox（離線支援）|
+| 後端 | Node.js + Express + Prisma ORM |
+| 資料庫 | PostgreSQL |
+| 認證 | JWT + RBAC |
+| 多租戶隔離 | AsyncLocalStorage + Prisma extension 自動注入 `tenantId` |
+
+#### 多租戶架構說明
+
+系統採 **shared database, row-level isolation** 策略：
+
+- 所有業務資料表皆含 `tenantId` 欄位
+- Prisma extended client 在每次查詢自動注入當前 tenant 的 `tenantId`，服務層不需手動處理
+- Tenant context 由 middleware 從 JWT 解析後存入 `AsyncLocalStorage`，request 全程可取用
 
 這個結構的優點：
-1. **確立主客關係**：明確釐清此 Repo 的核心為創業文件包，程式碼目錄不污染根目錄。
-2. **單一事實來源**：各技術系統的標準獨立維護在其所屬的 `infrastructure/`。
-3. **擴充性高**：未來若有新的產品線（如客戶端 APP），只需在 `systems/` 建立新資料夾。
+1. **確立主客關係**：程式碼與文件分離，`systems/` 不污染業務文件目錄。
+2. **單一設計來源**：`systems/DESIGN.md` 是 Admin SPA 與 POS PWA 共用的設計 token 規格。
+3. **擴充性高**：新產品線（LINE Bot、藥局官網）直接在 `systems/` 新建資料夾，共用同一 backend。
 
 ---
 
 ## 優化進度（已落地）
 
-目前不需要大改目錄，前一輪規劃的三項低風險優化都已完成：
+### 業務文件
+1. **P0 完成：統一索引檔命名** — 正式索引改為 `startup_template_pack/00_文件索引與填寫順序.md`。
+2. **P1 完成：新增角色導覽頁** — `ROLE_GUIDE.md`，定義 Founder / Ops / Finance / BD 的必讀文件。
+3. **P2 完成：模板 metadata 標準化** — 全部 26 份模板加入 `Owner`、`Update Frequency`、`Input From`、`Output To`。
 
-1. **P0 已完成：統一索引檔命名**
-   - 正式索引改為 `startup_template_pack/00_文件索引與填寫順序.md`。
-   - 舊檔名保留為相容導引頁，避免既有連結失效。
-
-2. **P1 已完成：新增角色導覽頁**
-   - 新增 `ROLE_GUIDE.md`，定義 Founder / Ops / Finance / BD 的必讀文件與每週節奏。
-
-3. **P2 已完成：模板 metadata 標準化**
-   - 全部 26 份 `*模板.md` 已在開頭加入統一 metadata 區塊：`Owner`、`Update Frequency`、`Input From`、`Output To`。
+### 技術系統
+1. **完成：Admin SPA + Backend** — 後台管理介面與 API 服務可運行。
+2. **完成：多租戶 Tenant 隔離** — Prisma extension 自動注入 `tenantId`，所有 unique constraint 已改為 tenant-scoped。
+3. **完成：DESIGN.md 設計系統** — `systems/DESIGN.md`，Admin SPA 與 POS PWA 共用的 Stripe-inspired 設計規格。
+4. **進行中：POS PWA** — 設計規格已完成，前端框架待建立（`systems/pos-ui/`）。
 
 ---
 

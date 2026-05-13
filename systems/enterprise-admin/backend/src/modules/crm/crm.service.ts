@@ -1,5 +1,6 @@
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
+import { requireTenantId } from '../../lib/tenant.context';
 
 export class CrmService {
     // 1. Get Customers with filters
@@ -67,7 +68,9 @@ export class CrmService {
         birthday?: string;
     }) {
         if (data.phone) {
-            const existing = await prisma.customer.findUnique({ where: { phone: data.phone } });
+            const existing = await prisma.customer.findUnique({
+                where: { phone_tenantId: { phone: data.phone, tenantId: requireTenantId() } },
+            });
             if (existing) throw new AppError(409, 'Phone number already registered');
         }
 

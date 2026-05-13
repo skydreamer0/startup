@@ -67,10 +67,10 @@ model User {
 
 model Role {
   id          String  @id @default(uuid())
-  name        String  @unique
+  name        String
   description String?
   isSystem    Boolean @default(false) @map("is_system")
-  tenantId    String? @map("tenant_id") // Optional because system roles can be global
+  tenantId    String  @map("tenant_id")
 
   // Audit fields
   createdAt DateTime  @default(now()) @map("created_at")
@@ -78,10 +78,11 @@ model Role {
   deletedAt DateTime? @map("deleted_at")
 
   // Relations
-  tenant          Tenant?          @relation(fields: [tenantId], references: [id])
+  tenant          Tenant           @relation(fields: [tenantId], references: [id])
   rolePermissions RolePermission[]
   userRoles       UserRole[]
 
+  @@unique([name, tenantId])
   @@index([tenantId])
   @@map("roles")
 }
@@ -155,8 +156,8 @@ model AuditLog {
 model Customer {
   id       String    @id @default(uuid())
   name     String?
-  phone    String?   @unique
-  lineUid  String?   @unique @map("line_uid")
+  phone    String?   @map("phone")
+  lineUid  String?   @map("line_uid")
   gender   String?
   birthday DateTime?
   tenantId String    @map("tenant_id")
@@ -176,13 +177,15 @@ model Customer {
   interactions Interaction[]
   orders       Order[]
 
+  @@unique([phone, tenantId])
+  @@unique([lineUid, tenantId])
   @@index([tenantId])
   @@map("customers")
 }
 
 model Tag {
   id        String   @id @default(uuid())
-  name      String   @unique
+  name      String
   color     String?
   tenantId  String   @map("tenant_id")
   createdAt DateTime @default(now()) @map("created_at")
@@ -190,6 +193,7 @@ model Tag {
   tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customers CustomerTag[]
 
+  @@unique([name, tenantId])
   @@index([tenantId])
   @@map("tags")
 }
@@ -251,7 +255,7 @@ model Supplier {
 
 model ProductCategory {
   id          String   @id @default(uuid())
-  name        String   @unique
+  name        String
   description String?
   tenantId    String   @map("tenant_id")
   createdAt   DateTime @default(now()) @map("created_at")
@@ -260,13 +264,14 @@ model ProductCategory {
   tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   products Product[]
 
+  @@unique([name, tenantId])
   @@index([tenantId])
   @@map("product_categories")
 }
 
 model Product {
   id          String  @id @default(uuid())
-  sku         String  @unique
+  sku         String
   name        String
   description String?
   tenantId    String  @map("tenant_id")
@@ -289,6 +294,7 @@ model Product {
   orderItems   OrderItem[]
   transactions InventoryTransaction[]
 
+  @@unique([sku, tenantId])
   @@index([tenantId])
   @@index([categoryId])
   @@index([supplierId])
