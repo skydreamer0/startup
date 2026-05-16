@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+/* ═══════════════════════════════════════════════════
+   PharmaSaaS POS — Design Tokens
+   ═══════════════════════════════════════════════════ */
+
+/* ────────────────────────────────────────────────────
+   LIGHT MODE (Default)
+   ──────────────────────────────────────────────────── */
+:root {
+  /* ─── Core Surfaces ─── */
+  --bg-app: #F8FAFC;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F1F5F9;
+  --bg-hover: rgba(0, 0, 0, 0.03);
+  --bg-input: #FFFFFF;
+  --bg-input-focus: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+
+  /* ─── Text ─── */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
+
+  /* ─── Accent ─── */
+  --accent: #6366F1;
+  --accent-hover: #4F46E5;
+  --accent-subtle: rgba(99, 102, 241, 0.08);
+  --accent-border: rgba(99, 102, 241, 0.20);
+  --accent-text: #4F46E5;
+
+  /* ─── Semantic ─── */
+  --success: #10B981;
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --danger: #EF4444;
+  --danger-bg: rgba(239, 68, 68, 0.08);
+  --warning: #F59E0B;
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --info: #3B82F6;
+  --info-bg: rgba(59, 130, 246, 0.08);
+
+  /* ─── Borders & Shadows ─── */
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+
+  /* ─── Layout ─── */
+  --sidebar-w: 260px;
+  --sidebar-collapsed: 72px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* ─── Motion ─── */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms var(--ease);
+  --transition: 250ms var(--ease);
+  --transition-theme: 300ms ease;
+
+  /* ─── Chart Colors ─── */
+  --chart-1: #6366F1;
+  --chart-2: #10B981;
+  --chart-3: #F59E0B;
+  --chart-4: #EF4444;
+  --chart-5: #8B5CF6;
+}
+
+/* ────────────────────────────────────────────────────
+   PHARMASAAS BRAND TOKENS
+   Used by POS surface and future brand-specific UI
+   ──────────────────────────────────────────────────── */
+:root {
+  /* Brand primaries */
+  --color-primary: #533afd;
+  --color-primary-hover: #665efd;
+  --color-primary-press: #2e2b8c;
+  --color-primary-soft: #e0deff;
+  --color-on-primary: #ffffff;
+
+  /* POS light surface (used by PosLayout, not AdminLayout) */
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #f6f9fc;
+  --color-canvas-muted: #eef2f7;
+  --color-hairline: #e3e8ee;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --space-section: 48px;
+}
+
+/* POS global reset */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-app); color: var(--text-primary); }
+button { font-family: inherit; }
+input { font-family: inherit; }
