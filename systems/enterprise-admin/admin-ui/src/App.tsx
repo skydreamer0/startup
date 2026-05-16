@@ -17,6 +17,8 @@ import CashFlowPage from './pages/Reports/CashFlowPage';
 import SalesRankingPage from './pages/Reports/SalesRankingPage';
 import AdminLayout from './layouts/AdminLayout';
 import PosPreviewPage from './pages/POS/PosPreviewPage';
+import BatchListPage from './pages/Inventory/BatchListPage';
+import ShiftListPage from './pages/Shifts/ShiftListPage';
 
 function ProtectedRoute() {
     const { user, loading } = useAuth();
@@ -57,8 +59,12 @@ export default function App() {
                             <Route path="/inventory" element={<ProductListPage />} />
                             <Route path="/inventory/analytics" element={<InventoryAnalyticsPage />} />
                             <Route path="/suppliers" element={<SupplierListPage />} />
+                            {/* Inventory batches Phase 8 */}
+                            <Route path="/inventory/batches" element={<BatchListPage />} />
                             {/* Orders Phase 4 */}
                             <Route path="/orders" element={<OrderListPage />} />
+                            {/* Shifts Phase 8 */}
+                            <Route path="/shifts" element={<ShiftListPage />} />
                             {/* Financial Reports Phase 5 */}
                             <Route path="/reports/margin" element={<MarginAnalysisPage />} />
                             <Route path="/reports/cashflow" element={<CashFlowPage />} />

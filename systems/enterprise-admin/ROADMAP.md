@@ -235,10 +235,10 @@
 
 ### 模組二：班別與批號核心 API
 - [x] **API-22**: `Shift` CRUD API (開班、交班狀態追蹤)。
-- [ ] **API-23**: `ProductBatch` API (入庫批號登錄、即期品查詢)。
-- [ ] **API-24**: `DailySettlement` API (日結計算與確認)。
-- [ ] **UI-27**: `/inventory/batches` 批號與效期管理頁面。
-- [ ] **UI-28**: `/shifts` 班別管理與日結報表頁面。
+- [x] **API-23**: `ProductBatch` API (入庫批號登錄、即期品查詢)。
+- [x] **API-24**: `DailySettlement` API (日結計算與確認)。
+- [x] **UI-27**: `/inventory/batches` 批號與效期管理頁面。
+- [x] **UI-28**: `/shifts` 班別管理與日結報表頁面。
 
 ---
 

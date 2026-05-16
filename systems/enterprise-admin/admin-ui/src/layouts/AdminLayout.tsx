@@ -34,11 +34,17 @@ export default function AdminLayout() {
                     <NavLink to="/inventory/analytics" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">📊</span> <span>Inventory Analytics</span>
                     </NavLink>
+                    <NavLink to="/inventory/batches" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📦</span> <span>批號管理</span>
+                    </NavLink>
                     <NavLink to="/suppliers" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">🏢</span> <span>Suppliers</span>
                     </NavLink>
                     <NavLink to="/orders" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">🛒</span> <span>Orders</span>
+                    </NavLink>
+                    <NavLink to="/shifts" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">🕐</span> <span>Shifts</span>
                     </NavLink>
 
                     <div className="sidebar-section">Financial Reports</div>
