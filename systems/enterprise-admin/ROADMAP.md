@@ -228,13 +228,13 @@
 **目標：擴展資料庫 Schema，讓 Order 模型從「後台手動建單」升級為「可承接 POS 即時銷售」。**
 
 ### 模組一：Schema 升級與遷移 (Prisma)
-- [ ] **DB-02**: 升級 `Order` 模型（加入 `order_number`, `order_type`, `payment_method`, `shift_id` 等欄位）。
-- [ ] **DB-03**: 新增 `ProductBatch` 模型（效期批號 FIFO 管理）。
-- [ ] **DB-04**: 新增 `Shift` (班別) 與 `DailySettlement` (日結對帳) 模型。
-- [ ] **MIG-01**: 建立 Prisma Migration 並確保既有手動訂單資料向上相容。
+- [x] **DB-02**: 升級 `Order` 模型（加入 `order_number`, `order_type`, `payment_method`, `shift_id` 等欄位）。
+- [x] **DB-03**: 新增 `ProductBatch` 模型（效期批號 FIFO 管理）。
+- [x] **DB-04**: 新增 `Shift` (班別) 與 `DailySettlement` (日結對帳) 模型。
+- [x] **MIG-01**: 建立 Prisma Migration `20260516140834_phase_8_sales_foundation` 並確保既有手動訂單資料向上相容。
 
 ### 模組二：班別與批號核心 API
-- [ ] **API-22**: `Shift` CRUD API (開班、交班狀態追蹤)。
+- [x] **API-22**: `Shift` CRUD API (開班、交班狀態追蹤)。
 - [ ] **API-23**: `ProductBatch` API (入庫批號登錄、即期品查詢)。
 - [ ] **API-24**: `DailySettlement` API (日結計算與確認)。
 - [ ] **UI-27**: `/inventory/batches` 批號與效期管理頁面。
@@ -247,4 +247,35 @@
 - **POS-01**: 獨立 / 內嵌 POS 結帳 UI (支援條碼掃描、快捷鍵操作)。
 - **POS-02**: 多付款方式與折扣核心邏輯。
 - **POS-03**: 電子發票 API 串接。
+
+---
+
+## 橫切關注點：架構改善方向 (Cross-cutting Concerns)
+> 從開發歷程中抽象出的系統性問題，納入各 Phase 規劃前置處理。
+
+### C-01: 行結尾規範化 (已完成 2026-05-16)
+**問題根源**：無 `.gitattributes`，Mac/Windows 混合開發導致 CRLF/LF 雜訊，每次 stash pop 都產生 50+ 個假修改。
+- [x] 建立 `.gitattributes`，強制所有文字檔 LF、`.bat/.ps1` 保留 CRLF。
+- [x] `git rm --cached && git add` 一次性重新正規化索引。
+
+### C-02: 短週期 Feature Branch 紀律
+**問題根源**：本地累積大型 stash（18 個衝突檔），同期遠端推進 34 個 commits，造成高風險合併視窗。
+- [ ] 每個獨立功能點開一個 feature branch，當天工作結束前至少 commit 一次。
+- [ ] 超過 2 天未 push 的 branch 應視為技術債。
+- [ ] Analytics / CRM 為衝突熱區，多人協作時優先使用 PR review。
+
+### C-03: ROADMAP 同步作為 PR 必要條件
+**問題根源**：Phase 8 DB schema + Shift API 全部 commit 完成，但 ROADMAP 仍全部打叉，導致人與 AI 都看不清真實進度。
+- [ ] 每個 feature PR 必須包含對應的 ROADMAP 勾選更新。
+- [ ] 建議 PR description template 加入 checklist：`- [ ] ROADMAP updated`。
+
+### C-04: Analytics 模組 API 合約邊界
+**問題根源**：Phase 7 Analytics Service 是最高頻修改區（stash 衝突 3 個檔案均在此模組），且後續 Phase 8/9 仍會繼續擴充。
+- [ ] `AnalyticsService` 應拆分為子領域：`CrmAnalytics`、`ProductAnalytics`、`OperationsAnalytics`，避免單一服務變成 1000+ 行的 God Object。
+- [ ] 各子領域定義清晰的 return type interface，作為前後端 contract。
+
+### C-05: Phase 8 剩餘任務完整性
+**背景**：Schema + Shift API 已完成，但 ProductBatch API、DailySettlement API 與 UI 頁面尚未開始，Phase 9 POS 依賴這些基礎。
+- 待完成（見 Phase 8 模組二 API-23, API-24, UI-27, UI-28）。
+- 建議在開始 Phase 9 POS UI 前先補齊，否則 POS 結帳無法寫入批號與日結。
 
