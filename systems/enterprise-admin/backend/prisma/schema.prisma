@@ -22,18 +22,21 @@ model Tenant {
   createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
-  users        User[]
-  roles        Role[]
-  auditLogs    AuditLog[]
-  customers    Customer[]
-  tags         Tag[]
-  suppliers    Supplier[]
-  categories   ProductCategory[]
-  products     Product[]
-  orders       Order[]
-  transactions InventoryTransaction[]
-  expenses     Expense[]
-  interactions Interaction[]
+  users            User[]
+  roles            Role[]
+  auditLogs        AuditLog[]
+  customers        Customer[]
+  tags             Tag[]
+  suppliers        Supplier[]
+  categories       ProductCategory[]
+  products         Product[]
+  orders           Order[]
+  transactions     InventoryTransaction[]
+  expenses         Expense[]
+  interactions     Interaction[]
+  shifts           Shift[]
+  productBatches   ProductBatch[]
+  dailySettlements DailySettlement[]
 
   @@map("tenants")
 }
@@ -60,6 +63,7 @@ model User {
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   userRoles UserRole[]
   auditLogs AuditLog[]
+  shifts    Shift[]
 
   @@index([tenantId])
   @@map("users")
@@ -293,6 +297,7 @@ model Product {
   supplier     Supplier?              @relation(fields: [supplierId], references: [id])
   orderItems   OrderItem[]
   transactions InventoryTransaction[]
+  batches      ProductBatch[]
 
   @@unique([sku, tenantId])
   @@index([tenantId])
@@ -312,15 +317,24 @@ model Order {
   shippingAddress String? @map("shipping_address")
   tenantId        String  @map("tenant_id")
 
+  // Phase 8: Sales foundation fields (all backward-compatible)
+  orderNumber   String? @map("order_number")                          // e.g. "ORD-20240516-001"
+  orderType     String  @default("WALK_IN") @map("order_type")        // WALK_IN | ONLINE | PHONE | SYSTEM
+  paymentMethod String  @default("CASH") @map("payment_method")       // CASH | CARD | LINE_PAY | TRANSFER | OTHER
+  shiftId       String? @map("shift_id")                              // FK to Shift, nullable
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer Customer    @relation(fields: [customerId], references: [id])
   items    OrderItem[]
+  shift    Shift?      @relation(fields: [shiftId], references: [id])
 
   @@index([tenantId])
   @@index([customerId])
+  @@index([shiftId])
+  @@index([orderNumber])
   @@map("orders")
 }
 
@@ -371,4 +385,71 @@ model Expense {
   @@index([tenantId])
   @@index([period])
   @@map("expenses")
+}
+
+// ─── Phase 8: Sales Foundation ────────────────────────────
+
+model Shift {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  staffId     String    @map("staff_id")       // FK to User (值班人員)
+  status      String    @default("OPEN")       // OPEN | CLOSED
+  openingCash Float     @default(0) @map("opening_cash") // 開班金額
+  closingCash Float?    @map("closing_cash")   // 交班金額 (收班後填入)
+  openedAt    DateTime  @default(now()) @map("opened_at")
+  closedAt    DateTime? @map("closed_at")
+  notes       String?
+
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  staff       User              @relation(fields: [staffId], references: [id])
+  orders      Order[]
+  settlements DailySettlement[]
+
+  @@index([tenantId])
+  @@index([staffId])
+  @@index([status])
+  @@map("shifts")
+}
+
+model ProductBatch {
+  id          String   @id @default(uuid())
+  productId   String   @map("product_id")
+  tenantId    String   @map("tenant_id")
+  batchNumber String   @map("batch_number")   // 批號，如 "LOT-20240101"
+  expiryDate  DateTime @map("expiry_date")    // 到期日
+  quantity    Int      @default(0)            // 此批次剩餘庫存
+  costPrice   Float    @map("cost_price")     // 此批次進貨成本
+  receivedAt  DateTime @default(now()) @map("received_at")
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, batchNumber, tenantId])
+  @@index([tenantId])
+  @@index([productId])
+  @@index([expiryDate])
+  @@map("product_batches")
+}
+
+model DailySettlement {
+  id            String    @id @default(uuid())
+  tenantId      String    @map("tenant_id")
+  shiftId       String    @map("shift_id")
+  date          DateTime  // 結算日期
+  totalSales    Float     @default(0) @map("total_sales")    // 總銷售金額
+  totalOrders   Int       @default(0) @map("total_orders")   // 訂單數量
+  cashAmount    Float     @default(0) @map("cash_amount")
+  cardAmount    Float     @default(0) @map("card_amount")
+  linePayAmount Float     @default(0) @map("line_pay_amount")
+  otherAmount   Float     @default(0) @map("other_amount")
+  confirmedAt   DateTime? @map("confirmed_at") // 確認日結時間
+  notes         String?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  shift  Shift  @relation(fields: [shiftId], references: [id])
+
+  @@unique([shiftId, date])
+  @@index([tenantId])
+  @@index([date])
+  @@map("daily_settlements")
 }
