@@ -210,6 +210,20 @@
 
 ---
 
+## Phase 7.7: Project Architecture Cleanup (架構整頓)
+**目標：降低 AI 上下文噪音，建立可導航的 monorepo 結構，讓人與 AI 都能快速定向。**
+
+- [x] **ARCH-01**: 建立 `CLAUDE.md` — Claude Code 原生上下文，替換過期的 `AI_CONTEXT.md`。
+- [x] **ARCH-02**: 重寫根目錄 `README.md` — 含架構總覽、技術棧、快速啟動、文件索引。
+- [x] **ARCH-03**: 建立 `systems/enterprise-admin/README.md` — 系統層入口說明。
+- [x] **ARCH-04**: 建立 `docs/architecture.md` — 系統邊界圖、資料流、ADR 索引。
+- [x] **ARCH-05**: 強化 `.aiignore` — 排除 `business/`、`docs/archive/`、`plans/archive/`。
+- [x] **ARCH-06**: 封存已完成的計畫檔案至 `docs/archive/` 和 `infrastructure/plans/archive/`。
+- [x] **ARCH-07**: 搬移 `startup_template_pack/` → `business/templates/`（商業文件獨立管理）。
+- [x] **ARCH-08**: 刪除根目錄殘骸（`implementation_plan.md.resolved`、`AI_CONTEXT.md`）。
+
+---
+
 ## Phase 8: Sales Foundation (銷售基盤強化)
 **目標：擴展資料庫 Schema，讓 Order 模型從「後台手動建單」升級為「可承接 POS 即時銷售」。**
 
