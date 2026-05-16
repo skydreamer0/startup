@@ -242,11 +242,13 @@
 
 ---
 
-## Phase 9: POS System Integration (POS 系統建置 - 規劃中)
+## Phase 9: POS System Integration (POS 系統建置)
 **目標：建立適用於門市快速結帳的操作介面，達成即時資料閉環。**
-- **POS-01**: 獨立 / 內嵌 POS 結帳 UI (支援條碼掃描、快捷鍵操作)。
-- **POS-02**: 多付款方式與折扣核心邏輯。
-- **POS-03**: 電子發票 API 串接。
+- [x] **POS-01**: 獨立 pos-ui SPA（三欄式結帳 UI、條碼掃描、鍵盤快捷鍵、員工切換業績歸屬）。
+- [x] **POS-02**: 多付款方式（CASH/CARD/LINE_PAY/TRANSFER）、商品層級折扣與整筆折扣、FIFO 批次扣庫存。
+- [x] **POS-ESC**: ESC/POS 熱感應收據（後端 buffer 產生 + WebUSB 列印）。
+- [x] **POS-OFF**: 離線佇列（IndexedDB 50 筆上限 + 網路恢復自動同步架構）。
+- [ ] **POS-03**: 電子發票 API 串接（Phase 10）。
 
 ---
 

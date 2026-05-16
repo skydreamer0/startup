@@ -54,5 +54,8 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-darwin-arm64": "^4.60.4"
   }
 }

@@ -19,6 +19,7 @@ import reportsRoutes from './modules/reports/reports.routes';
 import shiftsRoutes from './modules/shifts/shifts.routes';
 import productBatchesRoutes from './modules/product-batches/product-batches.routes';
 import dailySettlementsRoutes from './modules/daily-settlements/daily-settlements.routes';
+import posRoutes from './modules/pos/pos.routes';
 import { setTenantContext } from './middleware/tenant.middleware';
 
 const app = express();
@@ -54,6 +55,7 @@ apiRouter.use('/reports', reportsRoutes);
 apiRouter.use('/shifts', shiftsRoutes);
 apiRouter.use('/product-batches', productBatchesRoutes);
 apiRouter.use('/daily-settlements', dailySettlementsRoutes);
+apiRouter.use('/pos', posRoutes);
 
 app.use('/api/v1/admin', apiRouter);
 

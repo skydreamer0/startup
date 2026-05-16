@@ -53,6 +53,7 @@ model User {
   failedLoginAttempts Int       @default(0) @map("failed_login_attempts")
   totpSecret          String?   @map("totp_secret")
   tenantId            String    @map("tenant_id")
+  employeeCode        String?   @unique @map("employee_code")
 
   // Audit fields
   createdAt DateTime  @default(now()) @map("created_at")
@@ -64,6 +65,7 @@ model User {
   userRoles UserRole[]
   auditLogs AuditLog[]
   shifts    Shift[]
+  salesOrders  Order[] @relation("SalesOrders")
 
   @@index([tenantId])
   @@map("users")
@@ -322,19 +324,24 @@ model Order {
   orderType     String  @default("WALK_IN") @map("order_type")        // WALK_IN | ONLINE | PHONE | SYSTEM
   paymentMethod String  @default("CASH") @map("payment_method")       // CASH | CARD | LINE_PAY | TRANSFER | OTHER
   shiftId       String? @map("shift_id")                              // FK to Shift, nullable
+  discountAmount Float   @default(0)  @map("discount_amount")
+  discountNote   String?              @map("discount_note")
+  salesStaffId   String?              @map("sales_staff_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer Customer    @relation(fields: [customerId], references: [id])
-  items    OrderItem[]
-  shift    Shift?      @relation(fields: [shiftId], references: [id])
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  items      OrderItem[]
+  shift      Shift?      @relation(fields: [shiftId], references: [id])
+  salesStaff User?       @relation("SalesOrders", fields: [salesStaffId], references: [id])
 
   @@index([tenantId])
   @@index([customerId])
   @@index([shiftId])
   @@index([orderNumber])
+  @@index([salesStaffId])
   @@map("orders")
 }
 
@@ -343,7 +350,9 @@ model OrderItem {
   orderId   String @map("order_id")
   productId String @map("product_id")
   quantity  Int
-  unitPrice Float  @map("unit_price")
+  unitPrice      Float  @map("unit_price")
+  discountRate   Float  @default(0)  @map("discount_rate")
+  finalUnitPrice Float?              @map("final_unit_price")
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])

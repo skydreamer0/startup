@@ -38,6 +38,17 @@ const PERMISSIONS = [
     { action: 'manage', resource: 'analytics', description: 'Manage KPI settings' },
     // Reports (Phase 5)
     { action: 'read', resource: 'reports', description: 'View financial and sales reports' },
+    // Shifts (Phase 8)
+    { action: 'read', resource: 'shifts', description: 'View shift records' },
+    { action: 'manage', resource: 'shifts', description: 'Open and close shifts' },
+    // Product Batches (Phase 8)
+    { action: 'read', resource: 'product_batches', description: 'View product batches' },
+    { action: 'manage', resource: 'product_batches', description: 'Manage product batches' },
+    // Daily Settlements (Phase 8)
+    { action: 'read', resource: 'daily_settlements', description: 'View daily settlements' },
+    { action: 'manage', resource: 'daily_settlements', description: 'Confirm daily settlements' },
+    // POS (Phase 9)
+    { action: 'manage', resource: 'pos', description: 'Process POS checkout and manage POS operations' },
 ];
 
 async function main() {
@@ -135,7 +146,19 @@ async function main() {
     });
     console.log(`  ✅ SUPER_ADMIN role assigned to admin user`);
 
-    // 7. Seed CRM Data
+    // 7. Seed WALK_IN system customer (used by POS when no customer is selected)
+    await prisma.customer.upsert({
+        where: { phone_tenantId: { phone: 'WALK_IN', tenantId } },
+        update: {},
+        create: {
+            name: '散客',
+            phone: 'WALK_IN',
+            tenantId,
+        },
+    });
+    console.log('  ✅ WALK_IN system customer seeded');
+
+    // 8. Seed CRM Data
     const tagVIP = await prisma.tag.upsert({
         where: { name_tenantId: { name: 'VIP', tenantId } },
         create: { name: 'VIP', color: '#FFD700', tenantId },
@@ -195,7 +218,7 @@ async function main() {
     }
     console.log(`  ✅ CRM dummy data seeded`);
 
-    // 8. Seed Inventory Data
+    // 9. Seed Inventory Data
     const catHealth = await prisma.productCategory.upsert({
         where: { name_tenantId: { name: 'Health Supplements', tenantId } },
         create: { name: 'Health Supplements', description: '保健品類', tenantId },
@@ -254,7 +277,7 @@ async function main() {
     }
     console.log(`  ✅ Inventory dummy data seeded (${products.length} products, 2 suppliers)`);
 
-    // 9. Seed Orders
+    // 10. Seed Orders
     console.log('  🛒 Seeding dummy orders...');
     const dbCustomers = await prisma.customer.findMany();
     const dbProducts = await prisma.product.findMany();

@@ -202,7 +202,7 @@ describe('Roles API (Integration)', () => {
 
             const superAdmin = res.body.data.find((r: { name: string }) => r.name === 'SUPER_ADMIN');
             expect(superAdmin).toBeDefined();
-            expect(superAdmin.permissions.length).toBe(24);
+            expect(superAdmin.permissions.length).toBe(31);
         });
     });
 });
