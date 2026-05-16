@@ -1,5 +1,6 @@
 import { prisma } from '../../lib/prisma';
 import { ServiceError } from '../users/users.service';
+import { requireTenantId } from '../../lib/tenant.context';
 import type { CreateRoleInput, UpdateRolePermissionsInput } from './roles.schema';
 
 export class RolesService {
@@ -35,7 +36,10 @@ export class RolesService {
      * Create a new custom role.
      */
     async create(data: CreateRoleInput) {
-        const existing = await prisma.role.findUnique({ where: { name: data.name } });
+        const tenantId = requireTenantId();
+        const existing = await prisma.role.findUnique({
+            where: { name_tenantId: { name: data.name, tenantId } },
+        });
         if (existing) {
             throw new ServiceError('Role name already exists', 409);
         }
@@ -45,6 +49,7 @@ export class RolesService {
                 name: data.name,
                 description: data.description,
                 isSystem: false,
+                tenantId,
                 ...(data.permissionIds && {
                     rolePermissions: {
                         create: data.permissionIds.map((permissionId: string) => ({ permissionId })),
