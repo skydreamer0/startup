@@ -48,13 +48,13 @@ export default function CashFlowPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
                 <div className="stat-card">
                     <div className="stat-label">Beginning Cash</div>
-                    <div className="stat-value" style={{ marginTop: '12px', color: 'var(--text-muted)' }}>
+                    <div className="stat-value price-md" style={{ marginTop: '12px', color: 'var(--text-muted)' }}>
                         ${data?.beginningCash.toLocaleString() ?? 0}
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-label">Net Operating Cash</div>
-                    <div className="stat-value" style={{ marginTop: '12px', color: opCfsColor }}>
+                    <div className="stat-value price-md" style={{ marginTop: '12px', color: opCfsColor }}>
                         ${((data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0)).toLocaleString()}
                     </div>
                     <div style={{ fontSize: '12px', marginTop: '8px', color: 'var(--text-muted)' }}>
@@ -63,7 +63,7 @@ export default function CashFlowPage() {
                 </div>
                 <div className="stat-card">
                     <div className="stat-label">Net Investing Cash</div>
-                    <div className="stat-value" style={{ marginTop: '12px', color: '#f59e0b' }}>
+                    <div className="stat-value price-md" style={{ marginTop: '12px', color: '#f59e0b' }}>
                         -${data?.investingOutflows.toLocaleString() ?? 0}
                     </div>
                     <div style={{ fontSize: '12px', marginTop: '8px', color: 'var(--text-muted)' }}>
@@ -72,7 +72,7 @@ export default function CashFlowPage() {
                 </div>
                 <div className="stat-card">
                     <div className="stat-label">Ending Cash</div>
-                    <div className="stat-value" style={{ marginTop: '12px' }}>
+                    <div className="stat-value price-md" style={{ marginTop: '12px' }}>
                         ${data?.endingCash.toLocaleString() ?? 0}
                     </div>
                 </div>
@@ -113,7 +113,7 @@ export default function CashFlowPage() {
                                         <div style={{ fontWeight: 600 }}>{exp.type}</div>
                                         <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{exp.description || 'General'}</div>
                                     </div>
-                                    <div style={{ fontSize: '18px', fontWeight: 700, color: '#f87171' }}>
+                                    <div className="price" style={{ fontSize: '18px', fontWeight: 700, color: '#f87171' }}>
                                         -${exp.amount.toLocaleString()}
                                     </div>
                                 </div>
