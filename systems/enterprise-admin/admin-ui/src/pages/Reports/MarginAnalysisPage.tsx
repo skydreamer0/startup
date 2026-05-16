@@ -48,25 +48,25 @@ export default function MarginAnalysisPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
                 <div className="stat-card">
                     <div className="stat-label">Total Revenue</div>
-                    <div className="stat-value" style={{ marginTop: '12px' }}>
+                    <div className="stat-value price" style={{ marginTop: '12px' }}>
                         ${data?.summary.totalRevenue.toLocaleString() ?? 0}
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-label">Total COGS</div>
-                    <div className="stat-value" style={{ marginTop: '12px', color: '#f87171' }}>
+                    <div className="stat-value price" style={{ marginTop: '12px', color: '#f87171' }}>
                         ${data?.summary.totalCogs.toLocaleString() ?? 0}
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-label">Gross Margin ($)</div>
-                    <div className="stat-value" style={{ marginTop: '12px', color: '#10b981' }}>
+                    <div className="stat-value price" style={{ marginTop: '12px', color: '#10b981' }}>
                         ${data?.summary.totalMargin.toLocaleString() ?? 0}
                     </div>
                 </div>
                 <div className="stat-card" style={{ border: isTargetMet ? '1px solid #10b981' : '1px solid #f59e0b' }}>
                     <div className="stat-label">Gross Margin (%)</div>
-                    <div className="stat-value" style={{ marginTop: '12px', color: isTargetMet ? '#10b981' : '#f59e0b' }}>
+                    <div className="stat-value tabular price-lg" style={{ marginTop: '12px', color: isTargetMet ? '#10b981' : '#f59e0b' }}>
                         {currentMargin}%
                     </div>
                     <div style={{ fontSize: '12px', marginTop: '8px', color: 'var(--text-muted)' }}>
@@ -115,12 +115,12 @@ export default function MarginAnalysisPage() {
                                             <div style={{ fontWeight: 600 }}>{p.name}</div>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.sku}</div>
                                         </td>
-                                        <td style={{ textAlign: 'right' }}>{p.qty}</td>
-                                        <td style={{ textAlign: 'right' }}>${p.revenue.toLocaleString()}</td>
-                                        <td style={{ textAlign: 'right', color: p.marginPct >= targetMargin ? '#10b981' : '#f87171' }}>
+                                        <td style={{ textAlign: 'right' }} className="tabular">{p.qty}</td>
+                                        <td style={{ textAlign: 'right' }} className="price">${p.revenue.toLocaleString()}</td>
+                                        <td style={{ textAlign: 'right', color: p.marginPct >= targetMargin ? '#10b981' : '#f87171' }} className="tabular">
                                             {p.marginPct}%
                                         </td>
-                                        <td style={{ textAlign: 'right' }}>{p.contributionPct}%</td>
+                                        <td style={{ textAlign: 'right' }} className="tabular">{p.contributionPct}%</td>
                                     </tr>
                                 ))}
                             </tbody>

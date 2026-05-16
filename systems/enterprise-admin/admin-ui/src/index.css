@@ -76,6 +76,34 @@
 }
 
 /* ────────────────────────────────────────────────────
+   PHARMASAAS BRAND TOKENS
+   Used by POS surface and future brand-specific UI
+   ──────────────────────────────────────────────────── */
+:root {
+  /* Brand primaries */
+  --color-primary: #533afd;
+  --color-primary-hover: #665efd;
+  --color-primary-press: #2e2b8c;
+  --color-primary-soft: #e0deff;
+  --color-on-primary: #ffffff;
+
+  /* POS light surface (used by PosLayout, not AdminLayout) */
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #f6f9fc;
+  --color-canvas-muted: #eef2f7;
+  --color-hairline: #e3e8ee;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --space-section: 48px;
+}
+
+/* ────────────────────────────────────────────────────
    DARK MODE
    ──────────────────────────────────────────────────── */
 [data-theme="dark"] {
@@ -1394,4 +1422,45 @@ select.input-control {
   .toast {
     max-width: 100%;
   }
+}
+
+/* ────────────────────────────────────────────────────
+   NUMERIC & TABULAR UTILITIES
+   Apply to prices, quantities, metrics in tables/cards
+   ──────────────────────────────────────────────────── */
+.numeric,
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.price {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.price-md {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.price-lg {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.price-xl {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }

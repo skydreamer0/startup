@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { isDemoModeEnabled } from '../hooks/authDemo';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginPage() {
-    const { login } = useAuth();
+    const { login, demoLogin } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -69,6 +70,16 @@ export default function LoginPage() {
                     >
                         {submitting ? 'Signing in...' : 'Sign In'}
                     </button>
+                    {isDemoModeEnabled() && (
+                        <button
+                            type="button"
+                            className="btn btn-secondary login-btn"
+                            onClick={demoLogin}
+                            style={{ marginTop: '8px' }}
+                        >
+                            Open Demo Preview
+                        </button>
+                    )}
                 </form>
             </div>
         </div>

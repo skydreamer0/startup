@@ -68,7 +68,7 @@ export default function DashboardPage() {
                         <span className="stat-label">Lifetime Revenue</span>
                         <div className="stat-icon" style={{ color: 'var(--accent)', background: 'var(--accent-subtle)' }}>💰</div>
                     </div>
-                    <div className="stat-value">
+                    <div className="stat-value price-lg">
                         ${kpis?.revenue.totalLifetime.toLocaleString() ?? 0}
                     </div>
                     <div className="text-sm text-success">+12.5% from last month</div>
@@ -79,7 +79,7 @@ export default function DashboardPage() {
                         <span className="stat-label">Total Customers</span>
                         <div className="stat-icon" style={{ color: 'var(--success)', background: 'var(--success-bg)' }}>👤</div>
                     </div>
-                    <div className="stat-value">
+                    <div className="stat-value price-lg">
                         {kpis?.customers.total ?? 0}
                     </div>
                     <div className="text-sm text-muted">
@@ -95,17 +95,17 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex" style={{ gap: '1rem', marginTop: '0.5rem' }}>
                         <div>
-                            <div className="metric-value font-mono" style={{ fontSize: '1.25rem', color: bonusGate?.grossMarginPass ? 'var(--success)' : 'var(--danger)' }}>{bonusGate?.grossMarginPct ?? 0}%</div>
+                            <div className="metric-value font-mono price-md" style={{ fontSize: '1.25rem', color: bonusGate?.grossMarginPass ? 'var(--success)' : 'var(--danger)' }}>{bonusGate?.grossMarginPct ?? 0}%</div>
                             <div className="text-xs text-muted">Margin (≥30%)</div>
                         </div>
                         <div>
-                            <div className="metric-value font-mono" style={{ fontSize: '1.25rem', color: bonusGate?.cccPass ? 'var(--success)' : 'var(--danger)' }}>{bonusGate?.cccDays ?? 0}d</div>
+                            <div className="metric-value font-mono price-md" style={{ fontSize: '1.25rem', color: bonusGate?.cccPass ? 'var(--success)' : 'var(--danger)' }}>{bonusGate?.cccDays ?? 0}d</div>
                             <div className="text-xs text-muted">CCC (≤30d)</div>
                         </div>
                     </div>
                     <div className="text-sm mt-2 font-semibold flex justify-between">
                         <span>Status: <span className={bonusGate?.gatePass ? 'text-success' : 'text-danger'}>{bonusGate?.gatePass ? 'PASS' : 'FAIL'}</span></span>
-                        {bonusGate?.gatePass && <span className="text-accent">Pool: ~${bonusGate?.estimatedBonusPool.toLocaleString()}</span>}
+                        {bonusGate?.gatePass && <span className="text-accent price">Pool: ~${bonusGate?.estimatedBonusPool.toLocaleString()}</span>}
                     </div>
                 </div>
 
@@ -114,10 +114,10 @@ export default function DashboardPage() {
                         <span className="stat-label">LTV (per Customer)</span>
                         <div className="stat-icon" style={{ color: 'var(--chart-5)', background: 'rgba(139, 92, 246, 0.08)' }}>💎</div>
                     </div>
-                    <div className="stat-value">
+                    <div className="stat-value price-lg">
                         ${analytics?.ltv_twd?.toLocaleString() ?? 0}
                     </div>
-                    <div className="text-sm text-muted">
+                    <div className="text-sm text-muted price">
                         CAC: ${analytics?.cac_twd?.toLocaleString() ?? 0}
                     </div>
                 </div>
@@ -127,7 +127,7 @@ export default function DashboardPage() {
                         <span className="stat-label">Inventory Alerts</span>
                         <div className="stat-icon" style={{ color: 'var(--danger)', background: 'var(--danger-bg)' }}>⚠️</div>
                     </div>
-                    <div className="stat-value" style={{ color: (kpis?.inventory.lowStockCount ?? 0) > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                    <div className="stat-value price-lg" style={{ color: (kpis?.inventory.lowStockCount ?? 0) > 0 ? 'var(--danger)' : 'var(--success)' }}>
                         {kpis?.inventory.lowStockCount ?? 0}
                     </div>
                     <div className="text-sm text-muted">SKUs below safety stock</div>
@@ -181,25 +181,25 @@ export default function DashboardPage() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
                         <div className="metric-box">
                             <div className="stat-label">Avg. Customer LTV</div>
-                            <div className="metric-value" style={{ color: 'var(--accent-text)' }}>
+                            <div className="metric-value price" style={{ color: 'var(--accent-text)' }}>
                                 ${crm?.averageLTV.toLocaleString() ?? 0}
                             </div>
                         </div>
                         <div className="metric-box">
                             <div className="stat-label">90d Churn Risk</div>
-                            <div className="metric-value" style={{ color: (crm?.churnRate90d ?? 0) > 20 ? 'var(--danger)' : 'var(--warning)' }}>
+                            <div className="metric-value tabular" style={{ color: (crm?.churnRate90d ?? 0) > 20 ? 'var(--danger)' : 'var(--warning)' }}>
                                 {crm?.churnRate90d ?? 0}%
                             </div>
                         </div>
                         <div className="metric-box">
                             <div className="stat-label">Repurchase Rate</div>
-                            <div className="metric-value" style={{ color: (crm?.repurchaseRate ?? 0) > 30 ? 'var(--success)' : 'var(--warning)' }}>
+                            <div className="metric-value tabular" style={{ color: (crm?.repurchaseRate ?? 0) > 30 ? 'var(--success)' : 'var(--warning)' }}>
                                 {crm?.repurchaseRate ?? 0}%
                             </div>
                         </div>
                         <div className="metric-box">
                             <div className="stat-label">Average Order Value (AOV)</div>
-                            <div className="metric-value" style={{ color: 'var(--success)' }}>
+                            <div className="metric-value price" style={{ color: 'var(--success)' }}>
                                 ${analytics?.aov_twd?.toLocaleString() ?? 0}
                             </div>
                         </div>
@@ -212,17 +212,17 @@ export default function DashboardPage() {
                     <div className="flex flex-col gap-16">
                         <div className="supply-row">
                             <span className="stat-label">Total SKUs</span>
-                            <span className="font-semibold">{kpis?.inventory.totalProducts ?? 0}</span>
+                            <span className="font-semibold tabular">{kpis?.inventory.totalProducts ?? 0}</span>
                         </div>
                         <div className="supply-row">
                             <span className="stat-label">Avg. Delivery Rate</span>
-                            <span className="badge badge-success" style={{ background: (kpis?.suppliers.avgDeliveryReliability ?? 0) >= 95 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }}>
+                            <span className="badge badge-success tabular" style={{ background: (kpis?.suppliers.avgDeliveryReliability ?? 0) >= 95 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }}>
                                 {kpis?.suppliers.avgDeliveryReliability ?? '--'}%
                             </span>
                         </div>
                         <div className="supply-row">
                             <span className="stat-label">Avg. Defect Rate</span>
-                            <span className="badge" style={{ background: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? '#ef4444' : '#10b981' }}>
+                            <span className="badge tabular" style={{ background: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? '#ef4444' : '#10b981' }}>
                                 {kpis?.suppliers.avgDefectRate ?? '--'}%
                             </span>
                         </div>
@@ -312,8 +312,8 @@ export default function DashboardPage() {
                                     {kpis?.inventory.lowStockItems.map((item, idx) => (
                                         <tr key={idx}>
                                             <td className="font-semibold">{item.name}</td>
-                                            <td style={{ color: 'var(--danger)', fontWeight: 700 }}>{item.stockQuantity}</td>
-                                            <td>{item.safetyStock}</td>
+                                            <td className="tabular" style={{ color: 'var(--danger)', fontWeight: 700 }}>{item.stockQuantity}</td>
+                                            <td className="tabular">{item.safetyStock}</td>
                                         </tr>
                                     ))}
                                 </tbody>

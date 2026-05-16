@@ -113,13 +113,13 @@ export default function SalesRankingPage() {
                                                 {p.categoryName}
                                             </span>
                                         </td>
-                                        <td style={{ textAlign: 'right', fontWeight: 600, color: sortBy === 'quantity' ? '#8b5cf6' : 'var(--text-primary)' }}>
+                                        <td style={{ textAlign: 'right', fontWeight: 600, color: sortBy === 'quantity' ? '#8b5cf6' : 'var(--text-primary)' }} className="tabular">
                                             {p.quantity.toLocaleString()}
                                         </td>
-                                        <td style={{ textAlign: 'right', fontWeight: 600, color: sortBy === 'revenue' ? '#10b981' : 'var(--text-primary)' }}>
+                                        <td style={{ textAlign: 'right', fontWeight: 600, color: sortBy === 'revenue' ? '#10b981' : 'var(--text-primary)' }} className="price">
                                             ${p.revenue.toLocaleString()}
                                         </td>
-                                        <td style={{ textAlign: 'right', color: p.marginPct >= 30 ? '#10b981' : '#f59e0b' }}>
+                                        <td style={{ textAlign: 'right', color: p.marginPct >= 30 ? '#10b981' : '#f59e0b' }} className="tabular">
                                             {p.marginPct}%
                                         </td>
                                     </tr>

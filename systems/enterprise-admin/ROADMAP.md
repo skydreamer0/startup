@@ -197,16 +197,16 @@
 **計畫 merge 時機：Phase 8 開始前（Schema 升級前）。**
 
 ### Merge 前置作業
-- [ ] **DS-00**: CSS 衝突解析 — 3-way merge `index.css`（PharmaSaaS tokens vs 現有 v3.0 tokens），確認 backward-compatible alias 不破壞現有頁面。
-- [ ] **DS-00b**: `AdminLayout.tsx` 衝突解析 — 合併佈局結構調整，驗證所有路由頁面正常渲染。
+- [x] **DS-00**: CSS 衝突解析 — 3-way merge `index.css`（PharmaSaaS tokens vs 現有 v3.0 tokens），確認 backward-compatible alias 不破壞現有頁面。
+- [x] **DS-00b**: `AdminLayout.tsx` 衝突解析 — 合併佈局結構調整，驗證所有路由頁面正常渲染。
 
 ### 設計系統核心
-- [ ] **DS-01**: PharmaSaaS Design Token 遷移 — `--color-primary`、`--color-ink`、`--color-canvas` 等完整 token 體系整合進 `index.css`。
-- [ ] **DS-02**: Admin Shell Layout 重構 — 整合更新後的 `AdminLayout.tsx`。
+- [x] **DS-01**: PharmaSaaS Design Token 遷移 — `--color-primary`、`--color-ink`、`--color-canvas` 等完整 token 體系整合進 `index.css`。
+- [x] **DS-02**: Admin Shell Layout 重構 — 整合更新後的 `AdminLayout.tsx`。
 
 ### 輔助功能
-- [ ] **DS-03**: Demo / Preview 模式 — 整合 `authDemo.ts`、`demoLogin()` 與 wildcard 權限 (`*`)，供展示用途。
-- [ ] **DS-04**: POS Preview 頁面 — 整合 `PosPreviewPage.tsx` 雛形（88 行），作為 Phase 9 的視覺參考起點。
+- [x] **DS-03**: Demo / Preview 模式 — 整合 `authDemo.ts`、`demoLogin()` 與 wildcard 權限 (`*`)，供展示用途。
+- [x] **DS-04**: POS Preview 頁面 — 整合 `PosPreviewPage.tsx` 雛形（88 行），作為 Phase 9 的視覺參考起點。
 
 ---
 
