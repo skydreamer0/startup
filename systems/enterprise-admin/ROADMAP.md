@@ -144,7 +144,55 @@
 ## Phase 6.2: Frontend UI Structure Refinement (UI 細節結構優化)
 **目標：將 Phase 6 建立的設計系統徹底落實到所有次要頁面，確保所有表格、按鈕與輸入框的一致性高級感。**
 
-- [ ] **UI-19**: 重構 **Audit Logs** 與 **Users/Roles** 頁面 (套用標準 `.table`, `.btn`, `.input-field`)。
-- [ ] **UI-20**: 重構 **Inventory (Products)** 與 **Suppliers** 頁面 (修復表格標題擠壓，統一按鈕樣式)。
-- [ ] **UI-21**: 重構 **Orders** 與其他報表頁面的基礎控制項。
+- [x] **UI-19**: 重構 **Audit Logs** 與 **Users/Roles** 頁面 (套用標準 `.table`, `.btn`, `.input-field`)。
+- [x] **UI-20**: 重構 **Inventory (Products)** 與 **Suppliers** 頁面 (修復表格標題擠壓，統一按鈕樣式)。
+- [x] **UI-21**: 重構 **Orders** 與其他報表頁面的基礎控制項。
+
+---
+
+## Phase 7: Data Analytics Engine (數據分析引擎)
+**目標：利用既有資料（免修改 Schema），建立高商業價值的藥局營運分析模組。**
+
+### 模組一：客戶分層與回購預警 (CRM 進階)
+- [ ] **API-16**: `GET /analytics/rfm` RFM 客戶分層分析 (VIP / 忠誠 / 流失高危)。
+- [ ] **API-17**: `GET /analytics/churn-risk` 客戶回購週期 + 流失預警。
+- [ ] **UI-22**: `/analytics/rfm` 顧客分層儀表板（圓餅圖 + 名單匯出）。
+- [ ] **UI-23**: `/analytics/churn` 流失風險預警列表（關聯 LINE 推播）。
+
+### 模組二：商品與供應商進階分析
+- [ ] **API-18**: `GET /analytics/product-abc` ABC 商品毛利交叉分析。
+- [ ] **API-19**: `GET /analytics/supplier-ranking` 供應商綜合績效排名。
+- [ ] **UI-24**: `/analytics/products` 商品四象限矩陣圖 + 淘汰建議清單。
+- [ ] **UI-25**: `/analytics/suppliers` 供應商可靠度雷達圖與排行。
+
+### 模組三：營運時段與獎金門檻
+- [ ] **API-20**: `GET /analytics/bonus-gate` 獎金門檻即時追蹤 (Gate Pass 達標狀態)。
+- [ ] **API-21**: `GET /analytics/heatmap` 銷售時段熱力圖。
+- [ ] **UI-26**: 擴充 `/dashboard`，整合獎金燈號與時段熱力圖。
+
+---
+
+## Phase 8: Sales Foundation (銷售基盤強化)
+**目標：擴展資料庫 Schema，讓 Order 模型從「後台手動建單」升級為「可承接 POS 即時銷售」。**
+
+### 模組一：Schema 升級與遷移 (Prisma)
+- [ ] **DB-02**: 升級 `Order` 模型（加入 `order_number`, `order_type`, `payment_method`, `shift_id` 等欄位）。
+- [ ] **DB-03**: 新增 `ProductBatch` 模型（效期批號 FIFO 管理）。
+- [ ] **DB-04**: 新增 `Shift` (班別) 與 `DailySettlement` (日結對帳) 模型。
+- [ ] **MIG-01**: 建立 Prisma Migration 並確保既有手動訂單資料向上相容。
+
+### 模組二：班別與批號核心 API
+- [ ] **API-22**: `Shift` CRUD API (開班、交班狀態追蹤)。
+- [ ] **API-23**: `ProductBatch` API (入庫批號登錄、即期品查詢)。
+- [ ] **API-24**: `DailySettlement` API (日結計算與確認)。
+- [ ] **UI-27**: `/inventory/batches` 批號與效期管理頁面。
+- [ ] **UI-28**: `/shifts` 班別管理與日結報表頁面。
+
+---
+
+## Phase 9: POS System Integration (POS 系統建置 - 規劃中)
+**目標：建立適用於門市快速結帳的操作介面，達成即時資料閉環。**
+- **POS-01**: 獨立 / 內嵌 POS 結帳 UI (支援條碼掃描、快捷鍵操作)。
+- **POS-02**: 多付款方式與折扣核心邏輯。
+- **POS-03**: 電子發票 API 串接。
 

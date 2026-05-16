@@ -6,8 +6,10 @@ import UsersPage from './pages/UsersPage';
 import RolesPage from './pages/RolesPage';
 import AuditLogsPage from './pages/AuditLogsPage';
 import CustomerListPage from './pages/CRM/CustomerListPage';
+import CrmAnalyticsPage from './pages/CRM/CrmAnalyticsPage';
 import CustomerDetailPage from './pages/CRM/CustomerDetailPage';
 import ProductListPage from './pages/Inventory/ProductListPage';
+import InventoryAnalyticsPage from './pages/Inventory/InventoryAnalyticsPage';
 import SupplierListPage from './pages/Inventory/SupplierListPage';
 import OrderListPage from './pages/Orders/OrderListPage';
 import MarginAnalysisPage from './pages/Reports/MarginAnalysisPage';
@@ -46,9 +48,11 @@ export default function App() {
                             <Route path="/audit-logs" element={<AuditLogsPage />} />
                             {/* CRM Phase 3 */}
                             <Route path="/crm" element={<CustomerListPage />} />
+                            <Route path="/crm/analytics" element={<CrmAnalyticsPage />} />
                             <Route path="/crm/:id" element={<CustomerDetailPage />} />
                             {/* Inventory Phase 3 */}
                             <Route path="/inventory" element={<ProductListPage />} />
+                            <Route path="/inventory/analytics" element={<InventoryAnalyticsPage />} />
                             <Route path="/suppliers" element={<SupplierListPage />} />
                             {/* Orders Phase 4 */}
                             <Route path="/orders" element={<OrderListPage />} />

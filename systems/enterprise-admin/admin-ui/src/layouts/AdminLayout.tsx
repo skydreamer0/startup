@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function AdminLayout() {
     const { user, logout } = useAuth();
@@ -21,11 +22,17 @@ export default function AdminLayout() {
                     </NavLink>
 
                     <div className="sidebar-section">Business Operations</div>
-                    <NavLink to="/crm" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                    <NavLink to="/crm" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`} end>
                         <span className="icon">👤</span> <span>CRM</span>
                     </NavLink>
-                    <NavLink to="/inventory" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                    <NavLink to="/crm/analytics" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📊</span> <span>CRM Analytics</span>
+                    </NavLink>
+                    <NavLink to="/inventory" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`} end>
                         <span className="icon">📦</span> <span>Inventory</span>
+                    </NavLink>
+                    <NavLink to="/inventory/analytics" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📊</span> <span>Inventory Analytics</span>
                     </NavLink>
                     <NavLink to="/suppliers" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">🏢</span> <span>Suppliers</span>
@@ -62,6 +69,7 @@ export default function AdminLayout() {
                         <strong>{user?.fullName}</strong>
                         <span>{user?.roles?.[0] || 'User'}</span>
                     </div>
+                    <ThemeToggle />
                     <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ width: '100%', justifyContent: 'center' }}>
                         Logout
                     </button>

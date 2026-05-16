@@ -1,17 +1,58 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ordersApi, Order } from '../../api/orders';
-import { Link } from 'react-router-dom';
+import { crmApi, Customer } from '../../api/crm';
+import { inventoryApi, Product } from '../../api/inventory';
+
+type OrderForm = {
+    customerId: string;
+    productId: string;
+    quantity: string;
+    shippingAddress: string;
+};
+
+type ApiError = {
+    response?: {
+        data?: {
+            error?: {
+                message?: string;
+            };
+        };
+    };
+};
+
+const emptyOrderForm: OrderForm = {
+    customerId: '',
+    productId: '',
+    quantity: '1',
+    shippingAddress: '',
+};
 
 export default function OrderListPage() {
     const [statusFilter, setStatusFilter] = useState('');
+    const [showCreate, setShowCreate] = useState(false);
+    const [orderForm, setOrderForm] = useState<OrderForm>(emptyOrderForm);
+    const [saving, setSaving] = useState(false);
+    const queryClient = useQueryClient();
 
     const { data: ordersData, isLoading: loading } = useQuery({
         queryKey: ['orders', statusFilter],
         queryFn: () => ordersApi.getOrders({ status: statusFilter || undefined }),
     });
 
+    const { data: customersData } = useQuery({
+        queryKey: ['crm', 'customers', 'orders'],
+        queryFn: () => crmApi.getCustomers(),
+    });
+
+    const { data: productsData } = useQuery({
+        queryKey: ['inventory', 'products', 'orders'],
+        queryFn: () => inventoryApi.getProducts(),
+    });
+
     const orders: Order[] = ordersData?.data || [];
+    const customers: Customer[] = customersData?.data || [];
+    const products: Product[] = productsData?.data || [];
 
     const getStatusBadgeClass = (status: string) => {
         switch (status) {
@@ -21,6 +62,41 @@ export default function OrderListPage() {
             default: return '';
         }
     };
+
+    function openCreate() {
+        setOrderForm(emptyOrderForm);
+        setShowCreate(true);
+    }
+
+    function closeCreate() {
+        setShowCreate(false);
+        setOrderForm(emptyOrderForm);
+    }
+
+    async function createOrder(e: React.FormEvent) {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            await ordersApi.createOrder({
+                customerId: orderForm.customerId,
+                shippingAddress: orderForm.shippingAddress.trim() || undefined,
+                items: [
+                    {
+                        productId: orderForm.productId,
+                        quantity: Number(orderForm.quantity),
+                    },
+                ],
+            });
+            closeCreate();
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
+            queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
+        } catch (err) {
+            const message = (err as ApiError).response?.data?.error?.message || 'Failed to create order';
+            alert(message);
+        } finally {
+            setSaving(false);
+        }
+    }
 
     return (
         <div className="orders-page">
@@ -41,11 +117,11 @@ export default function OrderListPage() {
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
-                    <button className="btn btn-primary">+ Create Order</button>
+                    <button className="btn btn-primary" onClick={openCreate}>+ Create Order</button>
                 </div>
             </header>
 
-            <div className="glass-card table-container">
+            <div className="card table-container">
                 {loading ? (
                     <div className="p-20 text-center shimmer" style={{ height: '300px' }}></div>
                 ) : (
@@ -110,6 +186,58 @@ export default function OrderListPage() {
                     </table>
                 )}
             </div>
+
+            {showCreate && (
+                <div className="modal-overlay" onClick={closeCreate}>
+                    <div className="modal-content card" onClick={(e) => e.stopPropagation()}>
+                        <h2 className="modal-title">Create Order</h2>
+                        <form onSubmit={createOrder}>
+                            <div className="login-form">
+                                <div className="input-group">
+                                    <label className="input-label">Customer</label>
+                                    <select className="input-field" required value={orderForm.customerId}
+                                        onChange={(e) => setOrderForm({ ...orderForm, customerId: e.target.value })}>
+                                        <option value="">Select customer</option>
+                                        {customers.map((customer) => (
+                                            <option key={customer.id} value={customer.id}>
+                                                {customer.name || customer.phone || customer.id}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label">Product</label>
+                                    <select className="input-field" required value={orderForm.productId}
+                                        onChange={(e) => setOrderForm({ ...orderForm, productId: e.target.value })}>
+                                        <option value="">Select product</option>
+                                        {products.map((product) => (
+                                            <option key={product.id} value={product.id}>
+                                                {product.sku} - {product.name} ({product.stockQuantity} in stock)
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label">Quantity</label>
+                                    <input className="input-field" type="number" min="1" step="1" required value={orderForm.quantity}
+                                        onChange={(e) => setOrderForm({ ...orderForm, quantity: e.target.value })} />
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label">Shipping Address</label>
+                                    <input className="input-field" value={orderForm.shippingAddress}
+                                        onChange={(e) => setOrderForm({ ...orderForm, shippingAddress: e.target.value })} />
+                                </div>
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" className="btn btn-ghost" onClick={closeCreate}>Cancel</button>
+                                <button type="submit" className="btn btn-primary" disabled={saving}>
+                                    {saving ? 'Creating...' : 'Create Order'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -64,8 +64,8 @@ export default function AuditLogsPage() {
                 </select>
             </div>
 
-            <div className="glass-card" style={{ overflow: 'hidden' }}>
-                <table className="data-table">
+            <div className="card" style={{ overflow: 'hidden' }}>
+                <table className="table">
                     <thead>
                         <tr>
                             <th>Time</th>

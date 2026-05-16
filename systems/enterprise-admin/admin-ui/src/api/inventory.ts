@@ -6,6 +6,7 @@ export interface Supplier {
     contactName?: string;
     email?: string;
     phone?: string;
+    address?: string;
     rating?: number;
     deliveryReliability?: number;
     defectRate?: number;
@@ -16,6 +17,8 @@ export interface Product {
     sku: string;
     name: string;
     description?: string;
+    categoryId?: string;
+    supplierId?: string;
     costPrice: number;
     retailPrice: number;
     stockQuantity: number;

@@ -69,7 +69,7 @@ export default function RolesPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 24 }}>
                 {/* Role List */}
-                <div className="glass-card" style={{ padding: 16 }}>
+                <div className="card" style={{ padding: 16 }}>
                     <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, padding: '0 8px' }}>
                         Roles
                     </h3>
@@ -96,7 +96,7 @@ export default function RolesPage() {
                 </div>
 
                 {/* Permission Matrix */}
-                <div className="glass-card" style={{ padding: 24 }}>
+                <div className="card" style={{ padding: 24 }}>
                     {selectedRole ? (
                         <>
                             <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{selectedRole.name}</h3>
