@@ -16,6 +16,7 @@ import MarginAnalysisPage from './pages/Reports/MarginAnalysisPage';
 import CashFlowPage from './pages/Reports/CashFlowPage';
 import SalesRankingPage from './pages/Reports/SalesRankingPage';
 import AdminLayout from './layouts/AdminLayout';
+import PosPreviewPage from './pages/POS/PosPreviewPage';
 
 function ProtectedRoute() {
     const { user, loading } = useAuth();
@@ -41,6 +42,8 @@ export default function App() {
 
                     {/* Protected */}
                     <Route element={<ProtectedRoute />}>
+                        {/* POS — own layout, outside AdminLayout */}
+                        <Route path="/pos" element={<PosPreviewPage />} />
                         <Route element={<AdminLayout />}>
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/users" element={<UsersPage />} />
