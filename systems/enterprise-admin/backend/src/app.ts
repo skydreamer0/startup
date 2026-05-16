@@ -16,6 +16,7 @@ import orderRoutes from './modules/orders/order.routes';
 import analyticsRoutes from './modules/analytics/analytics.routes';
 import expensesRoutes from './modules/expenses/expenses.routes';
 import reportsRoutes from './modules/reports/reports.routes';
+import shiftsRoutes from './modules/shifts/shifts.routes';
 import { setTenantContext } from './middleware/tenant.middleware';
 
 const app = express();
@@ -48,6 +49,7 @@ apiRouter.use('/orders', orderRoutes);
 apiRouter.use('/analytics', analyticsRoutes);
 apiRouter.use('/expenses', expensesRoutes);
 apiRouter.use('/reports', reportsRoutes);
+apiRouter.use('/shifts', shiftsRoutes);
 
 app.use('/api/v1/admin', apiRouter);
 
