@@ -7,7 +7,6 @@ export default function POSLoginPage() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus so barcode scanner fires directly into the input
   useEffect(() => { inputRef.current?.focus(); }, []);
 
   async function handleLogin(employeeCode: string) {
@@ -22,7 +21,7 @@ export default function POSLoginPage() {
       localStorage.setItem('pos_accessToken', res.data.data.accessToken);
       window.location.href = '/';
     } catch {
-      setError('找不到此員工或帳號已停用');
+      setError('登入失敗，請確認員工代碼後再試');
       setCode('');
       setTimeout(() => inputRef.current?.focus(), 50);
     } finally {
@@ -30,8 +29,8 @@ export default function POSLoginPage() {
     }
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') handleLogin(code);
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') handleLogin(code);
   }
 
   return (
@@ -43,32 +42,33 @@ export default function POSLoginPage() {
         background: 'var(--bg-card)', borderRadius: 'var(--radius-md)',
         padding: 48, width: 380, boxShadow: 'var(--shadow-lg)', textAlign: 'center',
       }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>💊</div>
+        <div style={{ fontSize: 36, marginBottom: 12 }}>POS</div>
         <h2 style={{ margin: '0 0 6px', fontSize: 22 }}>PharmaSaaS POS</h2>
         <p style={{ margin: '0 0 28px', color: 'var(--text-muted)', fontSize: 14 }}>
-          請刷員工條碼或輸入員工編號登入
+          請掃描員工條碼或輸入員工代碼登入
         </p>
 
         <input
           ref={inputRef}
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(event) => setCode(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="員工條碼 / 員工編號"
+          placeholder="員工條碼 / 員工代碼"
           disabled={loading}
           style={{
             width: '100%', padding: '12px 14px', fontSize: 16,
             border: `1px solid ${error ? 'var(--danger)' : 'var(--border)'}`,
             borderRadius: 'var(--radius-xs)', boxSizing: 'border-box',
-            textAlign: 'center', letterSpacing: 2,
+            textAlign: 'center', letterSpacing: 0,
           }}
         />
 
         {error && (
-          <div style={{ color: 'var(--danger)', fontSize: 13, marginTop: 10 }}>{error}</div>
+          <div role="alert" style={{ color: 'var(--danger)', fontSize: 13, marginTop: 10 }}>{error}</div>
         )}
 
         <button
+          type="button"
           onClick={() => handleLogin(code)}
           disabled={loading || !code.trim()}
           style={{
@@ -79,7 +79,7 @@ export default function POSLoginPage() {
             opacity: loading || !code.trim() ? 0.6 : 1,
           }}
         >
-          {loading ? '驗證中…' : '登入'}
+          {loading ? '登入中...' : '登入'}
         </button>
       </div>
     </div>

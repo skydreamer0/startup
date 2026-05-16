@@ -6,11 +6,15 @@ import { useCartStore } from '../store/cartStore';
 import { PosProduct } from '../api/pos';
 
 const product: PosProduct = {
-  id: 'p1', name: 'Panadol', sku: 'PAN', retailPrice: 100, stockQuantity: 20,
+  id: 'p1',
+  name: 'Panadol',
+  sku: 'PAN',
+  retailPrice: 100,
+  stockQuantity: 20,
 };
 
 const defaultProps = {
-  currentStaffName: '張藥師',
+  currentStaffName: '王小明',
   onCheckout: vi.fn(),
   onSwitchStaff: vi.fn(),
 };
@@ -31,10 +35,10 @@ beforeEach(() => {
 });
 
 describe('CartPanel empty state', () => {
-  it('shows empty message when cart is empty', () => {
+  it('shows a readable empty cart message', () => {
     setupCart(0);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText('購物車為空')).toBeInTheDocument();
+    expect(screen.getByText('購物車目前沒有商品')).toBeInTheDocument();
   });
 
   it('disables checkout button when cart is empty', () => {
@@ -45,14 +49,14 @@ describe('CartPanel empty state', () => {
 });
 
 describe('CartPanel subtotal display', () => {
-  it('shows subtotal = price × quantity', () => {
-    setupCart(2); // 100 × 2 = 200
+  it('shows subtotal = price x quantity', () => {
+    setupCart(2);
     render(<CartPanel {...defaultProps} />);
     expect(screen.getByText(/小計 \$200/)).toBeInTheDocument();
   });
 
   it('shows subtotal with item discount applied', () => {
-    setupCart(1, 10); // 100 × 0.9 = 90
+    setupCart(1, 10);
     render(<CartPanel {...defaultProps} />);
     expect(screen.getByText(/小計 \$90/)).toBeInTheDocument();
   });
@@ -60,28 +64,28 @@ describe('CartPanel subtotal display', () => {
 
 describe('CartPanel total display', () => {
   it('shows total = subtotal when no order discount', () => {
-    setupCart(3); // subtotal=300
+    setupCart(3);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText(/合計 \$300/)).toBeInTheDocument();
+    expect(screen.getByText(/總計 \$300/)).toBeInTheDocument();
   });
 
   it('shows total = subtotal - orderDiscount', () => {
-    setupCart(3, 0, 50); // subtotal=300, discount=50, total=250
+    setupCart(3, 0, 50);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText(/合計 \$250/)).toBeInTheDocument();
+    expect(screen.getByText(/總計 \$250/)).toBeInTheDocument();
   });
 });
 
 describe('CartPanel order discount input', () => {
   it('updates total when user types order discount', async () => {
     const user = userEvent.setup();
-    setupCart(1); // subtotal=100
+    setupCart(1);
     render(<CartPanel {...defaultProps} />);
     const discountInput = within(screen.getByText('整筆折扣').parentElement!).getByPlaceholderText('0');
     await user.clear(discountInput);
     await user.type(discountInput, '30');
     expect(useCartStore.getState().orderDiscountAmount).toBe(30);
-    expect(screen.getByText(/合計 \$70/)).toBeInTheDocument();
+    expect(screen.getByText(/總計 \$70/)).toBeInTheDocument();
   });
 });
 
@@ -90,7 +94,7 @@ describe('CartPanel payment method', () => {
     const user = userEvent.setup();
     setupCart(1);
     render(<CartPanel {...defaultProps} />);
-    await user.click(screen.getByRole('button', { name: '刷卡' }));
+    await user.click(screen.getByRole('button', { name: '信用卡' }));
     expect(useCartStore.getState().paymentMethod).toBe('CARD');
   });
 });
@@ -102,5 +106,21 @@ describe('CartPanel checkout button', () => {
     render(<CartPanel {...defaultProps} />);
     await user.click(screen.getByRole('button', { name: /結帳/ }));
     expect(defaultProps.onCheckout).toHaveBeenCalledOnce();
+  });
+});
+
+describe('CartPanel clear cart confirmation', () => {
+  it('requires a second click before clearing the cart', async () => {
+    const user = userEvent.setup();
+    setupCart(1);
+    render(<CartPanel {...defaultProps} />);
+
+    await user.click(screen.getByRole('button', { name: /清空購物車/ }));
+    expect(useCartStore.getState().items).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('再按一次清空購物車');
+
+    await user.click(screen.getByRole('button', { name: /再按一次清空購物車/ }));
+    expect(useCartStore.getState().items).toHaveLength(0);
+    expect(screen.getByRole('status')).toHaveTextContent('購物車已清空');
   });
 });

@@ -56,14 +56,14 @@ describe('CartItem + button', () => {
   it('increments quantity in store when + clicked', async () => {
     const user = userEvent.setup();
     setup(1);
-    await user.click(screen.getByRole('button', { name: '+' }));
+    await user.click(screen.getByRole('button', { name: '增加數量' }));
     expect(useCartStore.getState().items[0].quantity).toBe(2);
   });
 
   it('caps quantity at stockQuantity', async () => {
     const user = userEvent.setup();
     setup(20);
-    await user.click(screen.getByRole('button', { name: '+' }));
+    await user.click(screen.getByRole('button', { name: '增加數量' }));
     expect(useCartStore.getState().items[0].quantity).toBe(20);
   });
 });
@@ -72,14 +72,14 @@ describe('CartItem - button', () => {
   it('decrements quantity when - clicked', async () => {
     const user = userEvent.setup();
     setup(3);
-    await user.click(screen.getByRole('button', { name: '−' }));
+    await user.click(screen.getByRole('button', { name: '減少數量' }));
     expect(useCartStore.getState().items[0].quantity).toBe(2);
   });
 
   it('removes item from cart when quantity reaches 0', async () => {
     const user = userEvent.setup();
     setup(1);
-    await user.click(screen.getByRole('button', { name: '−' }));
+    await user.click(screen.getByRole('button', { name: '減少數量' }));
     expect(useCartStore.getState().items).toHaveLength(0);
   });
 });
@@ -88,7 +88,7 @@ describe('CartItem quantity input (direct typing)', () => {
   it('updates quantity when user clears and types new number', async () => {
     const user = userEvent.setup();
     setup(2);
-    const input = screen.getByRole('spinbutton');
+    const input = screen.getByRole('spinbutton', { name: '商品數量' });
     await user.clear(input);
     await user.type(input, '5');
     await user.tab();
@@ -98,7 +98,7 @@ describe('CartItem quantity input (direct typing)', () => {
   it('updates quantity without clearing first', async () => {
     const user = userEvent.setup();
     setup(1);
-    const input = screen.getByRole('spinbutton');
+    const input = screen.getByRole('spinbutton', { name: '商品數量' });
     await user.clear(input);
     await user.type(input, '8');
     await user.tab();
@@ -108,7 +108,7 @@ describe('CartItem quantity input (direct typing)', () => {
   it('respects stockQuantity max when typing large number', async () => {
     const user = userEvent.setup();
     setup(1);
-    const input = screen.getByRole('spinbutton');
+    const input = screen.getByRole('spinbutton', { name: '商品數量' });
     await user.clear(input);
     await user.type(input, '999');
     await user.tab();
@@ -118,7 +118,7 @@ describe('CartItem quantity input (direct typing)', () => {
   it('sets quantity to 1 if user types 0', async () => {
     const user = userEvent.setup();
     setup(1);
-    const input = screen.getByRole('spinbutton');
+    const input = screen.getByRole('spinbutton', { name: '商品數量' });
     await user.clear(input);
     await user.type(input, '0');
     await user.tab();
@@ -137,11 +137,11 @@ describe('CartItem discount input', () => {
   });
 });
 
-describe('CartItem x remove button', () => {
-  it('removes item when x clicked', async () => {
+describe('CartItem remove button', () => {
+  it('removes item when remove clicked', async () => {
     const user = userEvent.setup();
     setup(2);
-    await user.click(screen.getByRole('button', { name: '×' }));
+    await user.click(screen.getByRole('button', { name: '移除 Panadol' }));
     expect(useCartStore.getState().items).toHaveLength(0);
   });
 });

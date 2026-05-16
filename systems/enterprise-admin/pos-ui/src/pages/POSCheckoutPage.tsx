@@ -7,6 +7,7 @@ import CartPanel from '../components/CartPanel';
 import StaffSwitchModal from '../components/StaffSwitchModal';
 import PaymentModal from '../components/PaymentModal';
 import ReceiptModal from '../components/ReceiptModal';
+import PosToast, { PosToastMessage } from '../components/PosToast';
 import { startBarcodeListener, stopBarcodeListener, onBarcode } from '../services/barcodeService';
 import { printReceipt } from '../services/receiptService';
 
@@ -16,7 +17,9 @@ function getCurrentUserId(): string | null {
     if (!token) return null;
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.userId ?? null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 export default function POSCheckoutPage() {
@@ -32,52 +35,87 @@ export default function POSCheckoutPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [openingCash, setOpeningCash] = useState(0);
   const [shiftOpening, setShiftOpening] = useState(false);
+  const [toast, setToast] = useState<PosToastMessage | null>(null);
 
   const { addItem, clearCart, setSalesStaff, currentSalesStaffId } = useCartStore();
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const currentStaff = staffList.find((s) => s.id === currentSalesStaffId);
-  const currentStaffName = currentStaff?.fullName ?? activeShift?.staff.fullName ?? '未設定';
+  const currentStaff = staffList.find((staff) => staff.id === currentSalesStaffId);
+  const currentStaffName = currentStaff?.fullName ?? activeShift?.staff.fullName ?? '未指定人員';
+
+  const showToast = useCallback((nextToast: PosToastMessage) => {
+    setToast(nextToast);
+  }, []);
 
   useEffect(() => {
-    posApi.getStaff().then((r) => setStaffList(r.data.data));
-    posApi.getActiveShift().then((r) => {
-      const shift = r.data.data;
+    if (!toast) return;
+    const timeout = window.setTimeout(() => setToast(null), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [toast]);
+
+  useEffect(() => {
+    posApi.getStaff().then((response) => setStaffList(response.data.data));
+    posApi.getActiveShift().then((response) => {
+      const shift = response.data.data;
       setActiveShift(shift);
       if (shift && !currentSalesStaffId) setSalesStaff(shift.staff.id);
     });
-  }, []);
+  }, [currentSalesStaffId, setSalesStaff]);
 
   useEffect(() => {
     setLoadingProducts(true);
     posApi.getProducts(searchQuery || undefined, selectedCategory ?? undefined)
-      .then((r) => setProducts(r.data.data))
+      .then((response) => setProducts(response.data.data))
       .finally(() => setLoadingProducts(false));
   }, [searchQuery, selectedCategory]);
 
   useEffect(() => {
     startBarcodeListener();
-    const unsub = onBarcode((code) => {
+    const unsubscribe = onBarcode((code) => {
       setSearchQuery(code);
       const matched = products.find(
-        (p) => p.sku === code || (p.barcode && p.barcode === code),
+        (product) => product.sku === code || (product.barcode && product.barcode === code),
       );
-      if (matched) addItem(matched);
+      if (matched) {
+        addItem(matched);
+        showToast({ type: 'success', message: `已加入 ${matched.name}` });
+      }
     });
-    return () => { stopBarcodeListener(); unsub(); };
-  }, [products, addItem]);
+    return () => { stopBarcodeListener(); unsubscribe(); };
+  }, [products, addItem, showToast]);
 
-  const handleKeydown = useCallback((e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement) return;
-    switch (e.key) {
-      case 'F2': e.preventDefault(); searchRef.current?.focus(); break;
-      case 'F3': e.preventDefault(); document.getElementById('order-discount')?.focus(); break;
-      case 'F5': e.preventDefault(); clearCart(); break;
-      case 'F6': e.preventDefault(); setShowStaffModal(true); break;
-      case 'Enter': e.preventDefault(); if (useCartStore.getState().items.length > 0) setShowPaymentModal(true); break;
-      case 'Escape': setShowStaffModal(false); setShowPaymentModal(false); break;
+  const handleKeydown = useCallback((event: KeyboardEvent) => {
+    if (event.target instanceof HTMLInputElement) return;
+
+    switch (event.key) {
+      case 'F2':
+        event.preventDefault();
+        searchRef.current?.focus();
+        break;
+      case 'F3':
+        event.preventDefault();
+        document.getElementById('order-discount')?.focus();
+        break;
+      case 'F5':
+        event.preventDefault();
+        showToast({ type: 'warning', message: '請使用清空購物車按鈕確認清空' });
+        break;
+      case 'F6':
+        event.preventDefault();
+        setShowStaffModal(true);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (!showStaffModal && !showPaymentModal && useCartStore.getState().items.length > 0) {
+          setShowPaymentModal(true);
+        }
+        break;
+      case 'Escape':
+        setShowStaffModal(false);
+        setShowPaymentModal(false);
+        break;
     }
-  }, [clearCart]);
+  }, [showPaymentModal, showStaffModal, showToast]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -86,11 +124,15 @@ export default function POSCheckoutPage() {
 
   async function handleCheckout() {
     const { items, orderDiscountAmount, orderDiscountNote, paymentMethod, currentSalesStaffId: staffId } = useCartStore.getState();
-    if (!activeShift) { alert('尚未開班，無法結帳'); return; }
+    if (!activeShift) {
+      showToast({ type: 'error', message: '目前沒有開啟班別，請先開班再結帳' });
+      return;
+    }
+
     setCheckoutLoading(true);
     try {
-      const res = await posApi.checkout({
-        cartItems: items.map((i) => ({ productId: i.product.id, quantity: i.quantity, discountRate: i.discountRate })),
+      const response = await posApi.checkout({
+        cartItems: items.map((item) => ({ productId: item.product.id, quantity: item.quantity, discountRate: item.discountRate })),
         paymentMethod,
         orderDiscountAmount,
         orderDiscountNote: orderDiscountNote || undefined,
@@ -99,10 +141,11 @@ export default function POSCheckoutPage() {
       });
       clearCart();
       setShowPaymentModal(false);
-      setCheckoutResult(res.data.data);
+      setCheckoutResult(response.data.data);
+      showToast({ type: 'success', message: '結帳完成' });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
-      alert(msg ?? '結帳失敗，請重試');
+      showToast({ type: 'error', message: msg ?? '結帳失敗，請稍後再試' });
     } finally {
       setCheckoutLoading(false);
     }
@@ -110,16 +153,21 @@ export default function POSCheckoutPage() {
 
   async function handleOpenShift() {
     const userId = getCurrentUserId();
-    if (!userId) { alert('無法取得使用者資訊，請重新登入'); return; }
+    if (!userId) {
+      showToast({ type: 'error', message: '找不到登入人員，請重新登入後再開班' });
+      return;
+    }
+
     setShiftOpening(true);
     try {
-      const res = await posApi.openShift(userId, openingCash);
-      const shift = res.data.data;
+      const response = await posApi.openShift(userId, openingCash);
+      const shift = response.data.data;
       setActiveShift(shift);
       setSalesStaff(shift.staff.id);
+      showToast({ type: 'success', message: '班別已開啟' });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
-      alert(msg ?? '開班失敗，請重試');
+      showToast({ type: 'error', message: msg ?? '開班失敗，請稍後再試' });
     } finally {
       setShiftOpening(false);
     }
@@ -128,42 +176,47 @@ export default function POSCheckoutPage() {
   async function handlePrint() {
     if (!checkoutResult) return;
     try {
-      const res = await posApi.getReceipt(checkoutResult.id);
-      await printReceipt(res.data.data.buffer);
+      const response = await posApi.getReceipt(checkoutResult.id);
+      await printReceipt(response.data.data.buffer);
+      showToast({ type: 'success', message: '收據已送出列印' });
     } catch {
-      alert('列印失敗');
+      showToast({ type: 'error', message: '列印失敗，請確認印表機後再試' });
     }
   }
 
   const categories = Array.from(
-    new Map(products.filter((p) => p.category).map((p) => [p.category!.id, p.category!])).values(),
+    new Map(products.filter((product) => product.category).map((product) => [product.category!.id, product.category!])).values(),
   );
 
-  // No active shift — show blocking overlay to open one
   if (!activeShift) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-app)', fontFamily: 'Inter, sans-serif' }}>
+        <PosToast toast={toast} onDismiss={() => setToast(null)} />
         <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 48, width: 380, boxShadow: 'var(--shadow-lg)', textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
-          <h2 style={{ margin: '0 0 8px' }}>尚未開班</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '0 0 28px' }}>請開班後才能使用 POS 結帳功能</p>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>開班</div>
+          <h2 style={{ margin: '0 0 8px' }}>目前沒有開啟班別</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '0 0 28px' }}>請先輸入開班金額，再開始 POS 結帳作業。</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
             <label style={{ fontSize: 13, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>開班金額</label>
             <input
-              type="number" min={0} value={openingCash}
-              onChange={(e) => setOpeningCash(Number(e.target.value))}
+              type="number"
+              min={0}
+              value={openingCash}
+              onChange={(event) => setOpeningCash(Number(event.target.value))}
               style={{ flex: 1, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: 14 }}
             />
             <span style={{ fontSize: 13 }}>元</span>
           </div>
           <button
+            type="button"
             onClick={handleOpenShift}
             disabled={shiftOpening}
-            style={{ width: '100%', padding: '12px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', fontSize: 16, fontWeight: 700, cursor: 'pointer', opacity: shiftOpening ? 0.7 : 1 }}
+            style={{ width: '100%', padding: '12px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', fontSize: 16, fontWeight: 700, cursor: shiftOpening ? 'not-allowed' : 'pointer', opacity: shiftOpening ? 0.7 : 1 }}
           >
-            {shiftOpening ? '開班中…' : '立即開班'}
+            {shiftOpening ? '開班中...' : '開始開班'}
           </button>
           <button
+            type="button"
             onClick={() => { localStorage.removeItem('pos_accessToken'); window.location.href = '/login'; }}
             style={{ marginTop: 12, width: '100%', padding: '8px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 13 }}
           >
@@ -176,28 +229,26 @@ export default function POSCheckoutPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-app)', fontFamily: 'Inter, sans-serif' }}>
-      {/* TopBar */}
+      <PosToast toast={toast} onDismiss={() => setToast(null)} />
       <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', gap: 16 }}>
         <span style={{ fontWeight: 700, fontSize: 15 }}>PharmaSaaS POS</span>
-        <span style={{ fontSize: 12, color: 'var(--success)' }}>班別開啟中</span>
+        <span style={{ fontSize: 12, color: 'var(--success)' }}>班別已開啟</span>
         <div style={{ flex: 1 }} />
-        <button onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13 }}>
-          👤 {currentStaffName} ▾ F6
+        <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13 }}>
+          人員 {currentStaffName} (F6)
         </button>
       </div>
 
-      {/* Search */}
       <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}>
         <input
           ref={searchRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="🔍 掃描條碼 / 輸入品名或 SKU... (F2)"
+          onChange={(event) => setSearchQuery(event.target.value)}
+          placeholder="搜尋商品名稱、條碼或 SKU... (F2)"
           style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: 14, boxSizing: 'border-box' }}
         />
       </div>
 
-      {/* 3-column layout */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <div style={{ width: 110, flexShrink: 0 }}>
           <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
@@ -210,13 +261,13 @@ export default function POSCheckoutPage() {
             currentStaffName={currentStaffName}
             onCheckout={() => setShowPaymentModal(true)}
             onSwitchStaff={() => setShowStaffModal(true)}
+            onFeedback={showToast}
           />
         </div>
       </div>
 
-      {/* Shortcut bar */}
       <div style={{ padding: '6px 16px', background: 'var(--bg-card)', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)', display: 'flex', gap: 16 }}>
-        <span>F2:搜尋</span><span>F3:折扣</span><span>F5:清空</span><span>F6:換人</span><span>Enter:結帳</span>
+        <span>F2: 搜尋</span><span>F3: 折扣</span><span>F5: 清空確認</span><span>F6: 切換人員</span><span>Enter: 結帳</span>
       </div>
 
       {showStaffModal && (

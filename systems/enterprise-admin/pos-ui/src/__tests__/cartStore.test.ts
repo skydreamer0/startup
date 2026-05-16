@@ -94,7 +94,7 @@ describe('updateQuantity', () => {
     useCartStore.getState().addItem(mockProduct);
     useCartStore.getState().addItem(mockProduct2);
     useCartStore.getState().updateQuantity(mockProduct.id, 8);
-    expect(useCartStore.getState().items.find(i => i.product.id === 'prod-2')?.quantity).toBe(1);
+    expect(useCartStore.getState().items.find((item) => item.product.id === 'prod-2')?.quantity).toBe(1);
   });
 });
 
@@ -118,18 +118,18 @@ describe('subtotal()', () => {
     expect(useCartStore.getState().subtotal()).toBe(0);
   });
 
-  it('returns retailPrice × quantity when no discount', () => {
+  it('returns retailPrice x quantity when no discount', () => {
     useCartStore.getState().addItem(mockProduct);
     expect(useCartStore.getState().subtotal()).toBeCloseTo(100);
   });
 
-  it('reflects quantity change: qty=5 → subtotal=500', () => {
+  it('reflects quantity change: qty=5 means subtotal=500', () => {
     useCartStore.getState().addItem(mockProduct);
     useCartStore.getState().updateQuantity(mockProduct.id, 5);
     expect(useCartStore.getState().subtotal()).toBeCloseTo(500);
   });
 
-  it('applies item-level discount: 10% off → subtotal=90', () => {
+  it('applies item-level discount: 10% off means subtotal=90', () => {
     useCartStore.getState().addItem(mockProduct);
     useCartStore.getState().updateItemDiscount(mockProduct.id, 10);
     expect(useCartStore.getState().subtotal()).toBeCloseTo(90);
@@ -167,7 +167,7 @@ describe('total()', () => {
     expect(useCartStore.getState().total()).toBe(0);
   });
 
-  it('updates after quantity change + order discount', () => {
+  it('updates after quantity change and order discount', () => {
     useCartStore.getState().addItem(mockProduct);
     useCartStore.getState().updateQuantity(mockProduct.id, 3);
     useCartStore.getState().setOrderDiscount(50);

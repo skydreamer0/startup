@@ -30,7 +30,10 @@ export async function enqueuePending(payload: CheckoutPayload): Promise<PendingT
     const req = tx.objectStore(STORE_NAME).count();
     req.onsuccess = () => resolve(req.result);
   });
-  if (count >= MAX_PENDING) throw new Error('離線佇列已達上限（50 筆），請恢復網路連線後再試');
+
+  if (count >= MAX_PENDING) {
+    throw new Error('離線交易已達 50 筆上限，請先恢復網路並同步後再繼續結帳');
+  }
 
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const localOrderNumber = `LOCAL-${dateStr}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
@@ -51,7 +54,7 @@ export async function getPending(): Promise<PendingTransaction[]> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const req = tx.objectStore(STORE_NAME).getAll();
-    req.onsuccess = () => resolve((req.result as PendingTransaction[]).filter((r) => !r.synced));
+    req.onsuccess = () => resolve((req.result as PendingTransaction[]).filter((record) => !record.synced));
     req.onerror = () => reject(req.error);
   });
 }

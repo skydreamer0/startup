@@ -7,18 +7,20 @@ interface Props {
 
 function stockLabel(product: PosProduct): { label: string; color: string } {
   if (product.stockQuantity <= 0) return { label: '缺貨', color: '#EF4444' };
-  if (product.safetyStock && product.stockQuantity <= product.safetyStock)
-    return { label: `庫存 ${product.stockQuantity}`, color: '#F59E0B' };
+  if (product.safetyStock && product.stockQuantity <= product.safetyStock) {
+    return { label: `低庫存 ${product.stockQuantity}`, color: '#F59E0B' };
+  }
   return { label: `庫存 ${product.stockQuantity}`, color: '#10B981' };
 }
 
 export default function ProductCard({ product }: Props) {
-  const addItem = useCartStore((s) => s.addItem);
+  const addItem = useCartStore((state) => state.addItem);
   const outOfStock = product.stockQuantity <= 0;
   const { label, color } = stockLabel(product);
 
   return (
     <button
+      type="button"
       onClick={() => !outOfStock && addItem(product)}
       disabled={outOfStock}
       style={{

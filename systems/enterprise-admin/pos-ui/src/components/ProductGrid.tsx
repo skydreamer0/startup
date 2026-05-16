@@ -8,11 +8,13 @@ interface Props {
 
 export default function ProductGrid({ products, loading }: Props) {
   if (loading) {
-    return <div style={{ padding: 24, color: 'var(--text-muted)', textAlign: 'center' }}>載入中…</div>;
+    return <div style={{ padding: 24, color: 'var(--text-muted)', textAlign: 'center' }}>商品載入中...</div>;
   }
+
   if (products.length === 0) {
-    return <div style={{ padding: 24, color: 'var(--text-muted)', textAlign: 'center' }}>無符合商品</div>;
+    return <div style={{ padding: 24, color: 'var(--text-muted)', textAlign: 'center' }}>沒有符合條件的商品</div>;
   }
+
   return (
     <div
       style={{
@@ -24,8 +26,8 @@ export default function ProductGrid({ products, loading }: Props) {
         flex: 1,
       }}
     >
-      {products.map((p) => (
-        <ProductCard key={p.id} product={p} />
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} />
       ))}
     </div>
   );

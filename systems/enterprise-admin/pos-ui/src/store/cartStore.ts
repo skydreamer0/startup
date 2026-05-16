@@ -4,7 +4,7 @@ import { PosProduct } from '../api/pos';
 export interface CartItem {
   product: PosProduct;
   quantity: number;
-  discountRate: number; // 0–100
+  discountRate: number; // 0-100
 }
 
 interface CartState {
@@ -35,13 +35,13 @@ export const useCartStore = create<CartState>((set, get) => ({
   currentSalesStaffId: null,
 
   addItem: (product) => set((state) => {
-    const existing = state.items.find((i) => i.product.id === product.id);
+    const existing = state.items.find((item) => item.product.id === product.id);
     if (existing) {
       return {
-        items: state.items.map((i) =>
-          i.product.id === product.id
-            ? { ...i, quantity: Math.min(i.quantity + 1, product.stockQuantity) }
-            : i,
+        items: state.items.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: Math.min(item.quantity + 1, product.stockQuantity) }
+            : item,
         ),
       };
     }
@@ -49,20 +49,20 @@ export const useCartStore = create<CartState>((set, get) => ({
   }),
 
   removeItem: (productId) => set((state) => ({
-    items: state.items.filter((i) => i.product.id !== productId),
+    items: state.items.filter((item) => item.product.id !== productId),
   })),
 
   updateQuantity: (productId, quantity) => set((state) => ({
     items: quantity <= 0
-      ? state.items.filter((i) => i.product.id !== productId)
-      : state.items.map((i) =>
-          i.product.id === productId ? { ...i, quantity } : i,
+      ? state.items.filter((item) => item.product.id !== productId)
+      : state.items.map((item) =>
+          item.product.id === productId ? { ...item, quantity } : item,
         ),
   })),
 
   updateItemDiscount: (productId, discountRate) => set((state) => ({
-    items: state.items.map((i) =>
-      i.product.id === productId ? { ...i, discountRate } : i,
+    items: state.items.map((item) =>
+      item.product.id === productId ? { ...item, discountRate } : item,
     ),
   })),
 

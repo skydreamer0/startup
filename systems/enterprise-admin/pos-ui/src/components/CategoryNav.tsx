@@ -11,6 +11,7 @@ interface Props {
 
 export default function CategoryNav({ categories, selectedId, onSelect }: Props) {
   const all = [{ id: null as string | null, name: '全部' }, ...categories];
+
   return (
     <nav
       style={{
@@ -23,23 +24,24 @@ export default function CategoryNav({ categories, selectedId, onSelect }: Props)
         minWidth: 100,
       }}
     >
-      {all.map((cat) => (
+      {all.map((category) => (
         <button
-          key={cat.id ?? 'all'}
-          onClick={() => onSelect(cat.id)}
+          type="button"
+          key={category.id ?? 'all'}
+          onClick={() => onSelect(category.id)}
           style={{
             padding: '8px 10px',
             borderRadius: 'var(--radius-xs)',
             border: 'none',
-            background: selectedId === cat.id ? 'var(--accent-subtle)' : 'transparent',
-            color: selectedId === cat.id ? 'var(--accent-text)' : 'var(--text-secondary)',
-            fontWeight: selectedId === cat.id ? 600 : 400,
+            background: selectedId === category.id ? 'var(--accent-subtle)' : 'transparent',
+            color: selectedId === category.id ? 'var(--accent-text)' : 'var(--text-secondary)',
+            fontWeight: selectedId === category.id ? 600 : 400,
             cursor: 'pointer',
             textAlign: 'left',
             fontSize: 13,
           }}
         >
-          {cat.name}
+          {category.name}
         </button>
       ))}
     </nav>
