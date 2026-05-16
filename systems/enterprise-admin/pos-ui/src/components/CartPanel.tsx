@@ -20,6 +20,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff 
     items, orderDiscountAmount, paymentMethod,
     setOrderDiscount, setPaymentMethod, clearCart, subtotal, total,
   } = useCartStore();
+  const totalQty = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
     <div style={{
@@ -33,6 +34,13 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff 
           {currentStaffName} (F6)
         </button>
       </div>
+
+      {/* Items header with total qty */}
+      {items.length > 0 && (
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingBottom: 2, borderBottom: '1px solid var(--border)' }}>
+          共 {totalQty} 件商品
+        </div>
+      )}
 
       {/* Items */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
