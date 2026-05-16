@@ -1,12 +1,6 @@
-export interface DemoUser {
-    id: string;
-    email: string;
-    fullName: string;
-    roles: string[];
-    permissions: string[];
-}
+import type { User } from './useAuth';
 
-export function createDemoUser(): DemoUser {
+export function createDemoUser(): User {
     return {
         id: 'demo-user-local',
         email: 'demo@pharmasaas.dev',

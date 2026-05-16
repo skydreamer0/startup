@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import api from '../api/client';
 import { createDemoUser, isDemoModeEnabled } from './authDemo';
 
-interface User {
+export interface User {
     id: string;
     email: string;
     fullName: string;

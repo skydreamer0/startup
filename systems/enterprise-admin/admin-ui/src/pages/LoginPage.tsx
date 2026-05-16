@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { isDemoModeEnabled } from '../hooks/authDemo';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginPage() {
@@ -69,7 +70,7 @@ export default function LoginPage() {
                     >
                         {submitting ? 'Signing in...' : 'Sign In'}
                     </button>
-                    {import.meta.env.VITE_DEMO_MODE === 'true' && (
+                    {isDemoModeEnabled() && (
                         <button
                             type="button"
                             className="btn btn-secondary login-btn"
