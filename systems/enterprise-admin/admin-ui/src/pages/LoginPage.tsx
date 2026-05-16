@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginPage() {
-    const { login } = useAuth();
+    const { login, demoLogin } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -69,6 +69,16 @@ export default function LoginPage() {
                     >
                         {submitting ? 'Signing in...' : 'Sign In'}
                     </button>
+                    {import.meta.env.VITE_DEMO_MODE === 'true' && (
+                        <button
+                            type="button"
+                            className="btn btn-secondary login-btn"
+                            onClick={demoLogin}
+                            style={{ marginTop: '8px' }}
+                        >
+                            Open Demo Preview
+                        </button>
+                    )}
                 </form>
             </div>
         </div>
