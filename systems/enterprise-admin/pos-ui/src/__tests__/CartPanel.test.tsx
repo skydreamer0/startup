@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CartPanel from '../components/CartPanel';
 import { useCartStore } from '../store/cartStore';
@@ -77,7 +77,7 @@ describe('CartPanel order discount input', () => {
     const user = userEvent.setup();
     setupCart(1); // subtotal=100
     render(<CartPanel {...defaultProps} />);
-    const discountInput = screen.getByPlaceholderText('0');
+    const discountInput = within(screen.getByText('整筆折扣').parentElement!).getByPlaceholderText('0');
     await user.clear(discountInput);
     await user.type(discountInput, '30');
     expect(useCartStore.getState().orderDiscountAmount).toBe(30);

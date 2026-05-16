@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CartItem from '../components/CartItem';
 import { useCartStore } from '../store/cartStore';
@@ -117,7 +117,7 @@ describe('CartItem quantity input (direct typing)', () => {
 
   it('sets quantity to 1 if user types 0', async () => {
     const user = userEvent.setup();
-    setup(3);
+    setup(1);
     const input = screen.getByRole('spinbutton');
     await user.clear(input);
     await user.type(input, '0');
@@ -130,7 +130,7 @@ describe('CartItem discount input', () => {
   it('updates discountRate when typing in discount field', async () => {
     const user = userEvent.setup();
     setup(1, 0);
-    const discountInput = screen.getByPlaceholderText('折扣%');
+    const discountInput = within(screen.getByText('折扣').parentElement!).getByPlaceholderText('0');
     await user.clear(discountInput);
     await user.type(discountInput, '20');
     expect(useCartStore.getState().items[0].discountRate).toBe(20);
