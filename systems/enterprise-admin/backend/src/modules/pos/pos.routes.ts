@@ -7,6 +7,9 @@ import { checkoutSchema, posProductsSchema } from './pos.schema';
 
 const router = Router();
 
+// Public: employee barcode login — no token required for POS kiosk
+router.post('/staff-login', PosController.staffLogin);
+
 router.use(authMiddleware);
 router.use(requirePermission('manage:pos'));
 

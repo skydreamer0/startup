@@ -26,14 +26,27 @@ export default function CartItem({ item }: Props) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
         <button
           onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)' }}
+          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0 }}
         >
           −
         </button>
-        <span style={{ fontSize: 13, minWidth: 20, textAlign: 'center' }}>{item.quantity}</span>
+        <input
+          type="number"
+          min={1}
+          max={item.product.stockQuantity}
+          value={item.quantity}
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val)) updateQuantity(item.product.id, Math.min(Math.max(1, val), item.product.stockQuantity));
+          }}
+          style={{
+            width: 40, textAlign: 'center', fontSize: 13, fontWeight: 600,
+            border: '1px solid var(--border)', borderRadius: 4, padding: '2px 4px',
+          }}
+        />
         <button
           onClick={() => updateQuantity(item.product.id, Math.min(item.quantity + 1, item.product.stockQuantity))}
-          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)' }}
+          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0 }}
         >
           +
         </button>

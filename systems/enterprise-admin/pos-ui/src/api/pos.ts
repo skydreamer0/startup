@@ -61,6 +61,6 @@ export const posApi = {
   getReceipt: (orderId: string) =>
     api.get<{ success: boolean; data: { buffer: string } }>(`/pos/receipt/${orderId}`),
 
-  login: (email: string, password: string) =>
-    api.post<{ success: boolean; data: { accessToken: string } }>('/auth/login', { email, password }),
+  openShift: (staffId: string, openingCash = 0) =>
+    api.post<{ success: boolean; data: ActiveShift }>('/shifts', { staffId, openingCash }),
 };
