@@ -13,6 +13,9 @@ vi.mock('../lib/prisma', () => ({
         supplier: {
             findMany: vi.fn(),
         },
+        product: {
+            groupBy: vi.fn(),
+        },
         order: {
             findMany: vi.fn(),
             aggregate: vi.fn(),
@@ -20,6 +23,7 @@ vi.mock('../lib/prisma', () => ({
         expense: {
             aggregate: vi.fn(),
         },
+        $queryRaw: vi.fn(),
     },
 }));
 
@@ -28,6 +32,8 @@ import { prisma } from '../lib/prisma';
 const mockCustomerFindMany = vi.mocked(prisma.customer.findMany);
 const mockOrderItemFindMany = vi.mocked(prisma.orderItem.findMany);
 const mockSupplierFindMany = vi.mocked(prisma.supplier.findMany);
+const mockProductGroupBy = vi.mocked(prisma.product.groupBy);
+const mockQueryRaw = vi.mocked(prisma.$queryRaw);
 const mockOrderFindMany = vi.mocked(prisma.order.findMany);
 const mockOrderAggregate = vi.mocked(prisma.order.aggregate);
 const mockExpenseAggregate = vi.mocked(prisma.expense.aggregate);
@@ -304,39 +310,31 @@ describe('AnalyticsService.getSupplierRanking', () => {
 
     it('should rank suppliers by composite score descending', async () => {
         mockSupplierFindMany.mockResolvedValue([
-            {
-                id: 's1', name: 'Good Supplier',
-                deliveryReliability: 95, defectRate: 1,
-                products: [
-                    { costPrice: 50, orderItems: [{ quantity: 10, unitPrice: 100 }] },
-                ],
-            },
-            {
-                id: 's2', name: 'Average Supplier',
-                deliveryReliability: 60, defectRate: 5,
-                products: [
-                    { costPrice: 80, orderItems: [{ quantity: 5, unitPrice: 100 }] },
-                ],
-            },
+            { id: 's1', name: 'Good Supplier', deliveryReliability: 95, defectRate: 1 },
+            { id: 's2', name: 'Average Supplier', deliveryReliability: 60, defectRate: 5 },
+        ] as any);
+        mockProductGroupBy.mockResolvedValue([
+            { supplierId: 's1', _count: { id: 3 } },
+            { supplierId: 's2', _count: { id: 2 } },
+        ] as any);
+        mockQueryRaw.mockResolvedValue([
+            { supplierId: 's1', totalRevenue: 1000, totalCost: 500 },
+            { supplierId: 's2', totalRevenue: 500, totalCost: 400 },
         ] as any);
 
         const result = await AnalyticsService.getSupplierRanking(startDate, endDate);
 
         expect(result).toHaveLength(2);
-        expect(result[0].id).toBe('s1'); // Higher composite score
+        expect(result[0].id).toBe('s1');
         expect(result[0].compositeScore).toBeGreaterThan(result[1].compositeScore);
     });
 
     it('should handle suppliers with no sales', async () => {
         mockSupplierFindMany.mockResolvedValue([
-            {
-                id: 's1', name: 'No Sales Supplier',
-                deliveryReliability: null, defectRate: null,
-                products: [
-                    { costPrice: 50, orderItems: [] },
-                ],
-            },
+            { id: 's1', name: 'No Sales Supplier', deliveryReliability: null, defectRate: null },
         ] as any);
+        mockProductGroupBy.mockResolvedValue([]);
+        mockQueryRaw.mockResolvedValue([]);
 
         const result = await AnalyticsService.getSupplierRanking(startDate, endDate);
 
