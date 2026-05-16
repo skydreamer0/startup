@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(codex:rescue)",
+      "Bash(node *)",
+      "Bash(git *)",
+      "Bash(docker-compose up *)",
+      "Bash(npm run *)",
+      "Bash(Start-Sleep -Seconds 5)",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(Select-String -Pattern \"html|error|refused\")",
+      "Bash(Select-Object -First 3)",
+      "Bash(npm test *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest *)",
+      "Bash(C:/Users/User/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/scripts/start-server.sh *)",
+      "Bash(bash *)",
+      "Bash(xargs cat)",
+      "Bash(grep -E \"\\(\\\\.md|\\\\.txt|\\\\.resolved|\\\\.tsv\\)$\")",
+      "Read(//mnt/c/Users/User/OneDrive - MSFT \\(1\\)/0.專案/**)",
+      "Bash(grep -i \"TODO\\\\|TBD\" CLAUDE.md README.md)"
+    ]
+  }
+}
