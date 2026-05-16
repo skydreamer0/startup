@@ -25,3 +25,15 @@ build/
 # 各大子系統的快取
 systems/enterprise-admin/admin-ui/dist/
 systems/enterprise-admin/backend/dist/
+
+# Business documents (not code — AI should not read)
+business/
+startup_template_pack/
+
+# Completed plans archive (historical reference only)
+docs/archive/
+systems/enterprise-admin/infrastructure/plans/archive/
+
+# Superpowers tooling artifacts
+docs/superpowers/
+.agents/
