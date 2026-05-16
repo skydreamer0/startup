@@ -52,7 +52,7 @@ const PERMISSIONS = [
 ];
 
 async function main() {
-    console.log('🌱 Seeding database...');
+    console.log(' Seeding database...');
 
     // 0. Create Default Tenant
     const tenant = await prisma.tenant.upsert({
@@ -278,7 +278,7 @@ async function main() {
     console.log(`  ✅ Inventory dummy data seeded (${products.length} products, 2 suppliers)`);
 
     // 10. Seed Orders
-    console.log('  🛒 Seeding dummy orders...');
+    console.log('   Seeding dummy orders...');
     const dbCustomers = await prisma.customer.findMany();
     const dbProducts = await prisma.product.findMany();
 
@@ -308,7 +308,7 @@ async function main() {
         });
     }
 
-    console.log('\n🎉 Database seeding completed!');
+    console.log('\n Database seeding completed!');
 }
 
 main()

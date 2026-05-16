@@ -16,7 +16,7 @@ The codebase was developed under time pressure with a "ship fast, iterate later"
 
 ## Findings: 6 Critical Improvement Areas
 
-### 🔴 Severity: High
+###  Severity: High
 
 #### 1. Duplicate PrismaClient Instances
 - **Problem**: Each service file (`crm.service.ts`, `inventory.service.ts`, `dashboard.service.ts`) creates its own `new PrismaClient()` instead of sharing the singleton from `lib/prisma.ts`.
@@ -28,7 +28,7 @@ The codebase was developed under time pressure with a "ship fast, iterate later"
 - **Impact**: Defeats TypeScript's compile-time safety. Typos in field names won't be caught until runtime. Impossible to refactor safely.
 - **Fix**: Use Prisma's generated types (`Prisma.SupplierCreateInput`, `Prisma.ProductUpdateInput`, etc.) and define typed DTOs.
 
-### 🟡 Severity: Medium
+###  Severity: Medium
 
 #### 3. Duplicated `AppError` Class
 - **Problem**: An identical `AppError` class is copy-pasted in every service file instead of being a shared utility.
@@ -40,7 +40,7 @@ The codebase was developed under time pressure with a "ship fast, iterate later"
 - **Impact**: Any authenticated user (even `CONTENT_EDITOR`) can access all CRM data, modify inventory, and view financial KPIs. This violates the principle of least privilege.
 - **Fix**: Apply `requirePermission('customers:read')` middleware to each route group.
 
-### 🟢 Severity: Low (but worth tracking)
+###  Severity: Low (but worth tracking)
 
 #### 5. Inconsistent Response Format
 - **Problem**: Auth routes return `{ success: true, data: ... }`, but CRM/Inventory routes return `{ status: 'success', data: ... }`. The `api_spec.md` standard is `{ success: true }`.

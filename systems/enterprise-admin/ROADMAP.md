@@ -61,16 +61,16 @@
 ## Phase 3.5: Technical Debt Remediation (架構品質強化)
 **目標：依據 [ADR-005](infrastructure/adr/adr_005_phase3_technical_debt.md) 發現的 6 項技術債務進行修復，確保 Phase 4 以乾淨架構基底推進。**
 
-### 🔴 P0 — 必須立刻修正 (阻塞性風險)
+###  P0 — 必須立刻修正 (阻塞性風險)
 - [x] **DEBT-01**: 統一 `PrismaClient` 單例 — 所有 Service 改用 `lib/prisma.ts` 的共享實例，禁止各自 `new PrismaClient()`。
 - [x] **DEBT-02**: 提取共用 `AppError` 類別至 `lib/errors.ts`，並修正 `error.middleware.ts` 以映射其 `statusCode` 與 `errorCode`。
 
-### 🟡 P1 — Phase 4 Sprint 1 解決 (安全與品質)
+###  P1 — Phase 4 Sprint 1 解決 (安全與品質)
 - [x] **DEBT-03**: 所有 CRM / Inventory / Dashboard 路由套用 `requirePermission()` RBAC 中介層。
 - [x] **DEBT-04**: 將 Inventory 相關權限 (`products:read/create/update`, `suppliers:read/create/update`) 加入 `seed.ts` 並同步 SUPER_ADMIN。
 - [x] **DEBT-05**: 消除 Service 層中所有 `any` 類型，改用 Prisma Generated Types 與自定義 DTOs。
 
-### 🟢 P2 — Phase 4 Sprint 2 解決 (一致性與體驗)
+###  P2 — Phase 4 Sprint 2 解決 (一致性與體驗)
 - [x] **DEBT-06**: 統一所有 API 回應格式為 `{ success: true/false, data, error }` (移除 `status: 'success'` 變體)。
 - [x] **DEBT-07**: 前端資料層遷移至 TanStack Query（所有頁面統一 cache + refetch）-query` (TanStack Query)，取代 `useEffect + useState` 資料獲取模式。
 
@@ -117,17 +117,17 @@
 ## Phase 5.5: CI/CD & Technical Debt Remediation (架構品質強化 II)
 **目標：修復 CI/CD Pipeline 失敗、移除殘留技術債、提升開發體驗與代碼品質。**
 
-### 🔴 P0 — CI/CD 阻塞性修復
+###  P0 — CI/CD 阻塞性修復
 - [x] **CICD-01**: 修正 `ci.yml` 中 `working-directory` 路徑錯誤（`./backend` → `./systems/enterprise-admin/backend`，`./admin-ui` → `./systems/enterprise-admin/admin-ui`）。
 - [x] **CICD-02**: 修正 `cache-dependency-path` 指向正確的 `package-lock.json` 位置。
 - [x] **CICD-03**: 移除重複的 `tsc --noEmit` Step（`npm run build` 已包含 type check）。
 
-### 🟡 P1 — 殘留依賴清理
+###  P1 — 殘留依賴清理
 - [x] **DEBT-08**: 移除 `package.json` 中 Jest 殘留依賴（`jest`, `ts-jest`, `@types/jest`），專案已全面使用 Vitest。
 - [x] **DEBT-09**: 刪除 `jest.config.js`、`test.js`、`test.ts`、`tsc-errors.txt` 殘留檔案。
 - [x] **DEBT-10**: 移除 `docker-compose.yml` 棄用的 `version: '3.8'` 欄位。
 
-### 🟢 P2 — 架構品質提升（規劃中）
+###  P2 — 架構品質提升（規劃中）
 - [x] **DEBT-11**: ESLint 9 flat config 遷移 — 將 `.eslintrc.cjs` 遷移至 `eslint.config.mjs`（ADR-007）。
 - [x] **DEBT-12**: 前端加入 ESLint + Vitest 基礎測試覆蓋。
 - [x] **DEBT-13**: 開發環境 SQLite → Docker PostgreSQL 切換（對齊架構文件規範，ADR-007）。
@@ -175,18 +175,18 @@
 ## Phase 7.5: Analytics P0 Fixes & SaaS Constraint Hardening
 **目標：修復 Analytics 模組的生產風險問題，強化 SaaS 多租戶正確性。**
 
-### 🔴 Analytics P0 修復
+###  Analytics P0 修復
 - [x] **FIX-01**: 修復 `getSalesHeatmap()` 時區 Bug — 使用 UTC+8 offset 取代 Node.js local `getDay()/getHours()`。
 - [x] **FIX-02**: 修復 `parsePeriod()` 日期邊界 — 使用次月起始點取代 `endOfMonth()`，避免月末訂單漏算。
 - [x] **FIX-03**: 優化 `getSupplierRanking()` N+1 查詢 — 拆分為 `product.groupBy` + `$queryRaw` 聚合，消除潛在 600+ 次查詢。
 
-### 🟡 SaaS 多租戶約束強化
+###  SaaS 多租戶約束強化
 - [x] **FIX-04**: `Role`/`Customer`/`Product`/`Tag`/`ProductCategory` 全部 `@unique` 升級為 `@@unique([field, tenantId])`。
 - [x] **FIX-05**: `seed.ts` 所有 `upsert` 改用複合唯一鍵，對齊 schema 變更。
 - [x] **FIX-06**: `crm.service.ts`、`roles.service.ts` 查重邏輯改用 tenant-scoped 複合鍵。
 - [x] **FIX-07**: `vitest.config.ts` → `.mts`，修復 `ERR_REQUIRE_ESM`；更新測試斷言對齊新權限數量。
 
-### 🟢 前端 P0 修復
+###  前端 P0 修復
 - [x] **FIX-08**: 修復 `MarginAnalysisPage`、`SalesRankingPage`、`CashFlowPage` 刷新按鈕（`setPeriod(period)` → `queryClient.invalidateQueries()`）。
 - [x] **FIX-09**: 補全 `ProductListPage`、`SupplierListPage`、`OrderListPage` 的 Add/Edit 按鈕事件綁定。
 

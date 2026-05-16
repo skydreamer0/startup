@@ -6,7 +6,7 @@ description: 系統化除錯工作流 (Systematic Debugging)
 
 當使用者觸發此工作流時，遇到任何 Bug、測試失敗或非預期行為時，請嚴格執行以下 **「根本原因導向 (Root Cause Oriented)」** 的四階段流程：
 
-## 🚨 鋼鐵禁令：嚴禁「瞎猜修復」
+##  鋼鐵禁令：嚴禁「瞎猜修復」
 在完成「階段 1」的根本原因調查前，**絕對禁止** 提出任何修復方案。若無法穩定重現或缺乏證據，請優先加入探測日誌 (Diagnostics/Instrumentation)。
 
 ---
