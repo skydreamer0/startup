@@ -90,8 +90,8 @@
 **目標：定義 SaaS 化架構基礎，建立對齊 Template Pack 的完整營運 KPI 引擎與財務報表系統。**
 
 ### 模組一：SaaS 多租戶基礎 (ADR-006)
-- [ ] **SAAS-01**: 建立 `Tenant` Model 與 row-level isolation 中介層。
-- [ ] **SAAS-02**: 所有核心 Model 加入 `tenant_id` 欄位與自動注入邏輯。
+- [x] **SAAS-01**: 建立 `Tenant` Model 與 row-level isolation 中介層（Prisma extension 自動注入）。
+- [x] **SAAS-02**: 所有核心 Model 加入 `tenant_id` 欄位與自動注入邏輯；`Role`/`Customer`/`Product`/`Tag`/`ProductCategory` 唯一約束升級為 tenant-scoped 複合鍵。
 - [ ] **SAAS-03**: Plan-based feature gating (`free`/`starter`/`pro`)。
 
 ### 模組二：營運 KPI 引擎 (對應 11_營運KPI / 12_單位經濟)
@@ -154,21 +154,59 @@
 **目標：利用既有資料（免修改 Schema），建立高商業價值的藥局營運分析模組。**
 
 ### 模組一：客戶分層與回購預警 (CRM 進階)
-- [ ] **API-16**: `GET /analytics/rfm` RFM 客戶分層分析 (VIP / 忠誠 / 流失高危)。
-- [ ] **API-17**: `GET /analytics/churn-risk` 客戶回購週期 + 流失預警。
-- [ ] **UI-22**: `/analytics/rfm` 顧客分層儀表板（圓餅圖 + 名單匯出）。
-- [ ] **UI-23**: `/analytics/churn` 流失風險預警列表（關聯 LINE 推播）。
+- [x] **API-16**: `GET /analytics/rfm` RFM 客戶分層分析 (VIP / 忠誠 / 流失高危)。
+- [x] **API-17**: `GET /analytics/churn-risk` 客戶回購週期 + 流失預警。
+- [x] **UI-22**: `/crm/analytics` 顧客分層儀表板（5 分段摘要卡 + 客戶名單）。
+- [x] **UI-23**: `/crm/analytics` 流失風險預警列表（Churn Risk 標籤頁）。
 
 ### 模組二：商品與供應商進階分析
-- [ ] **API-18**: `GET /analytics/product-abc` ABC 商品毛利交叉分析。
-- [ ] **API-19**: `GET /analytics/supplier-ranking` 供應商綜合績效排名。
-- [ ] **UI-24**: `/analytics/products` 商品四象限矩陣圖 + 淘汰建議清單。
-- [ ] **UI-25**: `/analytics/suppliers` 供應商可靠度雷達圖與排行。
+- [x] **API-18**: `GET /analytics/product-abc` ABC 商品毛利交叉分析。
+- [x] **API-19**: `GET /analytics/supplier-ranking` 供應商綜合績效排名。
+- [x] **UI-24**: `/inventory/analytics` 商品四象限矩陣圖（Stars / Cash Cows / Hidden Gems / Underperformers）。
+- [x] **UI-25**: `/inventory/analytics` 供應商複合評分排行（40% 營收 + 30% 毛利 + 20% 交期 + 10% 缺陷率）。
 
 ### 模組三：營運時段與獎金門檻
-- [ ] **API-20**: `GET /analytics/bonus-gate` 獎金門檻即時追蹤 (Gate Pass 達標狀態)。
-- [ ] **API-21**: `GET /analytics/heatmap` 銷售時段熱力圖。
-- [ ] **UI-26**: 擴充 `/dashboard`，整合獎金燈號與時段熱力圖。
+- [x] **API-20**: `GET /analytics/bonus-gate` 獎金門檻即時追蹤 (Gate Pass 達標狀態)。
+- [x] **API-21**: `GET /analytics/heatmap` 銷售時段熱力圖（7×24 網格）。
+- [x] **UI-26**: 擴充 `/dashboard`，整合獎金燈號與時段熱力圖。
+
+---
+
+## Phase 7.5: Analytics P0 Fixes & SaaS Constraint Hardening
+**目標：修復 Analytics 模組的生產風險問題，強化 SaaS 多租戶正確性。**
+
+### 🔴 Analytics P0 修復
+- [x] **FIX-01**: 修復 `getSalesHeatmap()` 時區 Bug — 使用 UTC+8 offset 取代 Node.js local `getDay()/getHours()`。
+- [x] **FIX-02**: 修復 `parsePeriod()` 日期邊界 — 使用次月起始點取代 `endOfMonth()`，避免月末訂單漏算。
+- [x] **FIX-03**: 優化 `getSupplierRanking()` N+1 查詢 — 拆分為 `product.groupBy` + `$queryRaw` 聚合，消除潛在 600+ 次查詢。
+
+### 🟡 SaaS 多租戶約束強化
+- [x] **FIX-04**: `Role`/`Customer`/`Product`/`Tag`/`ProductCategory` 全部 `@unique` 升級為 `@@unique([field, tenantId])`。
+- [x] **FIX-05**: `seed.ts` 所有 `upsert` 改用複合唯一鍵，對齊 schema 變更。
+- [x] **FIX-06**: `crm.service.ts`、`roles.service.ts` 查重邏輯改用 tenant-scoped 複合鍵。
+- [x] **FIX-07**: `vitest.config.ts` → `.mts`，修復 `ERR_REQUIRE_ESM`；更新測試斷言對齊新權限數量。
+
+### 🟢 前端 P0 修復
+- [x] **FIX-08**: 修復 `MarginAnalysisPage`、`SalesRankingPage`、`CashFlowPage` 刷新按鈕（`setPeriod(period)` → `queryClient.invalidateQueries()`）。
+- [x] **FIX-09**: 補全 `ProductListPage`、`SupplierListPage`、`OrderListPage` 的 Add/Edit 按鈕事件綁定。
+
+---
+
+## Phase 7.6: PharmaSaaS Design System Foundation (設計系統基礎 — 待 merge)
+**目標：整合 `codex/design-system-pos` 分支的設計系統 token，為 Phase 9 POS UI 奠定視覺基礎。**
+**計畫 merge 時機：Phase 8 開始前（Schema 升級前）。**
+
+### Merge 前置作業
+- [ ] **DS-00**: CSS 衝突解析 — 3-way merge `index.css`（PharmaSaaS tokens vs 現有 v3.0 tokens），確認 backward-compatible alias 不破壞現有頁面。
+- [ ] **DS-00b**: `AdminLayout.tsx` 衝突解析 — 合併佈局結構調整，驗證所有路由頁面正常渲染。
+
+### 設計系統核心
+- [ ] **DS-01**: PharmaSaaS Design Token 遷移 — `--color-primary`、`--color-ink`、`--color-canvas` 等完整 token 體系整合進 `index.css`。
+- [ ] **DS-02**: Admin Shell Layout 重構 — 整合更新後的 `AdminLayout.tsx`。
+
+### 輔助功能
+- [ ] **DS-03**: Demo / Preview 模式 — 整合 `authDemo.ts`、`demoLogin()` 與 wildcard 權限 (`*`)，供展示用途。
+- [ ] **DS-04**: POS Preview 頁面 — 整合 `PosPreviewPage.tsx` 雛形（88 行），作為 Phase 9 的視覺參考起點。
 
 ---
 
