@@ -98,6 +98,9 @@ typings/
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
+# Local agent worktrees
+.claude/worktrees/
+
 # OS
 .DS_Store
 Thumbs.db

@@ -19,7 +19,16 @@
       "Bash(xargs cat)",
       "Bash(grep -E \"\\(\\\\.md|\\\\.txt|\\\\.resolved|\\\\.tsv\\)$\")",
       "Read(//mnt/c/Users/User/OneDrive - MSFT \\(1\\)/0.專案/**)",
-      "Bash(grep -i \"TODO\\\\|TBD\" CLAUDE.md README.md)"
+      "Bash(grep -i \"TODO\\\\|TBD\" CLAUDE.md README.md)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx|prisma|css\\)$\")",
+      "Bash(npx prisma *)",
+      "PowerShell(cd \"C:\\\\Users\\\\User\\\\OneDrive - MSFT \\(1\\)\\\\0.專案\\\\startup\\\\systems\\\\enterprise-admin\\\\backend\"; $dbUrl = \\(Get-Content .env | Where-Object { $_ -match \"^DATABASE_URL\" } | ForEach-Object { \\($_ -split \"=\", 2\\)[1] }\\); npx prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema.prisma --shadow-database-url $dbUrl --script 2>&1)",
+      "PowerShell(New-Item *)",
+      "PowerShell(npx *)",
+      "PowerShell(npm *)",
+      "PowerShell(git *)",
+      "Skill(update-config)",
+      "PowerShell(Get-Process *)"
     ]
   }
 }
