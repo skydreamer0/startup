@@ -3,8 +3,11 @@ import { AnalyticsController } from './analytics.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
 import { requirePlan } from '../../middleware/plan.middleware';
+import { analyticsRateLimit } from '../../middleware/rate-limit.middleware';
 
 const router = Router();
+
+router.use(analyticsRateLimit);
 
 // Protect all analytics routes with authentication and the specific read permission
 router.use(authMiddleware);

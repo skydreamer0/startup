@@ -35,7 +35,38 @@ export class AuthService {
             },
         });
 
-        const accessToken = signAccessToken({ userId: user.id, email: user.email });
+        // 載入 tenant plan
+        const tenant = await prisma.tenant.findUnique({
+            where: { id: user.tenantId! },
+            select: { plan: true },
+        });
+
+        // 載入 permissions（含角色 join）
+        const userWithRoles = await prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                userRoles: {
+                    include: {
+                        role: { include: { rolePermissions: { include: { permission: true } } } },
+                    },
+                },
+            },
+        });
+        const permissions = [
+            ...new Set(
+                userWithRoles?.userRoles.flatMap((ur) =>
+                    ur.role.rolePermissions.map((rp) => `${rp.permission.action}:${rp.permission.resource}`),
+                ) ?? [],
+            ),
+        ];
+
+        const accessToken = signAccessToken({
+            userId: user.id,
+            email: user.email,
+            tenantId: user.tenantId ?? undefined,
+            plan: tenant?.plan ?? 'free',
+            permissions,
+        });
         const refreshToken = signRefreshToken({ userId: user.id, type: 'refresh' });
 
         return { accessToken, refreshToken, user: { id: user.id, email: user.email, fullName: user.fullName } };
@@ -56,7 +87,38 @@ export class AuthService {
                 throw new AuthError('User not found or inactive', 401);
             }
 
-            const newAccessToken = signAccessToken({ userId: user.id, email: user.email });
+            // 載入 tenant plan
+            const tenant = await prisma.tenant.findUnique({
+                where: { id: user.tenantId! },
+                select: { plan: true },
+            });
+
+            // 載入 permissions（含角色 join）
+            const userWithRoles = await prisma.user.findUnique({
+                where: { id: user.id },
+                include: {
+                    userRoles: {
+                        include: {
+                            role: { include: { rolePermissions: { include: { permission: true } } } },
+                        },
+                    },
+                },
+            });
+            const permissions = [
+                ...new Set(
+                    userWithRoles?.userRoles.flatMap((ur) =>
+                        ur.role.rolePermissions.map((rp) => `${rp.permission.action}:${rp.permission.resource}`),
+                    ) ?? [],
+                ),
+            ];
+
+            const newAccessToken = signAccessToken({
+                userId: user.id,
+                email: user.email,
+                tenantId: user.tenantId ?? undefined,
+                plan: tenant?.plan ?? 'free',
+                permissions,
+            });
             return { accessToken: newAccessToken };
         } catch (error) {
             if (error instanceof AuthError) throw error;

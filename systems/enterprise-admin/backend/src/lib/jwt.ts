@@ -4,6 +4,9 @@ import { env } from '../config/env';
 export interface AccessTokenPayload {
     userId: string;
     email: string;
+    tenantId?: string;
+    plan?: string;
+    permissions?: string[];
 }
 
 export interface RefreshTokenPayload {
@@ -13,7 +16,7 @@ export interface RefreshTokenPayload {
 
 export function signAccessToken(payload: AccessTokenPayload): string {
     return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
-        expiresIn: env.JWT_ACCESS_EXPIRES_IN as any,
+        expiresIn: env.JWT_ACCESS_EXPIRES_IN as jwt.SignOptions['expiresIn'],
     });
 }
 

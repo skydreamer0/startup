@@ -19,41 +19,62 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
         const token = authHeader.split(' ')[1];
         const payload = verifyAccessToken(token);
 
-        // Load user permissions from DB
-        const user = await prisma.user.findUnique({
-            where: { id: payload.userId, deletedAt: null },
-            include: {
-                userRoles: {
-                    include: {
-                        role: {
-                            include: {
-                                rolePermissions: {
-                                    include: { permission: true },
+        if (payload.permissions) {
+            // 新 JWT：僅做輕量用戶狀態驗證，無 join
+            const user = await prisma.user.findUnique({
+                where: { id: payload.userId, deletedAt: null },
+                select: { id: true, email: true, status: true },
+            });
+
+            if (!user || user.status !== 'active') {
+                return res.status(401).json({
+                    success: false,
+                    error: { code: 'UNAUTHORIZED', message: 'User not found or inactive' },
+                });
+            }
+
+            req.user = {
+                userId: payload.userId,
+                email: payload.email,
+                permissions: payload.permissions,
+            };
+        } else {
+            // 舊 JWT 向後相容：完整查詢含 join
+            const user = await prisma.user.findUnique({
+                where: { id: payload.userId, deletedAt: null },
+                include: {
+                    userRoles: {
+                        include: {
+                            role: {
+                                include: {
+                                    rolePermissions: {
+                                        include: { permission: true },
+                                    },
                                 },
                             },
                         },
                     },
                 },
-            },
-        });
-
-        if (!user || user.status !== 'active') {
-            return res.status(401).json({
-                success: false,
-                error: { code: 'UNAUTHORIZED', message: 'User not found or inactive' },
             });
+
+            if (!user || user.status !== 'active') {
+                return res.status(401).json({
+                    success: false,
+                    error: { code: 'UNAUTHORIZED', message: 'User not found or inactive' },
+                });
+            }
+
+            // Flatten permissions: "action:resource" format
+            const permissions = user.userRoles.flatMap((ur) =>
+                ur.role.rolePermissions.map((rp) => `${rp.permission.action}:${rp.permission.resource}`),
+            );
+
+            req.user = {
+                userId: user.id,
+                email: user.email,
+                permissions: [...new Set(permissions)],
+            };
         }
-
-        // Flatten permissions: "action:resource" format
-        const permissions = user.userRoles.flatMap((ur) =>
-            ur.role.rolePermissions.map((rp) => `${rp.permission.action}:${rp.permission.resource}`),
-        );
-
-        req.user = {
-            userId: user.id,
-            email: user.email,
-            permissions: [...new Set(permissions)], // deduplicate
-        };
 
         next();
     } catch (error) {

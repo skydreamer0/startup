@@ -21,6 +21,7 @@ import productBatchesRoutes from './modules/product-batches/product-batches.rout
 import dailySettlementsRoutes from './modules/daily-settlements/daily-settlements.routes';
 import posRoutes from './modules/pos/pos.routes';
 import { setTenantContext } from './middleware/tenant.middleware';
+import { defaultRateLimit } from './middleware/rate-limit.middleware';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.get('/health', (_req, res) => {
 const apiRouter = express.Router();
 
 // Establish tenant context for ALL API routes
+apiRouter.use(defaultRateLimit);
 apiRouter.use(setTenantContext);
 
 apiRouter.use('/auth', authRoutes);

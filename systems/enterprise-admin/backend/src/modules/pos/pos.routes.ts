@@ -4,8 +4,11 @@ import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { checkoutSchema, posProductsSchema } from './pos.schema';
+import { posRateLimit } from '../../middleware/rate-limit.middleware';
 
 const router = Router();
+
+router.use(posRateLimit);
 
 // Public: employee barcode login — no token required for POS kiosk
 router.post('/staff-login', PosController.staffLogin);

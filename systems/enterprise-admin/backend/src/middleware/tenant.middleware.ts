@@ -15,55 +15,70 @@ import { verifyAccessToken } from '../lib/jwt';
  */
 export async function setTenantContext(req: Request, res: Response, next: NextFunction) {
     let tenantId = req.headers['x-tenant-id'] as string;
+    let plan = '';
 
     // If no explicit header, try extracting from Authorization Bearer token
     if (!tenantId && req.headers.authorization?.startsWith('Bearer ')) {
         try {
             const token = req.headers.authorization.split(' ')[1];
             const payload = verifyAccessToken(token);
-            // In a full implementation, the JWT might contain the tenantId directly
-            // For now, we look up the user's tenantId. We use basePrisma to avoid auto-injection loops here.
-            const user = await basePrisma.user.findUnique({
-                where: { id: payload.userId },
-                select: { tenantId: true }
-            }) as any;
-            if (user?.tenantId) {
-                tenantId = user.tenantId;
+
+            if (payload.tenantId) {
+                // 新 JWT：直接從 payload 讀取，零 DB 查詢
+                tenantId = payload.tenantId;
+                plan = payload.plan ?? 'free';
+            } else {
+                // 舊 JWT 向後相容：查 DB 取 tenantId 和 plan
+                const user = await basePrisma.user.findUnique({
+                    where: { id: payload.userId },
+                    select: { tenantId: true },
+                }) as { tenantId: string | null } | null;
+                if (user?.tenantId) {
+                    tenantId = user.tenantId;
+                    const tenantRow = await basePrisma.tenant.findUnique({
+                        where: { id: tenantId },
+                        select: { plan: true },
+                    });
+                    plan = tenantRow?.plan ?? 'free';
+                }
             }
         } catch (e) {
             // Ignore token verification errors here; auth.middleware will catch them later
         }
     }
 
-    // Fallback logic (Dev only) or graceful failure
+    // Fallback: no tenantId resolved yet
     if (!tenantId) {
         // For development MVP, if no tenant is provided, route to "System Default"
         const defaultTenant = await basePrisma.tenant.findUnique({ where: { slug: 'default' } });
         if (defaultTenant) {
             tenantId = defaultTenant.id;
+            plan = (defaultTenant as any).plan ?? 'free';
         } else {
             return res.status(400).json({
                 success: false,
-                error: { code: 'TENANT_REQUIRED', message: 'A valid tenant context is required.' }
+                error: { code: 'TENANT_REQUIRED', message: 'A valid tenant context is required.' },
             });
         }
     }
 
-    // Fetch tenant plan for caching/gating
-    const tenant = await basePrisma.tenant.findUnique({
-        where: { id: tenantId },
-        select: { plan: true }
-    });
-
-    if (!tenant) {
-        return res.status(404).json({
-            success: false,
-            error: { code: 'TENANT_NOT_FOUND', message: 'The specified tenant does not exist.' }
+    // 若 plan 仍未取得（例如透過 x-tenant-id header 進來，或 defaultTenant 未帶 plan）
+    if (!plan) {
+        const tenantRow = await basePrisma.tenant.findUnique({
+            where: { id: tenantId },
+            select: { plan: true },
         });
+        if (!tenantRow) {
+            return res.status(404).json({
+                success: false,
+                error: { code: 'TENANT_NOT_FOUND', message: 'The specified tenant does not exist.' },
+            });
+        }
+        plan = tenantRow.plan;
     }
 
     // Run the rest of the middleware chain inside the tenant context
-    tenantContext.run({ tenantId, plan: tenant.plan }, () => {
+    tenantContext.run({ tenantId, plan }, () => {
         next();
     });
 }
