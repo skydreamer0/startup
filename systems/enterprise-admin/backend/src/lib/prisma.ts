@@ -19,6 +19,9 @@ const MappedModels = [
     'Order',
     'InventoryTransaction',
     'Expense',
+    'Shift',
+    'ProductBatch',
+    'DailySettlement',
 ] as const;
 
 export const basePrisma =

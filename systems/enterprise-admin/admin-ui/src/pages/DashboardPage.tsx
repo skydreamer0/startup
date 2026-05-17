@@ -71,7 +71,6 @@ export default function DashboardPage() {
                     <div className="stat-value price-lg">
                         ${kpis?.revenue.totalLifetime.toLocaleString() ?? 0}
                     </div>
-                    <div className="text-sm text-success">+12.5% from last month</div>
                 </div>
 
                 <div className="stat-card card">
