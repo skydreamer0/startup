@@ -84,9 +84,10 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
           value={orderDiscountAmount || ''}
           onChange={(e) => setOrderDiscount(Number(e.target.value))}
           placeholder="0"
-          style={{ flex: 1, padding: '4px 8px', border: '1px solid var(--border)', borderRadius: 4, fontSize: 13 }}
+          style={{ flex: 1, padding: '4px 8px', border: `1px solid ${orderDiscountAmount >= 500 ? '#F59E0B' : 'var(--border)'}`, borderRadius: 4, fontSize: 13 }}
         />
         <span style={{ fontSize: 12 }}>元</span>
+        {orderDiscountAmount >= 500 && <span style={{ fontSize: 10, color: '#F59E0B', fontWeight: 600, whiteSpace: 'nowrap' }}>高折扣</span>}
       </div>
 
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>

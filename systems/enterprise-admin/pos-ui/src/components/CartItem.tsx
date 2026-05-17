@@ -5,6 +5,8 @@ interface Props {
   item: CartItemType;
 }
 
+const DISCOUNT_WARN_THRESHOLD = 20;
+
 export default function CartItem({ item }: Props) {
   const { updateQuantity, removeItem, updateItemDiscount } = useCartStore();
   const storeItem = useCartStore((state) =>
@@ -104,13 +106,16 @@ export default function CartItem({ item }: Props) {
             updateItemDiscount(cur.product.id, isNaN(value) ? 0 : Math.min(Math.max(value, 0), 100));
           }}
           placeholder="0"
-          style={{ width: 40, padding: '2px 4px', border: '1px solid var(--border)', borderRadius: 4, fontSize: 11, textAlign: 'center' }}
+          style={{ width: 40, padding: '2px 4px', border: `1px solid ${cur.discountRate >= DISCOUNT_WARN_THRESHOLD ? '#F59E0B' : 'var(--border)'}`, borderRadius: 4, fontSize: 11, textAlign: 'center' }}
         />
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>%</span>
         {cur.discountRate > 0 && (
           <span style={{ fontSize: 11, color: 'var(--danger)', marginLeft: 2 }}>
             -${(unitPrice * (cur.discountRate / 100) * cur.quantity).toFixed(0)}
           </span>
+        )}
+        {cur.discountRate >= DISCOUNT_WARN_THRESHOLD && (
+          <span style={{ fontSize: 10, color: '#F59E0B', fontWeight: 600, whiteSpace: 'nowrap' }}>高折扣</span>
         )}
       </div>
     </div>

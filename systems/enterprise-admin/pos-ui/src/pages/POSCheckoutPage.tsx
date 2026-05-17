@@ -38,6 +38,9 @@ export default function POSCheckoutPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [openingCash, setOpeningCash] = useState(0);
   const [shiftOpening, setShiftOpening] = useState(false);
+  const [shiftClosing, setShiftClosing] = useState(false);
+  const [showCloseShift, setShowCloseShift] = useState(false);
+  const [closingCash, setClosingCash] = useState(0);
   const [toast, setToast] = useState<PosToastMessage | null>(null);
 
   const { addItem, clearCart, setSalesStaff, currentSalesStaffId } = useCartStore();
@@ -225,6 +228,22 @@ export default function POSCheckoutPage() {
     showToast({ type: fail === 0 ? 'success' : 'warning', message: fail === 0 ? `已同步 ${ok} 筆離線交易` : `同步完成：${ok} 成功，${fail} 失敗` });
   }
 
+  async function handleCloseShift() {
+    if (!activeShift) return;
+    setShiftClosing(true);
+    try {
+      await posApi.closeShift(activeShift.id, closingCash);
+      setActiveShift(null);
+      setShowCloseShift(false);
+      showToast({ type: 'success', message: '班別已關閉' });
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
+      showToast({ type: 'error', message: msg ?? '交班失敗，請稍後再試' });
+    } finally {
+      setShiftClosing(false);
+    }
+  }
+
   const categories = Array.from(
     new Map(products.filter((product) => product.category).map((product) => [product.category!.id, product.category!])).values(),
   );
@@ -280,6 +299,9 @@ export default function POSCheckoutPage() {
         <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13 }}>
           人員 {currentStaffName} (F6)
         </button>
+        <button type="button" onClick={() => setShowCloseShift(true)} style={{ background: 'none', border: '1px solid var(--danger)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--danger)' }}>
+          交班
+        </button>
       </div>
 
       <div className="pos-searchbar">
@@ -330,6 +352,24 @@ export default function POSCheckoutPage() {
           onPrint={handlePrint}
           onClose={() => setCheckoutResult(null)}
         />
+      )}
+      {showCloseShift && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 360, boxShadow: 'var(--shadow-lg)' }}>
+            <h3 style={{ margin: '0 0 16px' }}>確認交班</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>結帳金額</label>
+              <input type="number" min={0} value={closingCash} onChange={(e) => setClosingCash(Number(e.target.value))} style={{ flex: 1, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: 14 }} />
+              <span style={{ fontSize: 13 }}>元</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button type="button" onClick={() => setShowCloseShift(false)} style={{ flex: 1, padding: '10px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)', cursor: 'pointer', fontSize: 14 }}>取消</button>
+              <button type="button" onClick={handleCloseShift} disabled={shiftClosing} style={{ flex: 1, padding: '10px', background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: shiftClosing ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 700, opacity: shiftClosing ? 0.7 : 1 }}>
+                {shiftClosing ? '交班中...' : '確認交班'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
