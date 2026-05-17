@@ -10,7 +10,12 @@
 - Commits 用 Conventional Commits: `feat(scope): message`
 - DB/API 命名用 snake_case；前端 Component 用 PascalCase
 - 重大架構決策需新增 ADR：`systems/enterprise-admin/infrastructure/adr/`
-- 金額目前用 Float（Phase 8 前不改）
+- 金額目前用 Float，計劃在 Arch-Fix Phase 5 遷移到 Decimal（參考 ARCHITECTURE_HEALTH.md）
+- **錯誤處理**：所有 Controller 錯誤必須用 `next(err)` 傳給 global error handler，禁止自己 try/catch + res.status(500)
+- **資料獲取**：admin-ui 資料獲取必須用 TanStack Query，禁止 `useState + useEffect + api.xxx().then()`
+- **型別安全**：禁止 `as any`（唯一例外：`lib/prisma.ts` 內部的 Prisma Extension，其他地方一律不得使用）
+- **多租戶安全**：每次新增 Service 都必須呼叫 `requireTenantId()`（analytics.service.ts 是反面教材）
+- **假數據禁令**：禁止在 UI 放 hardcoded 假數據（如 "+12.5%"），必須從 API 取得真實數據
 
 ## 請勿讀取以下目錄（省 token）
 - `business/` — 商業模板，與程式碼無關
@@ -23,3 +28,8 @@
 - Schema：`systems/enterprise-admin/backend/prisma/schema.prisma`
 - API 規格：`systems/enterprise-admin/infrastructure/api/api_spec.md`
 - ADR：`systems/enterprise-admin/infrastructure/adr/`
+- 開發標準：`systems/enterprise-admin/infrastructure/standards/`（含 code_style_pr、test_pyramid、observability）
+- 錯誤處理規範：`systems/enterprise-admin/infrastructure/api/error_handling.md`
+- 後端設定規範：`systems/enterprise-admin/infrastructure/backend/backend_config.md`
+- RBAC 規範：`systems/enterprise-admin/infrastructure/backend/rbac_middleware.md`
+- 架構健康報告：`systems/enterprise-admin/ARCHITECTURE_HEALTH.md`
