@@ -206,13 +206,9 @@ export default function POSCheckoutPage() {
 
   async function handlePrint() {
     if (!checkoutResult) return;
-    try {
-      const response = await posApi.getReceipt(checkoutResult.id);
-      await printReceipt(response.data.data.buffer);
-      showToast({ type: 'success', message: '收據已送出列印' });
-    } catch {
-      showToast({ type: 'error', message: '列印失敗，請確認印表機後再試' });
-    }
+    const response = await posApi.getReceipt(checkoutResult.id);
+    await printReceipt(response.data.data.buffer);
+    showToast({ type: 'success', message: '收據已送出列印' });
   }
 
   const categories = Array.from(
@@ -310,7 +306,7 @@ export default function POSCheckoutPage() {
         />
       )}
       {showPaymentModal && (
-        <PaymentModal onConfirm={handleCheckout} onClose={() => setShowPaymentModal(false)} loading={checkoutLoading} />
+        <PaymentModal onConfirm={handleCheckout} onClose={() => setShowPaymentModal(false)} loading={checkoutLoading} salesStaffName={currentStaffName} />
       )}
       {checkoutResult && (
         <ReceiptModal
