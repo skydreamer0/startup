@@ -35,18 +35,18 @@ export default function ProductCard({ product }: Props) {
         textAlign: 'left',
         opacity: outOfStock ? 0.5 : 1,
         transition: 'var(--transition-fast)',
-        minHeight: 90,
+        height: 220,
       }}
     >
-      <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.3 }}>
+      <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.3, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
         {product.name}
       </span>
       <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{product.sku}</span>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-        <span style={{ fontWeight: 700, color: 'var(--accent)', fontSize: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', minHeight: 20 }}>
+        <span style={{ fontWeight: 700, color: 'var(--accent)', fontSize: 14, minHeight: 20 }}>
           ${product.retailPrice.toFixed(0)}
         </span>
-        <span style={{ fontSize: 11, color, fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: 11, color, fontWeight: 500, minHeight: 20 }}>{label}</span>
       </div>
     </button>
   );

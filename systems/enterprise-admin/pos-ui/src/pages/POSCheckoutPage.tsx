@@ -10,6 +10,9 @@ import ReceiptModal from '../components/ReceiptModal';
 import PosToast, { PosToastMessage } from '../components/PosToast';
 import { startBarcodeListener, stopBarcodeListener, onBarcode } from '../services/barcodeService';
 import { printReceipt } from '../services/receiptService';
+import { getPending, markSynced } from '../services/offlineQueue';
+import OfflineStatus from '../components/OfflineStatus';
+import PrinterStatus from '../components/PrinterStatus';
 
 function getCurrentUserId(): string | null {
   try {
@@ -35,6 +38,9 @@ export default function POSCheckoutPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [openingCash, setOpeningCash] = useState(0);
   const [shiftOpening, setShiftOpening] = useState(false);
+  const [shiftClosing, setShiftClosing] = useState(false);
+  const [showCloseShift, setShowCloseShift] = useState(false);
+  const [closingCash, setClosingCash] = useState(0);
   const [toast, setToast] = useState<PosToastMessage | null>(null);
 
   const { addItem, clearCart, setSalesStaff, currentSalesStaffId } = useCartStore();
@@ -72,14 +78,45 @@ export default function POSCheckoutPage() {
   useEffect(() => {
     startBarcodeListener();
     const unsubscribe = onBarcode((code) => {
-      setSearchQuery(code);
+      const applyMatchedProduct = (matched: PosProduct) => {
+        if (matched.stockQuantity === 0) {
+          showToast({ type: 'warning', message: `庫存不足：${matched.name}` });
+          return;
+        }
+
+        const alreadyInCart = useCartStore.getState().items.some((i) => i.product.id === matched.id);
+        addItem(matched);
+        showToast({
+          type: 'success',
+          message: alreadyInCart ? `數量 +1：${matched.name}` : `已加入 ${matched.name}`,
+        });
+        setSearchQuery('');
+        searchRef.current?.focus();
+      };
+
       const matched = products.find(
         (product) => product.sku === code || (product.barcode && product.barcode === code),
       );
       if (matched) {
-        addItem(matched);
-        showToast({ type: 'success', message: `已加入 ${matched.name}` });
+        applyMatchedProduct(matched);
+        return;
       }
+
+      void (async () => {
+        const response = await posApi.getProducts(code);
+        const results = response.data.data;
+
+        if (results.length === 0) {
+          showToast({ type: 'error', message: `找不到條碼 ${code}` });
+        } else if (results.length === 1) {
+          applyMatchedProduct(results[0]);
+        } else {
+          setProducts(results);
+          showToast({ type: 'info', message: `找到 ${results.length} 筆商品，請選擇` });
+        }
+
+        searchRef.current?.focus();
+      })();
     });
     return () => { stopBarcodeListener(); unsubscribe(); };
   }, [products, addItem, showToast]);
@@ -106,7 +143,7 @@ export default function POSCheckoutPage() {
         break;
       case 'Enter':
         event.preventDefault();
-        if (!showStaffModal && !showPaymentModal && useCartStore.getState().items.length > 0) {
+        if (!showStaffModal && !showPaymentModal && !checkoutResult && useCartStore.getState().items.length > 0) {
           setShowPaymentModal(true);
         }
         break;
@@ -115,7 +152,7 @@ export default function POSCheckoutPage() {
         setShowPaymentModal(false);
         break;
     }
-  }, [showPaymentModal, showStaffModal, showToast]);
+  }, [showPaymentModal, showStaffModal, showToast, checkoutResult]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -175,12 +212,35 @@ export default function POSCheckoutPage() {
 
   async function handlePrint() {
     if (!checkoutResult) return;
+    const response = await posApi.getReceipt(checkoutResult.id);
+    await printReceipt(response.data.data.buffer);
+    showToast({ type: 'success', message: '收據已送出列印' });
+  }
+
+  async function handleSync() {
+    const pending = await getPending();
+    if (pending.length === 0) { showToast({ type: 'info', message: '沒有待同步的交易' }); return; }
+    let ok = 0; let fail = 0;
+    for (const tx of pending) {
+      try { await posApi.checkout(tx.payload); await markSynced(tx.localId!); ok++; }
+      catch { fail++; }
+    }
+    showToast({ type: fail === 0 ? 'success' : 'warning', message: fail === 0 ? `已同步 ${ok} 筆離線交易` : `同步完成：${ok} 成功，${fail} 失敗` });
+  }
+
+  async function handleCloseShift() {
+    if (!activeShift) return;
+    setShiftClosing(true);
     try {
-      const response = await posApi.getReceipt(checkoutResult.id);
-      await printReceipt(response.data.data.buffer);
-      showToast({ type: 'success', message: '收據已送出列印' });
-    } catch {
-      showToast({ type: 'error', message: '列印失敗，請確認印表機後再試' });
+      await posApi.closeShift(activeShift.id, closingCash);
+      setActiveShift(null);
+      setShowCloseShift(false);
+      showToast({ type: 'success', message: '班別已關閉' });
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
+      showToast({ type: 'error', message: msg ?? '交班失敗，請稍後再試' });
+    } finally {
+      setShiftClosing(false);
     }
   }
 
@@ -228,18 +288,23 @@ export default function POSCheckoutPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-app)', fontFamily: 'Inter, sans-serif' }}>
+    <div className="pos-shell">
       <PosToast toast={toast} onDismiss={() => setToast(null)} />
-      <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', gap: 16 }}>
+      <div className="pos-topbar">
         <span style={{ fontWeight: 700, fontSize: 15 }}>PharmaSaaS POS</span>
         <span style={{ fontSize: 12, color: 'var(--success)' }}>班別已開啟</span>
         <div style={{ flex: 1 }} />
+        <OfflineStatus onSync={handleSync} />
+        <PrinterStatus />
         <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13 }}>
           人員 {currentStaffName} (F6)
         </button>
+        <button type="button" onClick={() => setShowCloseShift(true)} style={{ background: 'none', border: '1px solid var(--danger)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--danger)' }}>
+          交班
+        </button>
       </div>
 
-      <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}>
+      <div className="pos-searchbar">
         <input
           ref={searchRef}
           value={searchQuery}
@@ -249,14 +314,14 @@ export default function POSCheckoutPage() {
         />
       </div>
 
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <div style={{ width: 110, flexShrink: 0 }}>
+      <div className="pos-body">
+        <div className="pos-category">
           <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
         </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="pos-product-area">
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
-        <div style={{ width: 300, flexShrink: 0 }}>
+        <div className="pos-cart">
           <CartPanel
             currentStaffName={currentStaffName}
             onCheckout={() => setShowPaymentModal(true)}
@@ -266,7 +331,7 @@ export default function POSCheckoutPage() {
         </div>
       </div>
 
-      <div style={{ padding: '6px 16px', background: 'var(--bg-card)', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)', display: 'flex', gap: 16 }}>
+      <div className="pos-statusbar">
         <span>F2: 搜尋</span><span>F3: 折扣</span><span>F5: 清空確認</span><span>F6: 切換人員</span><span>Enter: 結帳</span>
       </div>
 
@@ -279,7 +344,7 @@ export default function POSCheckoutPage() {
         />
       )}
       {showPaymentModal && (
-        <PaymentModal onConfirm={handleCheckout} onClose={() => setShowPaymentModal(false)} loading={checkoutLoading} />
+        <PaymentModal onConfirm={handleCheckout} onClose={() => setShowPaymentModal(false)} loading={checkoutLoading} salesStaffName={currentStaffName} />
       )}
       {checkoutResult && (
         <ReceiptModal
@@ -287,6 +352,24 @@ export default function POSCheckoutPage() {
           onPrint={handlePrint}
           onClose={() => setCheckoutResult(null)}
         />
+      )}
+      {showCloseShift && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 360, boxShadow: 'var(--shadow-lg)' }}>
+            <h3 style={{ margin: '0 0 16px' }}>確認交班</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>結帳金額</label>
+              <input type="number" min={0} value={closingCash} onChange={(e) => setClosingCash(Number(e.target.value))} style={{ flex: 1, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: 14 }} />
+              <span style={{ fontSize: 13 }}>元</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button type="button" onClick={() => setShowCloseShift(false)} style={{ flex: 1, padding: '10px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)', cursor: 'pointer', fontSize: 14 }}>取消</button>
+              <button type="button" onClick={handleCloseShift} disabled={shiftClosing} style={{ flex: 1, padding: '10px', background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: shiftClosing ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 700, opacity: shiftClosing ? 0.7 : 1 }}>
+                {shiftClosing ? '交班中...' : '確認交班'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

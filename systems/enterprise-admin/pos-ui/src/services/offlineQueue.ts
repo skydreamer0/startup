@@ -59,6 +59,11 @@ export async function getPending(): Promise<PendingTransaction[]> {
   });
 }
 
+export async function getPendingCount(): Promise<number> {
+  const pending = await getPending();
+  return pending.length;
+}
+
 export async function markSynced(localId: number): Promise<void> {
   const db = await openDb();
   return new Promise((resolve, reject) => {

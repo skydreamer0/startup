@@ -63,4 +63,7 @@ export const posApi = {
 
   openShift: (staffId: string, openingCash = 0) =>
     api.post<{ success: boolean; data: ActiveShift }>('/shifts', { staffId, openingCash }),
+
+  closeShift: (shiftId: string, closingCash = 0) =>
+    api.patch<{ success: boolean; data: ActiveShift }>(`/shifts/${shiftId}/close`, { closingCash }),
 };

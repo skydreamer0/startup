@@ -54,10 +54,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
   }
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%',
-      borderLeft: '1px solid var(--border)', padding: 12, gap: 8,
-    }}>
+    <div className="pos-cart-panel">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>銷售人員</span>
         <button onClick={onSwitchStaff} style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -87,9 +84,10 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
           value={orderDiscountAmount || ''}
           onChange={(e) => setOrderDiscount(Number(e.target.value))}
           placeholder="0"
-          style={{ flex: 1, padding: '4px 8px', border: '1px solid var(--border)', borderRadius: 4, fontSize: 13 }}
+          style={{ flex: 1, padding: '4px 8px', border: `1px solid ${orderDiscountAmount >= 500 ? '#F59E0B' : 'var(--border)'}`, borderRadius: 4, fontSize: 13 }}
         />
         <span style={{ fontSize: 12 }}>元</span>
+        {orderDiscountAmount >= 500 && <span style={{ fontSize: 10, color: '#F59E0B', fontWeight: 600, whiteSpace: 'nowrap' }}>高折扣</span>}
       </div>
 
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
@@ -130,6 +128,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
         style={{
           padding: '12px', background: 'var(--accent)', color: '#fff', border: 'none',
           borderRadius: 'var(--radius-sm)', fontSize: 16, fontWeight: 700,
+          minHeight: 56,
           cursor: items.length === 0 ? 'not-allowed' : 'pointer',
           opacity: items.length === 0 ? 0.5 : 1,
         }}

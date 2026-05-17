@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { CheckoutResult } from '../api/pos';
 
 interface Props {
   order: CheckoutResult;
   onClose: () => void;
-  onPrint: () => void;
+  onPrint: () => Promise<void>;
 }
 
 const PAYMENT_LABELS: Record<string, string> = {
@@ -15,6 +16,9 @@ const PAYMENT_LABELS: Record<string, string> = {
 };
 
 export default function ReceiptModal({ order, onClose, onPrint }: Props) {
+  const [printing, setPrinting] = useState(false);
+  const [printError, setPrintError] = useState(false);
+
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
       <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 400, boxShadow: 'var(--shadow-lg)', textAlign: 'center' }}>
@@ -30,19 +34,35 @@ export default function ReceiptModal({ order, onClose, onPrint }: Props) {
         <div style={{ display: 'flex', gap: 12 }}>
           <button
             type="button"
-            onClick={onPrint}
-            style={{ flex: 1, padding: '10px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)', cursor: 'pointer', fontSize: 14 }}
+            onClick={async () => {
+              setPrinting(true);
+              setPrintError(false);
+              try {
+                await onPrint();
+              } catch {
+                setPrintError(true);
+              } finally {
+                setPrinting(false);
+              }
+            }}
+            disabled={printing}
+            style={{ flex: 1, padding: '10px', border: printError ? '1px solid #dc2626' : '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: printError ? '#fef2f2' : 'var(--bg-card)', color: printError ? '#b91c1c' : 'inherit', cursor: printing ? 'not-allowed' : 'pointer', fontSize: 14 }}
           >
-            列印收據
+            {printing ? '列印中...' : printError ? '重試列印' : '列印收據'}
           </button>
           <button
             type="button"
             onClick={onClose}
-            style={{ flex: 1, padding: '10px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
+            style={{ flex: 1, padding: '14px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 15, fontWeight: 700 }}
           >
             下一筆交易
           </button>
         </div>
+        {printError && (
+          <div style={{ marginTop: 10, color: '#b91c1c', fontSize: 12 }}>
+            列印失敗，請確認印表機後重試
+          </div>
+        )}
       </div>
     </div>
   );

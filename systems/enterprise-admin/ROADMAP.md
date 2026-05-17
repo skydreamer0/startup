@@ -248,6 +248,12 @@
 - [x] **POS-02**: 多付款方式（CASH/CARD/LINE_PAY/TRANSFER）、商品層級折扣與整筆折扣、FIFO 批次扣庫存。
 - [x] **POS-ESC**: ESC/POS 熱感應收據（後端 buffer 產生 + WebUSB 列印）。
 - [x] **POS-OFF**: 離線佇列（IndexedDB 50 筆上限 + 網路恢復自動同步架構）。
+- [x] **POS-UX-1**: 條碼 fallback 後端查詢（未找到時呼叫 API，單一結果自動加入、多結果填格）、庫存不足/重複掃描回饋 toast、掃描後焦點歸位。
+- [x] **POS-UX-2**: 付款 Modal 強化（結帳摘要、現金找零計算、現金不足時 Confirm 停用、銷售人員顯示、防誤觸 backdrop）。
+- [x] **POS-UX-3**: 收據 Modal 強化（列印 loading/retry 狀態、錯誤提示、列印失敗讓錯誤傳回 UI）。
+- [x] **POS-UX-4**: 響應式版面（POS Layout CSS class 系統、tablet ≤1023px 自適應、行動裝置 ≤767px cart 固定底部）。
+- [x] **POS-UX-5**: 離線佇列 UI（OfflineStatus topbar 元件：連線燈、待同步筆數、手動同步按鈕）、印表機狀態燈（USB/瀏覽器列印）。
+- [x] **POS-UX-6**: 管理員控制（商品折扣 ≥20% / 整筆折扣 ≥500元 警示、交班按鈕與結帳金額輸入流程）。
 - [ ] **POS-03**: 電子發票 API 串接（Phase 10）。
 
 ---

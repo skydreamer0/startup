@@ -5,6 +5,8 @@ interface Props {
   item: CartItemType;
 }
 
+const DISCOUNT_WARN_THRESHOLD = 20;
+
 export default function CartItem({ item }: Props) {
   const { updateQuantity, removeItem, updateItemDiscount } = useCartStore();
   const storeItem = useCartStore((state) =>
@@ -44,7 +46,7 @@ export default function CartItem({ item }: Props) {
           type="button"
           aria-label={`移除 ${cur.product.name}`}
           onClick={() => removeItem(cur.product.id)}
-          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, paddingLeft: 8 }}
+          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, paddingLeft: 8, minHeight: 40, minWidth: 40 }}
         >
           x
         </button>
@@ -55,7 +57,7 @@ export default function CartItem({ item }: Props) {
           type="button"
           aria-label="減少數量"
           onClick={() => updateQuantity(cur.product.id, cur.quantity - 1)}
-          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
+          style={{ width: 24, height: 24, minHeight: 40, minWidth: 40, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
         >
           -
         </button>
@@ -79,7 +81,7 @@ export default function CartItem({ item }: Props) {
           type="button"
           aria-label="增加數量"
           onClick={() => updateQuantity(cur.product.id, Math.min(cur.quantity + 1, cur.product.stockQuantity))}
-          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
+          style={{ width: 24, height: 24, minHeight: 40, minWidth: 40, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
         >
           +
         </button>
@@ -104,13 +106,16 @@ export default function CartItem({ item }: Props) {
             updateItemDiscount(cur.product.id, isNaN(value) ? 0 : Math.min(Math.max(value, 0), 100));
           }}
           placeholder="0"
-          style={{ width: 40, padding: '2px 4px', border: '1px solid var(--border)', borderRadius: 4, fontSize: 11, textAlign: 'center' }}
+          style={{ width: 40, padding: '2px 4px', border: `1px solid ${cur.discountRate >= DISCOUNT_WARN_THRESHOLD ? '#F59E0B' : 'var(--border)'}`, borderRadius: 4, fontSize: 11, textAlign: 'center' }}
         />
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>%</span>
         {cur.discountRate > 0 && (
           <span style={{ fontSize: 11, color: 'var(--danger)', marginLeft: 2 }}>
             -${(unitPrice * (cur.discountRate / 100) * cur.quantity).toFixed(0)}
           </span>
+        )}
+        {cur.discountRate >= DISCOUNT_WARN_THRESHOLD && (
+          <span style={{ fontSize: 10, color: '#F59E0B', fontWeight: 600, whiteSpace: 'nowrap' }}>高折扣</span>
         )}
       </div>
     </div>
