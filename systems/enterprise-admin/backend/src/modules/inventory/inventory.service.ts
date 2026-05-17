@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 
@@ -27,7 +28,7 @@ export class InventoryService {
         defectRate?: number;
         rating?: number;
     }) {
-        return await prisma.supplier.create({ data: data as any });
+        return await prisma.supplier.create({ data: data as Prisma.SupplierUncheckedCreateInput });
     }
 
     static async updateSupplier(id: string, data: {
@@ -97,7 +98,7 @@ export class InventoryService {
         categoryId?: string;
         supplierId?: string;
     }) {
-        return await prisma.product.create({ data: data as any });
+        return await prisma.product.create({ data: data as Prisma.ProductUncheckedCreateInput });
     }
 
     static async updateProduct(id: string, data: {

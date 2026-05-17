@@ -1,4 +1,5 @@
 import { prisma } from '../../lib/prisma';
+import { requireTenantId } from '../../lib/tenant.context';
 import { startOfMonth, endOfMonth, subMonths, format, parseISO, isValid, differenceInDays, addDays } from 'date-fns';
 
 // ─── RFM Type Definitions ────────────────────────────────
@@ -186,6 +187,7 @@ export class AnalyticsService {
      * Unified wrapper to fetch all current KPIs
      */
     static async getKpiSnapshot(periodStart: Date, periodEnd: Date) {
+        requireTenantId();
         const [gross_margin_pct, cac_twd, aov_twd, ccc_days] = await Promise.all([
             this.getGrossMarginPct(periodStart, periodEnd),
             this.getCacTwd(periodStart, periodEnd),
@@ -263,6 +265,7 @@ export class AnalyticsService {
      * - At Risk:  R > 60d
      */
     static async getRfmSegmentation(): Promise<RfmResult> {
+        requireTenantId();
         const customers = await prisma.customer.findMany({
             select: {
                 id: true,
@@ -353,6 +356,7 @@ export class AnalyticsService {
      * 4. Otherwise → low risk.
      */
     static async getChurnRisk(): Promise<ChurnRiskCustomer[]> {
+        requireTenantId();
         // Fetch customers who have at least 2 completed orders
         const customers = await prisma.customer.findMany({
             where: { purchaseCount: { gte: 2 } },
@@ -435,6 +439,7 @@ export class AnalyticsService {
      * Thresholds use the median of all products as the dividing line.
      */
     static async getProductAbcAnalysis(startDate: Date, endDate: Date): Promise<AbcResult> {
+        requireTenantId();
         const orderItems = await prisma.orderItem.findMany({
             where: {
                 order: {
@@ -545,6 +550,7 @@ export class AnalyticsService {
      * - Defect rate inverted (10% weight)
      */
     static async getSupplierRanking(startDate: Date, endDate: Date): Promise<RankedSupplier[]> {
+        requireTenantId();
         const suppliers = await prisma.supplier.findMany();
         const [productCounts, revenueRows] = await Promise.all([
             prisma.product.groupBy({
@@ -648,6 +654,7 @@ export class AnalyticsService {
      * grouped by weekday (0=Sun..6=Sat) and hour (0..23).
      */
     static async getSalesHeatmap(startDate: Date, endDate: Date): Promise<HeatmapCell[]> {
+        requireTenantId();
         const orders = await prisma.order.findMany({
             where: {
                 status: 'completed',
@@ -695,6 +702,7 @@ export class AnalyticsService {
      * Also estimates the bonus pool based on net profit margin.
      */
     static async getBonusGateStatus(periodStr?: string): Promise<BonusGateResult> {
+        requireTenantId();
         const now = new Date();
         const period = periodStr || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const periodDate = parseISO(`${period}-01`);

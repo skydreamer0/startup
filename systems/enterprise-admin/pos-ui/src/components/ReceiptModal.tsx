@@ -1,19 +1,12 @@
 import { useState } from 'react';
 import { CheckoutResult } from '../api/pos';
+import { PAYMENT_LABELS } from '../constants';
 
 interface Props {
   order: CheckoutResult;
   onClose: () => void;
   onPrint: () => Promise<void>;
 }
-
-const PAYMENT_LABELS: Record<string, string> = {
-  CASH: '現金',
-  CARD: '信用卡',
-  LINE_PAY: 'LINE Pay',
-  TRANSFER: '轉帳',
-  OTHER: '其他',
-};
 
 export default function ReceiptModal({ order, onClose, onPrint }: Props) {
   const [printing, setPrinting] = useState(false);
@@ -29,7 +22,7 @@ export default function ReceiptModal({ order, onClose, onPrint }: Props) {
           ${order.totalAmount.toFixed(0)} 元
         </div>
         <div style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 24 }}>
-          付款方式：{PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod}
+          付款方式：{PAYMENT_LABELS[order.paymentMethod as keyof typeof PAYMENT_LABELS] ?? order.paymentMethod}
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <button

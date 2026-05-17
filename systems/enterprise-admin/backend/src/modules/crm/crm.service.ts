@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
@@ -74,7 +75,7 @@ export class CrmService {
             if (existing) throw new AppError(409, 'Phone number already registered');
         }
 
-        return await prisma.customer.create({ data: data as any });
+        return await prisma.customer.create({ data: data as Prisma.CustomerUncheckedCreateInput });
     }
 
     // 4. Update Customer
@@ -99,7 +100,7 @@ export class CrmService {
                     customerId,
                     type: data.type,
                     content: data.content,
-                } as any,
+                } as Prisma.InteractionUncheckedCreateInput,
             }),
             prisma.customer.update({
                 where: { id: customerId },

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 
@@ -74,7 +75,7 @@ export class OrderService {
                     items: {
                         create: orderItemsData
                     }
-                } as any,
+                } as Prisma.OrderUncheckedCreateInput,
                 include: { items: true }
             });
 
@@ -86,7 +87,7 @@ export class OrderService {
                     data: {
                         ...t,
                         referenceId: order.id
-                    } as any
+                    } as Prisma.InventoryTransactionUncheckedCreateInput
                 });
             }
 
@@ -108,7 +109,7 @@ export class OrderService {
                     type: 'SYSTEM_NOTICE',
                     content: `Order created: ${order.id} for $${totalOrderAmount}`,
                     interactedAt: new Date()
-                } as any
+                } as Prisma.InteractionUncheckedCreateInput
             });
 
             return order;

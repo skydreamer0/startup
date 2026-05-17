@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCartStore } from '../store/cartStore';
+import { PAYMENT_LABELS, PaymentMethod } from '../constants';
 
 interface Props {
   onConfirm: () => void;
@@ -7,14 +8,6 @@ interface Props {
   loading: boolean;
   salesStaffName?: string;
 }
-
-const METHODS = [
-  { value: 'CASH', label: '現金' },
-  { value: 'CARD', label: '信用卡' },
-  { value: 'LINE_PAY', label: 'LINE Pay' },
-  { value: 'TRANSFER', label: '轉帳' },
-  { value: 'OTHER', label: '其他' },
-] as const;
 
 export default function PaymentModal({ onConfirm, onClose, loading, salesStaffName }: Props) {
   const [tendered, setTendered] = useState(0);
@@ -53,20 +46,20 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
         </div>
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
-          {METHODS.map((method) => (
+          {Object.entries(PAYMENT_LABELS).map(([value, label]) => (
             <button
               type="button"
-              key={method.value}
-              onClick={() => setPaymentMethod(method.value)}
+              key={value}
+              onClick={() => setPaymentMethod(value as PaymentMethod)}
               style={{
                 padding: '8px 16px', borderRadius: 'var(--radius-xs)',
                 border: '1px solid var(--border)',
-                background: paymentMethod === method.value ? 'var(--accent)' : 'var(--bg-card)',
-                color: paymentMethod === method.value ? '#fff' : 'var(--text-secondary)',
+                background: paymentMethod === value ? 'var(--accent)' : 'var(--bg-card)',
+                color: paymentMethod === value ? '#fff' : 'var(--text-secondary)',
                 cursor: 'pointer', fontSize: 14,
               }}
             >
-              {method.label}
+              {label}
             </button>
           ))}
         </div>

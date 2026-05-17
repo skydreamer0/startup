@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useCartStore } from '../store/cartStore';
 import CartItemComponent from './CartItem';
 import { PosToastMessage } from './PosToast';
+import { PAYMENT_LABELS } from '../constants';
 
 interface Props {
   currentStaffName: string;
@@ -9,14 +10,6 @@ interface Props {
   onSwitchStaff: () => void;
   onFeedback?: (toast: PosToastMessage) => void;
 }
-
-const PAYMENT_LABELS: Record<string, string> = {
-  CASH: '現金',
-  CARD: '信用卡',
-  LINE_PAY: 'LINE Pay',
-  TRANSFER: '轉帳',
-  OTHER: '其他',
-};
 
 export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff, onFeedback }: Props) {
   const {
