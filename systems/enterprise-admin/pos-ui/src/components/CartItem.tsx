@@ -44,7 +44,7 @@ export default function CartItem({ item }: Props) {
           type="button"
           aria-label={`移除 ${cur.product.name}`}
           onClick={() => removeItem(cur.product.id)}
-          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, paddingLeft: 8 }}
+          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, paddingLeft: 8, minHeight: 40, minWidth: 40 }}
         >
           x
         </button>
@@ -55,7 +55,7 @@ export default function CartItem({ item }: Props) {
           type="button"
           aria-label="減少數量"
           onClick={() => updateQuantity(cur.product.id, cur.quantity - 1)}
-          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
+          style={{ width: 24, height: 24, minHeight: 40, minWidth: 40, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
         >
           -
         </button>
@@ -79,7 +79,7 @@ export default function CartItem({ item }: Props) {
           type="button"
           aria-label="增加數量"
           onClick={() => updateQuantity(cur.product.id, Math.min(cur.quantity + 1, cur.product.stockQuantity))}
-          style={{ width: 24, height: 24, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
+          style={{ width: 24, height: 24, minHeight: 40, minWidth: 40, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', background: 'var(--bg-card)', flexShrink: 0, fontSize: 14 }}
         >
           +
         </button>

@@ -130,6 +130,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
         style={{
           padding: '12px', background: 'var(--accent)', color: '#fff', border: 'none',
           borderRadius: 'var(--radius-sm)', fontSize: 16, fontWeight: 700,
+          minHeight: 56,
           cursor: items.length === 0 ? 'not-allowed' : 'pointer',
           opacity: items.length === 0 ? 0.5 : 1,
         }}

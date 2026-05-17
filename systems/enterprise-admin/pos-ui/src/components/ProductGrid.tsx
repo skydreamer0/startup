@@ -19,7 +19,7 @@ export default function ProductGrid({ products, loading }: Props) {
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
         gap: 8,
         padding: 12,
         overflowY: 'auto',
