@@ -44,3 +44,19 @@ export async function printReceipt(base64Buffer: string): Promise<void> {
     win.close();
   }
 }
+
+export type PrinterType = 'usb' | 'fallback' | 'unavailable';
+
+export async function getPrinterStatus(): Promise<PrinterType> {
+  if (!('usb' in navigator)) return 'fallback';
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const usb = (navigator as unknown as { usb: any }).usb;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const devices: any[] = await usb.getDevices();
+    const connected = devices.some((d: any) => d.configuration !== null);
+    return connected ? 'usb' : 'fallback';
+  } catch {
+    return 'fallback';
+  }
+}

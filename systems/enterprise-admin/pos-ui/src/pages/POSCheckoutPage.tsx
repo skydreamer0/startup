@@ -10,6 +10,9 @@ import ReceiptModal from '../components/ReceiptModal';
 import PosToast, { PosToastMessage } from '../components/PosToast';
 import { startBarcodeListener, stopBarcodeListener, onBarcode } from '../services/barcodeService';
 import { printReceipt } from '../services/receiptService';
+import { getPending, markSynced } from '../services/offlineQueue';
+import OfflineStatus from '../components/OfflineStatus';
+import PrinterStatus from '../components/PrinterStatus';
 
 function getCurrentUserId(): string | null {
   try {
@@ -211,6 +214,17 @@ export default function POSCheckoutPage() {
     showToast({ type: 'success', message: '收據已送出列印' });
   }
 
+  async function handleSync() {
+    const pending = await getPending();
+    if (pending.length === 0) { showToast({ type: 'info', message: '沒有待同步的交易' }); return; }
+    let ok = 0; let fail = 0;
+    for (const tx of pending) {
+      try { await posApi.checkout(tx.payload); await markSynced(tx.localId!); ok++; }
+      catch { fail++; }
+    }
+    showToast({ type: fail === 0 ? 'success' : 'warning', message: fail === 0 ? `已同步 ${ok} 筆離線交易` : `同步完成：${ok} 成功，${fail} 失敗` });
+  }
+
   const categories = Array.from(
     new Map(products.filter((product) => product.category).map((product) => [product.category!.id, product.category!])).values(),
   );
@@ -261,6 +275,8 @@ export default function POSCheckoutPage() {
         <span style={{ fontWeight: 700, fontSize: 15 }}>PharmaSaaS POS</span>
         <span style={{ fontSize: 12, color: 'var(--success)' }}>班別已開啟</span>
         <div style={{ flex: 1 }} />
+        <OfflineStatus onSync={handleSync} />
+        <PrinterStatus />
         <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13 }}>
           人員 {currentStaffName} (F6)
         </button>
