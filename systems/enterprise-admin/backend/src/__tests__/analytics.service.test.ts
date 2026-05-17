@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AnalyticsService } from '../modules/analytics/analytics.service';
 
+// ─── Mock tenant context (AF-04 added requireTenantId() to all public methods) ─
+vi.mock('../lib/tenant.context', () => ({
+    requireTenantId: vi.fn(() => 'test-tenant-id'),
+    tenantContext: { getStore: vi.fn(() => ({ tenantId: 'test-tenant-id', plan: 'pro' })) },
+}));
+
 // ─── Mock Prisma ─────────────────────────────────────────
 vi.mock('../lib/prisma', () => ({
     prisma: {
