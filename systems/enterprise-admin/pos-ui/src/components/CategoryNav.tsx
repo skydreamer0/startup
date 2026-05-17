@@ -13,33 +13,13 @@ export default function CategoryNav({ categories, selectedId, onSelect }: Props)
   const all = [{ id: null as string | null, name: '全部' }, ...categories];
 
   return (
-    <nav
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 4,
-        padding: 8,
-        overflowY: 'auto',
-        borderRight: '1px solid var(--border)',
-        minWidth: 100,
-      }}
-    >
+    <nav className="pos-category-nav">
       {all.map((category) => (
         <button
           type="button"
           key={category.id ?? 'all'}
           onClick={() => onSelect(category.id)}
-          style={{
-            padding: '8px 10px',
-            borderRadius: 'var(--radius-xs)',
-            border: 'none',
-            background: selectedId === category.id ? 'var(--accent-subtle)' : 'transparent',
-            color: selectedId === category.id ? 'var(--accent-text)' : 'var(--text-secondary)',
-            fontWeight: selectedId === category.id ? 600 : 400,
-            cursor: 'pointer',
-            textAlign: 'left',
-            fontSize: 13,
-          }}
+          className={`pos-category-btn${selectedId === category.id ? ' pos-category-btn--active' : ''}`}
         >
           {category.name}
         </button>

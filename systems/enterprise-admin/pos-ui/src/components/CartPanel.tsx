@@ -54,10 +54,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
   }
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%',
-      borderLeft: '1px solid var(--border)', padding: 12, gap: 8,
-    }}>
+    <div className="pos-cart-panel">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>銷售人員</span>
         <button onClick={onSwitchStaff} style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}>

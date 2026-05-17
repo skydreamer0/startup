@@ -106,3 +106,37 @@
 body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-app); color: var(--text-primary); }
 button { font-family: inherit; }
 input { font-family: inherit; }
+
+/* ═══════════════════════════════════════════════════
+   POS LAYOUT SYSTEM
+   ═══════════════════════════════════════════════════ */
+
+.pos-shell { display: flex; flex-direction: column; height: 100vh; background: var(--bg-app); font-family: Inter, sans-serif; }
+.pos-topbar { display: flex; align-items: center; padding: 8px 16px; background: var(--bg-card); border-bottom: 1px solid var(--border); gap: 16px; flex-shrink: 0; }
+.pos-searchbar { padding: 8px 12px; background: var(--bg-card); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.pos-searchbar input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 14px; box-sizing: border-box; }
+.pos-body { display: flex; flex: 1; overflow: hidden; }
+.pos-category { width: 110px; flex-shrink: 0; }
+.pos-product-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.pos-cart { width: 360px; flex-shrink: 0; }
+.pos-statusbar { padding: 6px 16px; background: var(--bg-card); border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; gap: 16px; flex-shrink: 0; }
+
+.pos-category-nav { display: flex; flex-direction: column; gap: 4px; padding: 8px; overflow-y: auto; border-right: 1px solid var(--border); height: 100%; }
+.pos-category-btn { padding: 8px 10px; border-radius: var(--radius-xs); border: none; background: transparent; color: var(--text-secondary); cursor: pointer; text-align: left; font-size: 13px; width: 100%; }
+.pos-category-btn--active { background: var(--accent-subtle); color: var(--accent-text); font-weight: 600; }
+
+.pos-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; padding: 12px; overflow-y: auto; flex: 1; }
+
+.pos-cart-panel { display: flex; flex-direction: column; height: 100%; border-left: 1px solid var(--border); background: var(--bg-card); overflow: hidden; padding: 12px; gap: 8px; }
+
+@media (max-width: 1023px) {
+  .pos-cart { width: 280px; }
+  .pos-category { width: 80px; }
+  .pos-category-btn { padding: 6px 6px; font-size: 11px; }
+}
+
+@media (max-width: 767px) {
+  .pos-category { display: none; }
+  .pos-cart { width: 100%; position: fixed; bottom: 0; left: 0; right: 0; height: 50vh; z-index: 100; border-left: none; border-top: 2px solid var(--border); }
+  .pos-product-area { padding-bottom: 50vh; }
+}

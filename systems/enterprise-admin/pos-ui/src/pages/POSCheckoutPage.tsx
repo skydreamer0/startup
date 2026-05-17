@@ -255,9 +255,9 @@ export default function POSCheckoutPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-app)', fontFamily: 'Inter, sans-serif' }}>
+    <div className="pos-shell">
       <PosToast toast={toast} onDismiss={() => setToast(null)} />
-      <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', gap: 16 }}>
+      <div className="pos-topbar">
         <span style={{ fontWeight: 700, fontSize: 15 }}>PharmaSaaS POS</span>
         <span style={{ fontSize: 12, color: 'var(--success)' }}>班別已開啟</span>
         <div style={{ flex: 1 }} />
@@ -266,7 +266,7 @@ export default function POSCheckoutPage() {
         </button>
       </div>
 
-      <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}>
+      <div className="pos-searchbar">
         <input
           ref={searchRef}
           value={searchQuery}
@@ -276,14 +276,14 @@ export default function POSCheckoutPage() {
         />
       </div>
 
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <div style={{ width: 110, flexShrink: 0 }}>
+      <div className="pos-body">
+        <div className="pos-category">
           <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
         </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="pos-product-area">
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
-        <div style={{ width: 300, flexShrink: 0 }}>
+        <div className="pos-cart">
           <CartPanel
             currentStaffName={currentStaffName}
             onCheckout={() => setShowPaymentModal(true)}
@@ -293,7 +293,7 @@ export default function POSCheckoutPage() {
         </div>
       </div>
 
-      <div style={{ padding: '6px 16px', background: 'var(--bg-card)', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)', display: 'flex', gap: 16 }}>
+      <div className="pos-statusbar">
         <span>F2: 搜尋</span><span>F3: 折扣</span><span>F5: 清空確認</span><span>F6: 切換人員</span><span>Enter: 結帳</span>
       </div>
 
