@@ -13,21 +13,20 @@ router.use(analyticsRateLimit);
 router.use(authMiddleware);
 router.use(requirePermission('read:analytics'));
 
-// The KPI dashboard requires at least the 'starter' plan to view advanced metrics
+// Basic KPI dashboard — starter plan
 router.get('/kpis', requirePlan('starter'), AnalyticsController.getKpis);
 router.get('/trends', requirePlan('starter'), AnalyticsController.getTrends);
 
-// Phase 7: CRM Analytics
-router.get('/rfm', requirePlan('starter'), AnalyticsController.getRfm);
-router.get('/churn-risk', requirePlan('starter'), AnalyticsController.getChurnRisk);
+// CRM Analytics — pro plan
+router.get('/rfm', requirePlan('pro'), AnalyticsController.getRfm);
+router.get('/churn-risk', requirePlan('pro'), AnalyticsController.getChurnRisk);
 
-// Phase 7: Product & Supplier Analytics
-router.get('/product-abc', requirePlan('starter'), AnalyticsController.getProductAbc);
-router.get('/supplier-ranking', requirePlan('starter'), AnalyticsController.getSupplierRanking);
+// Product & Supplier Analytics — pro plan
+router.get('/product-abc', requirePlan('pro'), AnalyticsController.getProductAbc);
+router.get('/supplier-ranking', requirePlan('pro'), AnalyticsController.getSupplierRanking);
 
-// Phase 7: Operational Metrics
-router.get('/heatmap', requirePlan('starter'), AnalyticsController.getHeatmap);
-router.get('/bonus-gate', requirePlan('starter'), AnalyticsController.getBonusGate);
+// Operational Metrics — pro plan
+router.get('/heatmap', requirePlan('pro'), AnalyticsController.getHeatmap);
+router.get('/bonus-gate', requirePlan('pro'), AnalyticsController.getBonusGate);
 
 export default router;
-
