@@ -4,6 +4,7 @@ import { dashboardApi, DashboardKPIs, CrmMetrics, AnalyticsKPIs, AnalyticsTrend,
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import DashboardSkeleton from '../components/Skeleton';
 import { useToast } from '../components/Toast';
+import PlanGate from '../components/PlanGate';
 
 export default function DashboardPage() {
     const queryClient = useQueryClient();
@@ -133,7 +134,8 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* ── KPI Trend Chart ── */}
+            {/* ── KPI Trend Chart (starter+) ── */}
+            <PlanGate plan="starter" fallback={null}>
             {trends && trends.length > 0 && (
                 <section className="card section-card" style={{ marginBottom: 32 }}>
                     <h3 className="section-title">
@@ -168,6 +170,7 @@ export default function DashboardPage() {
                     </div>
                 </section>
             )}
+            </PlanGate>
 
             {/* ── Secondary Sections ── */}
             <div className="dashboard-grid-main">
