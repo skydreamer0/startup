@@ -266,21 +266,27 @@
 - [x] 建立 `.gitattributes`，強制所有文字檔 LF、`.bat/.ps1` 保留 CRLF。
 - [x] `git rm --cached && git add` 一次性重新正規化索引。
 
-### C-02: 短週期 Feature Branch 紀律
+### C-02: 短週期 Feature Branch 紀律 (已完成 2026-05-19)
 **問題根源**：本地累積大型 stash（18 個衝突檔），同期遠端推進 34 個 commits，造成高風險合併視窗。
-- [ ] 每個獨立功能點開一個 feature branch，當天工作結束前至少 commit 一次。
-- [ ] 超過 2 天未 push 的 branch 應視為技術債。
-- [ ] Analytics / CRM 為衝突熱區，多人協作時優先使用 PR review。
+- [x] 每個獨立功能點開一個 feature branch，當天工作結束前至少 commit 一次。
+- [x] 超過 2 天未 push 的 branch 應視為技術債。
+- [x] Analytics / CRM 為衝突熱區，多人協作時優先使用 PR review。
 
-### C-03: ROADMAP 同步作為 PR 必要條件
+紀律規範已寫入 `infrastructure/standards/git_workflow.md`（§3 Branch Discipline、§4 Scope 表）。
+
+### C-03: ROADMAP 同步作為 PR 必要條件 (已完成 2026-05-19)
 **問題根源**：Phase 8 DB schema + Shift API 全部 commit 完成，但 ROADMAP 仍全部打叉，導致人與 AI 都看不清真實進度。
-- [ ] 每個 feature PR 必須包含對應的 ROADMAP 勾選更新。
-- [ ] 建議 PR description template 加入 checklist：`- [ ] ROADMAP updated`。
+- [x] 每個 feature PR 必須包含對應的 ROADMAP 勾選更新。
+- [x] 建議 PR description template 加入 checklist：`- [ ] ROADMAP updated`。
 
-### C-04: Analytics 模組 API 合約邊界
+`.github/pull_request_template.md` 已加入 `ROADMAP updated` / `ADR added` 必勾項。
+
+### C-04: Analytics 模組 API 合約邊界 (已完成 2026-05-19)
 **問題根源**：Phase 7 Analytics Service 是最高頻修改區（stash 衝突 3 個檔案均在此模組），且後續 Phase 8/9 仍會繼續擴充。
-- [ ] `AnalyticsService` 應拆分為子領域：`CrmAnalytics`、`ProductAnalytics`、`OperationsAnalytics`，避免單一服務變成 1000+ 行的 God Object。
-- [ ] 各子領域定義清晰的 return type interface，作為前後端 contract。
+- [x] `AnalyticsService` 應拆分為子領域：`CrmAnalytics`、`ProductAnalytics`、`OperationsAnalytics`，避免單一服務變成 1000+ 行的 God Object。
+- [x] 各子領域定義清晰的 return type interface，作為前後端 contract。
+
+實作：744 行的 `analytics.service.ts` 已拆為 `crm-analytics.service.ts` (190 LOC) / `product-analytics.service.ts` (238 LOC) / `operations-analytics.service.ts` (276 LOC)，共用型別集中於 `analytics.types.ts`。Controller 仍為單一進入點，HTTP 路由與回應形狀不變；17 個 analytics 測試全綠，FIX-01/02/03 全部保留。
 
 ### C-05: Phase 8 剩餘任務完整性
 **背景**：Schema + Shift API 已完成，但 ProductBatch API、DailySettlement API 與 UI 頁面尚未開始，Phase 9 POS 依賴這些基礎。
