@@ -1,9 +1,13 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { usePlan, planMeets } from '../hooks/usePlan';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function AdminLayout() {
     const { user, logout } = useAuth();
+    const { data: planInfo } = usePlan();
+    const hasStarter = planMeets(planInfo?.plan, 'starter');
+    const hasPro = planMeets(planInfo?.plan, 'pro');
     const navigate = useNavigate();
 
     function handleLogout() {
@@ -25,15 +29,19 @@ export default function AdminLayout() {
                     <NavLink to="/crm" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`} end>
                         <span className="icon">👤</span> <span>CRM</span>
                     </NavLink>
-                    <NavLink to="/crm/analytics" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
-                        <span className="icon">📊</span> <span>CRM Analytics</span>
-                    </NavLink>
+                    {hasPro && (
+                        <NavLink to="/crm/analytics" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                            <span className="icon">📊</span> <span>CRM Analytics</span>
+                        </NavLink>
+                    )}
                     <NavLink to="/inventory" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`} end>
                         <span className="icon">📦</span> <span>Inventory</span>
                     </NavLink>
-                    <NavLink to="/inventory/analytics" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
-                        <span className="icon">📊</span> <span>Inventory Analytics</span>
-                    </NavLink>
+                    {hasPro && (
+                        <NavLink to="/inventory/analytics" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                            <span className="icon">📊</span> <span>Inventory Analytics</span>
+                        </NavLink>
+                    )}
                     <NavLink to="/inventory/batches" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">📦</span> <span>批號管理</span>
                     </NavLink>
@@ -47,16 +55,20 @@ export default function AdminLayout() {
                         <span className="icon">🕐</span> <span>Shifts</span>
                     </NavLink>
 
-                    <div className="sidebar-section">Financial Reports</div>
-                    <NavLink to="/reports/margin" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
-                        <span className="icon">📈</span> <span>Margin Analysis</span>
-                    </NavLink>
-                    <NavLink to="/reports/cashflow" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
-                        <span className="icon">💰</span> <span>Cash Flow</span>
-                    </NavLink>
-                    <NavLink to="/reports/sales-ranking" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
-                        <span className="icon">🏆</span> <span>Sales Ranking</span>
-                    </NavLink>
+                    {hasStarter && (
+                        <>
+                            <div className="sidebar-section">Financial Reports</div>
+                            <NavLink to="/reports/margin" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                                <span className="icon">📈</span> <span>Margin Analysis</span>
+                            </NavLink>
+                            <NavLink to="/reports/cashflow" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                                <span className="icon">💰</span> <span>Cash Flow</span>
+                            </NavLink>
+                            <NavLink to="/reports/sales-ranking" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                                <span className="icon">🏆</span> <span>Sales Ranking</span>
+                            </NavLink>
+                        </>
+                    )}
 
                     <div className="sidebar-section">System Admin</div>
                     <NavLink to="/users" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>

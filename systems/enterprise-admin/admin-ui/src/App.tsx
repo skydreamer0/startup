@@ -16,6 +16,7 @@ import MarginAnalysisPage from './pages/Reports/MarginAnalysisPage';
 import CashFlowPage from './pages/Reports/CashFlowPage';
 import SalesRankingPage from './pages/Reports/SalesRankingPage';
 import AdminLayout from './layouts/AdminLayout';
+import PlanGate from './components/PlanGate';
 import PosPreviewPage from './pages/POS/PosPreviewPage';
 import BatchListPage from './pages/Inventory/BatchListPage';
 import ShiftListPage from './pages/Shifts/ShiftListPage';
@@ -53,11 +54,11 @@ export default function App() {
                             <Route path="/audit-logs" element={<AuditLogsPage />} />
                             {/* CRM Phase 3 */}
                             <Route path="/crm" element={<CustomerListPage />} />
-                            <Route path="/crm/analytics" element={<CrmAnalyticsPage />} />
+                            <Route path="/crm/analytics" element={<PlanGate plan="pro"><CrmAnalyticsPage /></PlanGate>} />
                             <Route path="/crm/:id" element={<CustomerDetailPage />} />
                             {/* Inventory Phase 3 */}
                             <Route path="/inventory" element={<ProductListPage />} />
-                            <Route path="/inventory/analytics" element={<InventoryAnalyticsPage />} />
+                            <Route path="/inventory/analytics" element={<PlanGate plan="pro"><InventoryAnalyticsPage /></PlanGate>} />
                             <Route path="/suppliers" element={<SupplierListPage />} />
                             {/* Inventory batches Phase 8 */}
                             <Route path="/inventory/batches" element={<BatchListPage />} />
@@ -65,10 +66,10 @@ export default function App() {
                             <Route path="/orders" element={<OrderListPage />} />
                             {/* Shifts Phase 8 */}
                             <Route path="/shifts" element={<ShiftListPage />} />
-                            {/* Financial Reports Phase 5 */}
-                            <Route path="/reports/margin" element={<MarginAnalysisPage />} />
-                            <Route path="/reports/cashflow" element={<CashFlowPage />} />
-                            <Route path="/reports/sales-ranking" element={<SalesRankingPage />} />
+                            {/* Financial Reports Phase 5 — starter+ */}
+                            <Route path="/reports/margin" element={<PlanGate plan="starter"><MarginAnalysisPage /></PlanGate>} />
+                            <Route path="/reports/cashflow" element={<PlanGate plan="starter"><CashFlowPage /></PlanGate>} />
+                            <Route path="/reports/sales-ranking" element={<PlanGate plan="starter"><SalesRankingPage /></PlanGate>} />
                         </Route>
                     </Route>
 

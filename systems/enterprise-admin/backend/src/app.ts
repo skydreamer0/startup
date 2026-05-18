@@ -20,6 +20,7 @@ import shiftsRoutes from './modules/shifts/shifts.routes';
 import productBatchesRoutes from './modules/product-batches/product-batches.routes';
 import dailySettlementsRoutes from './modules/daily-settlements/daily-settlements.routes';
 import posRoutes from './modules/pos/pos.routes';
+import tenantsRoutes from './modules/tenants/tenants.routes';
 import { setTenantContext } from './middleware/tenant.middleware';
 import { defaultRateLimit } from './middleware/rate-limit.middleware';
 
@@ -58,6 +59,7 @@ apiRouter.use('/shifts', shiftsRoutes);
 apiRouter.use('/product-batches', productBatchesRoutes);
 apiRouter.use('/daily-settlements', dailySettlementsRoutes);
 apiRouter.use('/pos', posRoutes);
+apiRouter.use('/tenants', tenantsRoutes);
 
 app.use('/api/v1/admin', apiRouter);
 
