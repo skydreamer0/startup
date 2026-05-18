@@ -1,23 +1,48 @@
-## Description
-<!-- Please include a summary of the changes and the related issue. -->
-fixes # (issue)
+<!--
+Pull Request Template — PharmaSaaS / enterprise-admin
+See: systems/enterprise-admin/infrastructure/standards/git_workflow.md
+-->
+
+## Summary
+<!-- Why is this change needed? What does it do? 1–3 sentences. -->
+
+Fixes # (issue)
 
 ## Type of Change
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Technical debt or refactoring
-- [ ] Documentation update
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Refactor / technical debt
+- [ ] Breaking change
+- [ ] Docs only
 
-## Consistency Checks (Pre-Review)
-<!-- Authors MUST check these before requesting a review. -->
-- [ ] **Lint & Format**: My code passes all linter checks locally (`npm run lint`).
-- [ ] **Tests**: Unit tests / Integration tests have been added or updated to cover these changes.
-- [ ] **CI Pass**: The GitHub Actions CI pipeline is green.
-- [ ] **Architecture Docs**: If this changes the architecture or DB schema, I have updated `infrastructure/` and added an ADR if necessary.
+## Test Plan
+<!-- How did you verify this change? Mark all that apply and add details. -->
+- [ ] Unit / integration tests added or updated
+- [ ] `npm test` passes locally (backend)
+- [ ] Manual smoke test of affected UI screens
+- [ ] N/A — docs / config only
+
+Steps to reproduce / verify:
+1. ...
+
+## Required Checklist
+<!--
+Authors MUST tick every box before requesting review. Reviewers MUST block
+the PR if any are unticked.
+-->
+- [ ] **Lint & Format**: `npm run lint` is green locally
+- [ ] **CI Pass**: GitHub Actions pipeline is green
+- [ ] **Conventional Commits**: Each commit follows `type(scope): message`
+- [ ] **No `as any`**: Type assertions limited to `lib/prisma.ts` Prisma Extension
+- [ ] **Tenant safety**: Any new service method calls `requireTenantId()`
+- [ ] **Error handling**: Controllers use `next(err)`; no ad-hoc `res.status(500)`
+- [ ] **ROADMAP updated** (if applicable) — items checked off in `systems/enterprise-admin/ROADMAP.md`
+- [ ] **ADR added** (if architectural change) — new file under `systems/enterprise-admin/infrastructure/adr/`
+- [ ] **Architecture docs**: `infrastructure/` updated for schema / contract changes
+- [ ] **No fake data**: UI reads from real API endpoints (no hardcoded percentages)
 
 ## Reviewer Focus
-<!-- Tell the reviewer what they should look out for. -->
+<!-- Highlight files / risks you want extra eyes on. -->
 
-## Screenshots / Video (For UI Changes)
-<!-- Attach here if applicable -->
+## Screenshots / Video (UI changes only)
+<!-- Attach before/after screenshots or a short clip. -->

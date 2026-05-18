@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AnalyticsService } from '../modules/analytics/analytics.service';
+import { CrmAnalyticsService } from '../modules/analytics/crm-analytics.service';
+import { ProductAnalyticsService } from '../modules/analytics/product-analytics.service';
+import { OperationsAnalyticsService } from '../modules/analytics/operations-analytics.service';
 
 // ─── Mock tenant context (AF-04 added requireTenantId() to all public methods) ─
 vi.mock('../lib/tenant.context', () => ({
@@ -57,7 +59,7 @@ const endDate = new Date('2026-03-31');
 
 // ─── RFM Segmentation Tests ─────────────────────────────
 
-describe('AnalyticsService.getRfmSegmentation', () => {
+describe('CrmAnalyticsService.getRfmSegmentation', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -65,7 +67,7 @@ describe('AnalyticsService.getRfmSegmentation', () => {
     it('should return empty result when no customers exist', async () => {
         mockCustomerFindMany.mockResolvedValue([]);
 
-        const result = await AnalyticsService.getRfmSegmentation();
+        const result = await CrmAnalyticsService.getRfmSegmentation();
 
         expect(result.customers).toHaveLength(0);
         expect(result.summary).toEqual({ vip: 0, loyal: 0, new: 0, dormant: 0, at_risk: 0 });
@@ -83,7 +85,7 @@ describe('AnalyticsService.getRfmSegmentation', () => {
             },
         ] as any);
 
-        const result = await AnalyticsService.getRfmSegmentation();
+        const result = await CrmAnalyticsService.getRfmSegmentation();
 
         expect(result.customers).toHaveLength(1);
         expect(result.customers[0].segment).toBe('new');
@@ -102,7 +104,7 @@ describe('AnalyticsService.getRfmSegmentation', () => {
             },
         ] as any);
 
-        const result = await AnalyticsService.getRfmSegmentation();
+        const result = await CrmAnalyticsService.getRfmSegmentation();
 
         expect(result.customers[0].segment).toBe('at_risk');
         expect(result.summary.at_risk).toBe(1);
@@ -120,7 +122,7 @@ describe('AnalyticsService.getRfmSegmentation', () => {
             },
         ] as any);
 
-        const result = await AnalyticsService.getRfmSegmentation();
+        const result = await CrmAnalyticsService.getRfmSegmentation();
 
         expect(result.customers[0].segment).toBe('dormant');
         expect(result.summary.dormant).toBe(1);
@@ -136,7 +138,7 @@ describe('AnalyticsService.getRfmSegmentation', () => {
         ];
         mockCustomerFindMany.mockResolvedValue(customers as any);
 
-        const result = await AnalyticsService.getRfmSegmentation();
+        const result = await CrmAnalyticsService.getRfmSegmentation();
 
         const vipCustomer = result.customers.find((c) => c.id === 'vip1');
         expect(vipCustomer?.segment).toBe('vip');
@@ -150,7 +152,7 @@ describe('AnalyticsService.getRfmSegmentation', () => {
         ];
         mockCustomerFindMany.mockResolvedValue(customers as any);
 
-        const result = await AnalyticsService.getRfmSegmentation();
+        const result = await CrmAnalyticsService.getRfmSegmentation();
 
         const loyalCustomer = result.customers.find((c) => c.id === 'loyal1');
         expect(loyalCustomer?.segment).toBe('loyal');
@@ -159,7 +161,7 @@ describe('AnalyticsService.getRfmSegmentation', () => {
 
 // ─── Churn Risk Tests ────────────────────────────────────
 
-describe('AnalyticsService.getChurnRisk', () => {
+describe('CrmAnalyticsService.getChurnRisk', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -167,7 +169,7 @@ describe('AnalyticsService.getChurnRisk', () => {
     it('should return empty array when no repeat customers exist', async () => {
         mockCustomerFindMany.mockResolvedValue([]);
 
-        const result = await AnalyticsService.getChurnRisk();
+        const result = await CrmAnalyticsService.getChurnRisk();
 
         expect(result).toHaveLength(0);
     });
@@ -188,7 +190,7 @@ describe('AnalyticsService.getChurnRisk', () => {
             },
         ] as any);
 
-        const result = await AnalyticsService.getChurnRisk();
+        const result = await CrmAnalyticsService.getChurnRisk();
 
         expect(result).toHaveLength(1);
         expect(result[0].riskLevel).toBe('high');
@@ -211,7 +213,7 @@ describe('AnalyticsService.getChurnRisk', () => {
             },
         ] as any);
 
-        const result = await AnalyticsService.getChurnRisk();
+        const result = await CrmAnalyticsService.getChurnRisk();
 
         expect(result).toHaveLength(1);
         expect(result[0].riskLevel).toBe('low');
@@ -245,7 +247,7 @@ describe('AnalyticsService.getChurnRisk', () => {
             },
         ] as any);
 
-        const result = await AnalyticsService.getChurnRisk();
+        const result = await CrmAnalyticsService.getChurnRisk();
 
         expect(result[0].id).toBe('high-risk');
         expect(result[0].riskLevel).toBe('high');
@@ -256,7 +258,7 @@ describe('AnalyticsService.getChurnRisk', () => {
 
 // ─── ABC Product Analysis Tests ─────────────────────────
 
-describe('AnalyticsService.getProductAbcAnalysis', () => {
+describe('ProductAnalyticsService.getProductAbcAnalysis', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -264,7 +266,7 @@ describe('AnalyticsService.getProductAbcAnalysis', () => {
     it('should return empty result when no order items exist', async () => {
         mockOrderItemFindMany.mockResolvedValue([]);
 
-        const result = await AnalyticsService.getProductAbcAnalysis(startDate, endDate);
+        const result = await ProductAnalyticsService.getProductAbcAnalysis(startDate, endDate);
 
         expect(result.products).toHaveLength(0);
         expect(result.summary).toEqual({ star: 0, cash_cow: 0, hidden_gem: 0, underperformer: 0 });
@@ -286,7 +288,7 @@ describe('AnalyticsService.getProductAbcAnalysis', () => {
             { productId: 'p4', quantity: 1, unitPrice: 10, product: { id: 'p4', name: 'Underperformer', sku: 'S4', costPrice: 9, category: null, supplier: null } },
         ] as any);
 
-        const result = await AnalyticsService.getProductAbcAnalysis(startDate, endDate);
+        const result = await ProductAnalyticsService.getProductAbcAnalysis(startDate, endDate);
 
         expect(result.products).toHaveLength(4);
 
@@ -309,7 +311,7 @@ describe('AnalyticsService.getProductAbcAnalysis', () => {
 
 // ─── Supplier Ranking Tests ─────────────────────────────
 
-describe('AnalyticsService.getSupplierRanking', () => {
+describe('ProductAnalyticsService.getSupplierRanking', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -328,7 +330,7 @@ describe('AnalyticsService.getSupplierRanking', () => {
             { supplierId: 's2', totalRevenue: 500, totalCost: 400 },
         ] as any);
 
-        const result = await AnalyticsService.getSupplierRanking(startDate, endDate);
+        const result = await ProductAnalyticsService.getSupplierRanking(startDate, endDate);
 
         expect(result).toHaveLength(2);
         expect(result[0].id).toBe('s1');
@@ -342,7 +344,7 @@ describe('AnalyticsService.getSupplierRanking', () => {
         mockProductGroupBy.mockResolvedValue([]);
         mockQueryRaw.mockResolvedValue([]);
 
-        const result = await AnalyticsService.getSupplierRanking(startDate, endDate);
+        const result = await ProductAnalyticsService.getSupplierRanking(startDate, endDate);
 
         expect(result).toHaveLength(1);
         expect(result[0].totalRevenue).toBe(0);
@@ -352,7 +354,7 @@ describe('AnalyticsService.getSupplierRanking', () => {
 
 // ─── Sales Heatmap Tests ─────────────────────────────────
 
-describe('AnalyticsService.getSalesHeatmap', () => {
+describe('OperationsAnalyticsService.getSalesHeatmap', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -360,7 +362,7 @@ describe('AnalyticsService.getSalesHeatmap', () => {
     it('should return a 168-cell grid (7 days × 24 hours) when no orders exist', async () => {
         mockOrderFindMany.mockResolvedValue([]);
 
-        const result = await AnalyticsService.getSalesHeatmap(startDate, endDate);
+        const result = await OperationsAnalyticsService.getSalesHeatmap(startDate, endDate);
 
         expect(result).toHaveLength(168);
         expect(result.every((c) => c.orderCount === 0)).toBe(true);
@@ -374,7 +376,7 @@ describe('AnalyticsService.getSalesHeatmap', () => {
             { createdAt: wed14, totalAmount: 300 },
         ] as any);
 
-        const result = await AnalyticsService.getSalesHeatmap(startDate, endDate);
+        const result = await OperationsAnalyticsService.getSalesHeatmap(startDate, endDate);
 
         const cell = result.find((c) => c.weekday === wed14.getDay() && c.hour === wed14.getHours());
         expect(cell?.orderCount).toBe(2);
@@ -384,7 +386,7 @@ describe('AnalyticsService.getSalesHeatmap', () => {
 
 // ─── Bonus Gate Status Tests ─────────────────────────────
 
-describe('AnalyticsService.getBonusGateStatus', () => {
+describe('OperationsAnalyticsService.getBonusGateStatus', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -401,7 +403,7 @@ describe('AnalyticsService.getBonusGateStatus', () => {
             _count: { id: 1 },
         } as any);
 
-        const result = await AnalyticsService.getBonusGateStatus('2026-03');
+        const result = await OperationsAnalyticsService.getBonusGateStatus('2026-03');
 
         expect(result.grossMarginPct).toBe(50); // (100-50)/100 * 100
         expect(result.grossMarginPass).toBe(true);
