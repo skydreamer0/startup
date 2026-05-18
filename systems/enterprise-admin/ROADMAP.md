@@ -92,7 +92,7 @@
 ### 模組一：SaaS 多租戶基礎 (ADR-006)
 - [x] **SAAS-01**: 建立 `Tenant` Model 與 row-level isolation 中介層（Prisma extension 自動注入）。
 - [x] **SAAS-02**: 所有核心 Model 加入 `tenant_id` 欄位與自動注入邏輯；`Role`/`Customer`/`Product`/`Tag`/`ProductCategory` 唯一約束升級為 tenant-scoped 複合鍵。
-- [ ] **SAAS-03**: Plan-based feature gating (`free`/`starter`/`pro`)。
+- [x] **SAAS-03**: Plan-based feature gating (`free`/`starter`/`pro`)。
 
 ### 模組二：營運 KPI 引擎 (對應 11_營運KPI / 12_單位經濟)
 - [x] **KPI-01**: 統一 Analytics Service，計算 gross_margin / CCC / CAC / AOV / LTV / bonus_gate_pass。
