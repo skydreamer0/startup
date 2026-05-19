@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi, Product, Supplier } from '../../api/inventory';
+import { excelApi } from '../../api/excel';
+import PlanGate from '../../components/PlanGate';
 
 type ProductForm = {
     sku: string;
@@ -41,6 +43,16 @@ export default function ProductListPage() {
     const [productForm, setProductForm] = useState<ProductForm>(emptyProductForm);
     const [saving, setSaving] = useState(false);
     const queryClient = useQueryClient();
+
+    const exportMutation = useMutation({
+        mutationFn: () => excelApi.exportProducts(),
+        onError: (err) => alert(err instanceof Error ? err.message : 'Export failed'),
+    });
+
+    const exportInventoryMutation = useMutation({
+        mutationFn: () => excelApi.exportInventory(),
+        onError: (err) => alert(err instanceof Error ? err.message : 'Export failed'),
+    });
 
     const { data: productsData, isLoading: loading } = useQuery({
         queryKey: ['inventory', 'products', filter],
@@ -131,6 +143,22 @@ export default function ProductListPage() {
                         <option value="">All Inventory</option>
                         <option value="true">{'\u26A0\uFE0F'} Low Stock Alerts</option>
                     </select>
+                    <PlanGate plan="starter" fallback={null}>
+                        <button
+                            className="btn btn-ghost"
+                            onClick={() => exportMutation.mutate()}
+                            disabled={exportMutation.isPending}
+                        >
+                            {exportMutation.isPending ? 'Exporting...' : 'Export Products'}
+                        </button>
+                        <button
+                            className="btn btn-ghost"
+                            onClick={() => exportInventoryMutation.mutate()}
+                            disabled={exportInventoryMutation.isPending}
+                        >
+                            {exportInventoryMutation.isPending ? 'Exporting...' : 'Export Inventory'}
+                        </button>
+                    </PlanGate>
                     <button className="btn btn-primary" onClick={openCreate}>Add Product</button>
                 </div>
             </header>

@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { crmApi, Customer } from '../../api/crm';
 import { Link } from 'react-router-dom';
+import { excelApi } from '../../api/excel';
+import PlanGate from '../../components/PlanGate';
 
 export default function CustomerListPage() {
     const [filter, setFilter] = useState({ type: '', hasLine: '' });
@@ -9,6 +11,11 @@ export default function CustomerListPage() {
     const { data: customersData, isLoading: loading } = useQuery({
         queryKey: ['crm', 'customers', filter],
         queryFn: () => crmApi.getCustomers(filter),
+    });
+
+    const exportMutation = useMutation({
+        mutationFn: () => excelApi.exportCustomers(),
+        onError: (err) => alert(err instanceof Error ? err.message : 'Export failed'),
     });
 
     const customers: Customer[] = customersData?.data || [];
@@ -41,6 +48,15 @@ export default function CustomerListPage() {
                         <option value="true">LINE Connected</option>
                         <option value="false">Not Connected</option>
                     </select>
+                    <PlanGate plan="starter" fallback={null}>
+                        <button
+                            className="btn btn-ghost"
+                            onClick={() => exportMutation.mutate()}
+                            disabled={exportMutation.isPending}
+                        >
+                            {exportMutation.isPending ? 'Exporting...' : 'Export Excel'}
+                        </button>
+                    </PlanGate>
                 </div>
             </header>
 

@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ordersApi, Order } from '../../api/orders';
 import { crmApi, Customer } from '../../api/crm';
 import { inventoryApi, Product } from '../../api/inventory';
+import { excelApi } from '../../api/excel';
+import PlanGate from '../../components/PlanGate';
 
 type OrderForm = {
     customerId: string;
@@ -33,7 +35,14 @@ export default function OrderListPage() {
     const [showCreate, setShowCreate] = useState(false);
     const [orderForm, setOrderForm] = useState<OrderForm>(emptyOrderForm);
     const [saving, setSaving] = useState(false);
+    const [exportFrom, setExportFrom] = useState('');
+    const [exportTo, setExportTo] = useState('');
     const queryClient = useQueryClient();
+
+    const exportMutation = useMutation({
+        mutationFn: () => excelApi.exportOrders(exportFrom || undefined, exportTo || undefined),
+        onError: (err) => alert(err instanceof Error ? err.message : 'Export failed'),
+    });
 
     const { data: ordersData, isLoading: loading } = useQuery({
         queryKey: ['orders', statusFilter],
@@ -117,6 +126,31 @@ export default function OrderListPage() {
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
+                    <PlanGate plan="starter" fallback={null}>
+                        <input
+                            type="date"
+                            className="input-control"
+                            style={{ width: '150px' }}
+                            value={exportFrom}
+                            onChange={(e) => setExportFrom(e.target.value)}
+                            title="Export from date"
+                        />
+                        <input
+                            type="date"
+                            className="input-control"
+                            style={{ width: '150px' }}
+                            value={exportTo}
+                            onChange={(e) => setExportTo(e.target.value)}
+                            title="Export to date"
+                        />
+                        <button
+                            className="btn btn-ghost"
+                            onClick={() => exportMutation.mutate()}
+                            disabled={exportMutation.isPending}
+                        >
+                            {exportMutation.isPending ? 'Exporting...' : 'Export Excel'}
+                        </button>
+                    </PlanGate>
                     <button className="btn btn-primary" onClick={openCreate}>+ Create Order</button>
                 </div>
             </header>
