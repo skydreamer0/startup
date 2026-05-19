@@ -49,6 +49,8 @@ const PERMISSIONS = [
     { action: 'manage', resource: 'daily_settlements', description: 'Confirm daily settlements' },
     // POS (Phase 9)
     { action: 'manage', resource: 'pos', description: 'Process POS checkout and manage POS operations' },
+    // Marketing (Phase 6 — LINE Integration)
+    { action: 'manage', resource: 'marketing', description: 'Send LINE broadcasts and manage marketing campaigns' },
 ];
 
 async function main() {
