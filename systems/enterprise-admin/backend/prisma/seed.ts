@@ -49,6 +49,9 @@ const PERMISSIONS = [
     { action: 'manage', resource: 'daily_settlements', description: 'Confirm daily settlements' },
     // POS (Phase 9)
     { action: 'manage', resource: 'pos', description: 'Process POS checkout and manage POS operations' },
+    // Accounting (Phase 6 — INT-03)
+    { action: 'read', resource: 'accounting', description: 'View accounting sync logs and provider status' },
+    { action: 'manage', resource: 'accounting', description: 'Trigger accounting sync to external provider' },
 ];
 
 async function main() {

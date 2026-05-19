@@ -37,6 +37,7 @@ model Tenant {
   shifts           Shift[]
   productBatches   ProductBatch[]
   dailySettlements DailySettlement[]
+  accountingSyncLogs AccountingSyncLog[]
 
   @@map("tenants")
 }
@@ -461,4 +462,25 @@ model DailySettlement {
   @@index([tenantId])
   @@index([date])
   @@map("daily_settlements")
+}
+
+// ─── Phase 6: External Integrations (INT-03) ──────────────
+
+model AccountingSyncLog {
+  id           String    @id @default(uuid())
+  tenantId     String    @map("tenant_id")
+  provider     String    // mock | quickbooks | xero
+  entityType   String    @map("entity_type")   // order | expense
+  entityId     String    @map("entity_id")
+  externalId   String?   @map("external_id")
+  status       String    @default("pending")    // pending | synced | failed
+  errorMessage String?   @map("error_message")
+  syncedAt     DateTime? @map("synced_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId])
+  @@map("accounting_sync_logs")
 }

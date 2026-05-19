@@ -70,6 +70,15 @@ export default function AdminLayout() {
                         </>
                     )}
 
+                    {hasPro && (
+                        <>
+                            <div className="sidebar-section">Integrations</div>
+                            <NavLink to="/integrations/accounting" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                                <span className="icon">🧾</span> <span>Accounting Sync</span>
+                            </NavLink>
+                        </>
+                    )}
+
                     <div className="sidebar-section">System Admin</div>
                     <NavLink to="/users" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">👥</span> <span>Users</span>

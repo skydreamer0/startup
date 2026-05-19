@@ -20,6 +20,7 @@ import PlanGate from './components/PlanGate';
 import PosPreviewPage from './pages/POS/PosPreviewPage';
 import BatchListPage from './pages/Inventory/BatchListPage';
 import ShiftListPage from './pages/Shifts/ShiftListPage';
+import AccountingSyncPage from './pages/AccountingSyncPage';
 
 function ProtectedRoute() {
     const { user, loading } = useAuth();
@@ -70,6 +71,8 @@ export default function App() {
                             <Route path="/reports/margin" element={<PlanGate plan="starter"><MarginAnalysisPage /></PlanGate>} />
                             <Route path="/reports/cashflow" element={<PlanGate plan="starter"><CashFlowPage /></PlanGate>} />
                             <Route path="/reports/sales-ranking" element={<PlanGate plan="starter"><SalesRankingPage /></PlanGate>} />
+                            {/* Integrations Phase 6 — pro */}
+                            <Route path="/integrations/accounting" element={<AccountingSyncPage />} />
                         </Route>
                     </Route>
 
