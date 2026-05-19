@@ -49,32 +49,49 @@ export async function setTenantContext(req: Request, res: Response, next: NextFu
 
     // Fallback: no tenantId resolved yet
     if (!tenantId) {
-        // For development MVP, if no tenant is provided, route to "System Default"
-        const defaultTenant = await basePrisma.tenant.findUnique({ where: { slug: 'default' } });
-        if (defaultTenant) {
-            tenantId = defaultTenant.id;
-            plan = (defaultTenant as any).plan ?? 'free';
-        } else {
+        try {
+            // For development MVP, if no tenant is provided, route to "System Default"
+            const defaultTenant = await basePrisma.tenant.findUnique({
+                where: { slug: 'default' },
+                select: { id: true, plan: true },
+            });
+            if (defaultTenant) {
+                tenantId = defaultTenant.id;
+                plan = defaultTenant.plan ?? 'free';
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    error: { code: 'TENANT_REQUIRED', message: 'A valid tenant context is required.' },
+                });
+            }
+        } catch {
             return res.status(400).json({
                 success: false,
-                error: { code: 'TENANT_REQUIRED', message: 'A valid tenant context is required.' },
+                error: { code: 'TENANT_REQUIRED', message: 'Tenant resolution unavailable.' },
             });
         }
     }
 
     // 若 plan 仍未取得（例如透過 x-tenant-id header 進來，或 defaultTenant 未帶 plan）
     if (!plan) {
-        const tenantRow = await basePrisma.tenant.findUnique({
-            where: { id: tenantId },
-            select: { plan: true },
-        });
-        if (!tenantRow) {
-            return res.status(404).json({
+        try {
+            const tenantRow = await basePrisma.tenant.findUnique({
+                where: { id: tenantId },
+                select: { plan: true },
+            });
+            if (!tenantRow) {
+                return res.status(404).json({
+                    success: false,
+                    error: { code: 'TENANT_NOT_FOUND', message: 'The specified tenant does not exist.' },
+                });
+            }
+            plan = tenantRow.plan;
+        } catch {
+            return res.status(400).json({
                 success: false,
-                error: { code: 'TENANT_NOT_FOUND', message: 'The specified tenant does not exist.' },
+                error: { code: 'TENANT_REQUIRED', message: 'Tenant resolution unavailable.' },
             });
         }
-        plan = tenantRow.plan;
     }
 
     // Run the rest of the middleware chain inside the tenant context
