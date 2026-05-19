@@ -1,5 +1,6 @@
 import ExcelJS from 'exceljs';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { requireTenantId } from '../../lib/tenant.context';
 import { AppError } from '../../lib/errors';
@@ -321,6 +322,10 @@ export class ExcelService {
     private static async parseProductBuffer(buffer: Buffer): Promise<ParsedProductRow[]> {
         const workbook = new ExcelJS.Workbook();
         try {
+            // exceljs' ambient typings predate the @types/node Buffer<TArrayBuffer>
+            // generic; xlsx.load accepts our runtime Buffer fine, but TS's
+            // [Symbol.toStringTag] check trips. Safe to suppress.
+            // @ts-expect-error -- exceljs Buffer type lag (see comment above)
             await workbook.xlsx.load(buffer);
         } catch {
             throw new AppError(400, 'Invalid xlsx file');
@@ -443,17 +448,18 @@ export class ExcelService {
                     });
                     updated++;
                 } else {
-                    await prisma.product.create({
-                        data: {
-                            sku: data.sku,
-                            name: data.name,
-                            description: data.description ?? null,
-                            costPrice: data.costPrice,
-                            retailPrice: data.retailPrice,
-                            stockQuantity: data.stockQuantity,
-                            safetyStock: data.safetyStock,
-                        },
-                    });
+                    // tenantId is auto-injected by the Prisma extension at runtime;
+                    // cast matches the pattern in inventory.service.ts.
+                    const createData = {
+                        sku: data.sku,
+                        name: data.name,
+                        description: data.description ?? null,
+                        costPrice: data.costPrice,
+                        retailPrice: data.retailPrice,
+                        stockQuantity: data.stockQuantity,
+                        safetyStock: data.safetyStock,
+                    } as Prisma.ProductUncheckedCreateInput;
+                    await prisma.product.create({ data: createData });
                     created++;
                 }
             } catch (err) {
