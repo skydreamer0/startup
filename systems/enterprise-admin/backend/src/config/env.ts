@@ -12,6 +12,12 @@ const envSchema = z.object({
     PORT: z.coerce.number().default(3000),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     CORS_ORIGIN: z.string().default('http://localhost:5173'),
+    // Phase 6 INT-03 — optional accounting provider credentials.
+    // Absent => the corresponding provider reports isConfigured() === false.
+    QUICKBOOKS_CLIENT_ID: z.string().optional(),
+    QUICKBOOKS_CLIENT_SECRET: z.string().optional(),
+    XERO_CLIENT_ID: z.string().optional(),
+    XERO_CLIENT_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
