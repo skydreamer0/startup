@@ -52,6 +52,8 @@ const PERMISSIONS = [
     // Accounting (Phase 6 — INT-03)
     { action: 'read', resource: 'accounting', description: 'View accounting sync logs and provider status' },
     { action: 'manage', resource: 'accounting', description: 'Trigger accounting sync to external provider' },
+    // Marketing (Phase 6 — LINE Integration)
+    { action: 'manage', resource: 'marketing', description: 'Send LINE broadcasts and manage marketing campaigns' },
 ];
 
 async function main() {

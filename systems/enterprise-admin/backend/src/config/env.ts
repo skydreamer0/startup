@@ -18,6 +18,9 @@ const envSchema = z.object({
     QUICKBOOKS_CLIENT_SECRET: z.string().optional(),
     XERO_CLIENT_ID: z.string().optional(),
     XERO_CLIENT_SECRET: z.string().optional(),
+    // LINE Messaging API (INT-01) — optional; absent values disable LINE integration at runtime.
+    LINE_CHANNEL_ACCESS_TOKEN: z.string().optional(),
+    LINE_CHANNEL_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

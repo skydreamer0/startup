@@ -23,6 +23,7 @@ const MappedModels = [
     'ProductBatch',
     'DailySettlement',
     'AccountingSyncLog',
+    'MessageBroadcast',
 ] as const;
 
 export const basePrisma =
