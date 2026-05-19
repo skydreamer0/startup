@@ -136,7 +136,7 @@
 
 ## Phase 6: External Integrations & Advanced Automation (規劃中)
 - **INT-01**: LINE Messaging API (行銷推播與互動)
-- **INT-02**: 批次匯入匯出 (Excel/CSV)
+- [x] **INT-02**: 批次匯入匯出 (Excel/CSV)
 - **INT-03**: 外部會計系統拋轉 (QuickBooks/Xero)
 
 ---
