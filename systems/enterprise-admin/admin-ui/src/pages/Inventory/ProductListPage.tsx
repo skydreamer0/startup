@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi, Product, Supplier } from '../../api/inventory';
 import { excelApi } from '../../api/excel';
 import PlanGate from '../../components/PlanGate';
+import ImportProductsModal from '../../components/ImportProductsModal';
 
 type ProductForm = {
     sku: string;
@@ -42,6 +43,7 @@ export default function ProductListPage() {
     const [editProduct, setEditProduct] = useState<Product | null>(null);
     const [productForm, setProductForm] = useState<ProductForm>(emptyProductForm);
     const [saving, setSaving] = useState(false);
+    const [showImport, setShowImport] = useState(false);
     const queryClient = useQueryClient();
 
     const exportMutation = useMutation({
@@ -158,10 +160,21 @@ export default function ProductListPage() {
                         >
                             {exportInventoryMutation.isPending ? 'Exporting...' : 'Export Inventory'}
                         </button>
+                        <button className="btn btn-ghost" onClick={() => setShowImport(true)}>
+                            Import Products
+                        </button>
                     </PlanGate>
                     <button className="btn btn-primary" onClick={openCreate}>Add Product</button>
                 </div>
             </header>
+            {showImport && (
+                <ImportProductsModal
+                    onClose={() => setShowImport(false)}
+                    onSuccess={() => {
+                        queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
+                    }}
+                />
+            )}
 
             <div className="table-container">
                 {loading ? (
