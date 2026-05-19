@@ -55,6 +55,15 @@ export default function AdminLayout() {
                         <span className="icon">🕐</span> <span>Shifts</span>
                     </NavLink>
 
+                    {hasPro && (
+                        <>
+                            <div className="sidebar-section">Marketing</div>
+                            <NavLink to="/marketing/line" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                                <span className="icon">💬</span> <span>LINE 推播</span>
+                            </NavLink>
+                        </>
+                    )}
+
                     {hasStarter && (
                         <>
                             <div className="sidebar-section">Financial Reports</div>

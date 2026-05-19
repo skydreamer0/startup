@@ -20,6 +20,7 @@ import PlanGate from './components/PlanGate';
 import PosPreviewPage from './pages/POS/PosPreviewPage';
 import BatchListPage from './pages/Inventory/BatchListPage';
 import ShiftListPage from './pages/Shifts/ShiftListPage';
+import MarketingPage from './pages/Marketing/MarketingPage';
 
 function ProtectedRoute() {
     const { user, loading } = useAuth();
@@ -66,6 +67,8 @@ export default function App() {
                             <Route path="/orders" element={<OrderListPage />} />
                             {/* Shifts Phase 8 */}
                             <Route path="/shifts" element={<ShiftListPage />} />
+                            {/* Marketing Phase 6 — pro */}
+                            <Route path="/marketing/line" element={<MarketingPage />} />
                             {/* Financial Reports Phase 5 — starter+ */}
                             <Route path="/reports/margin" element={<PlanGate plan="starter"><MarginAnalysisPage /></PlanGate>} />
                             <Route path="/reports/cashflow" element={<PlanGate plan="starter"><CashFlowPage /></PlanGate>} />
