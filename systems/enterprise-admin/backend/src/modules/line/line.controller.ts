@@ -11,7 +11,7 @@ export class LineController {
             if (!segment || !title || !content) {
                 throw new AppError(400, 'segment, title and content are required', 'VALIDATION_FAILED');
             }
-            const userId = req.user?.id;
+            const userId = req.user?.userId;
             if (!userId) {
                 throw new AppError(401, 'Authentication required', 'UNAUTHORIZED');
             }
@@ -24,7 +24,7 @@ export class LineController {
 
     static async push(req: Request, res: Response, next: NextFunction) {
         try {
-            const { customerId } = req.params;
+            const customerId = req.params.customerId as string | undefined;
             const { text } = req.body ?? {};
             if (!customerId || !text) {
                 throw new AppError(400, 'customerId and text are required', 'VALIDATION_FAILED');

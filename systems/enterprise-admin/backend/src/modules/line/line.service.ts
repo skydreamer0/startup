@@ -1,4 +1,5 @@
 import { messagingApi, webhook } from '@line/bot-sdk';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
@@ -140,7 +141,7 @@ export class LineService {
                 status,
                 sentAt: status === 'failed' ? null : new Date(),
                 createdBy: userId,
-            },
+            } as Prisma.MessageBroadcastUncheckedCreateInput,
         });
 
         return broadcast;
