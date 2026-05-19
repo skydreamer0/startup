@@ -12,6 +12,9 @@ const envSchema = z.object({
     PORT: z.coerce.number().default(3000),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     CORS_ORIGIN: z.string().default('http://localhost:5173'),
+    // LINE Messaging API (INT-01) — optional; absent values disable LINE integration at runtime.
+    LINE_CHANNEL_ACCESS_TOKEN: z.string().optional(),
+    LINE_CHANNEL_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
