@@ -37,6 +37,7 @@ model Tenant {
   shifts           Shift[]
   productBatches   ProductBatch[]
   dailySettlements DailySettlement[]
+  messageBroadcasts MessageBroadcast[]
 
   @@map("tenants")
 }
@@ -162,8 +163,9 @@ model AuditLog {
 model Customer {
   id       String    @id @default(uuid())
   name     String?
-  phone    String?   @map("phone")
-  lineUid  String?   @map("line_uid")
+  phone      String? @map("phone")
+  lineUid    String? @map("line_uid")
+  lineUserId String? @unique @map("line_user_id")
   gender   String?
   birthday DateTime?
   tenantId String    @map("tenant_id")
@@ -461,4 +463,25 @@ model DailySettlement {
   @@index([tenantId])
   @@index([date])
   @@map("daily_settlements")
+}
+
+// ─── Phase 6: LINE Integration (INT-01) ───────────────────
+
+model MessageBroadcast {
+  id            String    @id @default(uuid())
+  tenantId      String    @map("tenant_id")
+  title         String
+  content       String    @db.Text
+  targetSegment String    @map("target_segment") // all | vip | first_time | at_risk
+  sentCount     Int       @default(0) @map("sent_count")
+  status        String    @default("pending") // pending | sent | failed | partial
+  sentAt        DateTime? @map("sent_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  createdBy     String    @map("created_by")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([createdAt])
+  @@map("message_broadcasts")
 }
