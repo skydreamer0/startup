@@ -21,6 +21,7 @@ import productBatchesRoutes from './modules/product-batches/product-batches.rout
 import dailySettlementsRoutes from './modules/daily-settlements/daily-settlements.routes';
 import posRoutes from './modules/pos/pos.routes';
 import tenantsRoutes from './modules/tenants/tenants.routes';
+import excelRoutes from './modules/excel/excel.routes';
 import { setTenantContext } from './middleware/tenant.middleware';
 import { defaultRateLimit } from './middleware/rate-limit.middleware';
 
@@ -60,6 +61,7 @@ apiRouter.use('/product-batches', productBatchesRoutes);
 apiRouter.use('/daily-settlements', dailySettlementsRoutes);
 apiRouter.use('/pos', posRoutes);
 apiRouter.use('/tenants', tenantsRoutes);
+apiRouter.use('/excel', excelRoutes);
 
 app.use('/api/v1/admin', apiRouter);
 
