@@ -29,6 +29,7 @@ export default function ShiftOpenScreen({
           <input
             type="number"
             min={0}
+            data-testid="shift-opening-cash-input"
             value={openingCash}
             onChange={(event) => onOpeningCashChange(Number(event.target.value))}
             style={{ flex: 1, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: 14 }}
@@ -37,6 +38,7 @@ export default function ShiftOpenScreen({
         </div>
         <button
           type="button"
+          data-testid="shift-open-button"
           onClick={onOpenShift}
           disabled={shiftOpening}
           style={{ width: '100%', padding: '12px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', fontSize: 16, fontWeight: 700, cursor: shiftOpening ? 'not-allowed' : 'pointer', opacity: shiftOpening ? 0.7 : 1 }}

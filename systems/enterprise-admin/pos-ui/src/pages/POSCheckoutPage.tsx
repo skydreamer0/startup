@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { posApi, PosStaff, CheckoutResult } from '../api/pos';
+import { posApi, PosStaff } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import CategoryNav from '../components/CategoryNav';
 import ProductGrid from '../components/ProductGrid';
@@ -14,6 +14,7 @@ import { getPending, markSynced } from '../services/offlineQueue';
 import OfflineStatus from '../components/OfflineStatus';
 import PrinterStatus from '../components/PrinterStatus';
 import { useShift } from '../hooks/useShift';
+import { useCheckout } from '../hooks/useCheckout';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import ShiftOpenScreen from './ShiftOpenScreen';
 import CloseShiftDialog from '../components/CloseShiftDialog';
@@ -24,11 +25,9 @@ export default function POSCheckoutPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [checkoutResult, setCheckoutResult] = useState<CheckoutResult | null>(null);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [toast, setToast] = useState<PosToastMessage | null>(null);
 
-  const { addItem, clearCart, setSalesStaff, currentSalesStaffId } = useCartStore();
+  const { addItem, setSalesStaff, currentSalesStaffId } = useCartStore();
   const searchRef = useRef<HTMLInputElement>(null);
 
   const showToast = useCallback((nextToast: PosToastMessage) => {
@@ -36,6 +35,12 @@ export default function POSCheckoutPage() {
   }, []);
 
   const shift = useShift(showToast, setSalesStaff);
+
+  const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout } = useCheckout({
+    shiftId: shift.activeShift?.id,
+    onSuccess: () => setShowPaymentModal(false),
+    showToast,
+  });
 
   const currentStaff = staffList.find((staff) => staff.id === currentSalesStaffId);
   const currentStaffName = currentStaff?.fullName ?? shift.activeShift?.staff.fullName ?? '未指定人員';
@@ -98,35 +103,6 @@ export default function POSCheckoutPage() {
     return () => window.removeEventListener('keydown', handleKeydown);
   }, [handleKeydown]);
 
-  async function handleCheckout() {
-    const { items, orderDiscountAmount, orderDiscountNote, paymentMethod, currentSalesStaffId: staffId } = useCartStore.getState();
-    if (!shift.activeShift) {
-      showToast({ type: 'error', message: '目前沒有開啟班別，請先開班再結帳' });
-      return;
-    }
-
-    setCheckoutLoading(true);
-    try {
-      const response = await posApi.checkout({
-        cartItems: items.map((item) => ({ productId: item.product.id, quantity: item.quantity, discountRate: item.discountRate })),
-        paymentMethod,
-        orderDiscountAmount,
-        orderDiscountNote: orderDiscountNote || undefined,
-        shiftId: shift.activeShift.id,
-        salesStaffId: staffId ?? undefined,
-      });
-      clearCart();
-      setShowPaymentModal(false);
-      setCheckoutResult(response.data.data);
-      showToast({ type: 'success', message: '結帳完成' });
-    } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
-      showToast({ type: 'error', message: msg ?? '結帳失敗，請稍後再試' });
-    } finally {
-      setCheckoutLoading(false);
-    }
-  }
-
   async function handlePrint() {
     if (!checkoutResult) return;
     const response = await posApi.getReceipt(checkoutResult.id);
@@ -180,6 +156,7 @@ export default function POSCheckoutPage() {
       <div className="pos-searchbar">
         <input
           ref={searchRef}
+          data-testid="product-search-input"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="搜尋商品名稱、條碼或 SKU... (F2)"
