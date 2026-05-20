@@ -136,7 +136,10 @@
 
 ## Phase 6: External Integrations & Advanced Automation (規劃中)
 - [x] **INT-01**: LINE Messaging API (行銷推播與互動)
-- [x] **INT-02**: 批次匯入匯出 (Excel/CSV)
+- [ ] **INT-02**: 批次匯入匯出 (Excel/CSV)
+  - [x] 後端：`csv.service.ts` + `csv.controller.ts`、Products/Orders/Customers export API、Products import API with multer
+  - [x] 前端元件：`CsvImportModal.tsx` 已建立
+  - [ ] **缺口**：商品列表頁、訂單列表頁尚未接上「匯出/匯入 CSV」按鈕（B3-3/B3-4）
 - [x] **INT-03**: 外部會計系統拋轉 (QuickBooks/Xero — adapter scaffold + mock provider; real SDKs deferred)
 
 ---
@@ -270,20 +273,20 @@
 ## Arch-Fix Phase 2: 型別與一致性整頓
 **目標：消除型別安全窟窿、統一前後端資料層模式。**
 
-- [ ] **AF-04**: `AnalyticsService` 加入顯式 `requireTenantId()` 呼叫（防守性 fail fast，勿依賴 Prisma Extension 隱式注入）。
-- [ ] **AF-05**: `PAYMENT_LABELS` 提取到 `pos-ui/src/constants.ts`，`CartPanel`、`PaymentModal`、`ReceiptModal` 三個 component 共用。
-- [ ] **AF-06**: 後端 Service 層消除可修復的 `as any`（`crm.service.ts`、`inventory.service.ts`、`order.service.ts`）；改用 `Prisma.validator()` 或拆出 DTO。
-- [ ] **AF-07**: `pos-ui` 引入 TanStack Query，`getProducts` / `getCategories` 改為 `useQuery`，解決無 cache 與庫存數字過時問題。
-- [ ] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `ShiftOpenScreen` component，將 14 個 useState 降到 6 個以內。
+- [x] **AF-04**: 各子 Analytics Service（`crm-analytics`、`product-analytics`、`operations-analytics`）均加入顯式 `requireTenantId()` 呼叫。（2026-05-19）
+- [x] **AF-05**: `PAYMENT_LABELS` 提取到 `pos-ui/src/constants.ts`，`CartPanel`、`PaymentModal`、`ReceiptModal` 三個 component 共用。（2026-05-19）
+- [x] **AF-06**: 後端 Service 層消除可修復的 `as any`（`crm.service.ts`、`inventory.service.ts`、`order.service.ts`）。（2026-05-19）
+- [x] **AF-07**: `pos-ui` 引入 TanStack Query，`getProducts` / `getCategories` 改為 `useQuery`，解決無 cache 與庫存數字過時問題。（2026-05-19）
+- [ ] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `ShiftOpenScreen` component，將現有 8 個 useState 降到 6 個以內。
 
 ---
 
 ## Arch-Fix Phase 3: 效能與安全強化
 **目標：解決 Auth / Tenant middleware 每次 request 打 DB 的問題，加入 rate limiting。**
 
-- [ ] **AF-09**: JWT payload 加入 `tenantId`（login 和 refresh 時寫入），`tenant.middleware.ts` 直接讀 JWT 取 tenantId，移除第一次 DB 查詢。
-- [ ] **AF-10**: JWT payload 加入 `permissions[]`（或 permission hash），`auth.middleware.ts` 直接驗 payload，移除 3 層 join 查詢；`roles/permissions` 變更時強制重新登入。
-- [ ] **AF-11**: 加入 `express-rate-limit`：`/pos/products` 每秒 10 次，`/analytics/*` 每分鐘 30 次。
+- [x] **AF-09**: JWT payload 加入 `tenantId`（login 和 refresh 時寫入），`tenant.middleware.ts` 直接讀 JWT 取 tenantId，移除第一次 DB 查詢。（2026-05-19）
+- [x] **AF-10**: JWT payload 加入 `permissions[]`，`auth.middleware.ts` 直接驗 payload，移除 3 層 join 查詢；`roles/permissions` 變更時強制重新登入。（2026-05-19）
+- [x] **AF-11**: 加入 `express-rate-limit`：POS 120/min、Analytics 30/min、全域 300/min。（2026-05-19）
 
 ---
 
@@ -310,28 +313,7 @@
 
 - [ ] **AF-18**: 建立 `packages/types/` workspace（pnpm workspace），backend Zod schema `infer` 輸出 shared types，`pos-ui` / `admin-ui` 直接 import，不再各自定義。
 - [ ] **AF-19**: Playwright E2E 覆蓋 POS 完整結帳流程（login → 開班 → 掃條碼 → 結帳 → 驗庫存扣減 → 驗收據）。
-- [ ] **AF-20**: SAAS-03 Plan-based feature gating 落地：`plan.middleware.ts` 接進路由，實作 `free` / `starter` / `pro` 功能限制。
-
----
-
-## Arch-Fix Phase 1–3: 架構品質修復 (已完成 2026-05-17)
-**目標：依據 `ARCHITECTURE_HEALTH.md` 的 P0/P1/P2 問題清單，系統性修復 11 項架構瓶頸。**
-
-### Phase 1 — P0 關鍵修復
-- [x] **AF-01**: `analytics.controller.ts` 8 個 method 改用 `next(err)`，移除手動 try/catch + res.status(500)。
-- [x] **AF-02**: `DashboardPage.tsx` 移除 hardcoded `+12.5% from last month` 假數據。
-- [x] **AF-03**: `lib/prisma.ts` MappedModels 補入 `Shift`、`ProductBatch`、`DailySettlement`，修補 Phase 8 模型的租戶隔離缺口。
-
-### Phase 2 — 型別安全與一致性
-- [x] **AF-04**: `analytics.service.ts` 7 個公開 method 加入 `requireTenantId()` 顯式呼叫（P1-8）。
-- [x] **AF-05**: `pos-ui` 提取 `PAYMENT_LABELS` 至 `src/constants.ts`，移除 CartPanel / PaymentModal / ReceiptModal 三處重複定義（P1-7）。
-- [x] **AF-06**: 後端 10 處 `as any` 替換為 `Prisma Unchecked Input` 型別（P1-4 部分）。
-- [x] **AF-07**: `pos-ui` 加入 `@tanstack/react-query`，商品 fetch 從 `useState + useEffect` 遷移至 `useQuery`（P1-5 部分）。
-
-### Phase 3 — JWT 效能優化與 Rate Limiting
-- [x] **AF-09**: `jwt.ts` `AccessTokenPayload` 擴展加入 `tenantId`、`plan`、`permissions`。
-- [x] **AF-10**: `auth.service` 登入/refresh 時將 permissions 寫入 JWT；`auth.middleware` 新 token 直接讀 payload（4 SQL → 1 SQL）；`tenant.middleware` 新 token 讀 JWT payload（0 DB 查詢）。
-- [x] **AF-11**: 加入 `express-rate-limit`：POS 120/min、Analytics 30/min、全域 300/min（P2-3）。
+- [x] **AF-20**: SAAS-03 Plan-based feature gating 落地：`requirePlan()` 套用到 reports 路由，前端 axios interceptor 攔截 403 並顯示 `PlanUpgradeToast`。（2026-05-20）
 
 ---
 
