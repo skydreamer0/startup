@@ -71,6 +71,7 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
             </label>
             <input
               id="payment-tendered"
+              data-testid="payment-tendered-input"
               type="number"
               min={0}
               value={tendered}
@@ -93,6 +94,7 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
           </button>
           <button
             type="button"
+            data-testid="payment-confirm-button"
             onClick={onConfirm}
             disabled={confirmDisabled}
             style={{ flex: 2, padding: '12px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: confirmDisabled ? 'not-allowed' : 'pointer', fontSize: 15, fontWeight: 700, opacity: confirmDisabled ? 0.7 : 1 }}

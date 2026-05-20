@@ -50,6 +50,7 @@ export default function POSLoginPage() {
 
         <input
           ref={inputRef}
+          data-testid="login-employee-code-input"
           value={code}
           onChange={(event) => setCode(event.target.value)}
           onKeyDown={handleKeyDown}
@@ -69,6 +70,7 @@ export default function POSLoginPage() {
 
         <button
           type="button"
+          data-testid="login-submit-button"
           onClick={() => handleLogin(code)}
           disabled={loading || !code.trim()}
           style={{

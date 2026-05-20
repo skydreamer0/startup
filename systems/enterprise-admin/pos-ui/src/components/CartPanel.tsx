@@ -116,6 +116,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
       )}
 
       <button
+        data-testid="cart-checkout-button"
         onClick={onCheckout}
         disabled={items.length === 0}
         style={{

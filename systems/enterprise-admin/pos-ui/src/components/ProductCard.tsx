@@ -21,6 +21,7 @@ export default function ProductCard({ product }: Props) {
   return (
     <button
       type="button"
+      data-testid={`product-card-${product.id}`}
       onClick={() => !outOfStock && addItem(product)}
       disabled={outOfStock}
       style={{
@@ -44,7 +45,7 @@ export default function ProductCard({ product }: Props) {
       <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{product.sku}</span>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', minHeight: 20 }}>
         <span style={{ fontWeight: 700, color: 'var(--accent)', fontSize: 14, minHeight: 20 }}>
-          ${product.retailPrice.toFixed(0)}
+          ${Number(product.retailPrice).toFixed(0)}
         </span>
         <span style={{ fontSize: 11, color, fontWeight: 500, minHeight: 20 }}>{label}</span>
       </div>

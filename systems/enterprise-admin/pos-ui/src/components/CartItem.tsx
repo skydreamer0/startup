@@ -14,7 +14,8 @@ export default function CartItem({ item }: Props) {
   );
   const cur = storeItem ?? item;
 
-  const unitPrice = cur.product.retailPrice;
+  // retailPrice may arrive as string from Prisma Decimal JSON serialisation
+  const unitPrice = Number(cur.product.retailPrice);
   const discountedUnit = unitPrice * (1 - cur.discountRate / 100);
   const lineTotal = discountedUnit * cur.quantity;
 
