@@ -6,7 +6,8 @@ export interface OrderItem {
     id: string;
     productId: string;
     quantity: number;
-    unitPrice: number;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    unitPrice: number | string;
     product?: {
         name: string;
         sku: string;
@@ -17,7 +18,8 @@ export interface Order {
     id: string;
     customerId: string;
     status: string;
-    totalAmount: number;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    totalAmount: number | string;
     paymentStatus: string;
     shippingAddress?: string;
     createdAt: string;

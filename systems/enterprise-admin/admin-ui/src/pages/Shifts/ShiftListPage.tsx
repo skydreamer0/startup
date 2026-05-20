@@ -288,8 +288,8 @@ export default function ShiftListPage() {
                                                 <td style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
                                                     {shift.closedAt ? new Date(shift.closedAt).toLocaleString('zh-TW') : '-'}
                                                 </td>
-                                                <td>${(shift.openingCash ?? 0).toLocaleString()}</td>
-                                                <td>{shift.closingCash != null ? `$${shift.closingCash.toLocaleString()}` : '-'}</td>
+                                                <td>${Number(shift.openingCash ?? 0).toLocaleString()}</td>
+                                                <td>{shift.closingCash != null ? `$${Number(shift.closingCash).toLocaleString()}` : '-'}</td>
                                                 <td>{shift._count?.orders ?? '-'}</td>
                                                 <td style={{ textAlign: 'right' }}>
                                                     {shift.status === 'OPEN' && (
@@ -357,11 +357,11 @@ export default function ShiftListPage() {
                                                 <td style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                                                     {s.shift?.staff?.fullName || s.shiftId.slice(0, 8)}
                                                 </td>
-                                                <td style={{ fontWeight: 700 }}>${s.totalSales.toLocaleString()}</td>
+                                                <td style={{ fontWeight: 700 }}>${Number(s.totalSales).toLocaleString()}</td>
                                                 <td>{s.totalOrders}</td>
-                                                <td>${s.cashAmount.toLocaleString()}</td>
-                                                <td>${s.cardAmount.toLocaleString()}</td>
-                                                <td>${s.linePayAmount.toLocaleString()}</td>
+                                                <td>${Number(s.cashAmount).toLocaleString()}</td>
+                                                <td>${Number(s.cardAmount).toLocaleString()}</td>
+                                                <td>${Number(s.linePayAmount).toLocaleString()}</td>
                                                 <td>
                                                     <span className={`badge ${s.confirmedAt ? 'badge-success' : 'badge-warning'}`}>
                                                         {s.confirmedAt ? '已確認' : '待確認'}

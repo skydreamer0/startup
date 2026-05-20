@@ -181,7 +181,7 @@ export default function BatchListPage() {
                                                 <span className={`badge ${badgeClass}`}>{label}</span>
                                             </td>
                                             <td>{batch.quantity.toLocaleString()}</td>
-                                            <td>${batch.costPrice.toLocaleString()}</td>
+                                            <td>${Number(batch.costPrice).toLocaleString()}</td>
                                             <td style={{ textAlign: 'right' }}>
                                                 <button
                                                     className="btn btn-danger btn-sm"

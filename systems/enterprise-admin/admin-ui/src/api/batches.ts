@@ -7,7 +7,8 @@ export interface ProductBatch {
     batchNumber: string;
     expiryDate: string;
     quantity: number;
-    costPrice: number;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    costPrice: number | string;
     receivedAt: string;
     product?: {
         name: string;
@@ -19,12 +20,17 @@ export interface DailySettlement {
     id: string;
     shiftId: string;
     date: string;
-    totalSales: number;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    totalSales: number | string;
     totalOrders: number;
-    cashAmount: number;
-    cardAmount: number;
-    linePayAmount: number;
-    otherAmount: number;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    cashAmount: number | string;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    cardAmount: number | string;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    linePayAmount: number | string;
+    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+    otherAmount: number | string;
     confirmedAt: string | null;
     notes?: string;
     shift?: {

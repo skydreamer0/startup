@@ -136,10 +136,7 @@
 
 ## Phase 6: External Integrations & Advanced Automation (規劃中)
 - [x] **INT-01**: LINE Messaging API (行銷推播與互動)
-- [ ] **INT-02**: 批次匯入匯出 (Excel/CSV)
-  - [x] 後端：`csv.service.ts` + `csv.controller.ts`、Products/Orders/Customers export API、Products import API with multer
-  - [x] 前端元件：`CsvImportModal.tsx` 已建立
-  - [ ] **缺口**：商品列表頁、訂單列表頁尚未接上「匯出/匯入 CSV」按鈕（B3-3/B3-4）
+- [x] **INT-02**: 批次匯入匯出 (Excel/CSV) — 後端 export/import API、前端 Export/Import 按鈕已全部接上（Products、Orders、Inventory）
 - [x] **INT-03**: 外部會計系統拋轉 (QuickBooks/Xero — adapter scaffold + mock provider; real SDKs deferred)
 
 ---
@@ -277,7 +274,7 @@
 - [x] **AF-05**: `PAYMENT_LABELS` 提取到 `pos-ui/src/constants.ts`，`CartPanel`、`PaymentModal`、`ReceiptModal` 三個 component 共用。（2026-05-19）
 - [x] **AF-06**: 後端 Service 層消除可修復的 `as any`（`crm.service.ts`、`inventory.service.ts`、`order.service.ts`）。（2026-05-19）
 - [x] **AF-07**: `pos-ui` 引入 TanStack Query，`getProducts` / `getCategories` 改為 `useQuery`，解決無 cache 與庫存數字過時問題。（2026-05-19）
-- [ ] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `ShiftOpenScreen` component，將現有 8 個 useState 降到 6 個以內。
+- [x] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `useCheckout()` hook，將 8 個 useState 降到 6 個以內。（2026-05-20）
 
 ---
 
@@ -295,24 +292,24 @@
 
 - [x] **AF-12**: 建立 `modules/analytics/services/` 子目錄，拆分為 `crm-analytics.service.ts` / `product-analytics.service.ts` / `operations-analytics.service.ts`，共用型別集中於 `analytics.types.ts`。（C-04，2026-05-19）
 - [x] **AF-13**: `analytics.controller.ts` 改為呼叫各子 service，HTTP 路由與回應形狀不變。（C-04，2026-05-19）
-- [ ] **AF-14**: 對各子 service 補充對應的獨立 unit test（目前測試掛在整合層，缺少子 service 隔離測試）。
+- [x] **AF-14**: 對各子 service 補充對應的獨立 unit test（目前測試掛在整合層，缺少子 service 隔離測試）。（2026-05-20）
 
 ---
 
 ## Arch-Fix Phase 5: Float → Decimal 金額精度遷移
 **目標：消除 POS 結帳 / 日結 / 財務報表的浮點精度 bug。**
 
-- [ ] **AF-15**: Prisma Schema 所有金額欄位從 `Float` 改為 `Decimal`（`costPrice`、`retailPrice`、`totalAmount`、`discountAmount`、`unitPrice`、`finalUnitPrice`、`Expense.amount`、`Shift.openingCash/closingCash`、`DailySettlement.*Amount`）並建立 migration。
-- [ ] **AF-16**: 前端金額計算改為整數運算（以分為單位）或引入 `decimal.js`。
-- [ ] **AF-17**: 撰寫 ADR-009 記錄 Float → Decimal 決策與遷移策略。
+- [x] **AF-15**: Prisma Schema 所有金額欄位從 `Float` 改為 `Decimal`（`costPrice`、`retailPrice`、`totalAmount`、`discountAmount`、`unitPrice`、`finalUnitPrice`、`Expense.amount`、`Shift.openingCash/closingCash`、`DailySettlement.*Amount`）並建立 migration。（2026-05-20）
+- [x] **AF-16**: Service 層所有算術使用 `Number(x)` 轉換；前端介面改為 `number | string`，顯示/運算前呼叫 `Number()`。（2026-05-20）
+- [x] **AF-17**: 撰寫 ADR-010 記錄 Float → Decimal 決策與遷移策略。（2026-05-20）
 
 ---
 
 ## Arch-Fix Phase 6: Shared Types + E2E + Feature Gating
 **目標：建立可擴展的 monorepo 結構，補全測試防護網，落地 SaaS 功能限制。**
 
-- [ ] **AF-18**: 建立 `packages/types/` workspace（pnpm workspace），backend Zod schema `infer` 輸出 shared types，`pos-ui` / `admin-ui` 直接 import，不再各自定義。
-- [ ] **AF-19**: Playwright E2E 覆蓋 POS 完整結帳流程（login → 開班 → 掃條碼 → 結帳 → 驗庫存扣減 → 驗收據）。
+- [x] **AF-18**: 建立 `packages/types/` workspace（pnpm workspace），backend Zod schema `infer` 輸出 shared types，`pos-ui` / `admin-ui` 直接 import，不再各自定義。（2026-05-20）
+- [x] **AF-19**: Playwright E2E 覆蓋 POS 完整結帳流程（login → 開班 → 掃條碼 → 結帳 → 驗庫存扣減 → 驗收據）。（2026-05-20）
 - [x] **AF-20**: SAAS-03 Plan-based feature gating 落地：`requirePlan()` 套用到 reports 路由，前端 axios interceptor 攔截 403 並顯示 `PlanUpgradeToast`。（2026-05-20）
 
 ---

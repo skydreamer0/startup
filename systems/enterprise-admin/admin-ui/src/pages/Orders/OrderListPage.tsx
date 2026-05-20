@@ -197,7 +197,7 @@ export default function OrderListPage() {
                                         </td>
                                         <td>
                                             <div style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
-                                                ${o.totalAmount.toLocaleString()}
+                                                ${Number(o.totalAmount).toLocaleString()}
                                             </div>
                                             <div style={{ fontSize: '11px', color: o.paymentStatus === 'paid' ? '#10b981' : '#f59e0b' }}>
                                                 {o.paymentStatus.toUpperCase()}
