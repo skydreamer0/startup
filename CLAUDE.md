@@ -33,3 +33,17 @@
 - 後端設定規範：`systems/enterprise-admin/infrastructure/backend/backend_config.md`
 - RBAC 規範：`systems/enterprise-admin/infrastructure/backend/rbac_middleware.md`
 - 架構健康報告：`systems/enterprise-admin/ARCHITECTURE_HEALTH.md`
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`skydreamer0/startup`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Using the five canonical default label strings. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Multi-context layout — `CONTEXT-MAP.md` at root points to `systems/enterprise-admin/CONTEXT.md` with ADRs at `systems/enterprise-admin/infrastructure/adr/`. See `docs/agents/domain.md`.
