@@ -314,6 +314,27 @@
 
 ---
 
+## Arch-Fix Phase 1–3: 架構品質修復 (已完成 2026-05-17)
+**目標：依據 `ARCHITECTURE_HEALTH.md` 的 P0/P1/P2 問題清單，系統性修復 11 項架構瓶頸。**
+
+### Phase 1 — P0 關鍵修復
+- [x] **AF-01**: `analytics.controller.ts` 8 個 method 改用 `next(err)`，移除手動 try/catch + res.status(500)。
+- [x] **AF-02**: `DashboardPage.tsx` 移除 hardcoded `+12.5% from last month` 假數據。
+- [x] **AF-03**: `lib/prisma.ts` MappedModels 補入 `Shift`、`ProductBatch`、`DailySettlement`，修補 Phase 8 模型的租戶隔離缺口。
+
+### Phase 2 — 型別安全與一致性
+- [x] **AF-04**: `analytics.service.ts` 7 個公開 method 加入 `requireTenantId()` 顯式呼叫（P1-8）。
+- [x] **AF-05**: `pos-ui` 提取 `PAYMENT_LABELS` 至 `src/constants.ts`，移除 CartPanel / PaymentModal / ReceiptModal 三處重複定義（P1-7）。
+- [x] **AF-06**: 後端 10 處 `as any` 替換為 `Prisma Unchecked Input` 型別（P1-4 部分）。
+- [x] **AF-07**: `pos-ui` 加入 `@tanstack/react-query`，商品 fetch 從 `useState + useEffect` 遷移至 `useQuery`（P1-5 部分）。
+
+### Phase 3 — JWT 效能優化與 Rate Limiting
+- [x] **AF-09**: `jwt.ts` `AccessTokenPayload` 擴展加入 `tenantId`、`plan`、`permissions`。
+- [x] **AF-10**: `auth.service` 登入/refresh 時將 permissions 寫入 JWT；`auth.middleware` 新 token 直接讀 payload（4 SQL → 1 SQL）；`tenant.middleware` 新 token 讀 JWT payload（0 DB 查詢）。
+- [x] **AF-11**: 加入 `express-rate-limit`：POS 120/min、Analytics 30/min、全域 300/min（P2-3）。
+
+---
+
 ## 橫切關注點：架構改善方向 (Cross-cutting Concerns)
 > 從開發歷程中抽象出的系統性問題，納入各 Phase 規劃前置處理。
 
@@ -344,8 +365,7 @@
 
 實作：744 行的 `analytics.service.ts` 已拆為 `crm-analytics.service.ts` (190 LOC) / `product-analytics.service.ts` (238 LOC) / `operations-analytics.service.ts` (276 LOC)，共用型別集中於 `analytics.types.ts`。Controller 仍為單一進入點，HTTP 路由與回應形狀不變；17 個 analytics 測試全綠，FIX-01/02/03 全部保留。
 
-### C-05: Phase 8 剩餘任務完整性
-**背景**：Schema + Shift API 已完成，但 ProductBatch API、DailySettlement API 與 UI 頁面尚未開始，Phase 9 POS 依賴這些基礎。
-- 待完成（見 Phase 8 模組二 API-23, API-24, UI-27, UI-28）。
-- 建議在開始 Phase 9 POS UI 前先補齊，否則 POS 結帳無法寫入批號與日結。
+### C-05: Phase 8 剩餘任務完整性 (已解決 2026-05-17)
+**背景**：此警告已過時。Phase 8 全部項目（API-22~24、UI-27~28）均已完成，Phase 9 POS 建置時依賴已就緒。
+- [x] API-23, API-24, UI-27, UI-28 全部完成（見 Phase 8 勾選狀態）。
 
