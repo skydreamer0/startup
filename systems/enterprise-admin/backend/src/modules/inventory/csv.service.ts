@@ -15,8 +15,8 @@ export class CsvService {
     const rows = products.map((p) => [
       p.name,
       p.sku,
-      p.retailPrice,
-      p.costPrice,
+      Number(p.retailPrice),
+      Number(p.costPrice),
       p.stockQuantity,
       p.safetyStockDays ?? '',
       p.status,
@@ -44,7 +44,7 @@ export class CsvService {
     const rows = orders.map((o) => [
       (o as any).orderNumber ?? o.id.slice(0, 8),
       o.status,
-      o.totalAmount,
+      Number(o.totalAmount),
       (o as any).paymentMethod ?? '',
       (o as any).customer?.fullName ?? '',
       (o as any).salesPerson?.fullName ?? '',

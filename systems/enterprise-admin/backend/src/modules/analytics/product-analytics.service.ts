@@ -54,8 +54,8 @@ export class ProductAnalyticsService {
 
         for (const item of orderItems) {
             const existing = productMap.get(item.productId);
-            const revenue = item.quantity * item.unitPrice;
-            const cost = item.quantity * item.product.costPrice;
+            const revenue = item.quantity * Number(item.unitPrice);
+            const cost = item.quantity * Number(item.product.costPrice);
 
             if (existing) {
                 existing.totalRevenue += revenue;

@@ -58,15 +58,15 @@ export class AccountingService {
             orderId: order.id,
             orderNumber: order.orderNumber ?? null,
             customerName: order.customer?.name || order.customer?.phone || 'Unknown',
-            totalAmount: order.totalAmount,
-            discountAmount: order.discountAmount,
+            totalAmount: Number(order.totalAmount),
+            discountAmount: Number(order.discountAmount),
             paymentMethod: order.paymentMethod,
             occurredAt: order.createdAt.toISOString(),
             lineItems: order.items.map((item) => ({
                 productSku: item.product.sku,
                 productName: item.product.name,
                 quantity: item.quantity,
-                unitPrice: item.unitPrice,
+                unitPrice: Number(item.unitPrice),
             })),
         };
 
@@ -94,7 +94,7 @@ export class AccountingService {
         const payload: ExpenseSyncPayload = {
             expenseId: expense.id,
             type: expense.type,
-            amount: expense.amount,
+            amount: Number(expense.amount),
             description: expense.description ?? null,
             period: expense.period,
         };

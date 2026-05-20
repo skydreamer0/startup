@@ -39,13 +39,14 @@ export class OrderService {
                     throw new AppError(400, `Insufficient stock for product ${product.name}`);
                 }
 
-                const itemTotal = product.retailPrice * item.quantity;
+                const retailPrice = Number(product.retailPrice);
+                const itemTotal = retailPrice * item.quantity;
                 totalOrderAmount += itemTotal;
 
                 orderItemsData.push({
                     productId: product.id,
                     quantity: item.quantity,
-                    unitPrice: product.retailPrice
+                    unitPrice: retailPrice
                 });
 
                 // Prepare stock update

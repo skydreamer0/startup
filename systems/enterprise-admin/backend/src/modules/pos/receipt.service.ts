@@ -76,21 +76,22 @@ export class ReceiptService {
     for (const item of order.items) {
       const name = item.product.name.slice(0, 20);
       const discountNote = item.discountRate > 0 ? ` (${item.discountRate}%折)` : '';
-      const unitPrice = item.finalUnitPrice ?? item.unitPrice;
+      const unitPrice = Number(item.finalUnitPrice ?? item.unitPrice);
       lines.push(`${name}${discountNote}`);
       lines.push(leftRight(`  × ${item.quantity}  @${unitPrice.toFixed(0)}`, `${(unitPrice * item.quantity).toFixed(0)}`));
     }
 
     lines.push(divider());
 
-    const subtotal = order.items.reduce((s, i) => s + (i.finalUnitPrice ?? i.unitPrice) * i.quantity, 0);
+    const subtotal = order.items.reduce((s, i) => s + Number(i.finalUnitPrice ?? i.unitPrice) * i.quantity, 0);
     lines.push(leftRight('小計', subtotal.toFixed(0)));
 
-    if (order.discountAmount > 0) {
-      lines.push(leftRight(`折扣${order.discountNote ? ` (${order.discountNote})` : ''}`, `-${order.discountAmount.toFixed(0)}`));
+    const discountAmount = Number(order.discountAmount);
+    if (discountAmount > 0) {
+      lines.push(leftRight(`折扣${order.discountNote ? ` (${order.discountNote})` : ''}`, `-${discountAmount.toFixed(0)}`));
     }
 
-    lines.push(CMD.BOLD_ON + leftRight('合計', `${order.totalAmount.toFixed(0)} 元`) + CMD.BOLD_OFF);
+    lines.push(CMD.BOLD_ON + leftRight('合計', `${Number(order.totalAmount).toFixed(0)} 元`) + CMD.BOLD_OFF);
     lines.push(leftRight('付款方式', order.paymentMethod));
     lines.push(divider());
 

@@ -29,8 +29,8 @@ export class MarginService {
         let totalCogs = 0;
 
         for (const item of orderItems) {
-            const rev = item.quantity * item.unitPrice;
-            const cogs = item.quantity * item.product.costPrice;
+            const rev = item.quantity * Number(item.unitPrice);
+            const cogs = item.quantity * Number(item.product.costPrice);
 
             totalRevenue += rev;
             totalCogs += cogs;

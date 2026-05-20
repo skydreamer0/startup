@@ -39,8 +39,8 @@ export class OperationsAnalyticsService {
         let totalCogs = 0;
 
         for (const item of orderItems) {
-            totalRevenue += item.quantity * item.unitPrice;
-            totalCogs += item.quantity * item.product.costPrice;
+            totalRevenue += item.quantity * Number(item.unitPrice);
+            totalCogs += item.quantity * Number(item.product.costPrice);
         }
 
         if (totalRevenue === 0) return 0;
@@ -71,7 +71,7 @@ export class OperationsAnalyticsService {
             }
         });
 
-        const totalMarketingSpend = marketingExpense._sum.amount || 0;
+        const totalMarketingSpend = Number(marketingExpense._sum.amount ?? 0);
         if (totalMarketingSpend === 0) return 0;
 
         const newCustomers = await this.getNewCustomersCount(startDate, endDate);
@@ -94,7 +94,7 @@ export class OperationsAnalyticsService {
             }
         });
 
-        const totalRevenue = result._sum.totalAmount || 0;
+        const totalRevenue = Number(result._sum.totalAmount ?? 0);
         const totalOrders = result._count.id || 0;
 
         if (totalOrders === 0) return 0;
@@ -215,7 +215,7 @@ export class OperationsAnalyticsService {
             const key = `${weekday}-${hour}`;
             const cell = grid.get(key)!;
             cell.orderCount++;
-            cell.revenue += order.totalAmount;
+            cell.revenue += Number(order.totalAmount);
         }
 
         // Round revenues and return as flat array
@@ -252,7 +252,7 @@ export class OperationsAnalyticsService {
                 createdAt: { gte: periodStart, lte: periodEnd },
             },
         });
-        const totalRevenue = revenueAgg._sum.totalAmount || 0;
+        const totalRevenue = Number(revenueAgg._sum.totalAmount ?? 0);
 
         const grossMarginPass = kpis.gross_margin_pct >= 30;
         const cccPass = kpis.ccc_days <= 30;

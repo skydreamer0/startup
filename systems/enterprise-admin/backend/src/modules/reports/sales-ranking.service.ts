@@ -25,8 +25,8 @@ export class SalesRankingService {
         const productMap = new Map<string, any>();
 
         for (const item of orderItems) {
-            const rev = item.quantity * item.unitPrice;
-            const cogs = item.quantity * item.product.costPrice;
+            const rev = item.quantity * Number(item.unitPrice);
+            const cogs = item.quantity * Number(item.product.costPrice);
             const margin = rev - cogs;
 
             const existing = productMap.get(item.productId) || {

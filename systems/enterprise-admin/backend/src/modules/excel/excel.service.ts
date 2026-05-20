@@ -111,8 +111,8 @@ export class ExcelService {
                 description: p.description ?? '',
                 category: p.category?.name ?? '',
                 supplier: p.supplier?.name ?? '',
-                costPrice: p.costPrice,
-                retailPrice: p.retailPrice,
+                costPrice: Number(p.costPrice),
+                retailPrice: Number(p.retailPrice),
                 stockQuantity: p.stockQuantity,
                 safetyStock: p.safetyStock,
             });
@@ -235,8 +235,8 @@ export class ExcelService {
                 status: o.status,
                 paymentStatus: o.paymentStatus,
                 paymentMethod: o.paymentMethod,
-                totalAmount: o.totalAmount,
-                discountAmount: o.discountAmount,
+                totalAmount: Number(o.totalAmount),
+                discountAmount: Number(o.discountAmount),
                 createdAt: o.createdAt.toISOString(),
             });
         }
@@ -259,8 +259,8 @@ export class ExcelService {
                     sku: item.product?.sku ?? '',
                     name: item.product?.name ?? '',
                     quantity: item.quantity,
-                    unitPrice: item.unitPrice,
-                    finalUnitPrice: item.finalUnitPrice ?? '',
+                    unitPrice: Number(item.unitPrice),
+                    finalUnitPrice: item.finalUnitPrice != null ? Number(item.finalUnitPrice) : '',
                     discountRate: item.discountRate,
                 });
             }
@@ -303,8 +303,8 @@ export class ExcelService {
                 stockQuantity: p.stockQuantity,
                 safetyStock: p.safetyStock,
                 isLowStock: isLow ? 'YES' : 'NO',
-                costPrice: p.costPrice,
-                retailPrice: p.retailPrice,
+                costPrice: Number(p.costPrice),
+                retailPrice: Number(p.retailPrice),
             });
             if (isLow) {
                 row.eachCell((cell) => {

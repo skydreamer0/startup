@@ -64,13 +64,14 @@ export class CheckoutService {
         }
 
         const discountRate = cartItem.discountRate ?? 0;
-        const finalUnitPrice = product.retailPrice * (1 - discountRate / 100);
+        const retailPrice = Number(product.retailPrice);
+        const finalUnitPrice = retailPrice * (1 - discountRate / 100);
         subtotal += finalUnitPrice * cartItem.quantity;
 
         itemsData.push({
           productId: cartItem.productId,
           quantity: cartItem.quantity,
-          unitPrice: product.retailPrice,
+          unitPrice: retailPrice,
           discountRate,
           finalUnitPrice,
           batchDeductions,

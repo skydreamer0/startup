@@ -20,17 +20,17 @@ export class CashFlowService {
                 createdAt: { gte: startDate, lte: endDate }
             }
         });
-        const operatingInflows = revenueAgg._sum.totalAmount || 0;
+        const operatingInflows = Number(revenueAgg._sum.totalAmount ?? 0);
 
         // 2. Operating Outflows (Manual Expenses)
         const expenses = await prisma.expense.findMany({
             where: { period: periodStr }
         });
 
-        const operatingOutflows = expenses.reduce((sum: number, e: any) => sum + e.amount, 0);
-        const expensesBreakdown = expenses.map((e: any) => ({
+        const operatingOutflows = expenses.reduce((sum: number, e) => sum + Number(e.amount), 0);
+        const expensesBreakdown = expenses.map((e) => ({
             type: e.type,
-            amount: e.amount,
+            amount: Number(e.amount),
             description: e.description
         }));
 
@@ -43,7 +43,7 @@ export class CashFlowService {
             include: { product: { select: { costPrice: true } } }
         });
 
-        const investingOutflows = inventoryIns.reduce((sum, tx) => sum + (tx.quantity * tx.product.costPrice), 0);
+        const investingOutflows = inventoryIns.reduce((sum, tx) => sum + (tx.quantity * Number(tx.product.costPrice)), 0);
 
         // 4. Net Cash Flow
         const netCashFlow = operatingInflows - operatingOutflows - investingOutflows;

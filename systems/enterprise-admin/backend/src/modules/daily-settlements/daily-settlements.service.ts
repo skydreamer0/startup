@@ -92,19 +92,20 @@ export class DailySettlementService {
     let otherAmount = 0;
 
     for (const order of orders) {
-      totalSales += order.totalAmount;
+      const amount = Number(order.totalAmount);
+      totalSales += amount;
       switch (order.paymentMethod) {
         case 'CASH':
-          cashAmount += order.totalAmount;
+          cashAmount += amount;
           break;
         case 'CARD':
-          cardAmount += order.totalAmount;
+          cardAmount += amount;
           break;
         case 'LINE_PAY':
-          linePayAmount += order.totalAmount;
+          linePayAmount += amount;
           break;
         default:
-          otherAmount += order.totalAmount;
+          otherAmount += amount;
           break;
       }
     }
