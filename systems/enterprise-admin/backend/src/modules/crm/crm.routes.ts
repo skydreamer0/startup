@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { CrmController } from './crm.controller';
+import { CsvController } from '../inventory/csv.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
 import { validate } from '../../middleware/validate.middleware';
@@ -27,5 +28,8 @@ router.post(
     validate({ body: createInteractionSchema }),
     CrmController.addInteraction
 );
+
+// CSV Export
+router.get('/customers/export/csv', requirePermission('read:crm'), CsvController.exportCustomers);
 
 export default router;

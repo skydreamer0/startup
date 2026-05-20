@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { OrderController } from './order.controller';
+import { CsvController } from '../inventory/csv.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
 
@@ -11,5 +12,8 @@ router.post('/', requirePermission('create:orders'), OrderController.create);
 router.get('/', requirePermission('read:orders'), OrderController.list);
 router.get('/:id', requirePermission('read:orders'), OrderController.getById);
 router.patch('/:id/status', requirePermission('update:orders'), OrderController.updateStatus);
+
+// CSV Export
+router.get('/export/csv', requirePermission('read:orders'), CsvController.exportOrders);
 
 export default router;
