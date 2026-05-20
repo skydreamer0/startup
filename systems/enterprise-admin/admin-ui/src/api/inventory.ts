@@ -1,30 +1,7 @@
 import api from './client';
+import type { Product, Supplier } from '@pharmasaas/types';
 
-export interface Supplier {
-    id: string;
-    name: string;
-    contactName?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    rating?: number;
-    deliveryReliability?: number;
-    defectRate?: number;
-}
-
-export interface Product {
-    id: string;
-    sku: string;
-    name: string;
-    description?: string;
-    categoryId?: string;
-    supplierId?: string;
-    costPrice: number;
-    retailPrice: number;
-    stockQuantity: number;
-    safetyStock: number;
-    supplier?: Supplier;
-}
+export type { Product, Supplier };
 
 export const inventoryApi = {
     // Suppliers

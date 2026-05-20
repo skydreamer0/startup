@@ -13,7 +13,11 @@
     "jsx": "react-jsx",
     "strict": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@pharmasaas/types": ["../packages/types/src/index.ts"]
+    }
   },
   "include": ["src"]
 }

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { PosProduct } from '../api/pos';
+import type { PosProduct } from '@pharmasaas/types';
 
 export interface CartItem {
   product: PosProduct;
@@ -81,7 +81,9 @@ export const useCartStore = create<CartState>((set, get) => ({
   subtotal: () => {
     const { items } = get();
     return items.reduce((sum, item) => {
-      const finalPrice = item.product.retailPrice * (1 - item.discountRate / 100);
+      // retailPrice may arrive as string from Prisma Decimal JSON serialisation
+      const retailPrice = Number(item.product.retailPrice);
+      const finalPrice = retailPrice * (1 - item.discountRate / 100);
       return sum + finalPrice * item.quantity;
     }, 0);
   },

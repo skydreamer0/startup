@@ -1,71 +1,21 @@
 import api from './client';
+import type {
+    DashboardKPIs,
+    CrmMetrics,
+    KpiSnapshot as AnalyticsKPIs,
+    KpiTrendPoint as AnalyticsTrend,
+    BonusGateResult as BonusGateStatus,
+    HeatmapCell,
+} from '@pharmasaas/types';
 
-export interface DashboardKPIs {
-    customers: { total: number; newThisMonth: number };
-    revenue: { totalLifetime: number };
-    inventory: {
-        totalProducts: number;
-        lowStockCount: number;
-        lowStockItems: { name: string; sku: string; stockQuantity: number; safetyStock: number }[];
-    };
-    suppliers: { avgDeliveryReliability: number | null; avgDefectRate: number | null };
-    recentInteractions: {
-        id: string;
-        type: string;
-        content: string;
-        interactedAt: string;
-        customer: { name: string; phone: string };
-    }[];
-}
-
-export interface CrmMetrics {
-    totalCustomers: number;
-    repeatCustomers: number;
-    repurchaseRate: number;
-    averageLTV: number;
-    totalRevenue: number;
-    churnRate90d: number;
-    atRiskCustomers: number;
-}
-
-export interface AnalyticsKPIs {
-    gross_margin_pct: number;
-    cac_twd: number;
-    aov_twd: number;
-    ccc_days: number;
-    ltv_twd: number;
-    bonus_gate_pass: boolean;
-    periodStart: string;
-    periodEnd: string;
-}
-
-export interface AnalyticsTrend {
-    period: string;
-    gross_margin_pct: number;
-    cac_twd: number;
-    aov_twd: number;
-    ccc_days: number;
-    ltv_twd: number;
-    bonus_gate_pass: boolean;
-}
-
-export interface BonusGateStatus {
-    period: string;
-    grossMarginPct: number;
-    grossMarginPass: boolean;
-    cccDays: number;
-    cccPass: boolean;
-    gatePass: boolean;
-    estimatedBonusPool: number;
-    totalRevenue: number;
-}
-
-export interface HeatmapCell {
-    weekday: number;
-    hour: number;
-    orderCount: number;
-    revenue: number;
-}
+export type {
+    DashboardKPIs,
+    CrmMetrics,
+    AnalyticsKPIs,
+    AnalyticsTrend,
+    BonusGateStatus,
+    HeatmapCell,
+};
 
 export const dashboardApi = {
     getKPIs: async (): Promise<DashboardKPIs> => {

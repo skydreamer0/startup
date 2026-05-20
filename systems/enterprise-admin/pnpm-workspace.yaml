@@ -1,0 +1,5 @@
+packages:
+  - 'packages/*'
+  - 'backend'
+  - 'admin-ui'
+  - 'pos-ui'

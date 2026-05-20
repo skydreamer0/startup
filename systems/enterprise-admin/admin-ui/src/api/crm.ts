@@ -1,25 +1,7 @@
 import api from './client';
+import type { Customer, Interaction } from '@pharmasaas/types';
 
-export interface Interaction {
-    id: string;
-    customerId: string;
-    type: string;
-    content?: string;
-    interactedAt: string;
-    createdAt: string;
-}
-
-export interface Customer {
-    id: string;
-    name?: string;
-    phone?: string;
-    lineUid?: string;
-    totalSpent: number;
-    purchaseCount: number;
-    lastInteractionDate?: string;
-    lastPurchaseDate?: string;
-    interactions?: Interaction[];
-}
+export type { Customer, Interaction };
 
 export const crmApi = {
     getCustomers: async (params?: { type?: string; hasLine?: string; page?: string }) => {

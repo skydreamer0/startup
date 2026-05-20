@@ -1,47 +1,13 @@
 import api from './client';
+import type {
+  PosProduct,
+  PosStaff,
+  ActiveShift,
+  CheckoutPayload,
+  CheckoutResult,
+} from '@pharmasaas/types';
 
-export interface PosProduct {
-  id: string;
-  name: string;
-  sku: string;
-  barcode?: string;
-  retailPrice: number;
-  stockQuantity: number;
-  safetyStock?: number;
-  category?: { id: string; name: string };
-}
-
-export interface PosStaff {
-  id: string;
-  fullName: string;
-  email: string;
-  employeeCode?: string;
-}
-
-export interface ActiveShift {
-  id: string;
-  status: string;
-  openedAt: string;
-  staff: { id: string; fullName: string };
-}
-
-export interface CheckoutPayload {
-  cartItems: { productId: string; quantity: number; discountRate: number }[];
-  paymentMethod: 'CASH' | 'CARD' | 'LINE_PAY' | 'TRANSFER' | 'OTHER';
-  orderDiscountAmount: number;
-  orderDiscountNote?: string;
-  customerId?: string;
-  shiftId: string;
-  salesStaffId?: string;
-}
-
-export interface CheckoutResult {
-  id: string;
-  orderNumber: string;
-  totalAmount: number;
-  paymentMethod: string;
-  items: { productId: string; quantity: number; unitPrice: number; finalUnitPrice: number }[];
-}
+export type { PosProduct, PosStaff, ActiveShift, CheckoutPayload, CheckoutResult };
 
 export const posApi = {
   getProducts: (q?: string, categoryId?: string, inStockOnly = true) =>
