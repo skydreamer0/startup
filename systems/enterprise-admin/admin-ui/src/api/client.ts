@@ -41,6 +41,15 @@ api.interceptors.response.use(
             }
         }
 
+        if (error.response?.status === 403) {
+            const code = error.response?.data?.error?.code;
+            if (code === 'PLAN_UPGRADE_REQUIRED') {
+                const msg = error.response.data.error.message ?? '此功能需要升級方案';
+                window.dispatchEvent(new CustomEvent('plan-upgrade-required', { detail: { message: msg } }));
+                return Promise.reject(error);
+            }
+        }
+
         return Promise.reject(error);
     },
 );

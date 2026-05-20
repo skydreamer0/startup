@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { usePlan, planMeets } from '../hooks/usePlan';
 import ThemeToggle from '../components/ThemeToggle';
+import { PlanUpgradeToast } from '../components/PlanUpgradeToast';
 
 export default function AdminLayout() {
     const { user, logout } = useAuth();
@@ -115,6 +116,7 @@ export default function AdminLayout() {
             <main className="main-content">
                 <Outlet />
             </main>
+            <PlanUpgradeToast />
         </div>
     );
 }
