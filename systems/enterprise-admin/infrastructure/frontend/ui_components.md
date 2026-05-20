@@ -106,7 +106,7 @@
 )}
 ```
 
-> 注意：`DashboardPage.tsx` 第 74 行目前仍有一個 hardcoded 的 `"+12.5% from last month"`，這是已知技術債，應在 API 補上 `revenueGrowthPct` 欄位後修正。
+> 歷史紀錄：`DashboardPage.tsx` 曾有 hardcoded 的 `"+12.5% from last month"`，已於 Arch-Fix Phase 1 (AF-02) 移除，改用 `kpis.customers.newThisMonth` 真實值。
 
 ---
 

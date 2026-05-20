@@ -282,9 +282,9 @@ const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
 
 **目標：** 消除會立即造成 bug 或誤導的問題
 
-- [ ] **AF-01**: `AnalyticsController` 8 個 method 改用 `next(err)`，移除手動 try/catch
-- [ ] **AF-02**: `DashboardPage` 移除 hardcoded `"+12.5% from last month"`；改為顯示 `N/A` 或從 API 取得真實 MoM 比較
-- [ ] **AF-03**: `prisma.ts` 的 `MappedModels` 加入 `Shift`、`ProductBatch`、`DailySettlement`
+- [x] **AF-01**: `AnalyticsController` 8 個 method 改用 `next(err)`，移除手動 try/catch（2026-05-20 驗證完成）
+- [x] **AF-02**: `DashboardPage` 移除 hardcoded `"+12.5% from last month"`；改用真實 `customers.newThisMonth`（2026-05-20 驗證完成）
+- [x] **AF-03**: `prisma.ts` 的 `MappedModels` 已含 `Shift`、`ProductBatch`、`DailySettlement`（並追加 `AccountingSyncLog`、`MessageBroadcast`）
 
 ---
 

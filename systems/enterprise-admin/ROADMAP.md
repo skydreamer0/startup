@@ -254,7 +254,63 @@
 - [x] **POS-UX-4**: 響應式版面（POS Layout CSS class 系統、tablet ≤1023px 自適應、行動裝置 ≤767px cart 固定底部）。
 - [x] **POS-UX-5**: 離線佇列 UI（OfflineStatus topbar 元件：連線燈、待同步筆數、手動同步按鈕）、印表機狀態燈（USB/瀏覽器列印）。
 - [x] **POS-UX-6**: 管理員控制（商品折扣 ≥20% / 整筆折扣 ≥500元 警示、交班按鈕與結帳金額輸入流程）。
-- [ ] **POS-03**: 電子發票 API 串接（Phase 10）。
+- ~~**POS-03**: 電子發票 API 串接~~ — 無限期延期。
+
+---
+
+## Arch-Fix Phase 1: P0 緊急修復
+**目標：消除會立即造成 bug 或誤導使用者的問題。**
+
+- [x] **AF-01**: `AnalyticsController` 8 個 method 改用 `next(err)`，移除自行 try/catch + res.status(500)。（驗證時發現程式碼早已完成，2026-05-20 同步文檔）
+- [x] **AF-02**: `DashboardPage` 移除 hardcoded `"+12.5% from last month"`；目前以 `customers.newThisMonth` 真實值取代。（程式碼已實作，文檔同步 2026-05-20）
+- [x] **AF-03**: `backend/src/lib/prisma.ts` 的 `MappedModels` 已含 `Shift`、`ProductBatch`、`DailySettlement`（並追加 `AccountingSyncLog`、`MessageBroadcast`）。
+
+---
+
+## Arch-Fix Phase 2: 型別與一致性整頓
+**目標：消除型別安全窟窿、統一前後端資料層模式。**
+
+- [ ] **AF-04**: `AnalyticsService` 加入顯式 `requireTenantId()` 呼叫（防守性 fail fast，勿依賴 Prisma Extension 隱式注入）。
+- [ ] **AF-05**: `PAYMENT_LABELS` 提取到 `pos-ui/src/constants.ts`，`CartPanel`、`PaymentModal`、`ReceiptModal` 三個 component 共用。
+- [ ] **AF-06**: 後端 Service 層消除可修復的 `as any`（`crm.service.ts`、`inventory.service.ts`、`order.service.ts`）；改用 `Prisma.validator()` 或拆出 DTO。
+- [ ] **AF-07**: `pos-ui` 引入 TanStack Query，`getProducts` / `getCategories` 改為 `useQuery`，解決無 cache 與庫存數字過時問題。
+- [ ] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `ShiftOpenScreen` component，將 14 個 useState 降到 6 個以內。
+
+---
+
+## Arch-Fix Phase 3: 效能與安全強化
+**目標：解決 Auth / Tenant middleware 每次 request 打 DB 的問題，加入 rate limiting。**
+
+- [ ] **AF-09**: JWT payload 加入 `tenantId`（login 和 refresh 時寫入），`tenant.middleware.ts` 直接讀 JWT 取 tenantId，移除第一次 DB 查詢。
+- [ ] **AF-10**: JWT payload 加入 `permissions[]`（或 permission hash），`auth.middleware.ts` 直接驗 payload，移除 3 層 join 查詢；`roles/permissions` 變更時強制重新登入。
+- [ ] **AF-11**: 加入 `express-rate-limit`：`/pos/products` 每秒 10 次，`/analytics/*` 每分鐘 30 次。
+
+---
+
+## Arch-Fix Phase 4: Analytics Service 拆分
+**目標：消解 God Object，各子領域獨立可測試。**
+
+- [x] **AF-12**: 建立 `modules/analytics/services/` 子目錄，拆分為 `crm-analytics.service.ts` / `product-analytics.service.ts` / `operations-analytics.service.ts`，共用型別集中於 `analytics.types.ts`。（C-04，2026-05-19）
+- [x] **AF-13**: `analytics.controller.ts` 改為呼叫各子 service，HTTP 路由與回應形狀不變。（C-04，2026-05-19）
+- [ ] **AF-14**: 對各子 service 補充對應的獨立 unit test（目前測試掛在整合層，缺少子 service 隔離測試）。
+
+---
+
+## Arch-Fix Phase 5: Float → Decimal 金額精度遷移
+**目標：消除 POS 結帳 / 日結 / 財務報表的浮點精度 bug。**
+
+- [ ] **AF-15**: Prisma Schema 所有金額欄位從 `Float` 改為 `Decimal`（`costPrice`、`retailPrice`、`totalAmount`、`discountAmount`、`unitPrice`、`finalUnitPrice`、`Expense.amount`、`Shift.openingCash/closingCash`、`DailySettlement.*Amount`）並建立 migration。
+- [ ] **AF-16**: 前端金額計算改為整數運算（以分為單位）或引入 `decimal.js`。
+- [ ] **AF-17**: 撰寫 ADR-009 記錄 Float → Decimal 決策與遷移策略。
+
+---
+
+## Arch-Fix Phase 6: Shared Types + E2E + Feature Gating
+**目標：建立可擴展的 monorepo 結構，補全測試防護網，落地 SaaS 功能限制。**
+
+- [ ] **AF-18**: 建立 `packages/types/` workspace（pnpm workspace），backend Zod schema `infer` 輸出 shared types，`pos-ui` / `admin-ui` 直接 import，不再各自定義。
+- [ ] **AF-19**: Playwright E2E 覆蓋 POS 完整結帳流程（login → 開班 → 掃條碼 → 結帳 → 驗庫存扣減 → 驗收據）。
+- [ ] **AF-20**: SAAS-03 Plan-based feature gating 落地：`plan.middleware.ts` 接進路由，實作 `free` / `starter` / `pro` 功能限制。
 
 ---
 
