@@ -20,11 +20,8 @@ import PlanGate from './components/PlanGate';
 import PosPreviewPage from './pages/POS/PosPreviewPage';
 import BatchListPage from './pages/Inventory/BatchListPage';
 import ShiftListPage from './pages/Shifts/ShiftListPage';
-<<<<<<< HEAD
 import AccountingSyncPage from './pages/AccountingSyncPage';
-=======
 import MarketingPage from './pages/Marketing/MarketingPage';
->>>>>>> worktree-agent-a2d40d271ff6b123e
 
 function ProtectedRoute() {
     const { user, loading } = useAuth();
