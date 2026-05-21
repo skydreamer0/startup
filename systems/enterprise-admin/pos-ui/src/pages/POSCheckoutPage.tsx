@@ -140,35 +140,39 @@ export default function POSCheckoutPage() {
     <div className="pos-shell">
       <PosToast toast={toast} onDismiss={() => setToast(null)} />
       <div className="pos-topbar">
-        <span style={{ fontWeight: 700, fontSize: 15 }}>PharmaSaaS POS</span>
-        <span style={{ fontSize: 12, color: 'var(--success)' }}>班別已開啟</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🌿</div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.2 }}>PharmaSaaS POS</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>健康生活藥局</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 12px', background: 'var(--success-bg)', borderRadius: 'var(--radius-full)' }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }} />
+          <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>班別進行中</span>
+        </div>
         <div style={{ flex: 1 }} />
-        <OfflineStatus onSync={handleSync} />
-        <PrinterStatus />
-        <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13 }}>
-          人員 {currentStaffName} (F6)
-        </button>
-        <button type="button" onClick={() => shift.setShowCloseShift(true)} style={{ background: 'none', border: '1px solid var(--danger)', borderRadius: 'var(--radius-xs)', padding: '4px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--danger)' }}>
-          交班
-        </button>
-      </div>
-
-      <div className="pos-searchbar">
         <input
           ref={searchRef}
           data-testid="product-search-input"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
-          placeholder="搜尋商品名稱、條碼或 SKU... (F2)"
-          style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', fontSize: 14, boxSizing: 'border-box' }}
+          placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
+          style={{ width: 260, padding: '8px 16px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', fontSize: 13, background: 'var(--bg-app)', outline: 'none', color: 'var(--text-primary)' }}
         />
+        <OfflineStatus onSync={handleSync} />
+        <PrinterStatus />
+        <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 16px', cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
+          👤 {currentStaffName}
+        </button>
+        <button type="button" onClick={() => shift.setShowCloseShift(true)} style={{ background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: 'var(--radius-full)', padding: '6px 16px', cursor: 'pointer', fontSize: 13, color: 'var(--danger)', fontWeight: 600 }}>
+          交班
+        </button>
       </div>
 
       <div className="pos-body">
-        <div className="pos-category">
-          <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
-        </div>
         <div className="pos-product-area">
+          <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
         <div className="pos-cart">

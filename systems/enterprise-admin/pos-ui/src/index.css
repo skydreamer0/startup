@@ -1,110 +1,75 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* ═══════════════════════════════════════════════════
-   PharmaSaaS POS — Design Tokens
+   PharmaSaaS POS — Warm Minimalist Design Tokens (V3)
    ═══════════════════════════════════════════════════ */
 
-/* ────────────────────────────────────────────────────
-   LIGHT MODE (Default)
-   ──────────────────────────────────────────────────── */
 :root {
-  /* ─── Core Surfaces ─── */
-  --bg-app: #F8FAFC;
-  --bg-sidebar: #FFFFFF;
+  /* ─── Surfaces ─── */
+  --bg-app: #FBF8F3;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #F1F5F9;
-  --bg-hover: rgba(0, 0, 0, 0.03);
+  --bg-card-hover: #F5EFE6;
+  --bg-hover: rgba(61, 43, 31, 0.03);
   --bg-input: #FFFFFF;
-  --bg-input-focus: #FFFFFF;
   --bg-elevated: #FFFFFF;
+  --bg-cart: #F5EFE6;
 
   /* ─── Text ─── */
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
+  --text-primary: #3D2B1F;
+  --text-secondary: #6B5245;
+  --text-muted: #9C8A7A;
   --text-inverse: #FFFFFF;
 
-  /* ─── Accent ─── */
-  --accent: #6366F1;
-  --accent-hover: #4F46E5;
-  --accent-subtle: rgba(99, 102, 241, 0.08);
-  --accent-border: rgba(99, 102, 241, 0.20);
-  --accent-text: #4F46E5;
+  /* ─── Accent (Amber) ─── */
+  --accent: #D97706;
+  --accent-hover: #B45309;
+  --accent-subtle: #FEF3C7;
+  --accent-border: #FDE68A;
+  --accent-text: #D97706;
 
   /* ─── Semantic ─── */
-  --success: #10B981;
-  --success-bg: rgba(16, 185, 129, 0.08);
-  --danger: #EF4444;
-  --danger-bg: rgba(239, 68, 68, 0.08);
-  --warning: #F59E0B;
-  --warning-bg: rgba(245, 158, 11, 0.08);
-  --info: #3B82F6;
-  --info-bg: rgba(59, 130, 246, 0.08);
+  --success: #4A7C59;
+  --success-bg: #ECFDF5;
+  --danger: #DC2626;
+  --danger-bg: rgba(220, 38, 38, 0.08);
+  --warning: #D97706;
+  --warning-bg: #FEF3C7;
+  --info: #0369A1;
+  --info-bg: rgba(3, 105, 161, 0.08);
 
   /* ─── Borders & Shadows ─── */
-  --border: #E2E8F0;
-  --border-strong: #CBD5E1;
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  --border: #E8DDD0;
+  --border-strong: #D6C8B8;
+  --shadow-xs: 0 1px 2px rgba(61, 43, 31, 0.04);
+  --shadow-sm: 0 1px 3px rgba(61, 43, 31, 0.06), 0 1px 2px rgba(61, 43, 31, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(61, 43, 31, 0.08), 0 2px 4px -2px rgba(61, 43, 31, 0.05);
+  --shadow-lg: 0 10px 20px -3px rgba(61, 43, 31, 0.10), 0 4px 8px -4px rgba(61, 43, 31, 0.06);
+  --shadow-card: 0 2px 8px rgba(61, 43, 31, 0.06);
 
-  /* ─── Layout ─── */
-  --sidebar-w: 260px;
-  --sidebar-collapsed: 72px;
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  /* ─── Radius (generous rounding for warm feel) ─── */
+  --radius-xs: 10px;
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 24px;
   --radius-full: 9999px;
 
   /* ─── Motion ─── */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: 150ms var(--ease);
   --transition: 250ms var(--ease);
-  --transition-theme: 300ms ease;
 
   /* ─── Chart Colors ─── */
-  --chart-1: #6366F1;
-  --chart-2: #10B981;
-  --chart-3: #F59E0B;
-  --chart-4: #EF4444;
-  --chart-5: #8B5CF6;
+  --chart-1: #D97706;
+  --chart-2: #4A7C59;
+  --chart-3: #0369A1;
+  --chart-4: #DC2626;
+  --chart-5: #7C3AED;
 }
 
-/* ────────────────────────────────────────────────────
-   PHARMASAAS BRAND TOKENS
-   Used by POS surface and future brand-specific UI
-   ──────────────────────────────────────────────────── */
-:root {
-  /* Brand primaries */
-  --color-primary: #533afd;
-  --color-primary-hover: #665efd;
-  --color-primary-press: #2e2b8c;
-  --color-primary-soft: #e0deff;
-  --color-on-primary: #ffffff;
-
-  /* POS light surface (used by PosLayout, not AdminLayout) */
-  --color-canvas: #ffffff;
-  --color-canvas-soft: #f6f9fc;
-  --color-canvas-muted: #eef2f7;
-  --color-hairline: #e3e8ee;
-
-  /* Spacing scale */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 24px;
-  --space-xxl: 32px;
-  --space-section: 48px;
-}
-
-/* POS global reset */
+/* Global reset */
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-app); color: var(--text-primary); }
+body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-app); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
 button { font-family: inherit; }
 input { font-family: inherit; }
 
@@ -112,32 +77,132 @@ input { font-family: inherit; }
    POS LAYOUT SYSTEM
    ═══════════════════════════════════════════════════ */
 
-.pos-shell { display: flex; flex-direction: column; height: 100vh; background: var(--bg-app); font-family: Inter, sans-serif; }
-.pos-topbar { display: flex; align-items: center; padding: 8px 16px; background: var(--bg-card); border-bottom: 1px solid var(--border); gap: 16px; flex-shrink: 0; }
-.pos-searchbar { padding: 8px 12px; background: var(--bg-card); border-bottom: 1px solid var(--border); flex-shrink: 0; }
-.pos-searchbar input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 14px; box-sizing: border-box; }
-.pos-body { display: flex; flex: 1; overflow: hidden; }
-.pos-category { width: 110px; flex-shrink: 0; }
-.pos-product-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.pos-cart { width: 360px; flex-shrink: 0; }
-.pos-statusbar { padding: 6px 16px; background: var(--bg-card); border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; gap: 16px; flex-shrink: 0; }
+.pos-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg-app);
+  font-family: Inter, sans-serif;
+}
 
-.pos-category-nav { display: flex; flex-direction: column; gap: 4px; padding: 8px; overflow-y: auto; border-right: 1px solid var(--border); height: 100%; }
-.pos-category-btn { padding: 8px 10px; border-radius: var(--radius-xs); border: none; background: transparent; color: var(--text-secondary); cursor: pointer; text-align: left; font-size: 13px; width: 100%; }
-.pos-category-btn--active { background: var(--accent-subtle); color: var(--accent-text); font-weight: 600; }
+/* Top bar */
+.pos-topbar {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 60px;
+  background: var(--bg-card);
+  border-bottom: 1.5px solid var(--border);
+  gap: 14px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-xs);
+}
 
-.pos-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; padding: 12px; overflow-y: auto; flex: 1; }
+/* Body: product area + cart, no sidebar */
+.pos-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 
-.pos-cart-panel { display: flex; flex-direction: column; height: 100%; border-left: 1px solid var(--border); background: var(--bg-card); overflow: hidden; padding: 12px; gap: 8px; }
+.pos-product-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
+.pos-cart {
+  width: 370px;
+  flex-shrink: 0;
+}
+
+/* Status bar */
+.pos-statusbar {
+  padding: 5px 24px;
+  background: var(--bg-card);
+  border-top: 1.5px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+/* ─── Category Nav (horizontal pills) ─── */
+.pos-category-nav {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 14px 20px 10px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+.pos-category-nav::-webkit-scrollbar { display: none; }
+
+.pos-category-btn {
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+.pos-category-btn:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+.pos-category-btn--active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* ─── Product Grid ─── */
+.pos-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 12px;
+  padding: 6px 20px 20px;
+  overflow-y: auto;
+  flex: 1;
+  align-items: start;
+}
+
+/* ─── Cart Panel ─── */
+.pos-cart-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-left: 1.5px solid var(--border);
+  background: var(--bg-cart);
+  overflow: hidden;
+  padding: 0;
+  gap: 0;
+}
+
+/* ─── Responsive ─── */
 @media (max-width: 1023px) {
-  .pos-cart { width: 280px; }
-  .pos-category { width: 80px; }
-  .pos-category-btn { padding: 6px 6px; font-size: 11px; }
+  .pos-cart { width: 300px; }
+  .pos-product-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
 }
 
 @media (max-width: 767px) {
-  .pos-category { display: none; }
-  .pos-cart { width: 100%; position: fixed; bottom: 0; left: 0; right: 0; height: 50vh; z-index: 100; border-left: none; border-top: 2px solid var(--border); }
+  .pos-cart {
+    width: 100%;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 50vh;
+    z-index: 100;
+    border-left: none;
+    border-top: 2px solid var(--border);
+  }
   .pos-product-area { padding-bottom: 50vh; }
 }

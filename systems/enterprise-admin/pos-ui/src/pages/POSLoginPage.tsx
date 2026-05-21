@@ -29,22 +29,19 @@ export default function POSLoginPage() {
     }
   }
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'Enter') handleLogin(code);
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') handleLogin(code);
   }
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      height: '100vh', background: 'var(--bg-app)',
-    }}>
-      <div style={{
-        background: 'var(--bg-card)', borderRadius: 'var(--radius-md)',
-        padding: 48, width: 380, boxShadow: 'var(--shadow-lg)', textAlign: 'center',
-      }}>
-        <div style={{ fontSize: 36, marginBottom: 12 }}>POS</div>
-        <h2 style={{ margin: '0 0 6px', fontSize: 22 }}>PharmaSaaS POS</h2>
-        <p style={{ margin: '0 0 28px', color: 'var(--text-muted)', fontSize: 14 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-app)', fontFamily: 'Inter, sans-serif' }}>
+      <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '48px 44px', width: 400, boxShadow: 'var(--shadow-lg)', textAlign: 'center', border: '1.5px solid var(--border)' }}>
+        <div style={{ width: 68, height: 68, borderRadius: 22, background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, margin: '0 auto 20px' }}>
+          🌿
+        </div>
+        <h2 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>PharmaSaaS POS</h2>
+        <p style={{ margin: '0 0 6px', color: 'var(--text-muted)', fontSize: 13 }}>健康生活藥局</p>
+        <p style={{ margin: '0 0 28px', color: 'var(--text-muted)', fontSize: 13 }}>
           請掃描員工條碼或輸入員工代碼登入
         </p>
 
@@ -52,20 +49,23 @@ export default function POSLoginPage() {
           ref={inputRef}
           data-testid="login-employee-code-input"
           value={code}
-          onChange={(event) => setCode(event.target.value)}
+          onChange={(e) => setCode(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="員工條碼 / 員工代碼"
           disabled={loading}
           style={{
-            width: '100%', padding: '12px 14px', fontSize: 16,
-            border: `1px solid ${error ? 'var(--danger)' : 'var(--border)'}`,
-            borderRadius: 'var(--radius-xs)', boxSizing: 'border-box',
-            textAlign: 'center', letterSpacing: 0,
+            width: '100%', padding: '13px 16px', fontSize: 15,
+            border: `1.5px solid ${error ? 'var(--danger)' : 'var(--border)'}`,
+            borderRadius: 'var(--radius-sm)', boxSizing: 'border-box',
+            textAlign: 'center', background: 'var(--bg-app)', color: 'var(--text-primary)',
+            outline: 'none',
           }}
         />
 
         {error && (
-          <div role="alert" style={{ color: 'var(--danger)', fontSize: 13, marginTop: 10 }}>{error}</div>
+          <div role="alert" style={{ color: 'var(--danger)', fontSize: 13, marginTop: 10, background: 'var(--danger-bg)', padding: '8px 12px', borderRadius: 'var(--radius-xs)' }}>
+            {error}
+          </div>
         )}
 
         <button
@@ -74,14 +74,16 @@ export default function POSLoginPage() {
           onClick={() => handleLogin(code)}
           disabled={loading || !code.trim()}
           style={{
-            marginTop: 16, width: '100%', padding: '12px',
-            background: 'var(--accent)', color: '#fff', border: 'none',
-            borderRadius: 'var(--radius-sm)', fontSize: 15, fontWeight: 700,
+            marginTop: 14, width: '100%', padding: '14px', border: 'none',
+            borderRadius: 'var(--radius-full)',
+            background: loading || !code.trim() ? 'var(--border)' : 'linear-gradient(135deg, #D97706, #F59E0B)',
+            color: loading || !code.trim() ? 'var(--text-muted)' : '#fff',
+            fontSize: 15, fontWeight: 800,
             cursor: loading || !code.trim() ? 'not-allowed' : 'pointer',
-            opacity: loading || !code.trim() ? 0.6 : 1,
+            boxShadow: loading || !code.trim() ? 'none' : '0 4px 14px rgba(217,119,6,0.35)',
           }}
         >
-          {loading ? '登入中...' : '登入'}
+          {loading ? '登入中...' : '登入 →'}
         </button>
       </div>
     </div>
