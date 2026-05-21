@@ -18,6 +18,7 @@ import SalesRankingPage from './pages/Reports/SalesRankingPage';
 import AdminLayout from './layouts/AdminLayout';
 import PlanGate from './components/PlanGate';
 import PosPreviewPage from './pages/POS/PosPreviewPage';
+import PosCheckoutPrototype from './pages/POS/PosCheckoutPrototype';
 import BatchListPage from './pages/Inventory/BatchListPage';
 import ShiftListPage from './pages/Shifts/ShiftListPage';
 import AccountingSyncPage from './pages/AccountingSyncPage';
@@ -49,6 +50,7 @@ export default function App() {
                     <Route element={<ProtectedRoute />}>
                         {/* POS — own layout, outside AdminLayout */}
                         <Route path="/pos" element={<PosPreviewPage />} />
+                        <Route path="/pos/prototype" element={<PosCheckoutPrototype />} />
                         <Route element={<AdminLayout />}>
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/users" element={<UsersPage />} />
