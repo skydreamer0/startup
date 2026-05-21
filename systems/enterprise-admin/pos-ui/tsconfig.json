@@ -16,7 +16,8 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@pharmasaas/types": ["../packages/types/src/index.ts"]
+      "@pharmasaas/types": ["../packages/types/src/index.ts"],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]
