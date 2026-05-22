@@ -314,6 +314,75 @@
 
 ---
 
+## Phase 9.5: POS UI Warm Minimalist Design System (已完成 2026-05-22)
+**目標：將 POS 介面從功能陽春升級為具品牌感的精品藥局風格。**
+
+- [x] **UI-DS-01**: 建立 Warm Minimalist 設計 token 體系（`--bg-app: #FBF8F3`、`--accent: #D97706`、`--border: #E8DDD0`、全面升級 `--radius-*`）。
+- [x] **UI-DS-02**: 商品卡重設計 — emoji icon（依 SKU 自動對應）、緊湊高度（`align-items: start` grid）、Amber 大字價格、庫存狀態 pill。
+- [x] **UI-DS-03**: 分類導航從垂直 sidebar 改為橫向 pill tabs。
+- [x] **UI-DS-04**: 搜尋欄移入 TopBar；品牌 icon（🌿）+ 藥局副標題。
+- [x] **UI-DS-05**: Cart Panel 暖米色底、圓角 CartItem card、付款方式 pill、Amber gradient 結帳按鈕。
+- [x] **UI-DS-06**: 登入頁 / 開班頁同步套用暖色系 + 全圓角設計。
+
+---
+
+## Phase 10: POS AI Intelligence (POS 智慧輔助)
+**目標：在 POS 結帳流程中加入客戶識別、個人化推薦與庫存智慧預警，提升客單價與補貨效率。**
+
+### 模組一：結帳客戶識別
+- [ ] **AI-01**: `GET /pos/customer-lookup` — 以電話號碼或會員條碼查詢客戶，回傳姓名、RFM 分層、最近購買、LTV、到期補充品清單。
+- [ ] **AI-02**: POS TopBar 加入客戶搜尋欄（電話輸入 / 條碼掃描），識別後顯示客戶名片 panel（層級徽章 + 累計消費 + 距上次來店天數）。
+- [ ] **AI-03**: VIP / 高風險流失客戶自動提示 toast（「💛 VIP 客戶，LTV $12,500」或「⚠ 90 天未回購，請關懷」）。
+
+### 模組二：個人化商品推薦
+- [ ] **AI-04**: `GET /pos/recommendations/:customerId` — 依購買週期推算「即將用完」商品，結合 ABC 分析優先推高毛利品項，回傳最多 3 筆推薦。
+- [ ] **AI-05**: Cart Panel 底部顯示推薦 chips（「🔁 上次買了魚油，可能需要補貨」），點擊直接加入購物車。
+- [ ] **AI-06**: 無客戶時顯示「熱銷商品」推薦（依當日 / 當週銷售量排序）。
+
+### 模組三：庫存智慧預警
+- [ ] **AI-07**: `GET /analytics/reorder-forecast` — 依各 SKU 近 30 天銷售速率 × 安全庫存天數，預測補貨日期，標記「本週須補貨」清單。
+- [ ] **AI-08**: POS TopBar 加入庫存預警角標（🔴 N 項本週須補貨），點開顯示詳細預警清單。
+- [ ] **AI-09**: Dashboard 整合補貨預警 widget。
+
+---
+
+## Phase 11: Production Deployment (生產環境建置)
+**目標：將 backend、admin-ui、pos-ui 三個服務打包成可一鍵啟動的 production Docker 環境。**
+
+### 模組一：pos-ui Docker 化
+- [ ] **DEPLOY-01**: 建立 `pos-ui/Dockerfile`（multi-stage: node build → nginx serve）。
+- [ ] **DEPLOY-02**: 建立 `pos-ui/nginx.conf`（SPA fallback、gzip、cache headers）。
+- [ ] **DEPLOY-03**: 更新根目錄 `docker-compose.yml`，加入 `pos-ui` service（port 5174 → Nginx 80）。
+
+### 模組二：Nginx 統一入口
+- [ ] **DEPLOY-04**: 建立 `nginx/` reverse proxy 配置，統一入口：
+  - `/api/*` → backend:3000
+  - `/pos` → pos-ui:80
+  - `/` → admin-ui:80
+- [ ] **DEPLOY-05**: SSL/TLS 佔位配置（Let's Encrypt certbot 掛載路徑預留）。
+
+### 模組三：環境設定與 CI/CD
+- [ ] **DEPLOY-06**: 建立 `.env.production.example`（各服務生產環境變數模板，含 JWT secrets、DB URL、CORS）。
+- [ ] **DEPLOY-07**: 更新 `.github/workflows/ci.yml`，加入 pos-ui build + type-check job。
+- [ ] **DEPLOY-08**: 建立 `Makefile`（`make dev` 啟動全 stack、`make prod` 建置 production image、`make migrate` 執行 DB migration）。
+
+### 模組四：健康檢查與監控
+- [ ] **DEPLOY-09**: 所有服務加入 `/health` endpoint，docker-compose healthcheck 完整設定。
+- [ ] **DEPLOY-10**: 撰寫 ADR-011 記錄 production deployment 架構決策。
+
+---
+
+## Phase 12: Admin-UI Visual Redesign (延後執行，低優先度)
+**目標：將 admin-ui 後台套用一致的設計語言，提升管理介面的品牌感與易用性。**
+**計畫啟動時機：Phase 10 + Phase 11 完成後。**
+
+- [ ] **ADM-UI-01**: 建立 admin-ui 設計 token（與 pos-ui 共用 brand tokens，但保留深色 admin shell 風格）。
+- [ ] **ADM-UI-02**: Dashboard、Users、Roles 頁面視覺升級。
+- [ ] **ADM-UI-03**: 報表頁面（Margin、CashFlow、SalesRanking）圖表樣式統一。
+- [ ] **ADM-UI-04**: 共用 component library 抽象（`packages/ui/`），pos-ui + admin-ui 共用 Button、Badge、Card。
+
+---
+
 ## 橫切關注點：架構改善方向 (Cross-cutting Concerns)
 > 從開發歷程中抽象出的系統性問題，納入各 Phase 規劃前置處理。
 
