@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+const paymentEntrySchema = z.object({
+  method: z.enum(['CASH', 'CARD', 'LINE_PAY', 'TRANSFER', 'OTHER']),
+  amount: z.number().min(0),
+});
+
 export const checkoutSchema = {
   body: z.object({
     cartItems: z.array(
@@ -10,11 +15,14 @@ export const checkoutSchema = {
       }),
     ).min(1, 'Cart must have at least one item'),
     paymentMethod: z.enum(['CASH', 'CARD', 'LINE_PAY', 'TRANSFER', 'OTHER']),
+    // Optional split payments — if provided, must sum to totalAmount
+    payments: z.array(paymentEntrySchema).optional(),
     orderDiscountAmount: z.number().min(0).optional().default(0),
     orderDiscountNote: z.string().optional(),
     customerId: z.string().uuid().optional(),
     shiftId: z.string().uuid(),
     salesStaffId: z.string().uuid().optional(),
+    adminPin: z.string().optional(),
   }),
 };
 

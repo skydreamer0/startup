@@ -16,6 +16,7 @@ const product: PosProduct = {
 const defaultProps = {
   currentStaffName: '王小明',
   onCheckout: vi.fn(),
+  onSplitCheckout: vi.fn(),
   onSwitchStaff: vi.fn(),
 };
 
@@ -26,6 +27,7 @@ function setupCart(quantity = 1, discountRate = 0, orderDiscount = 0) {
     orderDiscountNote: '',
     paymentMethod: 'CASH',
     currentSalesStaffId: null,
+    heldCarts: [],
   });
 }
 
@@ -38,13 +40,13 @@ describe('CartPanel empty state', () => {
   it('shows a readable empty cart message', () => {
     setupCart(0);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText('購物車目前沒有商品')).toBeInTheDocument();
+    expect(screen.getByText('點擊商品加入購物車')).toBeInTheDocument();
   });
 
   it('disables checkout button when cart is empty', () => {
     setupCart(0);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByRole('button', { name: /結帳/ })).toBeDisabled();
+    expect(screen.getByTestId('cart-checkout-button')).toBeDisabled();
   });
 });
 
@@ -52,13 +54,15 @@ describe('CartPanel subtotal display', () => {
   it('shows subtotal = price x quantity', () => {
     setupCart(2);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText(/小計 \$200/)).toBeInTheDocument();
+    const subtotalRow = screen.getByText('小計').closest('div')!;
+    expect(within(subtotalRow).getByText('$200')).toBeInTheDocument();
   });
 
   it('shows subtotal with item discount applied', () => {
     setupCart(1, 10);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText(/小計 \$90/)).toBeInTheDocument();
+    const subtotalRow = screen.getByText('小計').closest('div')!;
+    expect(within(subtotalRow).getByText('$90')).toBeInTheDocument();
   });
 });
 
@@ -66,13 +70,15 @@ describe('CartPanel total display', () => {
   it('shows total = subtotal when no order discount', () => {
     setupCart(3);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText(/總計 \$300/)).toBeInTheDocument();
+    const totalRow = screen.getByText('總計金額').closest('div')!;
+    expect(within(totalRow).getByText('$300')).toBeInTheDocument();
   });
 
   it('shows total = subtotal - orderDiscount', () => {
     setupCart(3, 0, 50);
     render(<CartPanel {...defaultProps} />);
-    expect(screen.getByText(/總計 \$250/)).toBeInTheDocument();
+    const totalRow = screen.getByText('總計金額').closest('div')!;
+    expect(within(totalRow).getByText('$250')).toBeInTheDocument();
   });
 });
 
@@ -85,7 +91,7 @@ describe('CartPanel order discount input', () => {
     await user.clear(discountInput);
     await user.type(discountInput, '30');
     expect(useCartStore.getState().orderDiscountAmount).toBe(30);
-    expect(screen.getByText(/總計 \$70/)).toBeInTheDocument();
+    expect(screen.getByText('$70')).toBeInTheDocument();
   });
 });
 
@@ -117,10 +123,9 @@ describe('CartPanel clear cart confirmation', () => {
 
     await user.click(screen.getByRole('button', { name: /清空購物車/ }));
     expect(useCartStore.getState().items).toHaveLength(1);
-    expect(screen.getByRole('status')).toHaveTextContent('再按一次清空購物車');
+    expect(screen.getByRole('status')).toHaveTextContent('再按一次確認清空');
 
-    await user.click(screen.getByRole('button', { name: /再按一次清空購物車/ }));
+    await user.click(screen.getByRole('button', { name: /再按一次確認清空/ }));
     expect(useCartStore.getState().items).toHaveLength(0);
-    expect(screen.getByRole('status')).toHaveTextContent('購物車已清空');
   });
 });

@@ -62,4 +62,29 @@ export class PosController {
       res.json({ success: true, data: { buffer } });
     } catch (err) { next(err); }
   }
+
+  static async getTodayOrders(req: Request, res: Response, next: NextFunction) {
+    try {
+      const shiftId = typeof req.query.shiftId === 'string' ? req.query.shiftId : undefined;
+      const data = await CheckoutService.getTodayOrders(shiftId);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
+  static async getOrderById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const orderId = Array.isArray(req.params.orderId) ? req.params.orderId[0] : req.params.orderId;
+      const data = await CheckoutService.getOrderById(orderId);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
+  static async refundOrder(req: Request, res: Response, next: NextFunction) {
+    try {
+      const orderId = Array.isArray(req.params.orderId) ? req.params.orderId[0] : req.params.orderId;
+      const { reason } = req.body as { reason?: string };
+      const data = await CheckoutService.refundOrder(orderId, reason);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
 }

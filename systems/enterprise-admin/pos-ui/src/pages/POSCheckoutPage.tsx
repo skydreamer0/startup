@@ -1,23 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { posApi, PosStaff } from '../api/pos';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { posApi, PosStaff, PosOrderSummary } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import CategoryNav from '../components/CategoryNav';
 import ProductGrid from '../components/ProductGrid';
 import CartPanel from '../components/CartPanel';
 import StaffSwitchModal from '../components/StaffSwitchModal';
 import PaymentModal from '../components/PaymentModal';
+import SplitPaymentModal, { PaymentEntry } from '../components/SplitPaymentModal';
 import ReceiptModal from '../components/ReceiptModal';
 import PosToast, { PosToastMessage } from '../components/PosToast';
-import { printReceipt } from '../services/receiptService';
+import AdminPinModal from '../components/AdminPinModal';
+import HoldOrderBar from '../components/HoldOrderBar';
+import OrderLookupModal from '../components/OrderLookupModal';
+import RefundModal from '../components/RefundModal';
+import ShiftReportModal from '../components/ShiftReportModal';
+import { printReceipt, openCashDrawer } from '../services/receiptService';
 import { getPending, markSynced } from '../services/offlineQueue';
 import OfflineStatus from '../components/OfflineStatus';
 import PrinterStatus from '../components/PrinterStatus';
 import { useShift } from '../hooks/useShift';
 import { useCheckout } from '../hooks/useCheckout';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
+import { useCustomerDisplay, openCustomerDisplay } from '../hooks/useCustomerDisplay';
 import ShiftOpenScreen from './ShiftOpenScreen';
 import CloseShiftDialog from '../components/CloseShiftDialog';
+
+// Discount thresholds that require admin PIN authorisation
+const ITEM_DISCOUNT_PIN_THRESHOLD = 20;
+const ORDER_DISCOUNT_PIN_THRESHOLD = 500;
 
 export default function POSCheckoutPage() {
   const [staffList, setStaffList] = useState<PosStaff[]>([]);
@@ -25,7 +36,18 @@ export default function POSCheckoutPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showSplitModal, setShowSplitModal] = useState(false);
+  const [showOrderLookup, setShowOrderLookup] = useState(false);
+  const [showShiftReport, setShowShiftReport] = useState(false);
+  const [refundTarget, setRefundTarget] = useState<PosOrderSummary | null>(null);
+  const [refundLoading, setRefundLoading] = useState(false);
   const [toast, setToast] = useState<PosToastMessage | null>(null);
+  const [adminPinPending, setAdminPinPending] = useState<null | { action: 'checkout' | 'split'; splitPayments?: PaymentEntry[] }>(null);
+  const [managerPin, setManagerPin] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
+  const { items, orderDiscountAmount } = useCartStore();
+  const hasHighDiscount = items.some((i) => i.discountRate >= ITEM_DISCOUNT_PIN_THRESHOLD) || orderDiscountAmount >= ORDER_DISCOUNT_PIN_THRESHOLD;
 
   const { addItem, setSalesStaff, currentSalesStaffId } = useCartStore();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -38,9 +60,11 @@ export default function POSCheckoutPage() {
 
   const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout } = useCheckout({
     shiftId: shift.activeShift?.id,
-    onSuccess: () => setShowPaymentModal(false),
+    onSuccess: () => { setShowPaymentModal(false); setShowSplitModal(false); },
     showToast,
   });
+
+  useCustomerDisplay();
 
   const currentStaff = staffList.find((staff) => staff.id === currentSalesStaffId);
   const currentStaffName = currentStaff?.fullName ?? shift.activeShift?.staff.fullName ?? '未指定人員';
@@ -65,6 +89,43 @@ export default function POSCheckoutPage() {
 
   useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast);
 
+  function requirePin(action: 'checkout' | 'split', splitPayments?: PaymentEntry[]) {
+    if (!hasHighDiscount) {
+      if (action === 'split') handleCheckout(splitPayments);
+      else handleCheckout();
+      return;
+    }
+    if (managerPin) {
+      if (action === 'split') handleCheckout(splitPayments);
+      else handleCheckout();
+      return;
+    }
+    setAdminPinPending({ action, splitPayments });
+  }
+
+  function onPinConfirmed(pin: string) {
+    setManagerPin(pin);
+    setAdminPinPending(null);
+    if (adminPinPending?.action === 'split') handleCheckout(adminPinPending.splitPayments);
+    else handleCheckout();
+  }
+
+  async function handleRefundConfirm(orderId: string, reason: string) {
+    setRefundLoading(true);
+    try {
+      await posApi.refundOrder(orderId, reason);
+      queryClient.invalidateQueries({ queryKey: ['pos-today-orders'] });
+      setRefundTarget(null);
+      setShowOrderLookup(false);
+      showToast({ type: 'success', message: '退貨完成，庫存已還原' });
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
+      showToast({ type: 'error', message: msg ?? '退貨失敗，請稍後再試' });
+    } finally {
+      setRefundLoading(false);
+    }
+  }
+
   const handleKeydown = useCallback((event: KeyboardEvent) => {
     if (event.target instanceof HTMLInputElement) return;
 
@@ -77,6 +138,11 @@ export default function POSCheckoutPage() {
         event.preventDefault();
         document.getElementById('order-discount')?.focus();
         break;
+      case 'F4':
+        event.preventDefault();
+        useCartStore.getState().holdCurrentCart();
+        showToast({ type: 'success', message: '已掛單' });
+        break;
       case 'F5':
         event.preventDefault();
         showToast({ type: 'warning', message: '請使用清空購物車按鈕確認清空' });
@@ -85,18 +151,28 @@ export default function POSCheckoutPage() {
         event.preventDefault();
         setShowStaffModal(true);
         break;
+      case 'F7':
+        event.preventDefault();
+        setShowOrderLookup(true);
+        break;
+      case 'F8':
+        event.preventDefault();
+        if (shift.activeShift) setShowShiftReport(true);
+        break;
       case 'Enter':
         event.preventDefault();
-        if (!showStaffModal && !showPaymentModal && !checkoutResult && useCartStore.getState().items.length > 0) {
+        if (!showStaffModal && !showPaymentModal && !showSplitModal && !checkoutResult && useCartStore.getState().items.length > 0) {
           setShowPaymentModal(true);
         }
         break;
       case 'Escape':
         setShowStaffModal(false);
         setShowPaymentModal(false);
+        setShowSplitModal(false);
+        setShowOrderLookup(false);
         break;
     }
-  }, [showPaymentModal, showStaffModal, showToast, checkoutResult]);
+  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -107,6 +183,10 @@ export default function POSCheckoutPage() {
     if (!checkoutResult) return;
     const response = await posApi.getReceipt(checkoutResult.id);
     await printReceipt(response.data.data.buffer);
+    // Open cash drawer if payment was (or includes) CASH
+    if (checkoutResult.paymentMethod === 'CASH') {
+      await openCashDrawer();
+    }
     showToast({ type: 'success', message: '收據已送出列印' });
   }
 
@@ -160,8 +240,18 @@ export default function POSCheckoutPage() {
           placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
           style={{ width: 260, padding: '8px 16px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', fontSize: 13, background: 'var(--bg-app)', outline: 'none', color: 'var(--text-primary)' }}
         />
+        <HoldOrderBar onFeedback={showToast} />
         <OfflineStatus onSync={handleSync} />
         <PrinterStatus />
+        <button type="button" onClick={() => setShowOrderLookup(true)} title="訂單查詢 (F7)" style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 14px', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>
+          📋 訂單 (F7)
+        </button>
+        <button type="button" onClick={() => setShowShiftReport(true)} title="班報表 (F8)" style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 14px', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>
+          📊 報表 (F8)
+        </button>
+        <button type="button" onClick={openCustomerDisplay} title="開啟顧客顯示器" style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 14px', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>
+          🖥 顧客
+        </button>
         <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 16px', cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
           👤 {currentStaffName}
         </button>
@@ -179,6 +269,7 @@ export default function POSCheckoutPage() {
           <CartPanel
             currentStaffName={currentStaffName}
             onCheckout={() => setShowPaymentModal(true)}
+            onSplitCheckout={() => setShowSplitModal(true)}
             onSwitchStaff={() => setShowStaffModal(true)}
             onFeedback={showToast}
           />
@@ -186,7 +277,7 @@ export default function POSCheckoutPage() {
       </div>
 
       <div className="pos-statusbar">
-        <span>F2: 搜尋</span><span>F3: 折扣</span><span>F5: 清空確認</span><span>F6: 切換人員</span><span>Enter: 結帳</span>
+        <span>F2: 搜尋</span><span>F3: 折扣</span><span>F4: 掛單</span><span>F5: 清空確認</span><span>F6: 切換人員</span><span>F7: 訂單查詢</span><span>F8: 班報表</span><span>Enter: 結帳</span>
       </div>
 
       {showStaffModal && (
@@ -198,7 +289,22 @@ export default function POSCheckoutPage() {
         />
       )}
       {showPaymentModal && (
-        <PaymentModal onConfirm={handleCheckout} onClose={() => setShowPaymentModal(false)} loading={checkoutLoading} salesStaffName={currentStaffName} />
+        <PaymentModal
+          onConfirm={() => requirePin('checkout')}
+          onClose={() => setShowPaymentModal(false)}
+          loading={checkoutLoading}
+          salesStaffName={currentStaffName}
+          hasHighDiscount={hasHighDiscount}
+          pinAuthorized={!!managerPin}
+        />
+      )}
+      {showSplitModal && (
+        <SplitPaymentModal
+          onConfirm={(payments) => requirePin('split', payments)}
+          onClose={() => setShowSplitModal(false)}
+          loading={checkoutLoading}
+          salesStaffName={currentStaffName}
+        />
       )}
       {checkoutResult && (
         <ReceiptModal
@@ -214,6 +320,34 @@ export default function POSCheckoutPage() {
           onConfirm={shift.handleCloseShift}
           onCancel={() => shift.setShowCloseShift(false)}
           loading={shift.shiftClosing}
+        />
+      )}
+      {adminPinPending && (
+        <AdminPinModal
+          reason={`折扣超過授權閾值（商品 ≥${ITEM_DISCOUNT_PIN_THRESHOLD}% 或整筆 ≥$${ORDER_DISCOUNT_PIN_THRESHOLD}），請輸入管理員 PIN`}
+          onConfirm={onPinConfirmed}
+          onClose={() => setAdminPinPending(null)}
+        />
+      )}
+      {showOrderLookup && (
+        <OrderLookupModal
+          shiftId={shift.activeShift?.id}
+          onRefund={(order) => { setRefundTarget(order); setShowOrderLookup(false); }}
+          onClose={() => setShowOrderLookup(false)}
+        />
+      )}
+      {refundTarget && (
+        <RefundModal
+          order={refundTarget}
+          onConfirm={handleRefundConfirm}
+          onClose={() => setRefundTarget(null)}
+          loading={refundLoading}
+        />
+      )}
+      {showShiftReport && shift.activeShift && (
+        <ShiftReportModal
+          shiftId={shift.activeShift.id}
+          onClose={() => setShowShiftReport(false)}
         />
       )}
     </div>

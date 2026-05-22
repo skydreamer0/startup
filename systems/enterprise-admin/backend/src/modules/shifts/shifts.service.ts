@@ -93,4 +93,53 @@ export class ShiftService {
     if (shift.status === 'OPEN') throw new AppError(400, 'Cannot delete an open shift');
     await prisma.shift.delete({ where: { id } });
   }
+
+  static async getReport(id: string) {
+    const tenantId = requireTenantId();
+    const shift = await prisma.shift.findFirst({
+      where: { id, tenantId },
+      include: {
+        staff: { select: { id: true, fullName: true } },
+        orders: {
+          where: { status: { in: ['completed', 'refunded'] } },
+          select: { id: true, orderNumber: true, status: true, totalAmount: true, discountAmount: true, paymentMethod: true, createdAt: true },
+        },
+      },
+    });
+    if (!shift) throw new AppError(404, 'Shift not found');
+
+    const completed = shift.orders.filter((o) => o.status === 'completed');
+    const refunded = shift.orders.filter((o) => o.status === 'refunded');
+
+    const paymentBreakdown: Record<string, number> = {};
+    let grossSales = 0;
+    for (const o of completed) {
+      const amt = Number(o.totalAmount);
+      paymentBreakdown[o.paymentMethod] = (paymentBreakdown[o.paymentMethod] ?? 0) + amt;
+      grossSales += amt;
+    }
+
+    const refundTotal = refunded.reduce((s, o) => s + Number(o.totalAmount), 0);
+    const netTotal = grossSales - refundTotal;
+    const discountTotal = completed.reduce((s, o) => s + Number(o.discountAmount), 0);
+    const cashIn = paymentBreakdown['CASH'] ?? 0;
+    const cashBalance = Number(shift.openingCash) + cashIn - refundTotal;
+
+    return {
+      shiftId: shift.id,
+      staffName: shift.staff.fullName,
+      openedAt: shift.openedAt,
+      closedAt: shift.closedAt ?? null,
+      openingCash: Number(shift.openingCash),
+      closingCash: shift.closingCash ? Number(shift.closingCash) : null,
+      orderCount: completed.length,
+      refundCount: refunded.length,
+      grossSales,
+      discountTotal,
+      refundTotal,
+      netTotal,
+      paymentBreakdown,
+      cashBalance,
+    };
+  }
 }

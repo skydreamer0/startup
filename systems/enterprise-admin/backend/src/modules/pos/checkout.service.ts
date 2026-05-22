@@ -93,7 +93,15 @@ export class CheckoutService {
         : 1;
       const orderNumber = `${prefix}${String(nextSeq).padStart(5, '0')}`;
 
-      // 6. Create Order + OrderItems
+      // 6. Validate split payments if provided
+      if (dto.payments && dto.payments.length > 0) {
+        const paymentsTotal = dto.payments.reduce((s, p) => s + p.amount, 0);
+        if (Math.abs(paymentsTotal - totalAmount) > 0.01) {
+          throw new AppError(400, `付款金額合計 ${paymentsTotal} 與訂單金額 ${totalAmount} 不符`);
+        }
+      }
+
+      // 7. Create Order + OrderItems
       const order = await tx.order.create({
         data: {
           tenantId,
@@ -117,11 +125,20 @@ export class CheckoutService {
               finalUnitPrice: item.finalUnitPrice,
             })),
           },
+          ...(dto.payments && dto.payments.length > 0 ? {
+            payments: {
+              create: dto.payments.map((p) => ({
+                tenantId,
+                method: p.method,
+                amount: p.amount,
+              })),
+            },
+          } : {}),
         },
-        include: { items: true },
+        include: { items: true, payments: true },
       });
 
-      // 7. Apply FIFO batch deductions + update product stock
+      // 8. Apply FIFO batch deductions + update product stock
       for (const item of itemsData) {
         for (const { id, deduct } of item.batchDeductions) {
           await tx.productBatch.update({
@@ -188,6 +205,81 @@ export class CheckoutService {
       where: { tenantId, status: 'OPEN' },
       include: { staff: { select: { id: true, fullName: true } } },
       orderBy: { openedAt: 'desc' },
+    });
+  }
+
+  static async getTodayOrders(shiftId?: string) {
+    const tenantId = requireTenantId();
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    return prisma.order.findMany({
+      where: {
+        tenantId,
+        createdAt: { gte: startOfDay },
+        ...(shiftId ? { shiftId } : {}),
+      },
+      include: {
+        items: {
+          include: { product: { select: { id: true, name: true, sku: true } } },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+  }
+
+  static async getOrderById(orderId: string) {
+    const tenantId = requireTenantId();
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, tenantId },
+      include: {
+        items: {
+          include: { product: { select: { id: true, name: true, sku: true } } },
+        },
+      },
+    });
+    if (!order) throw new AppError(404, 'Order not found');
+    return order;
+  }
+
+  static async refundOrder(orderId: string, reason?: string) {
+    const tenantId = requireTenantId();
+
+    return prisma.$transaction(async (tx) => {
+      const order = await tx.order.findFirst({
+        where: { id: orderId, tenantId },
+        include: { items: true },
+      });
+      if (!order) throw new AppError(404, 'Order not found');
+      if (order.status === 'refunded') throw new AppError(400, '此訂單已退款');
+      if (order.status !== 'completed') throw new AppError(400, '只能退貨已完成的訂單');
+
+      await tx.order.update({
+        where: { id: orderId },
+        data: {
+          status: 'refunded',
+          discountNote: reason ? `[退貨] ${reason}` : '[退貨]',
+        },
+      });
+
+      for (const item of order.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stockQuantity: { increment: item.quantity } },
+        });
+        await tx.inventoryTransaction.create({
+          data: {
+            tenantId,
+            productId: item.productId,
+            type: 'IN',
+            quantity: item.quantity,
+            referenceId: orderId,
+            notes: `POS 退貨 — ${order.orderNumber}`,
+          },
+        });
+      }
+
+      return { ...order, status: 'refunded' };
     });
   }
 }

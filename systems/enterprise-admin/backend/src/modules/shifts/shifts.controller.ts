@@ -37,4 +37,11 @@ export class ShiftController {
       res.json({ success: true, data: null });
     } catch (err) { next(err); }
   }
+
+  static async getReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await ShiftService.getReport(req.params.id as string);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
 }

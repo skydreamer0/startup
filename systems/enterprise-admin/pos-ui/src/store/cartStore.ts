@@ -7,12 +7,23 @@ export interface CartItem {
   discountRate: number; // 0-100
 }
 
+export interface HeldCart {
+  id: string;
+  label: string;
+  items: CartItem[];
+  orderDiscountAmount: number;
+  orderDiscountNote: string;
+  salesStaffId: string | null;
+  heldAt: Date;
+}
+
 interface CartState {
   items: CartItem[];
   orderDiscountAmount: number;
   orderDiscountNote: string;
   paymentMethod: 'CASH' | 'CARD' | 'LINE_PAY' | 'TRANSFER' | 'OTHER';
   currentSalesStaffId: string | null;
+  heldCarts: HeldCart[];
 
   addItem: (product: PosProduct) => void;
   removeItem: (productId: string) => void;
@@ -22,6 +33,10 @@ interface CartState {
   setPaymentMethod: (method: CartState['paymentMethod']) => void;
   setSalesStaff: (staffId: string | null) => void;
   clearCart: () => void;
+
+  holdCurrentCart: (label?: string) => void;
+  recallHeldCart: (id: string) => void;
+  deleteHeldCart: (id: string) => void;
 
   subtotal: () => number;
   total: () => number;
@@ -33,6 +48,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   orderDiscountNote: '',
   paymentMethod: 'CASH',
   currentSalesStaffId: null,
+  heldCarts: [],
 
   addItem: (product) => set((state) => {
     const existing = state.items.find((item) => item.product.id === product.id);
@@ -76,7 +92,58 @@ export const useCartStore = create<CartState>((set, get) => ({
     items: [],
     orderDiscountAmount: 0,
     orderDiscountNote: '',
+    paymentMethod: 'CASH',
   }),
+
+  holdCurrentCart: (label) => set((state) => {
+    if (state.items.length === 0) return state;
+    const held: HeldCart = {
+      id: crypto.randomUUID(),
+      label: label ?? `掛單 #${state.heldCarts.length + 1}`,
+      items: state.items,
+      orderDiscountAmount: state.orderDiscountAmount,
+      orderDiscountNote: state.orderDiscountNote,
+      salesStaffId: state.currentSalesStaffId,
+      heldAt: new Date(),
+    };
+    return {
+      heldCarts: [...state.heldCarts, held],
+      items: [],
+      orderDiscountAmount: 0,
+      orderDiscountNote: '',
+      paymentMethod: 'CASH',
+    };
+  }),
+
+  recallHeldCart: (id) => set((state) => {
+    const held = state.heldCarts.find((c) => c.id === id);
+    if (!held) return state;
+    // Save current cart back if non-empty
+    const newHeld = state.items.length > 0
+      ? state.heldCarts
+          .filter((c) => c.id !== id)
+          .concat({
+            id: crypto.randomUUID(),
+            label: `掛單 #${state.heldCarts.length + 1}`,
+            items: state.items,
+            orderDiscountAmount: state.orderDiscountAmount,
+            orderDiscountNote: state.orderDiscountNote,
+            salesStaffId: state.currentSalesStaffId,
+            heldAt: new Date(),
+          })
+      : state.heldCarts.filter((c) => c.id !== id);
+    return {
+      heldCarts: newHeld,
+      items: held.items,
+      orderDiscountAmount: held.orderDiscountAmount,
+      orderDiscountNote: held.orderDiscountNote,
+      currentSalesStaffId: held.salesStaffId,
+    };
+  }),
+
+  deleteHeldCart: (id) => set((state) => ({
+    heldCarts: state.heldCarts.filter((c) => c.id !== id),
+  })),
 
   subtotal: () => {
     const { items } = get();

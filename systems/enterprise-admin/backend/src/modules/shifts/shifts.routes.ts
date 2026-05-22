@@ -14,5 +14,6 @@ router.get('/:id', requirePermission('read:shifts'), ShiftController.getById);
 router.post('/', requirePermission('manage:shifts'), validate(createShiftSchema), ShiftController.create);
 router.patch('/:id/close', requirePermission('manage:shifts'), validate(closeShiftSchema), ShiftController.close);
 router.delete('/:id', requirePermission('manage:shifts'), ShiftController.delete);
+router.get('/:id/report', requirePermission('read:shifts'), ShiftController.getReport);
 
 export default router;

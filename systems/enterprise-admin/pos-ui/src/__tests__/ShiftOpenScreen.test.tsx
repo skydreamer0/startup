@@ -41,7 +41,7 @@ describe('ShiftOpenScreen', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: '開始開班' }));
+    await user.click(screen.getByTestId('shift-open-button'));
 
     expect(onOpenShift).toHaveBeenCalledOnce();
   });

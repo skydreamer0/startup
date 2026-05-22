@@ -144,11 +144,13 @@ export interface CartItemPayload {
 export interface CheckoutPayload {
   cartItems: CartItemPayload[];
   paymentMethod: PaymentMethod;
+  payments?: PaymentEntry[];
   orderDiscountAmount: number;
   orderDiscountNote?: string;
   customerId?: string;
   shiftId: string;
   salesStaffId?: string;
+  adminPin?: string;
 }
 
 export interface CheckoutResult {
@@ -370,6 +372,60 @@ export interface SalesRankingProduct {
   quantity: number;
   margin: number;
   marginPct: number;
+}
+
+// ─── POS extended types ───────────────────────────────────────────────────────
+
+export interface PosOrderItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+  unitPrice: number | string;
+  /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+  finalUnitPrice: number | string;
+  product: { id: string; name: string; sku: string };
+}
+
+export interface PosOrderSummary {
+  id: string;
+  orderNumber: string | null;
+  status: string;
+  /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+  totalAmount: number | string;
+  /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+  discountAmount: number | string;
+  paymentMethod: string;
+  createdAt: string;
+  items: PosOrderItem[];
+}
+
+export interface ShiftReport {
+  shiftId: string;
+  staffName: string;
+  openedAt: string;
+  closedAt: string | null;
+  openingCash: number;
+  closingCash: number | null;
+  orderCount: number;
+  refundCount: number;
+  grossSales: number;
+  discountTotal: number;
+  refundTotal: number;
+  netTotal: number;
+  paymentBreakdown: Record<string, number>;
+  cashBalance: number;
+}
+
+// ─── Split Payment ────────────────────────────────────────────────────────────
+
+export interface PaymentEntry {
+  method: PaymentMethod;
+  amount: number;
+}
+
+export interface SplitCheckoutPayload extends CheckoutPayload {
+  payments: PaymentEntry[];
 }
 
 // ─── API response wrappers ────────────────────────────────────────────────────

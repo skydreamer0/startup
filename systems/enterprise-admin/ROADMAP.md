@@ -326,7 +326,29 @@
 
 ---
 
-## Phase 10: POS AI Intelligence (POS 智慧輔助)
+## Phase 9.7: POS Completeness (POS 完整性補齊)
+**目標：補齊真實門市每天必用的核心功能，確保 POS 能獨立上線營運。**
+**AI 功能（Phase 10）延期至本 Phase 完成後執行。**
+
+### Sprint 1 — 純前端修補（無需後端）
+- [x] **POS-C-01**: 修復 `clearCart` — 補上 `paymentMethod: 'CASH'` reset，避免上筆付款方式殘留。
+- [x] **POS-C-02**: 收銀機錢箱控制 — 現金結帳後送出 ESC/POS `ESC p` 指令自動開錢箱。
+- [x] **POS-C-03**: 管理員 PIN 碼授權 — 折扣超過閾值時鎖定結帳，要求輸入班別管理員 PIN 才能放行。
+- [x] **POS-C-04**: 掛單暫存（Hold Order）— cartStore 支援多購物車暫存；TopBar 顯示掛單數量；可切換 / 刪除掛單。
+
+### Sprint 2 — 後端 + 前端
+- [x] **POS-C-05**: 今日訂單查詢 — `GET /pos/orders/today` + `OrderLookupModal`（可按班別篩選、顯示品項明細）。
+- [x] **POS-C-06**: 退貨 / 退款流程 — `POST /pos/orders/:id/refund` + `RefundModal`（整筆退貨、還原庫存、記錄 InventoryTransaction IN）。
+- [x] **POS-C-07**: X/Z 班報表 — `GET /shifts/:id/report` + `ShiftReportModal`（各付款方式分計、退款合計、現金應在金額、可列印）。
+- [x] **POS-C-08**: 庫存不足錯誤 UX — checkout 400 庫存不足時顯示明確 toast（商品名 + 剩餘庫存），而非靜默失敗。
+
+### Sprint 3 — 複雜功能
+- [x] **POS-C-09**: 拆單付款（Split Payment）— 新增 `OrderPayment` model；一筆訂單可指定兩種付款方式及各自金額；前端付款 modal 支援「+加入第二付款」。
+- [x] **POS-C-10**: 顧客面向顯示器（Customer Display）— BroadcastChannel API 開新視窗，即時同步購物車品項與總計給顧客看。
+
+---
+
+## Phase 10: POS AI Intelligence (POS 智慧輔助，延後至 Phase 9.7 完成後)
 **目標：在 POS 結帳流程中加入客戶識別、個人化推薦與庫存智慧預警，提升客單價與補貨效率。**
 
 ### 模組一：結帳客戶識別

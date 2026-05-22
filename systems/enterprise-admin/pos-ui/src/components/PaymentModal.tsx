@@ -7,9 +7,11 @@ interface Props {
   onClose: () => void;
   loading: boolean;
   salesStaffName?: string;
+  hasHighDiscount?: boolean;
+  pinAuthorized?: boolean;
 }
 
-export default function PaymentModal({ onConfirm, onClose, loading, salesStaffName }: Props) {
+export default function PaymentModal({ onConfirm, onClose, loading, salesStaffName, hasHighDiscount, pinAuthorized }: Props) {
   const [tendered, setTendered] = useState(0);
   const { items, subtotal, total, orderDiscountAmount, paymentMethod, setPaymentMethod } = useCartStore();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -41,6 +43,11 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
           {salesStaffName && (
             <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 10 }}>
               人員：{salesStaffName}
+            </div>
+          )}
+          {hasHighDiscount && (
+            <div style={{ marginTop: 10, padding: '6px 10px', borderRadius: 'var(--radius-xs)', background: pinAuthorized ? 'var(--success-bg)' : 'var(--warning-bg)', fontSize: 12, color: pinAuthorized ? 'var(--success)' : 'var(--warning)', fontWeight: 600 }}>
+              {pinAuthorized ? '✓ 管理員已授權高折扣' : '⚠ 高折扣：確認後將要求管理員 PIN'}
             </div>
           )}
         </div>

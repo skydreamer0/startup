@@ -24,6 +24,7 @@ const MappedModels = [
     'DailySettlement',
     'AccountingSyncLog',
     'MessageBroadcast',
+    'OrderPayment',
 ] as const;
 
 export const basePrisma =

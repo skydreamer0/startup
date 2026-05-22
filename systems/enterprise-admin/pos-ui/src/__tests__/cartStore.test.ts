@@ -184,11 +184,11 @@ describe('clearCart', () => {
     expect(useCartStore.getState().orderDiscountAmount).toBe(0);
   });
 
-  it('does not reset paymentMethod or salesStaff', () => {
+  it('resets paymentMethod to CASH but preserves salesStaff', () => {
     useCartStore.getState().setPaymentMethod('CARD');
     useCartStore.getState().setSalesStaff('staff-1');
     useCartStore.getState().clearCart();
-    expect(useCartStore.getState().paymentMethod).toBe('CARD');
+    expect(useCartStore.getState().paymentMethod).toBe('CASH');
     expect(useCartStore.getState().currentSalesStaffId).toBe('staff-1');
   });
 });

@@ -7,11 +7,12 @@ import { PAYMENT_LABELS } from '../constants';
 interface Props {
   currentStaffName: string;
   onCheckout: () => void;
+  onSplitCheckout: () => void;
   onSwitchStaff: () => void;
   onFeedback?: (toast: PosToastMessage) => void;
 }
 
-export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff, onFeedback }: Props) {
+export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckout, onSwitchStaff, onFeedback }: Props) {
   const {
     items, orderDiscountAmount, paymentMethod,
     setOrderDiscount, setPaymentMethod, clearCart, subtotal, total,
@@ -130,24 +131,40 @@ export default function CartPanel({ currentStaffName, onCheckout, onSwitchStaff,
         )}
 
         {/* Checkout button */}
-        <button
-          data-testid="cart-checkout-button"
-          onClick={onCheckout}
-          disabled={items.length === 0}
-          style={{
-            width: '100%', padding: '14px', border: 'none',
-            borderRadius: 'var(--radius-full)',
-            background: items.length === 0 ? 'var(--border)' : 'linear-gradient(135deg, #D97706, #F59E0B)',
-            color: items.length === 0 ? 'var(--text-muted)' : '#fff',
-            fontSize: 15, fontWeight: 800,
-            cursor: items.length === 0 ? 'not-allowed' : 'pointer',
-            boxShadow: items.length === 0 ? 'none' : '0 4px 14px rgba(217,119,6,0.35)',
-            letterSpacing: '0.01em',
-            marginBottom: 8,
-          }}
-        >
-          確認結帳 (Enter)
-        </button>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <button
+            data-testid="cart-checkout-button"
+            onClick={onCheckout}
+            disabled={items.length === 0}
+            style={{
+              flex: 3, padding: '14px', border: 'none',
+              borderRadius: 'var(--radius-full)',
+              background: items.length === 0 ? 'var(--border)' : 'linear-gradient(135deg, #D97706, #F59E0B)',
+              color: items.length === 0 ? 'var(--text-muted)' : '#fff',
+              fontSize: 15, fontWeight: 800,
+              cursor: items.length === 0 ? 'not-allowed' : 'pointer',
+              boxShadow: items.length === 0 ? 'none' : '0 4px 14px rgba(217,119,6,0.35)',
+              letterSpacing: '0.01em',
+            }}
+          >
+            確認結帳 (Enter)
+          </button>
+          <button
+            onClick={onSplitCheckout}
+            disabled={items.length === 0}
+            title="拆單付款"
+            style={{
+              flex: 1, padding: '14px', border: `1.5px solid ${items.length === 0 ? 'var(--border)' : 'var(--accent)'}`,
+              borderRadius: 'var(--radius-full)',
+              background: 'var(--bg-card)',
+              color: items.length === 0 ? 'var(--text-muted)' : 'var(--accent)',
+              fontSize: 13, fontWeight: 700,
+              cursor: items.length === 0 ? 'not-allowed' : 'pointer',
+            }}
+          >
+            拆單
+          </button>
+        </div>
         <button
           onClick={handleClearCart}
           style={{

@@ -23,7 +23,7 @@ describe('POSLoginPage', () => {
     expect(screen.getByRole('heading', { name: 'PharmaSaaS POS' })).toBeInTheDocument();
     expect(screen.getByText('請掃描員工條碼或輸入員工代碼登入')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('員工條碼 / 員工代碼')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '登入' })).toBeDisabled();
+    expect(screen.getByTestId('login-submit-button')).toBeDisabled();
   });
 
   it('shows a readable error when login fails', async () => {

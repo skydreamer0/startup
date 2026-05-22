@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { posApi, CheckoutResult } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { PosToastMessage } from '../components/PosToast';
+import { PaymentEntry } from '../components/SplitPaymentModal';
 
 interface UseCheckoutOptions {
   shiftId: string | undefined;
@@ -15,7 +16,7 @@ export function useCheckout({ shiftId, onSuccess, showToast }: UseCheckoutOption
 
   const { clearCart } = useCartStore();
 
-  async function handleCheckout() {
+  async function handleCheckout(splitPayments?: PaymentEntry[]) {
     const { items, orderDiscountAmount, orderDiscountNote, paymentMethod, currentSalesStaffId: staffId } =
       useCartStore.getState();
 
@@ -32,7 +33,8 @@ export function useCheckout({ shiftId, onSuccess, showToast }: UseCheckoutOption
           quantity: item.quantity,
           discountRate: item.discountRate,
         })),
-        paymentMethod,
+        paymentMethod: splitPayments ? splitPayments[0].method : paymentMethod,
+        payments: splitPayments,
         orderDiscountAmount,
         orderDiscountNote: orderDiscountNote || undefined,
         shiftId,

@@ -21,5 +21,8 @@ router.get('/products', validate(posProductsSchema), PosController.getProducts);
 router.get('/staff', PosController.getStaff);
 router.get('/shift/active', PosController.getActiveShift);
 router.get('/receipt/:orderId', PosController.getReceipt);
+router.get('/orders/today', PosController.getTodayOrders);
+router.get('/orders/:orderId', PosController.getOrderById);
+router.post('/orders/:orderId/refund', PosController.refundOrder);
 
 export default router;

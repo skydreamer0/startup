@@ -45,6 +45,34 @@ export async function printReceipt(base64Buffer: string): Promise<void> {
   }
 }
 
+// ESC/POS cash drawer kick: ESC p m t1 t2
+const CASH_DRAWER_CMD = new Uint8Array([0x1b, 0x70, 0x00, 0x19, 0xfa]);
+
+export async function openCashDrawer(): Promise<void> {
+  if (!('usb' in navigator)) return;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const usb = (navigator as unknown as { usb: any }).usb;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const devices: any[] = await usb.getDevices();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const device = devices.find((d: any) => d.configuration !== null);
+    if (!device) return;
+    await device.open();
+    if (device.configuration === null) await device.selectConfiguration(1);
+    await device.claimInterface(0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const endpoint = device.configuration.interfaces[0].alternates[0].endpoints.find(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (ep: any) => ep.direction === 'out',
+    );
+    if (endpoint) await device.transferOut(endpoint.endpointNumber, CASH_DRAWER_CMD);
+    await device.close();
+  } catch {
+    // Drawer open is best-effort; non-critical
+  }
+}
+
 export type PrinterType = 'usb' | 'fallback' | 'unavailable';
 
 export async function getPrinterStatus(): Promise<PrinterType> {
