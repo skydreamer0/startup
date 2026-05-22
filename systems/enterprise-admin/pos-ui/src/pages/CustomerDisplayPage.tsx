@@ -18,22 +18,17 @@ interface CartSnapshot {
 // ─── Wake Lock ───────────────────────────────────────────────────────────────
 function useWakeLock() {
   const lockRef = useRef<WakeLockSentinel | null>(null);
-
   useEffect(() => {
     if (!('wakeLock' in navigator)) return;
-
     async function acquire() {
       try {
         lockRef.current = await (
-          navigator as Navigator & {
-            wakeLock: { request(t: 'screen'): Promise<WakeLockSentinel> };
-          }
+          navigator as Navigator & { wakeLock: { request(t: 'screen'): Promise<WakeLockSentinel> } }
         ).wakeLock.request('screen');
-      } catch { /* non-critical */ }
+      } catch { /**/ }
     }
-
     acquire();
-    function onVisible() { if (document.visibilityState === 'visible') acquire(); }
+    const onVisible = () => document.visibilityState === 'visible' && acquire();
     document.addEventListener('visibilitychange', onVisible);
     return () => {
       document.removeEventListener('visibilitychange', onVisible);
@@ -50,377 +45,256 @@ function useFullscreen() {
     document.addEventListener('fullscreenchange', h);
     return () => document.removeEventListener('fullscreenchange', h);
   }, []);
-  function toggle() {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-    else document.exitFullscreen().catch(() => {});
-  }
+  const toggle = () =>
+    document.fullscreenElement
+      ? document.exitFullscreen().catch(() => {})
+      : document.documentElement.requestFullscreen().catch(() => {});
   return { isFs, toggle };
 }
 
-// ─── Display mode ────────────────────────────────────────────────────────────
-function useDisplayMode() {
-  const [standalone, setStandalone] = useState(
+// ─── Standalone / display-mode ───────────────────────────────────────────────
+function useStandalone() {
+  const [v, setV] = useState(
     window.matchMedia('(display-mode: standalone)').matches ||
     window.matchMedia('(display-mode: fullscreen)').matches,
   );
   useEffect(() => {
     const mq = window.matchMedia('(display-mode: standalone)');
-    const h = () => setStandalone(mq.matches);
+    const h = () => setV(mq.matches);
     mq.addEventListener('change', h);
     return () => mq.removeEventListener('change', h);
   }, []);
-  return standalone;
+  return v;
 }
 
 // ─── Breakpoint ──────────────────────────────────────────────────────────────
-type BP = 'mobile' | 'tablet-p' | 'tablet-l' | 'tv';
-function bp(): BP {
-  const w = window.innerWidth;
-  if (w < 480) return 'mobile';
-  if (w < 768) return 'tablet-p';
-  if (w < 1400) return 'tablet-l';
-  return 'tv';
-}
+type BP = 'mobile' | 'tablet' | 'tv';
+const getBP = (): BP => window.innerWidth < 768 ? 'mobile' : window.innerWidth < 1400 ? 'tablet' : 'tv';
 function useBP(): BP {
-  const [v, setV] = useState<BP>(bp);
+  const [v, setV] = useState<BP>(getBP);
   useEffect(() => {
-    const h = () => setV(bp());
+    const h = () => setV(getBP());
     window.addEventListener('resize', h);
     return () => window.removeEventListener('resize', h);
   }, []);
   return v;
 }
 
-// ─── Idle ────────────────────────────────────────────────────────────────────
+// ─── Idle screensaver ────────────────────────────────────────────────────────
 function useIdle(ms = 60_000) {
   const [idle, setIdle] = useState(false);
   const t = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
-    function reset() {
-      setIdle(false);
-      clearTimeout(t.current);
-      t.current = setTimeout(() => setIdle(true), ms);
-    }
+    const reset = () => { setIdle(false); clearTimeout(t.current); t.current = setTimeout(() => setIdle(true), ms); };
     reset();
     window.addEventListener('mousemove', reset);
     window.addEventListener('touchstart', reset);
-    return () => {
-      clearTimeout(t.current);
-      window.removeEventListener('mousemove', reset);
-      window.removeEventListener('touchstart', reset);
-    };
+    return () => { clearTimeout(t.current); window.removeEventListener('mousemove', reset); window.removeEventListener('touchstart', reset); };
   }, [ms]);
   return idle;
 }
 
-// ─── Shared style tokens ──────────────────────────────────────────────────────
-const C = {
-  bg: '#FBF8F3',
-  bgDark: '#1C1917',
-  border: '#E8DDD0',
-  borderMid: '#F5EFE8',
-  accent: '#D97706',
-  muted: '#A8A29E',
-  mutedDark: '#57534E',
-  text: '#1C1917',
-  textSub: '#78716C',
-  danger: '#F87171',
-  headerBg: '#F5EFE8',
-} as const;
-
-// Layout rule: every branch follows this contract:
-//   root        → height:100dvh  overflow:hidden  display:flex  flex-direction:column
-//   header      → flex-shrink:0
-//   body        → flex:1  min-height:0  (children may set overflow-y:auto)
-//   footer      → flex-shrink:0
-// This guarantees nothing spills outside the viewport.
-
 // ─── Main ────────────────────────────────────────────────────────────────────
 export default function CustomerDisplayPage() {
   const [cart, setCart] = useState<CartSnapshot | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { isFs, toggle } = useFullscreen();
-  const standalone = useDisplayMode();
-  const screen = useBP();
+  const standalone = useStandalone();
+  const bp = useBP();
   const idle = useIdle(60_000);
   useWakeLock();
 
   useEffect(() => {
     const ch = new BroadcastChannel('pos-customer-display');
     ch.onmessage = (e: MessageEvent<CartSnapshot | { type: 'clear' }>) => {
-      if ('type' in e.data && e.data.type === 'clear') {
-        setCart(null);
-      } else {
-        setCart(e.data as CartSnapshot);
-        setLastUpdated(new Date());
-      }
+      if ('type' in e.data && e.data.type === 'clear') setCart(null);
+      else setCart(e.data as CartSnapshot);
     };
     return () => ch.close();
   }, []);
 
-  const hasCart = !!(cart && cart.items.length > 0);
+  const hasCart = !!(cart?.items.length);
 
-  // ── Screensaver ──
+  // ── Screensaver ──────────────────────────────────────────────────────────
   if (idle && !hasCart) {
     return (
       <div
         className="customer-display-root"
         onClick={toggle}
-        style={{ height: '100dvh', overflow: 'hidden', background: C.bgDark, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'none' }}
+        style={{ height: '100dvh', overflow: 'hidden', background: '#141210', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'none' }}
       >
-        <div style={{ fontSize: screen === 'tv' ? 120 : 64, animation: 'cdPulse 3s ease-in-out infinite' }}>🌿</div>
-        <div style={{ color: C.mutedDark, fontSize: screen === 'tv' ? 26 : 17, marginTop: 20, letterSpacing: '0.2em' }}>健康生活藥局</div>
-        <style>{`@keyframes cdPulse{0%,100%{opacity:.5}50%{opacity:1}}`}</style>
-      </div>
-    );
-  }
-
-  // ── TV (≥1400px): left items col + right dark total panel ──
-  if (screen === 'tv') {
-    return (
-      <div className="customer-display-root" style={ROOT}>
-        <Header lastUpdated={lastUpdated} isFs={isFs} toggle={toggle} standalone={standalone} size="lg" />
-        <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 400px' }}>
-          {/* items: scrolls internally */}
-          <div style={{ minHeight: 0, overflowY: 'auto', padding: '28px 40px', borderRight: `2px solid ${C.border}` }}>
-            {!hasCart ? <Idle size="lg" /> : cart!.items.map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 0', borderBottom: `1px solid ${C.borderMid}` }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                  <div style={{ fontSize: 14, color: C.muted, marginTop: 3 }}>${item.unitPrice.toFixed(0)} / 件</div>
-                </div>
-                <div style={{ fontSize: 20, color: C.textSub, flexShrink: 0, width: 56, textAlign: 'center' }}>×{item.quantity}</div>
-                <div style={{ fontSize: 26, fontWeight: 800, color: C.accent, flexShrink: 0, width: 130, textAlign: 'right' }}>${item.lineTotal.toFixed(0)}</div>
-              </div>
-            ))}
-          </div>
-          {/* total: never scrolls */}
-          <div style={{ background: C.bgDark, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 36px', overflow: 'hidden' }}>
-            {hasCart && <Summary cart={cart!} totalFontSize={72} labelFontSize={20} rowFontSize={16} />}
-          </div>
+        <div style={{ fontSize: bp === 'tv' ? 100 : 60, animation: 'cdp 3s ease-in-out infinite' }}>🌿</div>
+        <div style={{ color: '#44403C', fontSize: bp === 'tv' ? 22 : 15, marginTop: 16, letterSpacing: '0.25em', fontFamily: 'system-ui, sans-serif' }}>
+          健康生活藥局
         </div>
-        <Footer />
+        <style>{`@keyframes cdp{0%,100%{opacity:.35}50%{opacity:.9}}`}</style>
       </div>
     );
   }
 
-  // ── Tablet landscape + desktop (768–1400px): stacked, items scroll, summary pinned ──
-  if (screen === 'tablet-l') {
+  // ── TV: items left | total right ─────────────────────────────────────────
+  if (bp === 'tv') {
     return (
-      <div className="customer-display-root" style={ROOT}>
-        <Header lastUpdated={lastUpdated} isFs={isFs} toggle={toggle} standalone={standalone} size="md" />
-        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', padding: '24px 32px', gap: 16 }}>
-          {!hasCart
-            ? <Idle size="md" />
-            : <>
-                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                  <ItemsTable cart={cart!} />
-                </div>
-                <div style={{ flexShrink: 0, background: C.bgDark, borderRadius: 16, padding: '20px 24px' }}>
-                  <Summary cart={cart!} totalFontSize={44} labelFontSize={17} rowFontSize={14} />
-                </div>
-              </>
-          }
+      <Layout>
+        <SmallHeader isFs={isFs} toggle={toggle} standalone={standalone} />
+        <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 360px' }}>
+          <ItemsCol cart={cart} tv />
+          <TotalPanel cart={cart} totalSize={80} />
         </div>
-        <Footer />
-      </div>
+      </Layout>
     );
   }
 
-  // ── Tablet portrait (480–768px): same structure, smaller ──
-  if (screen === 'tablet-p') {
-    return (
-      <div className="customer-display-root cd-safe-top cd-safe-bottom" style={ROOT}>
-        <Header lastUpdated={lastUpdated} isFs={isFs} toggle={toggle} standalone={standalone} size="sm" />
-        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', padding: '16px 20px', gap: 12 }}>
-          {!hasCart
-            ? <Idle size="md" />
-            : <>
-                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                  <ItemsTable cart={cart!} compact />
-                </div>
-                <div style={{ flexShrink: 0, background: C.bgDark, borderRadius: 14, padding: '16px 20px' }}>
-                  <Summary cart={cart!} totalFontSize={36} labelFontSize={15} rowFontSize={13} />
-                </div>
-              </>
-          }
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  // ── Tablet + Mobile: items top (scroll) | total bottom (pinned) ──────────
+  //
+  // Total zone height:  mobile→180px  tablet→220px
+  // This ratio (≈30-40% of screen) matches Square/Toast patterns.
+  const totalZoneH = bp === 'mobile' ? 172 : 210;
 
-  // ── Mobile (<480px): card stack, everything scrolls together ──
   return (
-    <div className="customer-display-root cd-safe-top cd-safe-bottom" style={ROOT}>
-      <div style={{ flexShrink: 0, background: C.bgDark, padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ fontSize: 20 }}>🌿</span>
-        <div style={{ flex: 1, color: '#fff', fontWeight: 800, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>健康生活藥局</div>
-        {!standalone && (
-          <button onClick={toggle} style={ICON_BTN}>{isFs ? '✕' : '⛶'}</button>
-        )}
+    <Layout>
+      <SmallHeader isFs={isFs} toggle={toggle} standalone={standalone} />
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        {/* scrollable items */}
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+          {!hasCart
+            ? <IdlePlaceholder />
+            : <ItemsCol cart={cart} tv={false} compact={bp === 'mobile'} />
+          }
+        </div>
+        {/* pinned total */}
+        <TotalPanel cart={cart} totalSize={bp === 'mobile' ? 56 : 68} height={totalZoneH} />
       </div>
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {!hasCart
-          ? <Idle size="sm" />
-          : <>
-              {cart!.items.map((item, i) => (
-                <div key={i} style={{ background: '#fff', borderRadius: 10, padding: '10px 14px', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, color: C.text, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                    <div style={{ color: C.muted, fontSize: 11, marginTop: 2 }}>× {item.quantity} · ${item.unitPrice.toFixed(0)}/件</div>
-                  </div>
-                  <div style={{ fontWeight: 800, color: C.accent, fontSize: 16, flexShrink: 0 }}>${item.lineTotal.toFixed(0)}</div>
-                </div>
-              ))}
-              <div style={{ background: C.bgDark, borderRadius: 12, padding: '14px 16px', marginTop: 4 }}>
-                <Summary cart={cart!} totalFontSize={34} labelFontSize={14} rowFontSize={12} />
-              </div>
-            </>
-        }
-      </div>
-      <Footer />
+    </Layout>
+  );
+}
+
+// ─── Layout shell ─────────────────────────────────────────────────────────────
+// height:100dvh + overflow:hidden guarantees nothing escapes the viewport.
+function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="customer-display-root"
+      style={{ height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#FAFAF9', fontFamily: 'system-ui, -apple-system, sans-serif' }}
+    >
+      {children}
     </div>
   );
 }
 
-// ─── Shared layout constants ──────────────────────────────────────────────────
-const ROOT: React.CSSProperties = {
-  height: '100dvh',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  background: C.bg,
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-};
-
-const ICON_BTN: React.CSSProperties = {
-  background: 'none',
-  border: `1px solid ${C.mutedDark}`,
-  color: C.muted,
-  borderRadius: 8,
-  padding: '4px 8px',
-  fontSize: 13,
-  cursor: 'pointer',
-  flexShrink: 0,
-  lineHeight: 1.4,
-};
-
-// ─── Header ──────────────────────────────────────────────────────────────────
-function Header({ lastUpdated, isFs, toggle, standalone, size }: {
-  lastUpdated: Date | null;
-  isFs: boolean;
-  toggle: () => void;
-  standalone: boolean;
-  size: 'sm' | 'md' | 'lg';
-}) {
-  const pad = size === 'lg' ? '18px 40px' : size === 'md' ? '14px 32px' : '12px 20px';
-  const logoSz = size === 'lg' ? 44 : size === 'md' ? 38 : 32;
-  const titleSz = size === 'lg' ? 19 : size === 'md' ? 16 : 14;
-  const subSz = size === 'lg' ? 13 : 11;
-
+// ─── Minimal header strip (≤40px) ────────────────────────────────────────────
+// Deliberate: small. The customer doesn't need branding — they need the total.
+function SmallHeader({ isFs, toggle, standalone }: { isFs: boolean; toggle: () => void; standalone: boolean }) {
   return (
-    <div style={{ flexShrink: 0, background: C.bgDark, padding: pad, display: 'flex', alignItems: 'center', gap: 12 }}>
-      <div style={{ width: logoSz, height: logoSz, borderRadius: Math.round(logoSz * 0.28), background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: Math.round(logoSz * 0.55), flexShrink: 0 }}>🌿</div>
-      <div style={{ minWidth: 0 }}>
-        <div style={{ color: '#fff', fontWeight: 800, fontSize: titleSz, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>PharmaSaaS</div>
-        <div style={{ color: C.muted, fontSize: subSz }}>健康生活藥局</div>
-      </div>
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-        {lastUpdated && (
-          <div style={{ color: C.mutedDark, fontSize: 12 }}>{lastUpdated.toLocaleTimeString('zh-TW')}</div>
-        )}
-        {!standalone && (
-          <button onClick={toggle} style={ICON_BTN}>
-            {isFs ? '✕ 退出' : '⛶ 全螢幕'}
-          </button>
-        )}
-      </div>
+    <div style={{ flexShrink: 0, height: 38, background: '#1C1917', display: 'flex', alignItems: 'center', paddingInline: 14, gap: 8 }}>
+      <span style={{ fontSize: 16 }}>🌿</span>
+      <span style={{ color: '#78716C', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em' }}>健康生活藥局</span>
+      {!standalone && (
+        <button
+          onClick={toggle}
+          style={{ marginLeft: 'auto', background: 'none', border: '1px solid #3C3835', color: '#57534E', borderRadius: 6, padding: '2px 8px', fontSize: 11, cursor: 'pointer', lineHeight: 1.6 }}
+        >
+          {isFs ? '退出' : '⛶'}
+        </button>
+      )}
     </div>
   );
 }
 
-// ─── ItemsTable ───────────────────────────────────────────────────────────────
-function ItemsTable({ cart, compact = false }: { cart: CartSnapshot; compact?: boolean }) {
-  const rowPad = compact ? '11px 16px' : '14px 20px';
-  const nameSz = compact ? 15 : 17;
-  const priceSz = compact ? 17 : 20;
+// ─── Items column ──────────────────────────────────────────────────────────────
+// Single-line row: name | qty | line-total   (~42px per row)
+// No sub-line unit price — that's merchant info, not customer-facing.
+function ItemsCol({ cart, tv, compact = false }: { cart: CartSnapshot | null; tv: boolean; compact?: boolean }) {
+  if (!cart?.items.length) return <IdlePlaceholder />;
+
+  const rowH   = tv ? 52 : compact ? 40 : 46;
+  const nameSz = tv ? 18 : compact ? 13 : 15;
+  const numSz  = tv ? 18 : compact ? 14 : 16;
+  const px     = tv ? 32 : 12;
+  const py     = tv ? 14 : 10;
 
   return (
-    <div style={{ background: '#fff', borderRadius: 14, border: `1.5px solid ${C.border}`, overflow: 'hidden' }}>
-      <div style={{ padding: `10px 20px`, background: C.headerBg, borderBottom: `1px solid ${C.border}`, display: 'grid', gridTemplateColumns: '1fr 64px 90px', gap: 12, fontSize: 11, color: C.muted, fontWeight: 700, letterSpacing: '0.06em' }}>
-        <span>商品</span>
-        <span style={{ textAlign: 'center' }}>數量</span>
-        <span style={{ textAlign: 'right' }}>小計</span>
+    <div>
+      {/* column header */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 48px 80px', paddingInline: px, paddingBlock: 6, borderBottom: '1px solid #E7E5E4', background: '#F5F4F2' }}>
+        <span style={{ fontSize: 11, color: '#A8A29E', fontWeight: 700, letterSpacing: '0.05em' }}>商品</span>
+        <span style={{ fontSize: 11, color: '#A8A29E', fontWeight: 700, textAlign: 'center' }}>數量</span>
+        <span style={{ fontSize: 11, color: '#A8A29E', fontWeight: 700, textAlign: 'right' }}>小計</span>
       </div>
       {cart.items.map((item, i) => (
-        <div key={i} style={{ padding: rowPad, borderBottom: `1px solid ${C.borderMid}`, display: 'grid', gridTemplateColumns: '1fr 64px 90px', gap: 12, alignItems: 'center' }}>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: nameSz, fontWeight: 700, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-            <div style={{ fontSize: nameSz - 4, color: C.muted, marginTop: 2 }}>${item.unitPrice.toFixed(0)} / 件</div>
-          </div>
-          <div style={{ fontSize: nameSz, color: C.textSub, textAlign: 'center' }}>×{item.quantity}</div>
-          <div style={{ fontSize: priceSz, fontWeight: 800, color: C.accent, textAlign: 'right' }}>${item.lineTotal.toFixed(0)}</div>
+        <div
+          key={i}
+          style={{ display: 'grid', gridTemplateColumns: '1fr 48px 80px', alignItems: 'center', paddingInline: px, paddingBlock: py, minHeight: rowH, borderBottom: '1px solid #F0EFEE' }}
+        >
+          {/* name: truncate — never let long names blow the grid */}
+          <span style={{ fontSize: nameSz, fontWeight: 600, color: '#1C1917', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 8 }}>
+            {item.name}
+          </span>
+          <span style={{ fontSize: numSz, color: '#78716C', textAlign: 'center' }}>
+            ×{item.quantity}
+          </span>
+          <span style={{ fontSize: numSz, fontWeight: 700, color: '#D97706', textAlign: 'right' }}>
+            ${item.lineTotal.toFixed(0)}
+          </span>
         </div>
       ))}
     </div>
   );
 }
 
-// ─── Summary ─────────────────────────────────────────────────────────────────
-function Summary({ cart, totalFontSize, labelFontSize, rowFontSize }: {
-  cart: CartSnapshot;
-  totalFontSize: number;
-  labelFontSize: number;
-  rowFontSize: number;
-}) {
-  const showBreakdown = cart.subtotal !== cart.total || cart.discount > 0;
+// ─── Total panel ──────────────────────────────────────────────────────────────
+// Dark background, huge number — the only thing the customer really cares about.
+function TotalPanel({ cart, totalSize, height }: { cart: CartSnapshot | null; totalSize: number; height?: number }) {
+  const showBreakdown = !!(cart && cart.discount > 0);
 
   return (
-    <div>
+    <div style={{
+      flexShrink: 0,
+      background: '#1C1917',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      paddingInline: height ? 16 : 36,
+      paddingBlock: height ? 0 : 36,
+      gap: 4,
+      ...(height ? { height } : { borderLeft: '2px solid #2C2A28' }),
+      overflow: 'hidden',
+    }}>
+      {/* breakdown row — only when there's a discount */}
       {showBreakdown && (
-        <>
-          {cart.subtotal !== cart.total && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: rowFontSize, color: '#A8A29E', marginBottom: 5 }}>
-              <span>小計</span><span>${cart.subtotal.toFixed(0)}</span>
-            </div>
-          )}
-          {cart.discount > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: rowFontSize, color: C.danger, marginBottom: 5 }}>
-              <span>折扣</span><span>-${cart.discount.toFixed(0)}</span>
-            </div>
-          )}
-        </>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#57534E', marginBottom: 4 }}>
+          <span>小計 ${cart!.subtotal.toFixed(0)}</span>
+          <span style={{ color: '#F87171' }}>折扣 -${cart!.discount.toFixed(0)}</span>
+        </div>
       )}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderTop: showBreakdown ? '1px solid #2C2A28' : 'none', paddingTop: showBreakdown ? 10 : 0, marginTop: showBreakdown ? 6 : 0 }}>
-        <span style={{ fontSize: labelFontSize, fontWeight: 700, color: '#D6D3D1' }}>合計</span>
-        <span style={{ fontSize: totalFontSize, fontWeight: 900, color: C.accent, letterSpacing: '-0.03em', lineHeight: 1 }}>
-          ${cart.total.toFixed(0)}
-        </span>
+
+      {/* label */}
+      <div style={{ fontSize: height ? 13 : 16, color: '#78716C', fontWeight: 600, letterSpacing: '0.06em' }}>
+        合計
+      </div>
+
+      {/* THE number */}
+      <div style={{
+        fontSize: totalSize,
+        fontWeight: 900,
+        color: cart ? '#F59E0B' : '#3C3835',
+        letterSpacing: '-0.03em',
+        lineHeight: 1,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}>
+        {cart ? `$${cart.total.toFixed(0)}` : '——'}
       </div>
     </div>
   );
 }
 
-// ─── Idle placeholder ─────────────────────────────────────────────────────────
-function Idle({ size }: { size: 'sm' | 'md' | 'lg' }) {
-  const emojiSz = size === 'sm' ? 36 : size === 'md' ? 52 : 72;
-  const textSz  = size === 'sm' ? 15 : size === 'md' ? 18 : 24;
-
+// ─── Empty / idle placeholder ─────────────────────────────────────────────────
+function IdlePlaceholder() {
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, opacity: 0.4 }}>
-      <div style={{ fontSize: emojiSz }}>🛍️</div>
-      <div style={{ fontSize: textSz, color: C.textSub, fontWeight: 500 }}>歡迎光臨！</div>
-      <div style={{ fontSize: textSz * 0.7, color: C.muted }}>等待加入商品...</div>
-    </div>
-  );
-}
-
-// ─── Footer ───────────────────────────────────────────────────────────────────
-function Footer() {
-  return (
-    <div style={{ flexShrink: 0, padding: '10px 24px', background: C.headerBg, borderTop: `1.5px solid ${C.border}`, textAlign: 'center', fontSize: 12, color: C.muted }}>
-      感謝您的光臨 · 請確認品項與金額無誤
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, opacity: 0.35, padding: 24 }}>
+      <span style={{ fontSize: 40 }}>🛍️</span>
+      <span style={{ fontSize: 15, color: '#78716C' }}>等待加入商品</span>
     </div>
   );
 }
