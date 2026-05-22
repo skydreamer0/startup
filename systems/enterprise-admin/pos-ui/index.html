@@ -2,8 +2,26 @@
 <html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="顧客顯示" />
+    <meta name="theme-color" content="#1C1917" />
+    <meta name="description" content="PharmaSaaS POS 顧客顯示器" />
+    <link rel="manifest" href="/manifest.json" />
     <title>PharmaSaaS POS</title>
+    <style>
+      /* Prevent text selection and context menu on display screens */
+      .customer-display-root {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+      /* Safe area insets for notched devices */
+      .cd-safe-top    { padding-top:    env(safe-area-inset-top); }
+      .cd-safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
   </head>
   <body>
     <div id="root"></div>
