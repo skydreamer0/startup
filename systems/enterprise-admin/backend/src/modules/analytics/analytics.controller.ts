@@ -107,6 +107,15 @@ export class AnalyticsController {
 
     // ─── Operations: Sales Heatmap ──────────────────────────
 
+    static async getReorderForecast(req: Request, res: Response, next: NextFunction) {
+        try {
+            const rawLimit = Number(req.query.limit);
+            const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? rawLimit : undefined;
+            const result = await ProductAnalyticsService.getReorderForecast(limit);
+
+            res.json({ success: true, data: result });
+        } catch (err) { next(err); }
+    }
     static async getHeatmap(req: Request, res: Response, next: NextFunction) {
         try {
             const { startDate, endDate } = parsePeriodFromRequest(req);

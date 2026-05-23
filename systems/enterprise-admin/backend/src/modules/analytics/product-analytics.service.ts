@@ -5,6 +5,8 @@ import type {
     AbcProduct,
     AbcResult,
     RankedSupplier,
+    ReorderForecastItem,
+    ReorderUrgency,
 } from './analytics.types';
 
 /**
@@ -15,6 +17,108 @@ import type {
  * per-supplier aggregate loop).
  */
 export class ProductAnalyticsService {
+    static async getReorderForecast(limit = 20): Promise<ReorderForecastItem[]> {
+        const tenantId = requireTenantId();
+        const boundedLimit = Math.max(1, Math.min(Math.floor(limit), 100));
+        const endDate = new Date();
+        const startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - 30);
+
+        const [products, orderItems] = await Promise.all([
+            prisma.product.findMany({
+                where: { tenantId },
+                select: {
+                    id: true,
+                    name: true,
+                    sku: true,
+                    stockQuantity: true,
+                    safetyStock: true,
+                },
+            }),
+            prisma.orderItem.findMany({
+                where: {
+                    order: {
+                        tenantId,
+                        status: 'completed',
+                        createdAt: {
+                            gte: startDate,
+                            lte: endDate,
+                        },
+                    },
+                    product: {
+                        tenantId,
+                    },
+                },
+                select: {
+                    productId: true,
+                    quantity: true,
+                },
+            }),
+        ]);
+
+        const quantityByProduct = new Map<string, number>();
+        for (const item of orderItems) {
+            quantityByProduct.set(item.productId, (quantityByProduct.get(item.productId) ?? 0) + item.quantity);
+        }
+
+        const forecasts = products
+            .map((product) => {
+                const quantitySold = quantityByProduct.get(product.id) ?? 0;
+                const dailySalesVelocity = Number((quantitySold / 30).toFixed(2));
+                const estimatedDaysUntilStockout = dailySalesVelocity > 0
+                    ? Number((product.stockQuantity / dailySalesVelocity).toFixed(2))
+                    : null;
+                const daysUntilSafetyStock = dailySalesVelocity > 0
+                    ? (product.stockQuantity - product.safetyStock) / dailySalesVelocity
+                    : null;
+
+                let urgency: ReorderUrgency = 'OK';
+                if (
+                    product.stockQuantity <= product.safetyStock ||
+                    estimatedDaysUntilStockout !== null && estimatedDaysUntilStockout <= 7 ||
+                    daysUntilSafetyStock !== null && daysUntilSafetyStock <= 7
+                ) {
+                    urgency = 'THIS_WEEK';
+                } else if (
+                    estimatedDaysUntilStockout !== null && estimatedDaysUntilStockout <= 30 ||
+                    daysUntilSafetyStock !== null && daysUntilSafetyStock <= 14
+                ) {
+                    urgency = 'SOON';
+                }
+
+                return {
+                    productId: product.id,
+                    name: product.name,
+                    sku: product.sku,
+                    stockQuantity: product.stockQuantity,
+                    safetyStock: product.safetyStock,
+                    dailySalesVelocity,
+                    estimatedDaysUntilStockout,
+                    urgency,
+                };
+            })
+            .filter((forecast) => (
+                forecast.stockQuantity <= forecast.safetyStock ||
+                forecast.dailySalesVelocity > 0
+            ));
+
+        const urgencyRank: Record<ReorderUrgency, number> = { THIS_WEEK: 0, SOON: 1, OK: 2 };
+        forecasts.sort((a, b) => {
+            const urgencyDelta = urgencyRank[a.urgency] - urgencyRank[b.urgency];
+            if (urgencyDelta !== 0) return urgencyDelta;
+
+            const aSafetyGap = a.stockQuantity - a.safetyStock;
+            const bSafetyGap = b.stockQuantity - b.safetyStock;
+            if (aSafetyGap !== bSafetyGap) return aSafetyGap - bSafetyGap;
+
+            const aDays = a.estimatedDaysUntilStockout ?? Number.POSITIVE_INFINITY;
+            const bDays = b.estimatedDaysUntilStockout ?? Number.POSITIVE_INFINITY;
+            return aDays - bDays;
+        });
+
+        return forecasts.slice(0, boundedLimit);
+    }
+
     /**
      * Cross-analyses products by revenue contribution and margin percentage.
      * Quadrants:

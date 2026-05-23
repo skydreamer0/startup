@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ProductAnalyticsService } from './product-analytics.service';
 
-// ?€?€?€ Mock tenant context ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// Mock tenant context
 vi.mock('../../lib/tenant.context', () => ({
     requireTenantId: vi.fn(() => 'test-tenant-id'),
     tenantContext: {
@@ -9,7 +9,7 @@ vi.mock('../../lib/tenant.context', () => ({
     },
 }));
 
-// ?€?€?€ Mock Prisma ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// Mock Prisma
 vi.mock('../../lib/prisma', () => ({
     prisma: {
         orderItem: {
@@ -19,6 +19,7 @@ vi.mock('../../lib/prisma', () => ({
             findMany: vi.fn(),
         },
         product: {
+            findMany: vi.fn(),
             groupBy: vi.fn(),
         },
         $queryRaw: vi.fn(),
@@ -29,13 +30,14 @@ import { prisma } from '../../lib/prisma';
 
 const mockOrderItemFindMany = vi.mocked(prisma.orderItem.findMany);
 const mockSupplierFindMany = vi.mocked(prisma.supplier.findMany);
+const mockProductFindMany = vi.mocked(prisma.product.findMany);
 const mockProductGroupBy = vi.mocked(prisma.product.groupBy);
 const mockQueryRaw = vi.mocked(prisma.$queryRaw);
 
 const startDate = new Date('2026-03-01');
 const endDate = new Date('2026-03-31');
 
-// ?€?€?€ ABC Product Analysis ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// ABC Product Analysis
 
 describe('ProductAnalyticsService.getProductAbcAnalysis', () => {
     beforeEach(() => {
@@ -146,7 +148,7 @@ describe('ProductAnalyticsService.getProductAbcAnalysis', () => {
     });
 });
 
-// ?€?€?€ Supplier Ranking ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// Supplier Ranking
 
 describe('ProductAnalyticsService.getSupplierRanking', () => {
     beforeEach(() => {
@@ -212,5 +214,109 @@ describe('ProductAnalyticsService.getSupplierRanking', () => {
         expect(result).toHaveLength(1);
         // compositeScore uses 50 defaults for reliability and defect ??should still be a valid number
         expect(result[0].compositeScore).toBeGreaterThan(0);
+    });
+});
+
+describe('ProductAnalyticsService.getReorderForecast', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        vi.setSystemTime(new Date('2026-05-23T12:00:00.000Z'));
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it('computes tenant-scoped reorder urgency from the last 30 days of completed sales', async () => {
+        mockProductFindMany.mockResolvedValue([
+            { id: 'p1', name: 'Fast Seller', sku: 'FAST-1', stockQuantity: 10, safetyStock: 5 },
+            { id: 'p2', name: 'Low Stock', sku: 'LOW-1', stockQuantity: 3, safetyStock: 5 },
+            { id: 'p3', name: 'Healthy Seller', sku: 'OK-1', stockQuantity: 100, safetyStock: 10 },
+            { id: 'p4', name: 'Dormant Stock', sku: 'DORM-1', stockQuantity: 100, safetyStock: 10 },
+        ] as unknown as ReturnType<typeof mockProductFindMany> extends Promise<infer T> ? T : never);
+        mockOrderItemFindMany.mockResolvedValue([
+            { productId: 'p1', quantity: 90 },
+            { productId: 'p2', quantity: 0 },
+            { productId: 'p3', quantity: 30 },
+        ] as unknown as ReturnType<typeof mockOrderItemFindMany> extends Promise<infer T> ? T : never);
+
+        const result = await ProductAnalyticsService.getReorderForecast();
+
+        expect(mockProductFindMany).toHaveBeenCalledWith({
+            where: { tenantId: 'test-tenant-id' },
+            select: {
+                id: true,
+                name: true,
+                sku: true,
+                stockQuantity: true,
+                safetyStock: true,
+            },
+        });
+        expect(mockOrderItemFindMany).toHaveBeenCalledWith({
+            where: {
+                order: {
+                    tenantId: 'test-tenant-id',
+                    status: 'completed',
+                    createdAt: {
+                        gte: new Date('2026-04-23T12:00:00.000Z'),
+                        lte: new Date('2026-05-23T12:00:00.000Z'),
+                    },
+                },
+                product: {
+                    tenantId: 'test-tenant-id',
+                },
+            },
+            select: {
+                productId: true,
+                quantity: true,
+            },
+        });
+        expect(result).toEqual([
+            {
+                productId: 'p2',
+                name: 'Low Stock',
+                sku: 'LOW-1',
+                stockQuantity: 3,
+                safetyStock: 5,
+                dailySalesVelocity: 0,
+                estimatedDaysUntilStockout: null,
+                urgency: 'THIS_WEEK',
+            },
+            {
+                productId: 'p1',
+                name: 'Fast Seller',
+                sku: 'FAST-1',
+                stockQuantity: 10,
+                safetyStock: 5,
+                dailySalesVelocity: 3,
+                estimatedDaysUntilStockout: 3.33,
+                urgency: 'THIS_WEEK',
+            },
+            {
+                productId: 'p3',
+                name: 'Healthy Seller',
+                sku: 'OK-1',
+                stockQuantity: 100,
+                safetyStock: 10,
+                dailySalesVelocity: 1,
+                estimatedDaysUntilStockout: 100,
+                urgency: 'OK',
+            },
+        ]);
+    });
+
+    it('returns a bounded forecast list', async () => {
+        mockProductFindMany.mockResolvedValue(Array.from({ length: 4 }, (_, index) => ({
+            id: `p${index}`,
+            name: `Product ${index}`,
+            sku: `SKU-${index}`,
+            stockQuantity: 1,
+            safetyStock: 5,
+        })) as unknown as ReturnType<typeof mockProductFindMany> extends Promise<infer T> ? T : never);
+        mockOrderItemFindMany.mockResolvedValue([]);
+
+        const result = await ProductAnalyticsService.getReorderForecast(2);
+
+        expect(result).toHaveLength(2);
     });
 });

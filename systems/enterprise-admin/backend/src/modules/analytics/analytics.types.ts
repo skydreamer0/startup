@@ -74,6 +74,20 @@ export interface RankedSupplier {
     productCount: number;
 }
 
+// Reorder Forecast (Product)
+export type ReorderUrgency = 'THIS_WEEK' | 'SOON' | 'OK';
+
+export interface ReorderForecastItem {
+    productId: string;
+    name: string;
+    sku: string;
+    stockQuantity: number;
+    safetyStock: number;
+    dailySalesVelocity: number;
+    estimatedDaysUntilStockout: number | null;
+    urgency: ReorderUrgency;
+}
+
 // ─── KPI Snapshot / Trend (Operations) ───────────────────
 export interface KpiSnapshot {
     gross_margin_pct: number;

@@ -24,6 +24,7 @@ router.get('/churn-risk', requirePlan('pro'), AnalyticsController.getChurnRisk);
 // Product & Supplier Analytics — pro plan
 router.get('/product-abc', requirePlan('pro'), AnalyticsController.getProductAbc);
 router.get('/supplier-ranking', requirePlan('pro'), AnalyticsController.getSupplierRanking);
+router.get('/reorder-forecast', requirePlan('pro'), AnalyticsController.getReorderForecast);
 
 // Operational Metrics — pro plan
 router.get('/heatmap', requirePlan('pro'), AnalyticsController.getHeatmap);
