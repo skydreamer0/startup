@@ -6,6 +6,7 @@ import type {
     KpiTrendPoint as AnalyticsTrend,
     BonusGateResult as BonusGateStatus,
     HeatmapCell,
+    ReorderForecastItem,
 } from '@pharmasaas/types';
 
 export type {
@@ -15,6 +16,7 @@ export type {
     AnalyticsTrend,
     BonusGateStatus,
     HeatmapCell,
+    ReorderForecastItem,
 };
 
 export const dashboardApi = {
@@ -44,6 +46,10 @@ export const dashboardApi = {
     getHeatmap: async (period?: string): Promise<HeatmapCell[]> => {
         const url = period ? `/analytics/heatmap?period=${period}` : '/analytics/heatmap';
         const { data } = await api.get(url);
+        return data.data;
+    },
+    getReorderForecast: async (limit = 8): Promise<ReorderForecastItem[]> => {
+        const { data } = await api.get('/analytics/reorder-forecast', { params: { limit } });
         return data.data;
     },
 };

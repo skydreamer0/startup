@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { dashboardApi, DashboardKPIs, CrmMetrics, AnalyticsKPIs, AnalyticsTrend, BonusGateStatus, HeatmapCell } from '../api/dashboard';
+import { dashboardApi, DashboardKPIs, CrmMetrics, AnalyticsKPIs, AnalyticsTrend, BonusGateStatus, HeatmapCell, ReorderForecastItem } from '../api/dashboard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import DashboardSkeleton from '../components/Skeleton';
 import { useToast } from '../components/Toast';
@@ -38,6 +38,11 @@ export default function DashboardPage() {
     const { data: heatmap } = useQuery<HeatmapCell[]>({
         queryKey: ['dashboard', 'heatmap'],
         queryFn: () => dashboardApi.getHeatmap(),
+    });
+
+    const { data: reorderForecast = [] } = useQuery<ReorderForecastItem[]>({
+        queryKey: ['dashboard', 'reorder-forecast'],
+        queryFn: () => dashboardApi.getReorderForecast(8),
     });
 
     function handleRefresh() {
@@ -291,38 +296,51 @@ export default function DashboardPage() {
             {/* ── Bottom Row: Low-stock & Interactions ── */}
             <div className="dashboard-grid-half">
 
-                {/* Low Stock Alerts */}
-                <section className="card section-card">
-                    <h3 className="section-title" style={{ color: 'var(--danger)' }}>⚠️ Low Stock Inventory</h3>
-                    {kpis?.inventory.lowStockItems.length === 0 ? (
-                        <div className="empty-state">
-                            <div className="empty-state-icon">✅</div>
-                            <div className="empty-state-title">All Clear</div>
-                            <div className="empty-state-text">All inventory levels are healthy. No products below safety stock.</div>
-                        </div>
-                    ) : (
-                        <div className="table-container">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Stock</th>
-                                        <th>Safety</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {kpis?.inventory.lowStockItems.map((item, idx) => (
-                                        <tr key={idx}>
-                                            <td className="font-semibold">{item.name}</td>
-                                            <td className="tabular" style={{ color: 'var(--danger)', fontWeight: 700 }}>{item.stockQuantity}</td>
-                                            <td className="tabular">{item.safetyStock}</td>
+                {/* AI Reorder Forecast */}
+                <PlanGate plan="pro" fallback={null}>
+                    <section className="card section-card">
+                        <h3 className="section-title" style={{ color: 'var(--danger)' }}>AI Reorder Forecast</h3>
+                        {reorderForecast.length === 0 ? (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">OK</div>
+                                <div className="empty-state-title">All Clear</div>
+                                <div className="empty-state-text">No SKU needs reorder attention from the 30-day sales forecast.</div>
+                            </div>
+                        ) : (
+                            <div className="table-container">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Stock</th>
+                                            <th>Velocity</th>
+                                            <th>Urgency</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </section>
+                                    </thead>
+                                    <tbody>
+                                        {reorderForecast.map((item) => (
+                                            <tr key={item.productId}>
+                                                <td className="font-semibold">{item.name}</td>
+                                                <td className="tabular" style={{ color: item.stockQuantity <= item.safetyStock ? 'var(--danger)' : 'var(--text-primary)', fontWeight: 700 }}>
+                                                    {item.stockQuantity} / {item.safetyStock}
+                                                </td>
+                                                <td className="tabular">{item.dailySalesVelocity}/day</td>
+                                                <td>
+                                                    <span className="badge" style={{
+                                                        background: item.urgency === 'THIS_WEEK' ? 'rgba(239, 68, 68, 0.1)' : item.urgency === 'SOON' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                                                        color: item.urgency === 'THIS_WEEK' ? '#ef4444' : item.urgency === 'SOON' ? '#f59e0b' : '#10b981',
+                                                    }}>
+                                                        {item.urgency === 'THIS_WEEK' ? 'This week' : item.urgency === 'SOON' ? 'Soon' : 'OK'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+                </PlanGate>
 
                 {/* Interactions */}
                 <section className="card section-card">
