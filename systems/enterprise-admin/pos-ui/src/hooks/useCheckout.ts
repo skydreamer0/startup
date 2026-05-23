@@ -6,11 +6,12 @@ import { PaymentEntry } from '../components/SplitPaymentModal';
 
 interface UseCheckoutOptions {
   shiftId: string | undefined;
+  customerId?: string;
   onSuccess: () => void;
   showToast: (msg: PosToastMessage) => void;
 }
 
-export function useCheckout({ shiftId, onSuccess, showToast }: UseCheckoutOptions) {
+export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCheckoutOptions) {
   const [checkoutResult, setCheckoutResult] = useState<CheckoutResult | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
@@ -37,6 +38,7 @@ export function useCheckout({ shiftId, onSuccess, showToast }: UseCheckoutOption
         payments: splitPayments,
         orderDiscountAmount,
         orderDiscountNote: orderDiscountNote || undefined,
+        customerId,
         shiftId,
         salesStaffId: staffId ?? undefined,
       });

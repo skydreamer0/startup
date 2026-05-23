@@ -7,9 +7,13 @@ import type {
   CheckoutResult,
   PosOrderSummary,
   ShiftReport,
+  PosCustomerLookup,
+  PosRecommendation,
+  ReorderForecastItem,
+  ReorderUrgency,
 } from '@pharmasaas/types';
 
-export type { PosProduct, PosStaff, ActiveShift, CheckoutPayload, CheckoutResult, PosOrderSummary, ShiftReport };
+export type { PosProduct, PosStaff, ActiveShift, CheckoutPayload, CheckoutResult, PosOrderSummary, ShiftReport, PosCustomerLookup, PosRecommendation, ReorderForecastItem, ReorderUrgency };
 
 export const posApi = {
   getProducts: (q?: string, categoryId?: string, inStockOnly = true) =>
@@ -19,6 +23,22 @@ export const posApi = {
 
   getStaff: () =>
     api.get<{ success: boolean; data: PosStaff[] }>('/pos/staff'),
+
+  lookupCustomer: (q: string) =>
+    api.get<{ success: boolean; data: PosCustomerLookup | null }>('/pos/customer-lookup', {
+      params: { q },
+    }),
+
+  getRecommendations: (customerId: string) =>
+    api.get<{ success: boolean; data: PosRecommendation[] }>(`/pos/recommendations/${customerId}`),
+
+  getHotRecommendations: () =>
+    api.get<{ success: boolean; data: PosRecommendation[] }>('/pos/recommendations'),
+
+  getReorderForecast: (limit = 20) =>
+    api.get<{ success: boolean; data: ReorderForecastItem[] }>('/pos/reorder-forecast', {
+      params: { limit },
+    }),
 
   getActiveShift: () =>
     api.get<{ success: boolean; data: ActiveShift | null }>('/pos/shift/active'),

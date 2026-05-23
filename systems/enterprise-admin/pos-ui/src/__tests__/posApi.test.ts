@@ -49,6 +49,42 @@ describe('posApi', () => {
     expect(post).toHaveBeenCalledWith('/pos/checkout', payload);
   });
 
+  it('requests customer lookup by phone or member code', async () => {
+    const { posApi } = await import('../api/pos');
+
+    posApi.lookupCustomer('0912345678');
+
+    expect(get).toHaveBeenCalledWith('/pos/customer-lookup', {
+      params: { q: '0912345678' },
+    });
+  });
+
+  it('requests customer recommendations', async () => {
+    const { posApi } = await import('../api/pos');
+
+    posApi.getRecommendations('customer-1');
+
+    expect(get).toHaveBeenCalledWith('/pos/recommendations/customer-1');
+  });
+
+  it('requests hot recommendations without a customer', async () => {
+    const { posApi } = await import('../api/pos');
+
+    posApi.getHotRecommendations();
+
+    expect(get).toHaveBeenCalledWith('/pos/recommendations');
+  });
+
+  it('requests reorder forecast with a bounded limit', async () => {
+    const { posApi } = await import('../api/pos');
+
+    posApi.getReorderForecast(5);
+
+    expect(get).toHaveBeenCalledWith('/pos/reorder-forecast', {
+      params: { limit: 5 },
+    });
+  });
+
   it('opens and closes shifts through the shifts endpoints', async () => {
     const { posApi } = await import('../api/pos');
 

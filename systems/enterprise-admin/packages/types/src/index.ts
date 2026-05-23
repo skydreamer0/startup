@@ -178,6 +178,44 @@ export interface PosStaff {
   employeeCode?: string;
 }
 
+export type PosCustomerSegment = 'vip' | 'loyal' | 'new' | 'at_risk';
+
+export interface PosCustomerLookup {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  rfmSegment: PosCustomerSegment;
+  totalSpent: number;
+  purchaseCount: number;
+  lastPurchaseDate: string | null;
+  daysSinceLastPurchase: number | null;
+  recentPurchases: {
+    productId: string;
+    name: string;
+    sku: string;
+    quantity: number;
+    purchasedAt: string;
+  }[];
+  supplementDueItems: {
+    productId: string;
+    name: string;
+    sku: string;
+    daysSincePurchase: number;
+  }[];
+}
+
+export interface PosRecommendation {
+  productId: string;
+  name: string;
+  sku: string;
+  retailPrice: number;
+  stockQuantity: number;
+  lastPurchasedAt?: string;
+  daysSincePurchase?: number;
+  quantitySold?: number;
+  reason: 'REPLENISHMENT_DUE' | 'HOT_SELLER';
+}
+
 export interface ActiveShift {
   id: string;
   status: string;
@@ -324,6 +362,19 @@ export interface BonusGateResult {
   gatePass: boolean;
   estimatedBonusPool: number;
   totalRevenue: number;
+}
+
+export type ReorderUrgency = 'THIS_WEEK' | 'SOON' | 'OK';
+
+export interface ReorderForecastItem {
+  productId: string;
+  name: string;
+  sku: string;
+  stockQuantity: number;
+  safetyStock: number;
+  dailySalesVelocity: number;
+  estimatedDaysUntilStockout: number | null;
+  urgency: ReorderUrgency;
 }
 
 // ─── Reports ─────────────────────────────────────────────────────────────────

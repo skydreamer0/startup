@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { posApi, PosStaff, PosOrderSummary } from '../api/pos';
+import { posApi, PosStaff, PosOrderSummary, PosCustomerLookup } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import CategoryNav from '../components/CategoryNav';
 import ProductGrid from '../components/ProductGrid';
@@ -25,6 +25,9 @@ import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { useCustomerDisplay, openCustomerDisplay } from '../hooks/useCustomerDisplay';
 import ShiftOpenScreen from './ShiftOpenScreen';
 import CloseShiftDialog from '../components/CloseShiftDialog';
+import CustomerLookupPanel from '../components/CustomerLookupPanel';
+import RecommendationChips from '../components/RecommendationChips';
+import ReorderForecastBadge from '../components/ReorderForecastBadge';
 
 // Discount thresholds that require admin PIN authorisation
 const ITEM_DISCOUNT_PIN_THRESHOLD = 20;
@@ -40,6 +43,7 @@ export default function POSCheckoutPage() {
   const [showOrderLookup, setShowOrderLookup] = useState(false);
   const [showShiftReport, setShowShiftReport] = useState(false);
   const [refundTarget, setRefundTarget] = useState<PosOrderSummary | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<PosCustomerLookup | null>(null);
   const [refundLoading, setRefundLoading] = useState(false);
   const [toast, setToast] = useState<PosToastMessage | null>(null);
   const [adminPinPending, setAdminPinPending] = useState<null | { action: 'checkout' | 'split'; splitPayments?: PaymentEntry[] }>(null);
@@ -60,6 +64,7 @@ export default function POSCheckoutPage() {
 
   const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout } = useCheckout({
     shiftId: shift.activeShift?.id,
+    customerId: selectedCustomer?.id,
     onSuccess: () => { setShowPaymentModal(false); setShowSplitModal(false); },
     showToast,
   });
@@ -87,7 +92,35 @@ export default function POSCheckoutPage() {
     staleTime: 30_000,
   });
 
+  const { data: recommendations = [] } = useQuery({
+    queryKey: ['pos-recommendations', selectedCustomer?.id],
+    queryFn: () => selectedCustomer
+      ? posApi.getRecommendations(selectedCustomer.id).then((r) => r.data.data)
+      : posApi.getHotRecommendations().then((r) => r.data.data),
+    staleTime: 60_000,
+  });
+
+  const { data: reorderForecast = [] } = useQuery({
+    queryKey: ['pos-reorder-forecast'],
+    queryFn: () => posApi.getReorderForecast(8).then((r) => r.data.data),
+    staleTime: 60_000,
+    retry: false,
+  });
+
   useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast);
+
+  function handleAddRecommendation(productId: string) {
+    const recommendation = recommendations.find((item) => item.productId === productId);
+    if (!recommendation) return;
+    addItem({
+      id: recommendation.productId,
+      name: recommendation.name,
+      sku: recommendation.sku,
+      retailPrice: recommendation.retailPrice,
+      stockQuantity: recommendation.stockQuantity,
+    });
+    showToast({ type: 'success', message: `已加入推薦商品：${recommendation.name}` });
+  }
 
   function requirePin(action: 'checkout' | 'split', splitPayments?: PaymentEntry[]) {
     if (!hasHighDiscount) {
@@ -240,8 +273,15 @@ export default function POSCheckoutPage() {
           placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
           style={{ width: 260, padding: '8px 16px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', fontSize: 13, background: 'var(--bg-app)', outline: 'none', color: 'var(--text-primary)' }}
         />
+        <CustomerLookupPanel
+          selectedCustomer={selectedCustomer}
+          onSelect={setSelectedCustomer}
+          onClear={() => setSelectedCustomer(null)}
+          onFeedback={showToast}
+        />
         <HoldOrderBar onFeedback={showToast} />
         <OfflineStatus onSync={handleSync} />
+        <ReorderForecastBadge forecasts={reorderForecast} />
         <PrinterStatus />
         <button type="button" onClick={() => setShowOrderLookup(true)} title="訂單查詢 (F7)" style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 14px', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>
           📋 訂單 (F7)
@@ -266,6 +306,9 @@ export default function POSCheckoutPage() {
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
         <div className="pos-cart">
+          <div style={{ padding: recommendations.length > 0 ? '10px 12px 0' : 0 }}>
+            <RecommendationChips recommendations={recommendations} onAdd={handleAddRecommendation} />
+          </div>
           <CartPanel
             currentStaffName={currentStaffName}
             onCheckout={() => setShowPaymentModal(true)}
