@@ -47,3 +47,12 @@ export const customerRecommendationsSchema = {
 };
 
 export type CheckoutDto = z.infer<typeof checkoutSchema.body>;
+
+export const createPosCustomerSchema = {
+  body: z.object({
+    phone: z.string().trim().min(1),
+    name: z.string().trim().optional(),
+  }),
+};
+
+export type CreatePosCustomerDto = z.infer<typeof createPosCustomerSchema.body>;

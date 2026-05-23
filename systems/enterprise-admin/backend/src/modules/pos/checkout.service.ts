@@ -2,6 +2,7 @@ import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
 import { ProductAnalyticsService } from '../analytics/product-analytics.service';
+import { CrmService } from '../crm/crm.service';
 import { CheckoutDto } from './pos.schema';
 
 type PosRfmSegment = 'vip' | 'loyal' | 'new' | 'at_risk';
@@ -299,6 +300,22 @@ export class CheckoutService {
       daysSinceLastPurchase,
       recentPurchases,
       supplementDueItems: Array.from(dueByProduct.values()).slice(0, 3),
+    };
+  }
+
+  static async createCustomer(data: { phone: string; name?: string }) {
+    const customer = await CrmService.createCustomer({ phone: data.phone, name: data.name });
+    return {
+      id: customer.id,
+      name: customer.name ?? null,
+      phone: customer.phone ?? null,
+      rfmSegment: 'new' as const,
+      totalSpent: 0,
+      purchaseCount: 0,
+      lastPurchaseDate: null,
+      daysSinceLastPurchase: null,
+      recentPurchases: [],
+      supplementDueItems: [],
     };
   }
 

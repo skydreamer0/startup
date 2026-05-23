@@ -29,6 +29,9 @@ export const posApi = {
       params: { q },
     }),
 
+  createCustomer: (payload: { phone: string; name?: string }) =>
+    api.post<{ success: boolean; data: PosCustomerLookup }>('/pos/customers', payload),
+
   getRecommendations: (customerId: string) =>
     api.get<{ success: boolean; data: PosRecommendation[] }>(`/pos/recommendations/${customerId}`),
 

@@ -54,6 +54,16 @@ export class PosController {
     } catch (err) { next(err); }
   }
 
+  static async createCustomer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const body = (req as unknown as Record<string, unknown>).validatedBody as { phone: string; name?: string };
+      const data = await CheckoutService.createCustomer(body);
+      res.status(201).json({ success: true, data });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async getRecommendations(req: Request, res: Response, next: NextFunction) {
     try {
       const customerId = Array.isArray(req.params.customerId)
