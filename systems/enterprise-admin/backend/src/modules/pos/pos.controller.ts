@@ -56,12 +56,9 @@ export class PosController {
 
   static async createCustomer(req: Request, res: Response, next: NextFunction) {
     try {
-      const body = (req as unknown as Record<string, unknown>).validatedBody as { phone: string; name?: string };
-      const data = await CheckoutService.createCustomer(body);
+      const data = await CheckoutService.createCustomer(req.body as { phone: string; name?: string });
       res.status(201).json({ success: true, data });
-    } catch (err) {
-      next(err);
-    }
+    } catch (err) { next(err); }
   }
 
   static async getRecommendations(req: Request, res: Response, next: NextFunction) {

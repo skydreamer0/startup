@@ -207,6 +207,67 @@ describe('Roles API (Integration)', () => {
     });
 });
 
+describe('POS Customers API (Integration)', () => {
+    let accessToken: string;
+    const uniquePhone = `09${Date.now().toString().slice(-8)}`;
+
+    beforeAll(async () => {
+        const loginRes = await request(app)
+            .post('/api/v1/admin/auth/login')
+            .send({ email: 'admin@system.local', password: 'Admin@123!' });
+        accessToken = loginRes.body.data.accessToken;
+    });
+
+    describe('POST /api/v1/admin/pos/customers', () => {
+        it('should create a new customer and return PosCustomerLookup shape', async () => {
+            const res = await request(app)
+                .post('/api/v1/admin/pos/customers')
+                .set('Authorization', `Bearer ${accessToken}`)
+                .send({ phone: uniquePhone, name: '測試新客' });
+
+            expect(res.status).toBe(201);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.phone).toBe(uniquePhone);
+            expect(res.body.data.name).toBe('測試新客');
+            expect(res.body.data.rfmSegment).toBe('new');
+            expect(res.body.data.totalSpent).toBe(0);
+            expect(res.body.data.purchaseCount).toBe(0);
+            expect(Array.isArray(res.body.data.recentPurchases)).toBe(true);
+            expect(Array.isArray(res.body.data.supplementDueItems)).toBe(true);
+        });
+
+        it('should reject duplicate phone with 409', async () => {
+            const res = await request(app)
+                .post('/api/v1/admin/pos/customers')
+                .set('Authorization', `Bearer ${accessToken}`)
+                .send({ phone: uniquePhone });
+
+            expect(res.status).toBe(409);
+            expect(res.body.success).toBe(false);
+        });
+
+        it('should reject missing phone with 400 (Zod validation)', async () => {
+            const res = await request(app)
+                .post('/api/v1/admin/pos/customers')
+                .set('Authorization', `Bearer ${accessToken}`)
+                .send({ name: '只有名字' });
+
+            expect(res.status).toBe(400);
+            expect(res.body.success).toBe(false);
+            expect(res.body.error.code).toBe('VALIDATION_FAILED');
+        });
+
+        it('should reject request without auth token with 401', async () => {
+            const res = await request(app)
+                .post('/api/v1/admin/pos/customers')
+                .send({ phone: '0900000001' });
+
+            expect(res.status).toBe(401);
+            expect(res.body.success).toBe(false);
+        });
+    });
+});
+
 describe('404 Handler', () => {
     it('should return 404 for unknown routes', async () => {
         const res = await request(app).get('/api/v1/admin/nonexistent');
