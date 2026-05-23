@@ -34,4 +34,16 @@ export const posProductsSchema = {
   }),
 };
 
+export const customerLookupSchema = {
+  query: z.object({
+    q: z.string().trim().min(1),
+  }),
+};
+
+export const customerRecommendationsSchema = {
+  params: z.object({
+    customerId: z.string().uuid(),
+  }),
+};
+
 export type CheckoutDto = z.infer<typeof checkoutSchema.body>;

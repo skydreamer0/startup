@@ -1,7 +1,23 @@
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
+import { ProductAnalyticsService } from '../analytics/product-analytics.service';
 import { CheckoutDto } from './pos.schema';
+
+type PosRfmSegment = 'vip' | 'loyal' | 'new' | 'at_risk';
+type PosRecommendationReason = 'REPLENISHMENT_DUE' | 'HOT_SELLER';
+
+function daysBetween(from: Date, to: Date) {
+  const msPerDay = 24 * 60 * 60 * 1000;
+  return Math.floor((to.getTime() - from.getTime()) / msPerDay);
+}
+
+function classifyCustomer(totalSpent: number, purchaseCount: number, daysSinceLastPurchase: number | null): PosRfmSegment {
+  if (daysSinceLastPurchase !== null && daysSinceLastPurchase >= 90) return 'at_risk';
+  if (totalSpent >= 10000 || purchaseCount >= 8) return 'vip';
+  if (purchaseCount >= 3) return 'loyal';
+  return 'new';
+}
 
 export class CheckoutService {
   static async checkout(dto: CheckoutDto) {
@@ -18,7 +34,13 @@ export class CheckoutService {
 
       // 3. Resolve customer (WALK_IN fallback)
       let customerId = dto.customerId;
-      if (!customerId) {
+      if (customerId) {
+        const customer = await tx.customer.findFirst({
+          where: { id: customerId, tenantId },
+          select: { id: true },
+        });
+        if (!customer) throw new AppError(404, 'Customer not found');
+      } else {
         const walkIn = await tx.customer.findFirst({ where: { phone: 'WALK_IN', tenantId } });
         if (!walkIn) throw new AppError(500, 'WALK_IN system customer not seeded');
         customerId = walkIn.id;
@@ -197,6 +219,202 @@ export class CheckoutService {
       select: { id: true, fullName: true, email: true, employeeCode: true },
       orderBy: { fullName: 'asc' },
     });
+  }
+
+  static async lookupCustomer(q: string, now = new Date()) {
+    const tenantId = requireTenantId();
+    const query = q.trim();
+    if (!query) return null;
+
+    const customer = await prisma.customer.findFirst({
+      where: {
+        tenantId,
+        OR: [
+          { phone: { contains: query } },
+          { id: query },
+        ],
+      },
+      include: {
+        orders: {
+          where: { tenantId },
+          orderBy: { createdAt: 'desc' },
+          take: 3,
+          include: {
+            items: {
+              include: {
+                product: { select: { id: true, name: true, sku: true, retailPrice: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!customer) return null;
+
+    const lastPurchaseDate = customer.lastPurchaseDate ?? customer.orders[0]?.createdAt ?? null;
+    const daysSinceLastPurchase = lastPurchaseDate ? daysBetween(lastPurchaseDate, now) : null;
+    const totalSpent = Number(customer.totalSpent);
+    const rfmSegment = classifyCustomer(totalSpent, customer.purchaseCount, daysSinceLastPurchase);
+
+    const recentPurchases = customer.orders.flatMap((order) =>
+      order.items.map((item) => ({
+        productId: item.product.id,
+        name: item.product.name,
+        sku: item.product.sku,
+        quantity: item.quantity,
+        purchasedAt: order.createdAt.toISOString(),
+      })),
+    ).slice(0, 5);
+
+    const dueByProduct = new Map<string, {
+      productId: string;
+      name: string;
+      sku: string;
+      daysSincePurchase: number;
+    }>();
+
+    for (const order of customer.orders) {
+      const age = daysBetween(order.createdAt, now);
+      if (age < 25) continue;
+      for (const item of order.items) {
+        if (!dueByProduct.has(item.product.id)) {
+          dueByProduct.set(item.product.id, {
+            productId: item.product.id,
+            name: item.product.name,
+            sku: item.product.sku,
+            daysSincePurchase: age,
+          });
+        }
+      }
+    }
+
+    return {
+      id: customer.id,
+      name: customer.name,
+      phone: customer.phone,
+      rfmSegment,
+      totalSpent,
+      purchaseCount: customer.purchaseCount,
+      lastPurchaseDate: lastPurchaseDate?.toISOString() ?? null,
+      daysSinceLastPurchase,
+      recentPurchases,
+      supplementDueItems: Array.from(dueByProduct.values()).slice(0, 3),
+    };
+  }
+
+  static async getRecommendations(customerId: string, now = new Date()) {
+    const tenantId = requireTenantId();
+
+    const customer = await prisma.customer.findFirst({
+      where: { id: customerId, tenantId },
+      select: { id: true },
+    });
+    if (!customer) throw new AppError(404, 'Customer not found');
+
+    const cutoff = new Date(now);
+    cutoff.setDate(cutoff.getDate() - 25);
+
+    const purchasedItems = await prisma.orderItem.findMany({
+      where: {
+        order: {
+          customerId,
+          tenantId,
+          createdAt: { lte: cutoff },
+        },
+        product: { tenantId, stockQuantity: { gt: 0 } },
+      },
+      include: {
+        order: { select: { createdAt: true } },
+        product: { select: { id: true, name: true, sku: true, retailPrice: true, stockQuantity: true } },
+      },
+      orderBy: { order: { createdAt: 'desc' } },
+      take: 50,
+    });
+
+    const recommendations = new Map<string, {
+      productId: string;
+      name: string;
+      sku: string;
+      retailPrice: number;
+      stockQuantity: number;
+      lastPurchasedAt: string;
+      daysSincePurchase: number;
+      reason: PosRecommendationReason;
+    }>();
+
+    for (const item of purchasedItems) {
+      if (recommendations.has(item.productId)) continue;
+      recommendations.set(item.productId, {
+        productId: item.product.id,
+        name: item.product.name,
+        sku: item.product.sku,
+        retailPrice: Number(item.product.retailPrice),
+        stockQuantity: item.product.stockQuantity,
+        lastPurchasedAt: item.order.createdAt.toISOString(),
+        daysSincePurchase: daysBetween(item.order.createdAt, now),
+        reason: 'REPLENISHMENT_DUE',
+      });
+      if (recommendations.size >= 3) break;
+    }
+
+    return Array.from(recommendations.values());
+  }
+
+  static async getHotRecommendations(now = new Date()) {
+    const tenantId = requireTenantId();
+    const startDate = new Date(now);
+    startDate.setDate(startDate.getDate() - 7);
+
+    const soldItems = await prisma.orderItem.findMany({
+      where: {
+        order: {
+          tenantId,
+          status: 'completed',
+          createdAt: { gte: startDate, lte: now },
+        },
+        product: { tenantId, stockQuantity: { gt: 0 } },
+      },
+      include: {
+        product: { select: { id: true, name: true, sku: true, retailPrice: true, stockQuantity: true } },
+      },
+      take: 200,
+    });
+
+    const byProduct = new Map<string, {
+      productId: string;
+      name: string;
+      sku: string;
+      retailPrice: number;
+      stockQuantity: number;
+      quantitySold: number;
+      reason: PosRecommendationReason;
+    }>();
+
+    for (const item of soldItems) {
+      const existing = byProduct.get(item.productId);
+      if (existing) {
+        existing.quantitySold += item.quantity;
+        continue;
+      }
+      byProduct.set(item.productId, {
+        productId: item.product.id,
+        name: item.product.name,
+        sku: item.product.sku,
+        retailPrice: Number(item.product.retailPrice),
+        stockQuantity: item.product.stockQuantity,
+        quantitySold: item.quantity,
+        reason: 'HOT_SELLER',
+      });
+    }
+
+    return Array.from(byProduct.values())
+      .sort((a, b) => b.quantitySold - a.quantitySold)
+      .slice(0, 3);
+  }
+
+  static async getReorderForecast(limit = 20) {
+    requireTenantId();
+    return ProductAnalyticsService.getReorderForecast(limit);
   }
 
   static async getActiveShift() {

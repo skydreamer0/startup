@@ -46,6 +46,40 @@ export class PosController {
     } catch (err) { next(err); }
   }
 
+  static async lookupCustomer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = (req as unknown as Record<string, unknown>).validatedQuery as { q: string };
+      const data = await CheckoutService.lookupCustomer(query.q);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
+  static async getRecommendations(req: Request, res: Response, next: NextFunction) {
+    try {
+      const customerId = Array.isArray(req.params.customerId)
+        ? req.params.customerId[0]
+        : req.params.customerId;
+      const data = await CheckoutService.getRecommendations(customerId);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
+  static async getHotRecommendations(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await CheckoutService.getHotRecommendations();
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
+  static async getReorderForecast(req: Request, res: Response, next: NextFunction) {
+    try {
+      const rawLimit = Number(req.query.limit);
+      const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? rawLimit : undefined;
+      const data = await CheckoutService.getReorderForecast(limit);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
   static async getActiveShift(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await CheckoutService.getActiveShift();

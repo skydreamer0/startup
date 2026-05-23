@@ -97,4 +97,20 @@ describe('CheckoutService.checkout', () => {
       }),
     );
   });
+
+  it('rejects customer IDs outside the current tenant before creating an order', async () => {
+    const shift = { id: 'shift-1', status: 'OPEN', staffId: 'staff-1', tenantId: 'tenant-1' };
+    mockTx.shift.findFirst.mockResolvedValue(shift);
+    mockTx.customer.findFirst.mockResolvedValue(null);
+
+    await expect(CheckoutService.checkout({ ...baseDto, customerId: 'customer-from-other-tenant' })).rejects.toMatchObject({
+      statusCode: 404,
+    });
+
+    expect(mockTx.customer.findFirst).toHaveBeenCalledWith({
+      where: { id: 'customer-from-other-tenant', tenantId: 'tenant-1' },
+      select: { id: true },
+    });
+    expect(mockTx.order.create).not.toHaveBeenCalled();
+  });
 });
