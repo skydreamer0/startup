@@ -7,7 +7,7 @@ export class CsvService {
   static async exportProducts(): Promise<string> {
     const tenantId = requireTenantId();
     const products = await prisma.product.findMany({
-      where: { tenantId, deletedAt: null },
+      where: { tenantId },
       include: { category: true, supplier: true },
       orderBy: { name: 'asc' },
     });
@@ -18,15 +18,14 @@ export class CsvService {
       Number(p.retailPrice),
       Number(p.costPrice),
       p.stockQuantity,
-      p.safetyStockDays ?? '',
-      p.status,
+      p.safetyStock ?? '',
       (p as any).category?.name ?? '',
       (p as any).supplier?.name ?? '',
     ]);
 
     return stringify(rows, {
       header: true,
-      columns: ['商品名稱', 'SKU', '售價', '成本', '庫存', '安全庫存天數', '狀態', '分類', '供應商'],
+      columns: ['商品名稱', 'SKU', '售價', '成本', '庫存', '安全庫存天數', '分類', '供應商'],
     });
   }
 
@@ -37,7 +36,7 @@ export class CsvService {
         tenantId,
         ...(startDate && endDate ? { createdAt: { gte: startDate, lte: endDate } } : {}),
       },
-      include: { customer: true, salesPerson: true },
+      include: { customer: true, salesStaff: true },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -46,8 +45,8 @@ export class CsvService {
       o.status,
       Number(o.totalAmount),
       (o as any).paymentMethod ?? '',
-      (o as any).customer?.fullName ?? '',
-      (o as any).salesPerson?.fullName ?? '',
+      o.customer?.name ?? '',
+      o.salesStaff?.fullName ?? '',
       o.createdAt.toISOString().slice(0, 10),
     ]);
 
@@ -65,9 +64,8 @@ export class CsvService {
     });
 
     const rows = customers.map((c) => [
-      c.fullName,
+      c.name ?? '',
       (c as any).phone ?? '',
-      c.email ?? '',
       (c as any).totalSpent ?? 0,
       (c as any).purchaseCount ?? 0,
       c.createdAt.toISOString().slice(0, 10),
@@ -75,7 +73,7 @@ export class CsvService {
 
     return stringify(rows, {
       header: true,
-      columns: ['姓名', '電話', 'Email', '累計消費', '購買次數', '加入日期'],
+      columns: ['姓名', '電話', '累計消費', '購買次數', '加入日期'],
     });
   }
 
@@ -86,7 +84,7 @@ export class CsvService {
       retailPrice: number;
       costPrice: number;
       stockQuantity: number;
-      safetyStockDays?: number;
+      safetyStock?: number;
     }>;
     errors: string[];
   }> {
@@ -94,7 +92,7 @@ export class CsvService {
       columns: true,
       skip_empty_lines: true,
       trim: true,
-    });
+    }) as Record<string, string>[];
 
     const valid: any[] = [];
     const errors: string[] = [];
@@ -134,7 +132,7 @@ export class CsvService {
         retailPrice,
         costPrice,
         stockQuantity,
-        safetyStockDays: row['安全庫存天數']
+        safetyStock: row['安全庫存天數']
           ? parseInt(row['安全庫存天數'], 10)
           : undefined,
       });

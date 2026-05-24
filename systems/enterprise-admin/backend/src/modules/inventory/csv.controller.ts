@@ -47,7 +47,7 @@ export class CsvController {
           continue;
         }
         await prisma.product.create({
-          data: { ...row, tenantId, status: 'active' },
+          data: { ...row, tenantId },
         });
         created++;
       }
