@@ -30,7 +30,11 @@ export default function ReorderForecastBadge({ forecasts }: Props) {
   const topStyle = URGENCY_STYLES[topUrgency];
 
   return (
-    <div style={{ position: 'relative', display: 'inline-flex' }}>
+    // pointer-events: none on the wrapper prevents the positioned div from intercepting
+    // clicks on adjacent topbar elements (e.g. CustomerLookupPanel 取消 button) when
+    // headless Chromium's smaller viewport causes flex items to be rendered in stacking
+    // order where positioned items paint above non-positioned siblings.
+    <div style={{ position: 'relative', display: 'inline-flex', pointerEvents: 'none' }}>
       <button
         type="button"
         aria-label={`Reorder forecast: ${forecasts.length} items need attention`}
@@ -49,6 +53,7 @@ export default function ReorderForecastBadge({ forecasts }: Props) {
           fontSize: 12,
           fontWeight: 800,
           whiteSpace: 'nowrap',
+          pointerEvents: 'auto',
         }}
       >
         <span>Reorder</span>
@@ -85,6 +90,7 @@ export default function ReorderForecastBadge({ forecasts }: Props) {
             boxShadow: 'var(--shadow-lg)',
             zIndex: 600,
             overflow: 'hidden',
+            pointerEvents: 'auto',
           }}
         >
           <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)' }}>

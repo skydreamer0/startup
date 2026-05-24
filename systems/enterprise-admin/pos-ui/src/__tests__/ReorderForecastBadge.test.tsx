@@ -53,4 +53,16 @@ describe('ReorderForecastBadge', () => {
 
     expect(container).toBeEmptyDOMElement();
   });
+
+  it('outer wrapper has pointer-events:none so it cannot intercept adjacent topbar controls', () => {
+    const { container } = render(<ReorderForecastBadge forecasts={forecasts} />);
+    const wrapper = container.firstChild as HTMLElement;
+    expect(wrapper.style.pointerEvents).toBe('none');
+  });
+
+  it('badge button restores pointer-events:auto so it remains clickable', () => {
+    render(<ReorderForecastBadge forecasts={forecasts} />);
+    const btn = screen.getByRole('button', { name: /reorder forecast/i });
+    expect(btn.style.pointerEvents).toBe('auto');
+  });
 });
