@@ -24,7 +24,7 @@ export class CsvController {
           error: { code: 'NO_FILE', message: '請上傳 CSV 檔案' },
         });
       }
-      const csvContent = req.file.buffer.toString('utf-8').replace(/^﻿/, '');
+      const csvContent = req.file.buffer.toString('utf-8').replace(/^\uFEFF/, '');
       const { valid, errors } = await CsvService.parseProductImportCsv(csvContent);
 
       if (errors.length > 0) {

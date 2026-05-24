@@ -83,7 +83,7 @@ describe('CrmAnalyticsService.getRfmSegmentation', () => {
                 purchaseCount: 1,
                 lastPurchaseDate: daysAgo(3),
             },
-        ] as any);
+        ] as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getRfmSegmentation();
 
@@ -102,7 +102,7 @@ describe('CrmAnalyticsService.getRfmSegmentation', () => {
                 purchaseCount: 5,
                 lastPurchaseDate: daysAgo(90),
             },
-        ] as any);
+        ] as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getRfmSegmentation();
 
@@ -120,7 +120,7 @@ describe('CrmAnalyticsService.getRfmSegmentation', () => {
                 purchaseCount: 4,
                 lastPurchaseDate: daysAgo(45),
             },
-        ] as any);
+        ] as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getRfmSegmentation();
 
@@ -136,7 +136,7 @@ describe('CrmAnalyticsService.getRfmSegmentation', () => {
             { id: 'low3', name: 'Low3', phone: '0900000004', totalSpent: 300, purchaseCount: 1, lastPurchaseDate: daysAgo(15) },
             { id: 'low4', name: 'Low4', phone: '0900000005', totalSpent: 400, purchaseCount: 1, lastPurchaseDate: daysAgo(20) },
         ];
-        mockCustomerFindMany.mockResolvedValue(customers as any);
+        mockCustomerFindMany.mockResolvedValue(customers as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getRfmSegmentation();
 
@@ -150,7 +150,7 @@ describe('CrmAnalyticsService.getRfmSegmentation', () => {
             { id: 'loyal1', name: 'Loyal', phone: '0911111111', totalSpent: 5000, purchaseCount: 4, lastPurchaseDate: daysAgo(10) },
             { id: 'low1', name: 'Low Spender', phone: '0922222222', totalSpent: 100, purchaseCount: 1, lastPurchaseDate: daysAgo(5) },
         ];
-        mockCustomerFindMany.mockResolvedValue(customers as any);
+        mockCustomerFindMany.mockResolvedValue(customers as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getRfmSegmentation();
 
@@ -188,7 +188,7 @@ describe('CrmAnalyticsService.getChurnRisk', () => {
                     { createdAt: daysAgo(20) },
                 ],
             },
-        ] as any);
+        ] as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getChurnRisk();
 
@@ -211,7 +211,7 @@ describe('CrmAnalyticsService.getChurnRisk', () => {
                     { createdAt: daysAgo(5) },
                 ],
             },
-        ] as any);
+        ] as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getChurnRisk();
 
@@ -245,7 +245,7 @@ describe('CrmAnalyticsService.getChurnRisk', () => {
                     { createdAt: daysAgo(60) },
                 ],
             },
-        ] as any);
+        ] as Parameters<typeof mockCustomerFindMany.mockResolvedValue>[0]);
 
         const result = await CrmAnalyticsService.getChurnRisk();
 
@@ -286,7 +286,7 @@ describe('ProductAnalyticsService.getProductAbcAnalysis', () => {
             { productId: 'p3', quantity: 1, unitPrice: 10, product: { id: 'p3', name: 'HiddenGem', sku: 'S3', costPrice: 1, category: null, supplier: null } },
             // Underperformer: low revenue, low margin (cost=9, price=10 → 10% margin)
             { productId: 'p4', quantity: 1, unitPrice: 10, product: { id: 'p4', name: 'Underperformer', sku: 'S4', costPrice: 9, category: null, supplier: null } },
-        ] as any);
+        ] as Parameters<typeof mockOrderItemFindMany.mockResolvedValue>[0]);
 
         const result = await ProductAnalyticsService.getProductAbcAnalysis(startDate, endDate);
 
@@ -320,15 +320,15 @@ describe('ProductAnalyticsService.getSupplierRanking', () => {
         mockSupplierFindMany.mockResolvedValue([
             { id: 's1', name: 'Good Supplier', deliveryReliability: 95, defectRate: 1 },
             { id: 's2', name: 'Average Supplier', deliveryReliability: 60, defectRate: 5 },
-        ] as any);
+        ] as Parameters<typeof mockSupplierFindMany.mockResolvedValue>[0]);
         mockProductGroupBy.mockResolvedValue([
             { supplierId: 's1', _count: { id: 3 } },
             { supplierId: 's2', _count: { id: 2 } },
-        ] as any);
+        ] as Parameters<typeof mockProductGroupBy.mockResolvedValue>[0]);
         mockQueryRaw.mockResolvedValue([
             { supplierId: 's1', totalRevenue: 1000, totalCost: 500 },
             { supplierId: 's2', totalRevenue: 500, totalCost: 400 },
-        ] as any);
+        ] as Parameters<typeof mockQueryRaw.mockResolvedValue>[0]);
 
         const result = await ProductAnalyticsService.getSupplierRanking(startDate, endDate);
 
@@ -340,7 +340,7 @@ describe('ProductAnalyticsService.getSupplierRanking', () => {
     it('should handle suppliers with no sales', async () => {
         mockSupplierFindMany.mockResolvedValue([
             { id: 's1', name: 'No Sales Supplier', deliveryReliability: null, defectRate: null },
-        ] as any);
+        ] as Parameters<typeof mockSupplierFindMany.mockResolvedValue>[0]);
         mockProductGroupBy.mockResolvedValue([]);
         mockQueryRaw.mockResolvedValue([]);
 
@@ -374,7 +374,7 @@ describe('OperationsAnalyticsService.getSalesHeatmap', () => {
         mockOrderFindMany.mockResolvedValue([
             { createdAt: wed14, totalAmount: 500 },
             { createdAt: wed14, totalAmount: 300 },
-        ] as any);
+        ] as Parameters<typeof mockOrderFindMany.mockResolvedValue>[0]);
 
         const result = await OperationsAnalyticsService.getSalesHeatmap(startDate, endDate);
 
@@ -395,13 +395,13 @@ describe('OperationsAnalyticsService.getBonusGateStatus', () => {
         // Mock the methods that getKpiSnapshot calls
         mockOrderItemFindMany.mockResolvedValue([
             { quantity: 10, unitPrice: 100, product: { costPrice: 50 } },
-        ] as any);
+        ] as Parameters<typeof mockOrderItemFindMany.mockResolvedValue>[0]);
         mockCustomerFindMany.mockResolvedValue([]);
-        mockExpenseAggregate.mockResolvedValue({ _sum: { amount: 0 } } as any);
+        mockExpenseAggregate.mockResolvedValue({ _sum: { amount: 0 } } as Parameters<typeof mockExpenseAggregate.mockResolvedValue>[0]);
         mockOrderAggregate.mockResolvedValue({
             _sum: { totalAmount: 1000 },
             _count: { id: 1 },
-        } as any);
+        } as Parameters<typeof mockOrderAggregate.mockResolvedValue>[0]);
 
         const result = await OperationsAnalyticsService.getBonusGateStatus('2026-03');
 
