@@ -369,8 +369,8 @@ describe('OperationsAnalyticsService.getSalesHeatmap', () => {
     });
 
     it('should correctly bucket orders by weekday and hour', async () => {
-        // Wednesday, 14:00 UTC (weekday=3 in getDay())
-        const wed14 = new Date('2026-03-04T14:00:00');
+        // 06:00 UTC = 14:00 Taiwan Standard Time (UTC+8); service adds +8h then uses getUTCHours()
+        const wed14 = new Date('2026-03-04T06:00:00.000Z');
         mockOrderFindMany.mockResolvedValue([
             { createdAt: wed14, totalAmount: 500 },
             { createdAt: wed14, totalAmount: 300 },
@@ -378,7 +378,8 @@ describe('OperationsAnalyticsService.getSalesHeatmap', () => {
 
         const result = await OperationsAnalyticsService.getSalesHeatmap(startDate, endDate);
 
-        const cell = result.find((c) => c.weekday === wed14.getDay() && c.hour === wed14.getHours());
+        // weekday=3 (Wednesday), hour=14 (Taiwan local) — explicit to avoid TZ-dependent .getDay()/.getHours()
+        const cell = result.find((c) => c.weekday === 3 && c.hour === 14);
         expect(cell?.orderCount).toBe(2);
         expect(cell?.revenue).toBe(800);
     });
