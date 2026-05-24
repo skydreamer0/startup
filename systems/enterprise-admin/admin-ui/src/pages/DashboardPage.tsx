@@ -30,7 +30,7 @@ export default function DashboardPage() {
         queryFn: () => dashboardApi.getAnalyticsTrends(),
     });
 
-    const { data: bonusGate, isLoading: bonusLoading } = useQuery<BonusGateStatus>({
+    const { data: bonusGate } = useQuery<BonusGateStatus>({
         queryKey: ['dashboard', 'bonus-gate'],
         queryFn: () => dashboardApi.getBonusGate(),
     });
@@ -372,20 +372,3 @@ export default function DashboardPage() {
     );
 }
 
-/** KPI Traffic Light Indicator */
-function KpiLight({ label, value, status }: { label: string; value: string; status: 'green' | 'amber' | 'red' }) {
-    const colors = {
-        green: { bg: 'var(--success-bg)', dot: 'var(--success)', text: 'var(--success)' },
-        amber: { bg: 'var(--warning-bg)', dot: 'var(--warning)', text: 'var(--warning)' },
-        red: { bg: 'var(--danger-bg)', dot: 'var(--danger)', text: 'var(--danger)' },
-    };
-    const c = colors[status];
-
-    return (
-        <div className="kpi-light" style={{ background: c.bg }}>
-            <div className="kpi-dot" style={{ background: c.dot }} />
-            <span className="kpi-light-label">{label}</span>
-            <span className="kpi-light-value" style={{ color: c.text }}>{value}</span>
-        </div>
-    );
-}

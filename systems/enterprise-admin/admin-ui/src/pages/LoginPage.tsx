@@ -17,8 +17,9 @@ export default function LoginPage() {
 
         try {
             await login(email, password);
-        } catch (err: any) {
-            setError(err.response?.data?.error?.message || 'Login failed');
+        } catch (err) {
+            const axiosErr = err as { response?: { data?: { error?: { message?: string } } } };
+            setError(axiosErr.response?.data?.error?.message || 'Login failed');
         } finally {
             setSubmitting(false);
         }

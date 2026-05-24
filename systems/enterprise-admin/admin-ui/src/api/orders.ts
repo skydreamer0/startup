@@ -51,7 +51,7 @@ export const ordersApi = {
         return res.data;
     },
 
-    createOrder: async (data: any) => {
+    createOrder: async (data: Record<string, unknown>) => {
         const token = localStorage.getItem('token');
         const res = await axios.post(`${API_URL}/orders`, data, {
             headers: { Authorization: `Bearer ${token}` }

@@ -32,7 +32,7 @@ export default function SalesRankingPage() {
                 <div className="flex gap-12" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
                     <select
                         value={sortBy}
-                        onChange={e => setSortBy(e.target.value as any)}
+                        onChange={e => setSortBy(e.target.value as 'revenue' | 'quantity')}
                         className="input-field"
                         style={{ width: '180px' }}
                     >
@@ -72,7 +72,7 @@ export default function SalesRankingPage() {
                                     ))}
                                 </Pie>
                                 <PieTooltip
-                                    formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+                                    formatter={(value) => `$${Number(value ?? 0).toLocaleString()}`}
                                     contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text-primary)' }}
                                 />
                                 <Legend wrapperStyle={{ color: 'var(--text-primary)', fontSize: '12px' }} />

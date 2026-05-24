@@ -29,8 +29,9 @@ export function CsvImportModal({ isOpen, onClose, uploadUrl, queryKey, label }: 
       onClose();
       alert(`匯入完成：新增 ${data.data.created} 筆，略過重複 ${data.data.skipped} 筆`);
     },
-    onError: (err: any) => {
-      setError(err.response?.data?.error?.message ?? '匯入失敗，請確認 CSV 格式');
+    onError: (err: unknown) => {
+      const axiosErr = err as { response?: { data?: { error?: { message?: string } } } };
+      setError(axiosErr.response?.data?.error?.message ?? '匯入失敗，請確認 CSV 格式');
     },
   });
 
