@@ -69,12 +69,12 @@ jobs:
         JWT_REFRESH_SECRET: "test-refresh-secret-at-least-32-chars!"
         JWT_REFRESH_EXPIRES_IN: "7d"
 
-  frontend:
-    name: Frontend CI
+  admin-ui:
+    name: Admin UI CI
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./systems/enterprise-admin/admin-ui
+        working-directory: ./systems/enterprise-admin
 
     steps:
     - uses: actions/checkout@v4
@@ -89,13 +89,41 @@ jobs:
       with:
         node-version: 20
         cache: 'pnpm'
-        cache-dependency-path: './systems/enterprise-admin/admin-ui/pnpm-lock.yaml'
+        cache-dependency-path: './systems/enterprise-admin/pnpm-lock.yaml'
 
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
 
     - name: Lint
-      run: npm run lint
+      run: pnpm --filter admin-ui run lint
 
     - name: Build and Type Check
-      run: npm run build
+      run: pnpm --filter admin-ui run build
+
+  pos-ui:
+    name: POS UI CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10
+
+    - name: Setup Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'pnpm'
+        cache-dependency-path: './systems/enterprise-admin/pnpm-lock.yaml'
+
+    - name: Install Dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Build and Type Check
+      run: pnpm --filter pos-ui run build

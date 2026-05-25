@@ -19,8 +19,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=production
       - URL=http://localhost:3000
@@ -34,17 +34,64 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./backend/prisma:/app/prisma
 
   admin-ui:
     build:
-      context: ./admin-ui
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: admin-ui/Dockerfile
+    expose:
+      - "80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  pos-ui:
+    build:
+      context: .
+      dockerfile: pos-ui/Dockerfile
+      args:
+        VITE_BASE: /pos/
+    expose:
+      - "80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:alpine
     ports:
       - "80:80"
+      # Enable after certificates are issued and nginx.conf listens on 443.
+      # - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Certbot/TLS placeholders for production hosts.
+      # - ./certbot/www:/var/www/certbot:ro
+      # - ./certbot/conf:/etc/letsencrypt:ro
     depends_on:
+      - admin-ui
+      - pos-ui
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Enable on a production host after replacing example.com.
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - ./certbot/www:/var/www/certbot
+  #     - ./certbot/conf:/etc/letsencrypt
+  #   command: certonly --webroot --webroot-path=/var/www/certbot --email ops@example.com --agree-tos --no-eff-email -d example.com
 
 volumes:
   pgdata:

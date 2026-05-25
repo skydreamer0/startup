@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect, createContext, useContext, type ReactNode } from 'react';
+import { useState, useCallback, useEffect, type ReactNode } from 'react';
+import { ToastContext, type ToastContextValue, type ToastType } from './toastContext';
 
 /* ─────────────────────────────────────────────
    Global Toast Notification System
@@ -8,28 +9,11 @@ import { useState, useCallback, useEffect, createContext, useContext, type React
      toast.error('Failed to save');
    ───────────────────────────────────────────── */
 
-type ToastType = 'success' | 'error' | 'warning' | 'info';
-
 interface Toast {
     id: number;
     message: string;
     type: ToastType;
     exiting?: boolean;
-}
-
-interface ToastContextValue {
-    success: (msg: string) => void;
-    error: (msg: string) => void;
-    warning: (msg: string) => void;
-    info: (msg: string) => void;
-}
-
-const ToastContext = createContext<ToastContextValue | null>(null);
-
-export function useToast(): ToastContextValue {
-    const ctx = useContext(ToastContext);
-    if (!ctx) throw new Error('useToast must be used within <ToastProvider>');
-    return ctx;
 }
 
 const ICONS: Record<ToastType, string> = {

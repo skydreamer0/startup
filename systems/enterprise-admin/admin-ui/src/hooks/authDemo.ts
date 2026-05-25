@@ -1,4 +1,4 @@
-import type { User } from './useAuth';
+import type { User } from './authContext';
 
 export function createDemoUser(): User {
     return {

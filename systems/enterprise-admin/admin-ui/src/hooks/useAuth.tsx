@@ -1,25 +1,7 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import api from '../api/client';
+import { AuthContext, type User } from './authContext';
 import { createDemoUser, isDemoModeEnabled } from './authDemo';
-
-export interface User {
-    id: string;
-    email: string;
-    fullName: string;
-    roles: string[];
-    permissions: string[];
-}
-
-interface AuthContextType {
-    user: User | null;
-    loading: boolean;
-    login: (email: string, password: string) => Promise<void>;
-    demoLogin: () => void;
-    logout: () => void;
-    hasPermission: (perm: string) => boolean;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -85,8 +67,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function useAuth() {
-    const ctx = useContext(AuthContext);
-    if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-    return ctx;
-}

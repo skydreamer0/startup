@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/authContext';
 import { usePlan, planMeets } from '../hooks/usePlan';
 import ThemeToggle from '../components/ThemeToggle';
 import { PlanUpgradeToast } from '../components/PlanUpgradeToast';

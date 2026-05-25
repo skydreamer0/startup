@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 
 interface Role { id: string; name: string; }
+interface RoleResponse { id: string; name: string; }
 interface User {
     id: string;
     email: string;
@@ -11,6 +12,20 @@ interface User {
     lastLoginAt: string | null;
     createdAt: string;
     roles: Role[];
+}
+interface ApiError {
+    response?: {
+        data?: {
+            error?: {
+                message?: string;
+            };
+        };
+    };
+}
+
+function getErrorMessage(err: unknown, fallback: string): string {
+    const apiError = err as ApiError;
+    return apiError.response?.data?.error?.message || fallback;
 }
 
 export default function UsersPage() {
@@ -41,7 +56,7 @@ export default function UsersPage() {
         queryKey: ['allRoles'],
         queryFn: async () => {
             const res = await api.get('/roles');
-            return res.data.data.map((r: any) => ({ id: r.id, name: r.name })) as Role[];
+            return (res.data.data as RoleResponse[]).map((r) => ({ id: r.id, name: r.name }));
         },
     });
 
@@ -57,8 +72,8 @@ export default function UsersPage() {
             setShowCreate(false);
             setCreateForm({ email: '', password: '', fullName: '' });
             queryClient.invalidateQueries({ queryKey: ['users'] });
-        } catch (err: any) {
-            alert(err.response?.data?.error?.message || 'Failed to create user');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to create user'));
         } finally {
             setSaving(false);
         }
@@ -85,8 +100,8 @@ export default function UsersPage() {
             });
             setEditUser(null);
             queryClient.invalidateQueries({ queryKey: ['users'] });
-        } catch (err: any) {
-            alert(err.response?.data?.error?.message || 'Failed to update user');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to update user'));
         } finally {
             setSaving(false);
         }
@@ -97,8 +112,8 @@ export default function UsersPage() {
         try {
             await api.delete(`/users/${id}`);
             queryClient.invalidateQueries({ queryKey: ['users'] });
-        } catch (err: any) {
-            alert(err.response?.data?.error?.message || 'Failed');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed'));
         }
     }
 

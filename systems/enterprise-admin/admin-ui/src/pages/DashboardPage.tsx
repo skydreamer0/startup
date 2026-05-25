@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { dashboardApi, DashboardKPIs, CrmMetrics, AnalyticsKPIs, AnalyticsTrend, BonusGateStatus, HeatmapCell, ReorderForecastItem } from '../api/dashboard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import DashboardSkeleton from '../components/Skeleton';
-import { useToast } from '../components/Toast';
+import { useToast } from '../components/toastContext';
 import PlanGate from '../components/PlanGate';
 
 export default function DashboardPage() {
@@ -371,4 +371,3 @@ export default function DashboardPage() {
         </div>
     );
 }
-

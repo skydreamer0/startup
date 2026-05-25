@@ -1,14 +1,5 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-
-type Theme = 'light' | 'dark';
-
-interface ThemeContextValue {
-    theme: Theme;
-    toggleTheme: () => void;
-    setTheme: (t: Theme) => void;
-}
-
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+import { useState, useEffect, type ReactNode } from 'react';
+import { ThemeContext, type Theme } from './theme-context';
 
 const STORAGE_KEY = 'admin-ui-theme';
 
@@ -47,8 +38,3 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function useTheme(): ThemeContextValue {
-    const ctx = useContext(ThemeContext);
-    if (!ctx) throw new Error('useTheme must be used within a ThemeProvider');
-    return ctx;
-}

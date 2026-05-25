@@ -1,21 +1,21 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
-WORKDIR /app
+WORKDIR /workspace
 
-COPY package*.json ./
-RUN npm ci
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
-COPY . .
-RUN npm run build
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY packages ./packages
+COPY admin-ui ./admin-ui
 
-# --- Production Stage ---
+WORKDIR /workspace/admin-ui
+RUN pnpm install --frozen-lockfile
+RUN pnpm run build
+
 FROM nginx:alpine
 
-# Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy built assets
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY admin-ui/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /workspace/admin-ui/dist /usr/share/nginx/html
 
 EXPOSE 80
 

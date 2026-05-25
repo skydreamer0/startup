@@ -1,0 +1,13 @@
+{
+  "name": "enterprise-admin-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise Admin System - Monorepo",
+  "scripts": {
+    "dev": "pnpm -r run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint"
+  },
+  "devDependencies": {}
+}

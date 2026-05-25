@@ -372,25 +372,25 @@
 **目標：將 backend、admin-ui、pos-ui 三個服務打包成可一鍵啟動的 production Docker 環境。**
 
 ### 模組一：pos-ui Docker 化
-- [ ] **DEPLOY-01**: 建立 `pos-ui/Dockerfile`（multi-stage: node build → nginx serve）。
-- [ ] **DEPLOY-02**: 建立 `pos-ui/nginx.conf`（SPA fallback、gzip、cache headers）。
-- [ ] **DEPLOY-03**: 更新根目錄 `docker-compose.yml`，加入 `pos-ui` service（port 5174 → Nginx 80）。
+- [x] **DEPLOY-01**: 建立 `pos-ui/Dockerfile`（multi-stage: node build → nginx serve）。
+- [x] **DEPLOY-02**: 建立 `pos-ui/nginx.conf`（SPA fallback、gzip、cache headers）。
+- [x] **DEPLOY-03**: 更新根目錄 `docker-compose.yml`，加入 `pos-ui` service（port 5174 → Nginx 80）。
 
 ### 模組二：Nginx 統一入口
-- [ ] **DEPLOY-04**: 建立 `nginx/` reverse proxy 配置，統一入口：
+- [x] **DEPLOY-04**: 建立 `nginx/` reverse proxy 配置，統一入口：
   - `/api/*` → backend:3000
   - `/pos` → pos-ui:80
   - `/` → admin-ui:80
-- [ ] **DEPLOY-05**: SSL/TLS 佔位配置（Let's Encrypt certbot 掛載路徑預留）。
+- [x] **DEPLOY-05**: SSL/TLS 佔位配置（Let's Encrypt certbot 掛載路徑預留）。
 
 ### 模組三：環境設定與 CI/CD
-- [ ] **DEPLOY-06**: 建立 `.env.production.example`（各服務生產環境變數模板，含 JWT secrets、DB URL、CORS）。
-- [ ] **DEPLOY-07**: 更新 `.github/workflows/ci.yml`，加入 pos-ui build + type-check job。
-- [ ] **DEPLOY-08**: 建立 `Makefile`（`make dev` 啟動全 stack、`make prod` 建置 production image、`make migrate` 執行 DB migration）。
+- [x] **DEPLOY-06**: 建立 `.env.production.example`（各服務生產環境變數模板，含 JWT secrets、DB URL、CORS）。
+- [x] **DEPLOY-07**: 更新 `.github/workflows/ci.yml`，加入 pos-ui build + type-check job。
+- [x] **DEPLOY-08**: 建立 `Makefile`（`make dev` 啟動全 stack、`make prod` 建置 production image、`make migrate` 執行 DB migration）。
 
 ### 模組四：健康檢查與監控
-- [ ] **DEPLOY-09**: 所有服務加入 `/health` endpoint，docker-compose healthcheck 完整設定。
-- [ ] **DEPLOY-10**: 撰寫 ADR-011 記錄 production deployment 架構決策。
+- [x] **DEPLOY-09**: 所有服務加入 `/health` endpoint，docker-compose healthcheck 完整設定。
+- [x] **DEPLOY-10**: 撰寫 ADR-011 記錄 production deployment 架構決策。
 
 ---
 

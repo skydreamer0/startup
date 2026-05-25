@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/authContext';
 import { isDemoModeEnabled } from '../hooks/authDemo';
 import ThemeToggle from '../components/ThemeToggle';
 
