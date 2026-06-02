@@ -250,15 +250,17 @@ JWT 簽發時沒有包含 `tenantId` 和 `plan`，導致每次都要回查 DB。
 
 ---
 
-#### P2-4：Plan-based Feature Gating 未實作（SAAS-03）
+#### P2-4：Plan-based Feature Gating 未實作（SAAS-03，已於 AF-20 修復）
 
 **位置：** `backend/src/middleware/plan.middleware.ts`（已建立 middleware 框架）
 
-**問題：** ROADMAP SAAS-03 標記為未完成。`plan.middleware.ts` 存在但沒有接進任何路由。多租戶 SaaS 的核心商業邏輯（free/starter/pro 功能限制）還沒落地。
+**原始問題：** ROADMAP SAAS-03 曾標記為未完成。`plan.middleware.ts` 存在但沒有接進任何路由。多租戶 SaaS 的核心商業邏輯（free/starter/pro 功能限制）尚未落地。
+
+**修復狀態：** 已於 Arch-Fix Phase 6 / AF-20 完成，`requirePlan()` 已套用到 reports 路由，前端也加入 plan gating 的 403 顯示流程。
 
 ---
 
-#### P2-5：MappedModels 列表漏掉新 Model
+#### P2-5：MappedModels 列表漏掉新 Model（已於 AF-03 修復）
 
 **位置：** `backend/src/lib/prisma.ts`
 
@@ -270,11 +272,13 @@ const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
 
 **漏掉的 Model（Phase 8 新增）：** `Shift`、`ProductBatch`、`DailySettlement`
 
-這些 model 有 `tenantId` 欄位，但不在 `MappedModels` 中，代表 Prisma Extension 不會自動注入 tenant filter。目前 Service 層用手動 `where: { tenantId }` 補救，但未來若有開發者忘記，就會有跨租戶資料洩漏。
+這些 model 有 `tenantId` 欄位，但當時不在 `MappedModels` 中，代表 Prisma Extension 不會自動注入 tenant filter。目前此問題已於 AF-03 修復，`MappedModels` 已包含 `Shift`、`ProductBatch`、`DailySettlement`，並追加後續新增的 tenant-scoped models。
 
 ---
 
-## 改善 Roadmap
+## 改善 Roadmap（已完成）
+
+> 結案狀態：AF-01 到 AF-20 已全部完成。最新進度來源以 `ROADMAP.md` 的 Arch-Fix Phase 1-6 為準；本節保留原始改善路線與完成對照，作為歷史健康報告的封存參考。
 
 ---
 
@@ -292,11 +296,11 @@ const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
 
 **目標：** 消除型別安全窟窿、統一前端資料層模式
 
-- [ ] **AF-04**: `AnalyticsService` 加入 `requireTenantId()` 呼叫（防守性，明確 fail fast）
-- [ ] **AF-05**: `PAYMENT_LABELS` 提取到 `pos-ui/src/constants.ts`，三個 component 共用
-- [ ] **AF-06**: 後端 Service 層消除可修復的 `as any`（`crm.service.ts`、`inventory.service.ts`、`order.service.ts`）；用 `Prisma.validator()` 或拆出 DTO
-- [ ] **AF-07**: `pos-ui` 引入 TanStack Query，`getProducts` 改為 `useQuery`，解決 cache 缺失問題
-- [ ] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `ShiftOpenScreen` component，將 14 個 useState 降到 6 個以內
+- [x] **AF-04**: `AnalyticsService` 加入 `requireTenantId()` 呼叫（防守性，明確 fail fast）
+- [x] **AF-05**: `PAYMENT_LABELS` 提取到 `pos-ui/src/constants.ts`，三個 component 共用
+- [x] **AF-06**: 後端 Service 層消除可修復的 `as any`（`crm.service.ts`、`inventory.service.ts`、`order.service.ts`）；用 `Prisma.validator()` 或拆出 DTO
+- [x] **AF-07**: `pos-ui` 引入 TanStack Query，`getProducts` 改為 `useQuery`，解決 cache 缺失問題
+- [x] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `ShiftOpenScreen` component，將 14 個 useState 降到 6 個以內
 
 ---
 
@@ -304,9 +308,9 @@ const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
 
 **目標：** 解決 Auth/Tenant middleware 的每次 DB 查詢問題
 
-- [ ] **AF-09**: JWT payload 加入 `tenantId`（login 和 refresh 時寫入），`tenant.middleware.ts` 直接讀 JWT 取 tenantId，移除第一次 DB 查詢
-- [ ] **AF-10**: JWT payload 加入 `permissions[]`（或 permission hash），`auth.middleware.ts` 直接驗 payload，移除 3 層 join 查詢；在 `roles/permissions` 變更時強制重新登入
-- [ ] **AF-11**: 加入 `express-rate-limit`：`/pos/products` 每秒 10 次，`/analytics/*` 每分鐘 30 次
+- [x] **AF-09**: JWT payload 加入 `tenantId`（login 和 refresh 時寫入），`tenant.middleware.ts` 直接讀 JWT 取 tenantId，移除第一次 DB 查詢
+- [x] **AF-10**: JWT payload 加入 `permissions[]`（或 permission hash），`auth.middleware.ts` 直接驗 payload，移除 3 層 join 查詢；在 `roles/permissions` 變更時強制重新登入
+- [x] **AF-11**: 加入 `express-rate-limit`：`/pos/products` 每秒 10 次，`/analytics/*` 每分鐘 30 次
 
 ---
 
@@ -314,26 +318,26 @@ const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
 
 **目標：** 消解 736 行 God Object，對齊大廠「單一職責」標準
 
-- [ ] **AF-12**: 建立 `modules/analytics/services/` 子目錄：
+- [x] **AF-12**: 建立 `modules/analytics/services/` 子目錄：
   - `kpi.service.ts`（KPI Snapshot + Trend）
   - `crm-analytics.service.ts`（RFM + Churn Risk）
   - `product-analytics.service.ts`（ABC + Supplier Ranking）
   - `ops-analytics.service.ts`（Heatmap + Bonus Gate）
-- [ ] **AF-13**: `analytics.controller.ts` 改為呼叫各子 service，移除 God Object
-- [ ] **AF-14**: 對各子 service 補充對應的 unit test
+- [x] **AF-13**: `analytics.controller.ts` 改為呼叫各子 service，移除 God Object
+- [x] **AF-14**: 對各子 service 補充對應的 unit test
 
 ---
 
-### Arch-Fix Phase 5：Float → Decimal 遷移（計劃中，Phase 10 前）
+### Arch-Fix Phase 5：Float → Decimal 遷移
 
 **目標：** 解決金額浮點精度問題
 
-- [ ] **AF-15**: Prisma Schema 所有金額欄位從 `Float` 改為 `Decimal`
+- [x] **AF-15**: Prisma Schema 所有金額欄位從 `Float` 改為 `Decimal`
   - `costPrice`、`retailPrice`、`totalAmount`、`discountAmount`、`unitPrice`、`finalUnitPrice`
   - `Expense.amount`、`Shift.openingCash/closingCash`
   - `DailySettlement.*Amount`
-- [ ] **AF-16**: 前端金額計算改為整數運算（以分為單位）或使用 `decimal.js`
-- [ ] **AF-17**: 撰寫 ADR-009 記錄此決策
+- [x] **AF-16**: 前端金額計算改為整數運算（以分為單位）或使用 `decimal.js`
+- [x] **AF-17**: 撰寫 ADR-010 記錄此決策
 
 ---
 
@@ -341,11 +345,11 @@ const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
 
 **目標：** 建立可擴展的 monorepo 結構，補全測試防護網
 
-- [ ] **AF-18**: 建立 `packages/types/` workspace（turborepo 或 pnpm workspace）
+- [x] **AF-18**: 建立 `packages/types/` workspace（turborepo 或 pnpm workspace）
   - backend Zod schema `infer` 輸出到 shared types
   - pos-ui / admin-ui 直接 import，不再各自定義
-- [ ] **AF-19**: Playwright E2E：POS 完整結帳流程（login → 開班 → 加商品 → 結帳 → 驗庫存）
-- [ ] **AF-20**: SAAS-03 Plan-based feature gating 落地（`plan.middleware.ts` 接進路由）
+- [x] **AF-19**: Playwright E2E：POS 完整結帳流程（login → 開班 → 加商品 → 結帳 → 驗庫存）
+- [x] **AF-20**: SAAS-03 Plan-based feature gating 落地（`plan.middleware.ts` 接進路由）
 
 ---
 
@@ -382,4 +386,4 @@ const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
 
 ---
 
-> 本文件反映 2026-05-17 的架構快照。建議在每個 Arch-Fix Phase 完成後更新對應條目狀態。
+> 本文件反映 2026-05-17 的架構快照；Arch-Fix Phase 1-6 已於 `ROADMAP.md` 結案。本文件保留作為歷史健康報告與改善封存參考。

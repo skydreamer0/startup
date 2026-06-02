@@ -6,7 +6,7 @@ required_files=(
   "CONTEXT-MAP.md"
   "docs/agents/domain.md"
   "docs/agents/navigation.md"
-  "docs/plans/2026-06-02-agent-context-workflow-roadmap.md"
+  "docs/archive/plans/2026-06-02-agent-context-workflow-roadmap.md"
   "systems/enterprise-admin/CONTEXT.md"
   "systems/enterprise-admin/package.json"
   "systems/enterprise-admin/backend/MODULE.md"
