@@ -39,6 +39,7 @@ the PR if any are unticked.
 - [ ] **ROADMAP updated** (if applicable) — items checked off in `systems/enterprise-admin/ROADMAP.md`
 - [ ] **ADR added** (if architectural change) — new file under `systems/enterprise-admin/infrastructure/adr/`
 - [ ] **Architecture docs**: `infrastructure/` updated for schema / contract changes
+- [ ] **AI context freshness**: updated `AGENTS.md`, `CONTEXT-MAP.md`, system `CONTEXT.md`, `docs/agents/navigation.md`, or standards when workflow / routing / source-of-truth changed
 - [ ] **No fake data**: UI reads from real API endpoints (no hardcoded percentages)
 
 ## Reviewer Focus

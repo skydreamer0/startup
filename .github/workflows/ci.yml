@@ -7,6 +7,17 @@ on:
     branches: [ "master", "main" ]
 
 jobs:
+
+  agent-context:
+    name: Agent Context Validation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate agent context files
+      run: ./scripts/validate-agent-context.sh
+
   backend:
     name: Backend CI
     runs-on: ubuntu-latest
