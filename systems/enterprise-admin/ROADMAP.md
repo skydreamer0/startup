@@ -405,6 +405,17 @@
 
 ---
 
+## Phase 13: Cloud-Run Improvement Roadmaps (雲端代理改善計畫)
+**目標：把下一輪改善拆成雲端 agent 可獨立執行的 roadmap，並在文件內附上本機不可見的 required skills 與 fallback workflow。**
+**執行入口：** [`docs/plans/2026-06-02-cloud-improvement-roadmaps.md`](../../docs/plans/2026-06-02-cloud-improvement-roadmaps.md)
+
+- [ ] **CLOUD-01**: Fresh Architecture And Test Health Audit — 重新產出目前架構健康與測試/CI 狀態。
+- [ ] **CLOUD-02**: Production Readiness Hardening — 補齊 production runbook、migration/rollback、backup/monitoring 操作文件。
+- [ ] **CLOUD-03**: Admin-UI Visual Redesign — 執行 Phase 12 的 admin-ui 視覺一致化。
+- [ ] **CLOUD-04**: Shared UI Library Decision — 判斷並最小化落地 `packages/ui/`，或記錄暫不抽象的決策。
+
+---
+
 ## 橫切關注點：架構改善方向 (Cross-cutting Concerns)
 > 從開發歷程中抽象出的系統性問題，納入各 Phase 規劃前置處理。
 
