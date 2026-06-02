@@ -59,7 +59,7 @@ export default function RolesPage() {
     });
 
     return (
-        <div>
+        <div className="admin-page roles-page">
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Roles & Permissions</h1>
@@ -67,9 +67,9 @@ export default function RolesPage() {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 24 }}>
+            <div className="admin-surface-grid">
                 {/* Role List */}
-                <div className="card" style={{ padding: 16 }}>
+                <div className="card role-list-card">
                     <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, padding: '0 8px' }}>
                         Roles
                     </h3>
@@ -77,19 +77,12 @@ export default function RolesPage() {
                         <div
                             key={role.id}
                             onClick={() => setSelectedRole(role)}
-                            style={{
-                                padding: '14px 16px',
-                                borderRadius: 'var(--radius-sm)',
-                                cursor: 'pointer',
-                                marginBottom: 4,
-                                background: selectedRole?.id === role.id ? 'rgba(102, 126, 234, 0.12)' : 'transparent',
-                                transition: 'background 0.15s',
-                            }}
+                            className={`role-list-item ${selectedRole?.id === role.id ? 'active' : ''}`}
                         >
                             <div style={{ fontWeight: 500, fontSize: 14 }}>{role.name}</div>
                             <div className="text-muted text-sm" style={{ marginTop: 2 }}>
                                 {role.permissions.length} permissions
-                                {role.isSystem && <span style={{ marginLeft: 8, color: 'var(--accent-orange)', fontSize: 11 }}>SYSTEM</span>}
+                                {role.isSystem && <span className="role-system-label">SYSTEM</span>}
                             </div>
                         </div>
                     ))}

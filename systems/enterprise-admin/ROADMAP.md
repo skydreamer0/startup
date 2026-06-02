@@ -398,21 +398,21 @@
 **目標：將 admin-ui 後台套用一致的設計語言，提升管理介面的品牌感與易用性。**
 **計畫啟動時機：Phase 10 + Phase 11 完成後。**
 
-- [ ] **ADM-UI-01**: 建立 admin-ui 設計 token（與 pos-ui 共用 brand tokens，但保留深色 admin shell 風格）。
-- [ ] **ADM-UI-02**: Dashboard、Users、Roles 頁面視覺升級。
-- [ ] **ADM-UI-03**: 報表頁面（Margin、CashFlow、SalesRanking）圖表樣式統一。
-- [ ] **ADM-UI-04**: 共用 component library 抽象（`packages/ui/`），pos-ui + admin-ui 共用 Button、Badge、Card。
+- [x] **ADM-UI-01**: 建立 admin-ui 設計 token（與 pos-ui 共用 brand tokens，但保留深色 admin shell 風格）。
+- [x] **ADM-UI-02**: Dashboard、Users、Roles 頁面視覺升級。
+- [x] **ADM-UI-03**: 報表頁面（Margin、CashFlow、SalesRanking）圖表樣式統一。
+- [ ] **ADM-UI-04**: 共用 component library 抽象（`packages/ui/`），pos-ui + admin-ui 共用 Button、Badge、Card。（依 ADR-012 暫緩：目前保留 app-local primitives，未建立新 package 邊界。）
 
 ---
 
 ## Phase 13: Cloud-Run Improvement Roadmaps (雲端代理改善計畫)
 **目標：把下一輪改善拆成雲端 agent 可獨立執行的 roadmap，並在文件內附上本機不可見的 required skills 與 fallback workflow。**
-**執行入口：** [`docs/plans/2026-06-02-cloud-improvement-roadmaps.md`](../../docs/plans/2026-06-02-cloud-improvement-roadmaps.md)
+**執行紀錄：** [`docs/archive/plans/2026-06-02-cloud-improvement-roadmaps.md`](../../docs/archive/plans/2026-06-02-cloud-improvement-roadmaps.md)
 
-- [ ] **CLOUD-01**: Fresh Architecture And Test Health Audit — 重新產出目前架構健康與測試/CI 狀態。
-- [ ] **CLOUD-02**: Production Readiness Hardening — 補齊 production runbook、migration/rollback、backup/monitoring 操作文件。
-- [ ] **CLOUD-03**: Admin-UI Visual Redesign — 執行 Phase 12 的 admin-ui 視覺一致化。
-- [ ] **CLOUD-04**: Shared UI Library Decision — 判斷並最小化落地 `packages/ui/`，或記錄暫不抽象的決策。
+- [x] **CLOUD-01**: Fresh Architecture And Test Health Audit — 重新產出目前架構健康與測試/CI 狀態。
+- [x] **CLOUD-02**: Production Readiness Hardening — 補齊 production runbook、migration/rollback、backup/monitoring 操作文件。
+- [x] **CLOUD-03**: Admin-UI Visual Redesign — 執行 Phase 12 的 admin-ui 視覺一致化。
+- [x] **CLOUD-04**: Shared UI Library Decision — 判斷並最小化落地 `packages/ui/`，或記錄暫不抽象的決策。
 
 ---
 

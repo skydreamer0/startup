@@ -23,7 +23,7 @@ export default function SalesRankingPage() {
     const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#f87171', '#14b8a6', '#6366f1'];
 
     return (
-        <div>
+        <div className="admin-page report-page sales-ranking-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                     <h1 className="page-title">Product Sales Ranking</h1>
@@ -50,7 +50,7 @@ export default function SalesRankingPage() {
                 </div>
             </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '24px' }}>
+            <div className="report-grid-wide">
                 {/* Category Breakdown Pie Chart */}
                 <section className="card" style={{ padding: '24px' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>Category Breakdown (Revenue)</h3>

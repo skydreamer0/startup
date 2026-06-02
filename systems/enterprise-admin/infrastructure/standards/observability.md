@@ -30,3 +30,8 @@ Detailed context of discrete events.
 
 ## 3. Incident Response
 When a RED metric breaches a defined SLO threshold (see `slo_error_budget.md`), an alert goes to the on-call engineer via Slack/PagerDuty, containing direct links to the relevant traces and logs.
+
+
+## 4. Production Monitoring Checklist
+
+For deployment-time and first-response monitoring, use the checklist in [Production Runbook](production_runbook.md#7-monitoring-checklist). It operationalizes this standard for the current Docker Compose topology, including service health, audit logs, rate-limit signals, and database backup signals.

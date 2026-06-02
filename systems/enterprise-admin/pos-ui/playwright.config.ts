@@ -5,12 +5,16 @@ import { defineConfig, devices } from '@playwright/test';
  * The dev server runs on port 5174 (see vite.config.ts).
  * Tests are in the e2e/ directory.
  *
+ * To install browsers:
+ *   npm run test:e2e:install
+ *
  * To run:
  *   npm run test:e2e
  *
  * Prerequisites:
- *   1. Backend running: cd ../backend && npm run dev   (port 3000)
- *   2. POS UI running:  npm run dev                   (port 5174)
+ *   1. Playwright Chromium installed: npm run test:e2e:install
+ *   2. Backend running: cd ../backend && npm run dev   (port 3000)
+ *   3. POS UI running:  npm run dev                   (port 5174)
  *
  * Or let Playwright start the dev server automatically via `webServer` below.
  */

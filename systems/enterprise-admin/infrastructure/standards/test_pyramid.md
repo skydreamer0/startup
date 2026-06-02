@@ -23,3 +23,11 @@ To maintain a high deployment velocity without sacrificing stability, we follow 
 ## 3. Pull Request Requirements
 - A PR that introduces new features must include corresponding Unit/Integration tests.
 - A PR that fixes a bug must include a regression test proving the bug is fixed.
+
+
+## 4. Current CI Test Gates
+
+- Backend CI runs Prisma client generation, lint, build, database setup/seed, and backend tests against PostgreSQL. Prisma engines are cached in CI to reduce dependency on repeated binary downloads.
+- Admin UI CI runs lint, focused unit/render tests, and production build/type-check.
+- POS UI unit/component tests run in CI with `pnpm --filter pos-ui run test`; Vitest is configured to include only `src/**/*.{test,spec}.{ts,tsx}` so Playwright E2E specs stay under the Playwright runner.
+- POS Playwright E2E requires browser installation (`pnpm --filter pos-ui run test:e2e:install`) and a running backend with seeded POS data before `pnpm --filter pos-ui run test:e2e`. Browser installation downloads from Playwright/CDN hosts, so cloud/CI runners need network allowlisting or a pre-populated browser cache. Do not make POS E2E a default PR gate until the browser and backend/seed dependencies are deterministic in CI.

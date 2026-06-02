@@ -57,6 +57,14 @@ jobs:
     - name: Install Dependencies
       run: npm ci
 
+    - name: Cache Prisma engines
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/prisma
+        key: ${{ runner.os }}-prisma-${{ hashFiles('systems/enterprise-admin/backend/prisma/schema.prisma', 'systems/enterprise-admin/backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-prisma-
+
     - name: Generate Prisma Client
       run: npx prisma generate
 
@@ -108,6 +116,9 @@ jobs:
     - name: Lint
       run: pnpm --filter admin-ui run lint
 
+    - name: Unit and Render Tests
+      run: pnpm --filter admin-ui run test
+
     - name: Build and Type Check
       run: pnpm --filter admin-ui run build
 
@@ -135,6 +146,9 @@ jobs:
 
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
+
+    - name: Unit and Component Tests
+      run: pnpm --filter pos-ui run test
 
     - name: Build and Type Check
       run: pnpm --filter pos-ui run build
