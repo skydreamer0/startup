@@ -136,7 +136,7 @@ export default function UsersPage() {
     }
 
     return (
-        <div>
+        <div className="admin-page users-page">
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Users</h1>
@@ -145,7 +145,7 @@ export default function UsersPage() {
                 <button className="btn btn-primary" onClick={() => setShowCreate(true)}>+ New User</button>
             </div>
 
-            <div style={{ marginBottom: 20 }}>
+            <div>
                 <input
                     className="input-field search-bar"
                     placeholder="Search by name or email..."
@@ -154,7 +154,7 @@ export default function UsersPage() {
                 />
             </div>
 
-            <div className="card" style={{ overflow: 'hidden' }}>
+            <div className="table-container">
                 <table className="table">
                     <thead>
                         <tr>

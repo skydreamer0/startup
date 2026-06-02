@@ -26,7 +26,7 @@ export default function MarginAnalysisPage() {
     const isTargetMet = currentMargin >= targetMargin;
 
     return (
-        <div>
+        <div className="admin-page report-page margin-report-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Gross Margin Analysis</h1>
@@ -75,7 +75,7 @@ export default function MarginAnalysisPage() {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <div className="report-grid-balanced">
                 {/* Trend Chart */}
                 <section className="card" style={{ padding: '24px' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>6-Month Margin Trend</h3>

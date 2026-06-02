@@ -1,389 +1,144 @@
 # Architecture Health Report — Enterprise Admin System
 
-> 撰寫日期：2026-05-17  
-> 範圍：`systems/enterprise-admin/`（backend + admin-ui + pos-ui）  
-> 目標：找出所有維護瓶頸、安全隱患、擴展障礙，依嚴重程度排序，並提供可執行的改善 Roadmap
+> Last refreshed: 2026-06-02  
+> Scope: `systems/enterprise-admin/` (`backend`, `admin-ui`, `pos-ui`, workspace CI/context)  
+> Method: Roadmap A fresh audit from `docs/plans/2026-06-02-cloud-improvement-roadmaps.md`; command output and nearest source-of-truth inspection only.
 
 ---
 
-## 整體評估
+## 2026-05-17 Arch-Fix Snapshot Status
 
-| 層面 | 現況 | 評分 |
-|---|---|---|
-| 後端模組結構 | Controller → Service → Prisma 三層清晰 | ✅ 好 |
-| 多租戶隔離 | Prisma Extension 自動注入，middleware 建立 context | ⚠️ 可改進 |
-| 型別安全 | 21 處 `as any`，跨應用無共用型別 | ⚠️ 有隱患 |
-| 錯誤處理 | 大部分用 `next(err)`，但 AnalyticsController 自成一格 | ⚠️ 不一致 |
-| 效能 | 每 request 做 2~3 次 DB 查詢（auth + tenant），無 cache | ⚠️ 有瓶頸 |
-| 金額計算 | 全面使用 Float，浮點精度問題存在 | ❌ 有 bug 風險 |
-| 前端資料層 | admin-ui 用 TanStack Query，pos-ui 用 useState/useEffect | ⚠️ 不一致 |
-| 測試覆蓋 | Unit 測試存在，無 E2E，Analytics 測試偏少 | ⚠️ 有缺口 |
-| 假數據 | Dashboard "+12.5% from last month" hardcoded | ❌ 會誤導使用者 |
+The 2026-05-17 architecture-health report is now treated as a closed historical snapshot, not an active TODO list. Its Arch-Fix follow-up work has been completed in later ROADMAP phases, including analytics service decomposition, plan gating, POS UX hardening, deployment scaffolding, and context-routing improvements.
+
+This document now tracks the current health snapshot from 2026-06-02 onward.
 
 ---
 
-## 問題清單（依嚴重度排序）
+## 2026-06-02 Current Health Snapshot
+
+### Verification Inventory
+
+| Area | Existing local commands inspected |
+| --- | --- |
+| Workspace | `pnpm run dev`, `pnpm run build`, `pnpm run test`, `pnpm run lint`, `pnpm run agent:context` |
+| Backend | `pnpm run build`, `pnpm run test`, `pnpm run test:coverage`, `pnpm run lint`, `pnpm run db:generate`, migration/seed/reset/studio commands |
+| Admin UI | `pnpm run build`, `pnpm run test`, `pnpm run test:coverage`, `pnpm run lint`, Vite dev/preview commands |
+| POS UI | `pnpm run build`, `pnpm run test`, `pnpm run test:e2e`, Playwright UI/report commands, Vite dev/preview commands |
+
+### Verification Results
+
+| Command | Result | Classification | Evidence |
+| --- | --- | --- | --- |
+| `./scripts/validate-agent-context.sh` | Pass | Context wiring healthy | `agent context validation passed.` |
+| `cd systems/enterprise-admin && pnpm run agent:context` | Pass | Workspace context script healthy | Delegates to root validation and passed. |
+| `cd systems/enterprise-admin/backend && pnpm run lint` | Pass with warnings | Real technical-debt signal, not a blocker | 0 errors, 20 warnings, mostly explicit `any` and unused variables. |
+| `cd systems/enterprise-admin/backend && pnpm run db:generate` | Fail | Environment / dependency-fetch gap | Prisma engine checksum and engine downloads from `binaries.prisma.sh` returned `403 Forbidden`. |
+| `cd systems/enterprise-admin/backend && PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 pnpm run db:generate` | Fail | Environment / dependency-fetch gap | Checksum was bypassed, but engine download itself still returned `403 Forbidden`. |
+| `cd systems/enterprise-admin/backend && pnpm run build` | Fail | Inconclusive backend type health because generated Prisma client is absent | TypeScript cannot import `PrismaClient`/`Prisma`; additional strictness and portable Express-router type errors are visible and should be rechecked after Prisma generation succeeds. |
+| `cd systems/enterprise-admin/backend && pnpm run test` | Fail | Test environment gap | 19 files / 124 tests passed; 3 integration suites exited because required env vars were absent. |
+| `cd systems/enterprise-admin/backend && DATABASE_URL=... JWT_*... pnpm run test` | Fail | Environment gap after env parity improved | 19 files / 124 tests passed; the same 3 suites then failed because `.prisma/client/default` was missing. |
+| `cd systems/enterprise-admin/admin-ui && pnpm run lint` | Pass | Admin UI lint healthy | No ESLint output. |
+| `cd systems/enterprise-admin/admin-ui && pnpm run test` | Pass | Admin UI unit/render tests healthy | 2 files / 10 tests passed after focused admin page smoke tests were added. |
+| `cd systems/enterprise-admin/admin-ui && pnpm run build` | Pass | Admin UI production build healthy | TypeScript + Vite build completed. |
+| `cd systems/enterprise-admin/pos-ui && pnpm run build` | Pass | POS UI production build healthy | TypeScript + Vite build completed. |
+| `cd systems/enterprise-admin/pos-ui && pnpm run test` | Pass | POS unit/component test boundary fixed | 22 files / 126 tests passed; Vitest now excludes Playwright `e2e/**` specs. |
+| `cd systems/enterprise-admin/pos-ui && pnpm run test:e2e` | Fail | Environment gap | Playwright found 6 tests but Chromium executable was not installed in `/root/.cache/ms-playwright`. |
 
 ---
 
-### P0 — 會造成 Bug 或安全事故
+## P0 Findings — Release Blockers
 
-#### P0-1：Float 金額精度問題（全域）
+### No confirmed P0 product regression found in this audit
 
-**位置：** `prisma/schema.prisma`、所有 Service 層計算
+The admin UI and POS UI production builds passed. Backend unit-style tests that do not require generated Prisma client or database access passed in the local audit. No verified security incident, data corruption path, or broken user-facing flow was confirmed from command output.
 
-**問題：**
-```
-costPrice  Float  # POS 結帳時 Float 計算
-retailPrice Float
-totalAmount Float
-discountAmount Float
-```
-`0.1 + 0.2 = 0.30000000000000004`（JavaScript / IEEE 754 浮點）。  
-藥局 POS 每筆交易的金額是法律與財務的精確要求，浮點誤差在累計計算時會導致每日對帳誤差。
-
-**影響：** POS 結帳 → 日結 → 財務報表全部受影響。
-
-**正確做法：** 改用 `Decimal`（Prisma + PostgreSQL 原生支援）。前端傳輸用字串或整數（以分為單位）。
+The backend remains only partially verified because Prisma generation was blocked by a dependency-fetch failure. That is tracked as P1 because the blocker is environment/verification parity, not confirmed broken product behavior.
 
 ---
 
-#### P0-2：AnalyticsController 繞過 Global Error Handler
+## P1 Findings — Near-Term Engineering Risks
 
-**位置：** `backend/src/modules/analytics/analytics.controller.ts`（8 個 method）
+### P1-1: Backend build and DB-backed tests are blocked when Prisma engines cannot be fetched
 
-**問題：** 每個 method 自己 try/catch，不呼叫 `next(err)`：
-```ts
-// AnalyticsController — 錯誤被吃掉
-catch (error) {
-  console.error('[AnalyticsController] getKpis Error:', error);
-  res.status(500).json({ success: false, error: { code: 'INTERNAL_SERVER_ERROR', ... } });
-}
+**Evidence:** `pnpm run db:generate` failed on `binaries.prisma.sh` with `403 Forbidden`; retrying with `PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1` bypassed checksum validation but still failed to download the engine file. Backend build then could not import generated `PrismaClient`/`Prisma`, and DB-backed tests could not resolve `.prisma/client/default`.
 
-// 其他所有 Controller — 正確做法
-catch (err) { next(err); }
-```
+**Likely owner area:** Backend / CI / dependency management.
 
-**影響：**
-- `AppError`（如 404、403）被吃掉，永遠回傳 500
-- 錯誤不走 `error.middleware.ts`，無法集中記錄
-- 未來接 Sentry / 監控時，analytics 錯誤會消失
+**Classification:** Environment and CI-parity risk. CI may still pass if GitHub runners can reach Prisma binaries, but cloud/local workers cannot reliably verify backend build/test health without a cached engine or deterministic generation strategy.
 
----
+**2026-06-02 follow-up:** CI now caches Prisma engines under `~/.cache/prisma`, and production/test standards document that first-time runners still need access to `binaries.prisma.sh` or a pre-populated cache. Backend build remains inconclusive in this local environment until Prisma generation can complete.
 
-#### P0-3：Dashboard 有永遠不會更新的假數據
+### P1-2: Backend strict TypeScript health is inconclusive and needs a clean Prisma-generated rerun
 
-**位置：** `admin-ui/src/pages/DashboardPage.tsx:74`
+**Evidence:** The first backend build surfaced missing Prisma exports plus many strictness errors (`implicit any`, `unknown[]` to `string[]`) and portable Express route/app inference errors (`TS2742`). Some strictness errors can be cascading from the missing generated Prisma client; the Express router portability errors are likely independent and should be verified after `prisma generate` succeeds.
 
-```tsx
-<div className="text-sm text-success">+12.5% from last month</div>
-```
+**Likely owner area:** Backend.
 
-這是寫死的字串，API 沒有回傳 MoM 比較數據，它永遠顯示 `+12.5%`。用戶會誤判業務狀況。
+**Classification:** Potential real code health issue; blocked from final diagnosis by Prisma generation failure.
 
----
+**Recommended follow-up:** Re-run `pnpm run db:generate && pnpm run build` in an environment with Prisma engine access. If `TS2742` remains, annotate Express `app`/`router` exports explicitly. If strictness errors remain, triage by module and avoid broad type suppressions.
 
-### P1 — 維護瓶頸（不緊急但會越來越痛）
+### P1-3: POS Vitest command imports Playwright E2E specs
 
-#### P1-1：AnalyticsService God Object（736 行）
+**Evidence:** `pnpm run test` in `pos-ui` completed 22 Vitest files / 126 tests, then failed because `e2e/checkout-flow.spec.ts` calls Playwright `test.describe()` under the Vitest runner.
 
-**位置：** `backend/src/modules/analytics/analytics.service.ts`
+**Likely owner area:** POS UI test configuration.
 
-**問題：** 一個 class 包含：KPI 計算、RFM 分段、Churn Risk、ABC 分析、供應商排名、銷售熱力圖、獎金門檻。
+**Classification:** Resolved test-runner boundary bug. The standard unit/component test command should not collect Playwright specs.
 
-```
-Phase 5: getKpiSnapshot / getKpiTrend   → 200 行
-Phase 7: getRfmSegmentation             → 80 行
-Phase 7: getChurnRisk                   → 80 行
-Phase 7: getProductAbcAnalysis          → 120 行
-Phase 7: getSupplierRanking             → 80 行
-Phase 7: getSalesHeatmap                → 80 行
-Phase 7: getBonusGateStatus             → 100 行
-```
+**2026-06-02 follow-up:** POS Vitest now includes only `src/**/*.{test,spec}.{ts,tsx}` and excludes `e2e/**`; `pnpm run test` passes 22 files / 126 tests, while Playwright remains isolated behind `pnpm run test:e2e`.
 
-**影響：**
-- 任何新分析功能都往這個 class 加，沒有終點
-- 測試難以隔離：`analytics.service.test.ts` 要 mock 整個 service
-- ROADMAP C-04 已標記此問題但未執行
+### P1-4: POS E2E verification depends on undeclared Playwright browser installation
 
-**正確做法：** 依業務領域拆分：
-```
-modules/analytics/
-  crm-analytics.service.ts      (RFM, Churn)
-  product-analytics.service.ts  (ABC, Supplier Ranking)
-  ops-analytics.service.ts      (Heatmap, Bonus Gate)
-  kpi.service.ts                (KPI Snapshot, Trend)
-```
+**Evidence:** `pnpm run test:e2e` discovered 6 tests but failed before executing assertions because the Chromium headless shell was missing.
+
+**Likely owner area:** POS UI / CI / developer environment.
+
+**Classification:** Documented environment gap.
+
+**2026-06-02 follow-up:** POS now exposes `pnpm run test:e2e:install` for Chromium installation, and the Playwright config plus test standards document that E2E still requires a running backend and seeded POS data before it becomes a default PR gate. In this cloud environment, Chromium download still returns 403 from the Playwright CDN, so runners need allowlisting or a pre-populated browser cache.
 
 ---
 
-#### P1-2：Auth Middleware 每次 Request 做深層 Join（無 Cache）
+## P2 Findings — Maintenance and Observability Improvements
 
-**位置：** `backend/src/middleware/auth.middleware.ts`
+### P2-1: Backend lint allows accumulating warning-level type debt
 
-**問題：** 每個 authenticated request 都執行：
-```ts
-prisma.user.findUnique({
-  include: {
-    userRoles: {
-      include: {
-        role: { include: { rolePermissions: { include: { permission: true } } } }
-      }
-    }
-  }
-})
-```
-這是 3 層 join，產生約 4 條 SQL。POS 結帳在高頻操作下（每筆交易）會觸發此查詢。
+**Evidence:** Backend ESLint passed with 20 warnings, including explicit `any` usages and unused variables.
 
-**正確做法：** 把 permissions 在 JWT 簽發時直接寫入 payload（或加 in-memory 快取 with TTL）。
+**Likely owner area:** Backend.
 
----
+**Classification:** Maintenance debt, not a current blocker.
 
-#### P1-3：Tenant Middleware 每次 Request 查 2 次 DB
+**Recommended follow-up:** Convert warnings into tracked cleanup issues by module. Consider tightening lint severity only after the current warning inventory is reduced.
 
-**位置：** `backend/src/middleware/tenant.middleware.ts`
+### P2-2: Admin UI has minimal automated test coverage despite healthy build/lint status
 
-**問題：**
-1. 查 `user.tenantId`（為了從 JWT 取得 tenant）
-2. 查 `tenant.plan`（為了 plan-based feature gating）
+**Evidence:** Admin UI lint and build passed, but `pnpm run test` currently runs only `src/hooks/authDemo.test.ts` with 6 tests.
 
-JWT 簽發時沒有包含 `tenantId` 和 `plan`，導致每次都要回查 DB。
+**Likely owner area:** Admin UI.
 
-**正確做法：** 在 JWT payload 中包含 `tenantId` 和 `plan`，並在 plan 變更時（管理員操作）讓所有 token 失效。
+**Classification:** Improved coverage, continue expanding as behavior changes.
+
+**2026-06-02 follow-up:** Added focused admin render smoke tests for Dashboard, Users, Roles, Margin, Cash Flow, and Sales Ranking pages. These tests verify the Phase 12 visual wrapper/classes and key rendered content without changing API behavior.
 
 ---
 
-#### P1-4：`as any` 21 處型別安全窟窿
+## Clean Areas Checked
 
-**位置：** 散落全後端
-
-主要集中在：
-- `prisma.ts` — Prisma Extension 實作（必要但可改進）
-- `crm.service.ts`、`inventory.service.ts`、`order.service.ts` — `create({ data: data as any })`
-- `auth.controller.ts` — audit log 型別
-- `tenant.middleware.ts` — `user as any`
-
-**原因：** Prisma Extended Client 的型別在 `create/update` 操作中因為 Extension 加入的欄位而失配，開發時用 `as any` 繞過。
-
-**正確做法：** 為 Extended Prisma Client 定義 proper DTOs，或使用 `Prisma.validator()` 產生正確型別。
+- **Agent context routing:** Root validation and workspace `agent:context` both passed.
+- **Admin UI build/lint/unit tests:** All checked commands passed.
+- **POS UI production build:** TypeScript + Vite build passed.
+- **Backend lint hard failures:** No ESLint errors were reported.
+- **Backend non-DB unit-style tests:** 19 files / 124 tests passed before DB/generated-client-dependent suites failed.
 
 ---
 
-#### P1-5：pos-ui 無 TanStack Query，資料層不一致
+## Follow-Up Placement
 
-**位置：** `pos-ui/src/pages/POSCheckoutPage.tsx`
+No new ROADMAP phase was created during this audit. The findings above should feed the existing Phase 13 execution order:
 
-**問題：** admin-ui 使用 TanStack Query（統一 cache + refetch）。pos-ui 用 `useState + useEffect + posApi.getXxx().then()`，導致：
-- 無 cache：切換分類時每次重新 fetch 商品
-- 無自動 refetch：庫存變動後 UI 不會更新
-- Error 狀態手動管理
-- Loading 狀態手動管理
-
-**影響：** POS 在高頻操作下不必要的網路請求，且庫存數字可能過時。
-
----
-
-#### P1-6：POSCheckoutPage 14 個 useState，5 個 useEffect
-
-**位置：** `pos-ui/src/pages/POSCheckoutPage.tsx`（377 行）
-
-**問題：** 所有狀態混在一個 component：
-- 商品/分類/搜尋狀態（可以是 TanStack Query）
-- 班別開關狀態（可以是 `useShift` hook）
-- Modal 顯示狀態（3 個 boolean）
-- Toast 狀態
-- Loading 狀態（3 個 boolean）
-
-**正確做法：** 抽出 `useShift()` 和 `usePOSProducts()` hooks，開班畫面獨立為 `ShiftOpenScreen` component。
-
----
-
-#### P1-7：PAYMENT_LABELS 三處重複定義
-
-**位置：**
-- `pos-ui/src/components/CartPanel.tsx`
-- `pos-ui/src/components/PaymentModal.tsx`
-- `pos-ui/src/components/ReceiptModal.tsx`
-
-同一個 `{ CASH: '現金', CARD: '信用卡', ... }` 在三個檔案各自定義一次。
-
----
-
-#### P1-8：Analytics Service 不顯式呼叫 requireTenantId()
-
-**位置：** `backend/src/modules/analytics/analytics.service.ts`
-
-**問題：** Service 沒有呼叫 `requireTenantId()`，依賴 Prisma Extension 隱式注入 tenant 過濾。當 `MappedModels` 漏列某個 model 時，查詢會跨租戶洩漏資料，且沒有任何明顯錯誤。
-
-其他 Service（如 `checkout.service.ts`、`crm.service.ts`）都有顯式呼叫 `requireTenantId()`，只有 Analytics 是例外。
-
----
-
-### P2 — 未來成長瓶頸（現在規劃，避免後期大重構）
-
-#### P2-1：沒有 Shared Types Package
-
-**問題：** Monorepo 有三個應用（backend / admin-ui / pos-ui），但沒有 `packages/types` 層。
-- `CheckoutPayload`、`PosProduct` 在 pos-ui 定義，backend 有自己的 Zod schema，兩者不同步
-- 新增欄位時需同時改三個地方
-- 無法 codegen（e.g., openapi-typescript）
-
-**正確做法：** 建立 `packages/types/` workspace，後端用 `zod.infer` 輸出型別，前端直接 import。
-
----
-
-#### P2-2：沒有 E2E 測試
-
-**問題：** 目前只有後端 unit tests（7 個測試檔）和前端 component tests（pos-ui 5 個）。
-
-關鍵業務流程（POS 結帳→庫存扣減→收據產生）沒有 E2E 測試。
-
-**正確做法：** Playwright 測試覆蓋：登入 → 開班 → 掃條碼 → 結帳 → 驗收據。
-
----
-
-#### P2-3：沒有 API Rate Limiting
-
-**問題：** `app.ts` 沒有 rate limiting middleware。POS barcode 查詢（每次掃描觸發 API）和 analytics（計算密集）都沒有保護。
-
-**正確做法：** 加 `express-rate-limit`，對 `/pos/products`、`/analytics/*` 設不同的 rate limit。
-
----
-
-#### P2-4：Plan-based Feature Gating 未實作（SAAS-03，已於 AF-20 修復）
-
-**位置：** `backend/src/middleware/plan.middleware.ts`（已建立 middleware 框架）
-
-**原始問題：** ROADMAP SAAS-03 曾標記為未完成。`plan.middleware.ts` 存在但沒有接進任何路由。多租戶 SaaS 的核心商業邏輯（free/starter/pro 功能限制）尚未落地。
-
-**修復狀態：** 已於 Arch-Fix Phase 6 / AF-20 完成，`requirePlan()` 已套用到 reports 路由，前端也加入 plan gating 的 403 顯示流程。
-
----
-
-#### P2-5：MappedModels 列表漏掉新 Model（已於 AF-03 修復）
-
-**位置：** `backend/src/lib/prisma.ts`
-
-```ts
-const MappedModels = ['User', 'Role', 'AuditLog', 'Customer', 'Tag',
-  'Interaction', 'Supplier', 'ProductCategory', 'Product', 'Order',
-  'InventoryTransaction', 'Expense'] as const;
-```
-
-**漏掉的 Model（Phase 8 新增）：** `Shift`、`ProductBatch`、`DailySettlement`
-
-這些 model 有 `tenantId` 欄位，但當時不在 `MappedModels` 中，代表 Prisma Extension 不會自動注入 tenant filter。目前此問題已於 AF-03 修復，`MappedModels` 已包含 `Shift`、`ProductBatch`、`DailySettlement`，並追加後續新增的 tenant-scoped models。
-
----
-
-## 改善 Roadmap（已完成）
-
-> 結案狀態：AF-01 到 AF-20 已全部完成。最新進度來源以 `ROADMAP.md` 的 Arch-Fix Phase 1-6 為準；本節保留原始改善路線與完成對照，作為歷史健康報告的封存參考。
-
----
-
-### Arch-Fix Phase 1：P0 緊急修復（1-2 天）
-
-**目標：** 消除會立即造成 bug 或誤導的問題
-
-- [x] **AF-01**: `AnalyticsController` 8 個 method 改用 `next(err)`，移除手動 try/catch（2026-05-20 驗證完成）
-- [x] **AF-02**: `DashboardPage` 移除 hardcoded `"+12.5% from last month"`；改用真實 `customers.newThisMonth`（2026-05-20 驗證完成）
-- [x] **AF-03**: `prisma.ts` 的 `MappedModels` 已含 `Shift`、`ProductBatch`、`DailySettlement`（並追加 `AccountingSyncLog`、`MessageBroadcast`）
-
----
-
-### Arch-Fix Phase 2：型別與一致性整頓（3-5 天）
-
-**目標：** 消除型別安全窟窿、統一前端資料層模式
-
-- [x] **AF-04**: `AnalyticsService` 加入 `requireTenantId()` 呼叫（防守性，明確 fail fast）
-- [x] **AF-05**: `PAYMENT_LABELS` 提取到 `pos-ui/src/constants.ts`，三個 component 共用
-- [x] **AF-06**: 後端 Service 層消除可修復的 `as any`（`crm.service.ts`、`inventory.service.ts`、`order.service.ts`）；用 `Prisma.validator()` 或拆出 DTO
-- [x] **AF-07**: `pos-ui` 引入 TanStack Query，`getProducts` 改為 `useQuery`，解決 cache 缺失問題
-- [x] **AF-08**: `POSCheckoutPage` 重構：抽出 `useShift()` hook + `ShiftOpenScreen` component，將 14 個 useState 降到 6 個以內
-
----
-
-### Arch-Fix Phase 3：效能與安全強化（1 週）
-
-**目標：** 解決 Auth/Tenant middleware 的每次 DB 查詢問題
-
-- [x] **AF-09**: JWT payload 加入 `tenantId`（login 和 refresh 時寫入），`tenant.middleware.ts` 直接讀 JWT 取 tenantId，移除第一次 DB 查詢
-- [x] **AF-10**: JWT payload 加入 `permissions[]`（或 permission hash），`auth.middleware.ts` 直接驗 payload，移除 3 層 join 查詢；在 `roles/permissions` 變更時強制重新登入
-- [x] **AF-11**: 加入 `express-rate-limit`：`/pos/products` 每秒 10 次，`/analytics/*` 每分鐘 30 次
-
----
-
-### Arch-Fix Phase 4：AnalyticsService 拆分（1 週）
-
-**目標：** 消解 736 行 God Object，對齊大廠「單一職責」標準
-
-- [x] **AF-12**: 建立 `modules/analytics/services/` 子目錄：
-  - `kpi.service.ts`（KPI Snapshot + Trend）
-  - `crm-analytics.service.ts`（RFM + Churn Risk）
-  - `product-analytics.service.ts`（ABC + Supplier Ranking）
-  - `ops-analytics.service.ts`（Heatmap + Bonus Gate）
-- [x] **AF-13**: `analytics.controller.ts` 改為呼叫各子 service，移除 God Object
-- [x] **AF-14**: 對各子 service 補充對應的 unit test
-
----
-
-### Arch-Fix Phase 5：Float → Decimal 遷移
-
-**目標：** 解決金額浮點精度問題
-
-- [x] **AF-15**: Prisma Schema 所有金額欄位從 `Float` 改為 `Decimal`
-  - `costPrice`、`retailPrice`、`totalAmount`、`discountAmount`、`unitPrice`、`finalUnitPrice`
-  - `Expense.amount`、`Shift.openingCash/closingCash`
-  - `DailySettlement.*Amount`
-- [x] **AF-16**: 前端金額計算改為整數運算（以分為單位）或使用 `decimal.js`
-- [x] **AF-17**: 撰寫 ADR-010 記錄此決策
-
----
-
-### Arch-Fix Phase 6：Shared Types + E2E（長期）
-
-**目標：** 建立可擴展的 monorepo 結構，補全測試防護網
-
-- [x] **AF-18**: 建立 `packages/types/` workspace（turborepo 或 pnpm workspace）
-  - backend Zod schema `infer` 輸出到 shared types
-  - pos-ui / admin-ui 直接 import，不再各自定義
-- [x] **AF-19**: Playwright E2E：POS 完整結帳流程（login → 開班 → 加商品 → 結帳 → 驗庫存）
-- [x] **AF-20**: SAAS-03 Plan-based feature gating 落地（`plan.middleware.ts` 接進路由）
-
----
-
-## 問題地圖快速參考
-
-```
-高影響
-  │
-  │  P0-1 Float 金額 ─────────────────── P1-1 Analytics God Object
-  │  P0-2 Analytics error handling       P1-2 Auth middleware N+1 query
-  │  P0-3 Hardcoded "+12.5%"            P1-3 Tenant middleware 2x DB
-  │                                       P1-4 as any 21 處
-  │                                       P1-5 pos-ui 無 Query cache
-  │
-  │                    P2-1 Shared Types  P2-2 無 E2E
-  │                    P2-3 無 Rate Limit P2-4 Feature Gating
-  │                    P2-5 MappedModels 漏 model
-  │
-低影響
-       緊急                              不緊急
-```
-
----
-
-## 什麼不需要動
-
-以下是目前架構的亮點，不要過度改動：
-
-- **`cartStore.ts`** — Zustand store 設計乾淨，addItem/remove/計算分離清楚
-- **`checkout.service.ts`** — FIFO 批次邏輯是業務複雜度，寫法已很正確
-- **`barcodeService.ts`** — 43 行，pub/sub 模式，不需改
-- **`tenant.context.ts` + Prisma Extension** — AsyncLocalStorage 用法正確，是大廠常見模式
-- **模組化路由結構** — `modules/[domain]/controller+service+routes+schema` 四件套清晰
-
----
-
-> 本文件反映 2026-05-17 的架構快照；Arch-Fix Phase 1-6 已於 `ROADMAP.md` 結案。本文件保留作為歷史健康報告與改善封存參考。
+1. Roadmap B should document production/developer dependency expectations for Prisma generation and Playwright installation where relevant.
+2. Roadmap C can proceed after acknowledging that Admin UI build/lint/test are currently green.
+3. Roadmap D should not extract shared UI primitives until Roadmap C creates concrete duplication pressure.
+4. A future backend hardening slice should re-run backend build/test in an environment where Prisma engines can be generated, then fix any remaining non-cascading TypeScript errors.

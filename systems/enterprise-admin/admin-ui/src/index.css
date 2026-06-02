@@ -1455,6 +1455,339 @@ select.input-control {
   }
 }
 
+
+/* ═════════════════════════════════════
+   ADMIN UI OPERATIONAL REFRESH — Phase 12
+   Quiet, dense, scan-first treatment for admin surfaces.
+   ═════════════════════════════════════ */
+:root {
+  --admin-accent: var(--color-primary);
+  --admin-accent-hover: var(--color-primary-hover);
+  --admin-accent-soft: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  --admin-accent-border: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  --accent: var(--admin-accent);
+  --accent-hover: var(--admin-accent-hover);
+  --accent-subtle: var(--admin-accent-soft);
+  --accent-border: var(--admin-accent-border);
+  --accent-text: var(--admin-accent);
+  --admin-shell: #111827;
+  --admin-shell-muted: #1f2937;
+  --admin-page-max: 1440px;
+  --admin-panel-radius: 8px;
+  --admin-control-radius: 7px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.02);
+}
+
+[data-theme="dark"] {
+  --admin-accent: #8b7cff;
+  --admin-accent-hover: #a69bff;
+  --admin-accent-soft: rgba(139, 124, 255, 0.13);
+  --admin-accent-border: rgba(139, 124, 255, 0.28);
+  --accent: var(--admin-accent);
+  --accent-hover: var(--admin-accent-hover);
+  --accent-subtle: var(--admin-accent-soft);
+  --accent-border: var(--admin-accent-border);
+  --accent-text: var(--admin-accent);
+}
+
+.admin-layout {
+  background:
+    radial-gradient(circle at top left, var(--accent-subtle), transparent 320px),
+    var(--bg-app);
+}
+
+.sidebar {
+  background: linear-gradient(180deg, var(--admin-shell), #0b1220);
+  border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-logo {
+  color: #f8fafc;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-section {
+  color: rgba(203, 213, 225, 0.72);
+}
+
+.sidebar-item {
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+.sidebar-item.active {
+  background: rgba(255, 255, 255, 0.11);
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 var(--admin-accent);
+}
+
+.sidebar-footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-user strong {
+  color: #ffffff;
+}
+
+.sidebar-user span {
+  color: rgba(203, 213, 225, 0.72);
+}
+
+.main-content {
+  width: calc(100% - var(--sidebar-w));
+  max-width: var(--admin-page-max);
+  padding: 32px 40px;
+}
+
+.admin-page,
+.report-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  align-items: center;
+  margin-bottom: 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  margin-top: 6px;
+  color: var(--text-secondary);
+}
+
+.card,
+.glass-card,
+.stat-card,
+.table-container {
+  border-radius: var(--admin-panel-radius);
+}
+
+.card,
+.glass-card {
+  border-color: var(--border);
+}
+
+.card:hover,
+.glass-card:hover {
+  border-color: var(--border-strong);
+}
+
+.stat-card {
+  padding: 20px;
+  gap: 10px;
+}
+
+.stat-card:hover {
+  transform: none;
+}
+
+.stat-value {
+  font-size: 28px;
+}
+
+.stat-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.btn {
+  border-radius: var(--admin-control-radius);
+}
+
+.btn-primary {
+  background: var(--admin-accent);
+  color: var(--color-on-primary);
+}
+
+.btn-primary:hover {
+  background: var(--admin-accent-hover);
+  transform: none;
+}
+
+.input-control,
+.input-field {
+  border-radius: var(--admin-control-radius);
+}
+
+.table-container {
+  overflow: hidden;
+}
+
+.table th {
+  background: color-mix(in srgb, var(--bg-hover) 72%, var(--bg-card));
+  padding: 11px 16px;
+  font-size: 10.5px;
+}
+
+.table td {
+  padding: 12px 16px;
+}
+
+.badge {
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.badge-active,
+.badge-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 18%, transparent);
+}
+
+.badge-suspended,
+.badge-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 18%, transparent);
+}
+
+.badge-pending,
+.badge-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 18%, transparent);
+}
+
+.badge-role,
+.badge-info {
+  background: var(--info-bg);
+  color: var(--info);
+  border-color: color-mix(in srgb, var(--info) 18%, transparent);
+}
+
+.section-card {
+  padding: 24px;
+}
+
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.metric-box,
+.interaction-item,
+.kpi-light {
+  border-radius: var(--admin-panel-radius);
+  background: color-mix(in srgb, var(--bg-hover) 62%, var(--bg-card));
+}
+
+.metric-box:hover,
+.kpi-light:hover {
+  transform: none;
+}
+
+.admin-surface-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 24px;
+}
+
+.role-list-card {
+  padding: 16px;
+}
+
+.role-list-item {
+  padding: 14px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--admin-panel-radius);
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.role-list-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.role-list-item.active {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+}
+
+.role-system-label {
+  margin-left: 8px;
+  color: var(--warning);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.permissions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.permission-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.permission-chip.assigned {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent-text);
+}
+
+.report-grid,
+.report-grid-balanced {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+}
+
+.report-grid-wide {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.4fr);
+  gap: 24px;
+}
+
+.report-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    width: calc(100% - var(--sidebar-collapsed));
+  }
+
+  .admin-surface-grid,
+  .report-grid,
+  .report-grid-balanced,
+  .report-grid-wide {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ────────────────────────────────────────────────────
    NUMERIC & TABULAR UTILITIES
    Apply to prices, quantities, metrics in tables/cards

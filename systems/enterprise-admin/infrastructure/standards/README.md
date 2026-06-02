@@ -10,4 +10,5 @@ Consistency is the foundation of scale. These standards define how we write code
 - [SLI, SLO & Error Budget Policy](slo_error_budget.md)
 - [Testing Strategy & Pyramid](test_pyramid.md)
 - [Observability & Monitoring Standard](observability.md)
+- [Production Runbook](production_runbook.md)
 - [Project Document Structures](../system_architecture.md)

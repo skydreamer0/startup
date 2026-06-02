@@ -62,6 +62,7 @@ See `systems/enterprise-admin/infrastructure/adr/` for full ADR list.
 | Auth | ADR-002 | Stateless JWT |
 | Backend framework | ADR-003 | Express 5 |
 | Multi-tenancy | ADR-006 | Row-level via Prisma extension |
+| Shared UI boundary | ADR-012 | Defer `packages/ui` until cross-app primitive reuse is proven |
 
 ## Future Systems (Planned)
 

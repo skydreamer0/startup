@@ -1,8 +1,10 @@
 # Cloud Improvement Roadmaps
 
 Date: 2026-06-02
-Status: Ready for cloud execution
+Status: Archived after Phase 13 execution
 Scope: New post-Arch-Fix improvement work for `systems/enterprise-admin`
+
+> **Completion note (2026-06-02):** Phase 13 CLOUD-01 through CLOUD-04 are complete in `systems/enterprise-admin/ROADMAP.md`. Roadmap D completed by ADR-012, which documents that `packages/ui/` is deferred until cross-app primitive reuse is proven. The detailed task checklists below remain as the original cloud-worker execution template.
 
 > **For cloud agentic workers:** Cloud workers may not have access to local Codex skill metadata. Treat the skill list below as required operating instructions. If a named skill is unavailable, follow the fallback workflow written beside it.
 

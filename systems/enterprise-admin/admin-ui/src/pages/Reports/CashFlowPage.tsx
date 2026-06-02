@@ -26,7 +26,7 @@ export default function CashFlowPage() {
     const opCfsColor = (data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0) >= 0 ? '#10b981' : '#f87171';
 
     return (
-        <div>
+        <div className="admin-page report-page cashflow-report-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Cash Flow Statement</h1>
@@ -78,7 +78,7 @@ export default function CashFlowPage() {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
+            <div className="report-grid-wide">
                 {/* 6-Month Liquidity Trend */}
                 <section className="card" style={{ padding: '24px' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>Cash Position & Net Cash Flow Trend</h3>

@@ -55,7 +55,7 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="dashboard-content">
+        <div className="admin-page dashboard-content">
             <header className="page-header">
                 <div>
                     <h1 className="page-title">Operations Overview</h1>
