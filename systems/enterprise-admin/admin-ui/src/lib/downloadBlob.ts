@@ -1,25 +1,15 @@
+import api from '../api/client';
+import { downloadAuthenticatedBlob, saveBlob } from '../api/requestLifecycle';
+
 /**
  * Download a file from an authenticated API endpoint as a blob.
- * Used for Excel/CSV exports where the response is binary.
+ * Uses the shared admin axios lifecycle so binary exports inherit the same
+ * auth-token injection, 401 refresh, and 403 plan-upgrade handling as JSON requests.
  *
- * @param url     Full URL (or path relative to current origin) of the endpoint.
+ * @param url Full API URL or path accepted by the admin API client.
  * @param filename Suggested filename for the saved file.
- * @param authToken Bearer token to send in the Authorization header.
  */
-export async function downloadBlob(url: string, filename: string, authToken: string): Promise<void> {
-    const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${authToken}` },
-    });
-    if (!res.ok) {
-        throw new Error(`Download failed: ${res.status}`);
-    }
-    const blob = await res.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = objectUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(objectUrl);
+export async function downloadBlob(url: string, filename: string): Promise<void> {
+    const blob = await downloadAuthenticatedBlob(api, url);
+    saveBlob(blob, filename);
 }

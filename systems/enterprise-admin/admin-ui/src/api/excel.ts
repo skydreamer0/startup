@@ -1,30 +1,26 @@
 import api from './client';
 import { downloadBlob } from '../lib/downloadBlob';
 
-const BASE = '/api/v1/admin/excel';
+const BASE = '/excel';
 
 function todayStamp(): string {
     return new Date().toISOString().slice(0, 10);
 }
 
-function getToken(): string {
-    return localStorage.getItem('accessToken') ?? '';
-}
-
 export const excelApi = {
     exportProducts: () =>
-        downloadBlob(`${BASE}/export/products`, `products-${todayStamp()}.xlsx`, getToken()),
+        downloadBlob(`${BASE}/export/products`, `products-${todayStamp()}.xlsx`),
     exportCustomers: () =>
-        downloadBlob(`${BASE}/export/customers`, `customers-${todayStamp()}.xlsx`, getToken()),
+        downloadBlob(`${BASE}/export/customers`, `customers-${todayStamp()}.xlsx`),
     exportOrders: (from?: string, to?: string) => {
         const qs = new URLSearchParams();
         if (from) qs.set('from', from);
         if (to) qs.set('to', to);
         const suffix = qs.toString() ? `?${qs.toString()}` : '';
-        return downloadBlob(`${BASE}/export/orders${suffix}`, `orders-${todayStamp()}.xlsx`, getToken());
+        return downloadBlob(`${BASE}/export/orders${suffix}`, `orders-${todayStamp()}.xlsx`);
     },
     exportInventory: () =>
-        downloadBlob(`${BASE}/export/inventory`, `inventory-${todayStamp()}.xlsx`, getToken()),
+        downloadBlob(`${BASE}/export/inventory`, `inventory-${todayStamp()}.xlsx`),
 
     previewImportProducts: async (file: File): Promise<ImportSummary> => {
         const fd = new FormData();

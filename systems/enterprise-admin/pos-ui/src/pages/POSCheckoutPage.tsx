@@ -7,7 +7,8 @@ import ProductGrid from '../components/ProductGrid';
 import CartPanel from '../components/CartPanel';
 import StaffSwitchModal from '../components/StaffSwitchModal';
 import PaymentModal from '../components/PaymentModal';
-import SplitPaymentModal, { PaymentEntry } from '../components/SplitPaymentModal';
+import SplitPaymentModal from '../components/SplitPaymentModal';
+import type { PaymentEntry } from '@pharmasaas/types';
 import ReceiptModal from '../components/ReceiptModal';
 import PosToast, { PosToastMessage } from '../components/PosToast';
 import AdminPinModal from '../components/AdminPinModal';
@@ -16,7 +17,7 @@ import OrderLookupModal from '../components/OrderLookupModal';
 import RefundModal from '../components/RefundModal';
 import ShiftReportModal from '../components/ShiftReportModal';
 import { printReceipt, openCashDrawer } from '../services/receiptService';
-import { getPending, markSynced } from '../services/offlineQueue';
+import { syncPendingTransactions } from '../services/offlineQueue';
 import OfflineStatus from '../components/OfflineStatus';
 import PrinterStatus from '../components/PrinterStatus';
 import { useShift } from '../hooks/useShift';
@@ -28,10 +29,13 @@ import CloseShiftDialog from '../components/CloseShiftDialog';
 import CustomerLookupPanel from '../components/CustomerLookupPanel';
 import RecommendationChips from '../components/RecommendationChips';
 import ReorderForecastBadge from '../components/ReorderForecastBadge';
-
-// Discount thresholds that require admin PIN authorisation
-const ITEM_DISCOUNT_PIN_THRESHOLD = 20;
-const ORDER_DISCOUNT_PIN_THRESHOLD = 500;
+import {
+  buildCheckoutIntent,
+  checkoutNeedsManagerApproval,
+  MANAGER_APPROVAL_REASON,
+  resolveCheckoutAuthorization,
+  type CheckoutAction,
+} from '../services/checkoutIntent';
 
 export default function POSCheckoutPage() {
   const [staffList, setStaffList] = useState<PosStaff[]>([]);
@@ -50,10 +54,13 @@ export default function POSCheckoutPage() {
   const [managerPin, setManagerPin] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const { items, orderDiscountAmount } = useCartStore();
-  const hasHighDiscount = items.some((i) => i.discountRate >= ITEM_DISCOUNT_PIN_THRESHOLD) || orderDiscountAmount >= ORDER_DISCOUNT_PIN_THRESHOLD;
-
-  const { addItem, setSalesStaff, currentSalesStaffId } = useCartStore();
+  const {
+    items,
+    orderDiscountAmount,
+    addItem,
+    setSalesStaff,
+    currentSalesStaffId,
+  } = useCartStore();
   const searchRef = useRef<HTMLInputElement>(null);
 
   const showToast = useCallback((nextToast: PosToastMessage) => {
@@ -61,6 +68,7 @@ export default function POSCheckoutPage() {
   }, []);
 
   const shift = useShift(showToast, setSalesStaff);
+  const hasHighDiscount = checkoutNeedsManagerApproval(items, orderDiscountAmount);
 
   const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout } = useCheckout({
     shiftId: shift.activeShift?.id,
@@ -122,18 +130,29 @@ export default function POSCheckoutPage() {
     showToast({ type: 'success', message: `已加入推薦商品：${recommendation.name}` });
   }
 
-  function requirePin(action: 'checkout' | 'split', splitPayments?: PaymentEntry[]) {
-    if (!hasHighDiscount) {
-      if (action === 'split') handleCheckout(splitPayments);
-      else handleCheckout();
+  function requirePin(action: CheckoutAction, splitPayments?: PaymentEntry[]) {
+    const cart = useCartStore.getState();
+    const authorization = resolveCheckoutAuthorization({
+      action,
+      managerPin,
+      intent: buildCheckoutIntent({
+        items: cart.items,
+        paymentMethod: cart.paymentMethod,
+        splitPayments,
+        orderDiscountAmount: cart.orderDiscountAmount,
+        orderDiscountNote: cart.orderDiscountNote,
+        customerId: selectedCustomer?.id,
+        shiftId: shift.activeShift?.id,
+        salesStaffId: cart.currentSalesStaffId,
+      }),
+    });
+
+    if (authorization.status === 'approved') {
+      handleCheckout(authorization.splitPayments);
       return;
     }
-    if (managerPin) {
-      if (action === 'split') handleCheckout(splitPayments);
-      else handleCheckout();
-      return;
-    }
-    setAdminPinPending({ action, splitPayments });
+
+    setAdminPinPending({ action: authorization.action, splitPayments: authorization.splitPayments });
   }
 
   function onPinConfirmed(pin: string) {
@@ -224,14 +243,17 @@ export default function POSCheckoutPage() {
   }
 
   async function handleSync() {
-    const pending = await getPending();
-    if (pending.length === 0) { showToast({ type: 'info', message: '沒有待同步的交易' }); return; }
-    let ok = 0; let fail = 0;
-    for (const tx of pending) {
-      try { await posApi.checkout(tx.payload); await markSynced(tx.localId!); ok++; }
-      catch { fail++; }
+    const { successCount, failureCount } = await syncPendingTransactions((payload) => posApi.checkout(payload));
+    if (successCount + failureCount === 0) {
+      showToast({ type: 'info', message: '沒有待同步的交易' });
+      return;
     }
-    showToast({ type: fail === 0 ? 'success' : 'warning', message: fail === 0 ? `已同步 ${ok} 筆離線交易` : `同步完成：${ok} 成功，${fail} 失敗` });
+    showToast({
+      type: failureCount === 0 ? 'success' : 'warning',
+      message: failureCount === 0
+        ? `已同步 ${successCount} 筆離線交易`
+        : `同步完成：${successCount} 成功，${failureCount} 失敗`,
+    });
   }
 
   const categories = Array.from(
@@ -367,7 +389,7 @@ export default function POSCheckoutPage() {
       )}
       {adminPinPending && (
         <AdminPinModal
-          reason={`折扣超過授權閾值（商品 ≥${ITEM_DISCOUNT_PIN_THRESHOLD}% 或整筆 ≥$${ORDER_DISCOUNT_PIN_THRESHOLD}），請輸入管理員 PIN`}
+          reason={MANAGER_APPROVAL_REASON}
           onConfirm={onPinConfirmed}
           onClose={() => setAdminPinPending(null)}
         />
