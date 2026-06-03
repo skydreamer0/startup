@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// ─── Mock tenant context ─────────────────────────────────
-vi.mock('../lib/tenant.context', () => ({
-    requireTenantId: vi.fn(() => 'test-tenant-id'),
-    tenantContext: { getStore: vi.fn(() => ({ tenantId: 'test-tenant-id', plan: 'pro' })) },
-}));
+import { TEST_TENANT_ID, withTenantContext } from './helpers/tenant-context';
 
 // ─── Mock Prisma ─────────────────────────────────────────
 vi.mock('../lib/prisma', () => ({
@@ -83,7 +78,7 @@ describe('AccountingService.syncOrder', () => {
         };
         mockSyncLogCreate.mockResolvedValue(fakeLog as never);
 
-        const result = await AccountingService.syncOrder('order-1');
+        const result = await withTenantContext(() => AccountingService.syncOrder('order-1'));
 
         expect(result.alreadySynced).toBe(false);
         expect(result.log).toEqual(fakeLog);
@@ -91,7 +86,7 @@ describe('AccountingService.syncOrder', () => {
         expect(mockSyncLogCreate).toHaveBeenCalledWith(
             expect.objectContaining({
                 data: expect.objectContaining({
-                    tenantId: 'test-tenant-id',
+                    tenantId: TEST_TENANT_ID,
                     provider: 'mock',
                     entityType: 'order',
                     entityId: 'order-1',
@@ -112,7 +107,7 @@ describe('AccountingService.syncOrder', () => {
         };
         mockSyncLogFindFirst.mockResolvedValue(existingLog as never);
 
-        const result = await AccountingService.syncOrder('order-1');
+        const result = await withTenantContext(() => AccountingService.syncOrder('order-1'));
 
         expect(result.alreadySynced).toBe(true);
         expect(result.log).toEqual(existingLog);
@@ -128,14 +123,14 @@ describe('AccountingService.syncOrder', () => {
         mockProvider.syncOrder.mockRejectedValue(new Error('Provider not configured'));
         mockSyncLogCreate.mockResolvedValue({ id: 'log-fail', status: 'failed' } as never);
 
-        await expect(AccountingService.syncOrder('order-2')).rejects.toThrow(
+        await expect(withTenantContext(() => AccountingService.syncOrder('order-2'))).rejects.toThrow(
             'Provider not configured',
         );
 
         expect(mockSyncLogCreate).toHaveBeenCalledWith(
             expect.objectContaining({
                 data: expect.objectContaining({
-                    tenantId: 'test-tenant-id',
+                    tenantId: TEST_TENANT_ID,
                     provider: 'mock',
                     entityType: 'order',
                     entityId: 'order-2',
