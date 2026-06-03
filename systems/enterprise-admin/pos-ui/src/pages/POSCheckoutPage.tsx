@@ -275,25 +275,25 @@ export default function POSCheckoutPage() {
     <div className="pos-shell">
       <PosToast toast={toast} onDismiss={() => setToast(null)} />
       <div className="pos-topbar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🌿</div>
+        <div className="pos-brand">
+          <div className="pos-brand-mark">🌿</div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.2 }}>PharmaSaaS POS</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>健康生活藥局</div>
+            <div className="pos-brand-title">PharmaSaaS POS</div>
+            <div className="pos-brand-subtitle">健康生活藥局</div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 12px', background: 'var(--success-bg)', borderRadius: 'var(--radius-full)' }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }} />
-          <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>班別進行中</span>
+        <div className="pos-shift-pill">
+          <span className="pos-shift-dot" />
+          <span>班別進行中</span>
         </div>
-        <div style={{ flex: 1 }} />
+        <div className="pos-search-spacer" />
         <input
           ref={searchRef}
           data-testid="product-search-input"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
-          style={{ width: 260, padding: '8px 16px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', fontSize: 13, background: 'var(--bg-app)', outline: 'none', color: 'var(--text-primary)' }}
+          className="pos-search-input"
         />
         <CustomerLookupPanel
           selectedCustomer={selectedCustomer}
@@ -305,19 +305,19 @@ export default function POSCheckoutPage() {
         <OfflineStatus onSync={handleSync} />
         <ReorderForecastBadge forecasts={reorderForecast} />
         <PrinterStatus />
-        <button type="button" onClick={() => setShowOrderLookup(true)} title="訂單查詢 (F7)" style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 14px', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>
+        <button type="button" onClick={() => setShowOrderLookup(true)} title="訂單查詢 (F7)" className="pos-topbar-action">
           📋 訂單 (F7)
         </button>
-        <button type="button" onClick={() => setShowShiftReport(true)} title="班報表 (F8)" style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 14px', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>
+        <button type="button" onClick={() => setShowShiftReport(true)} title="班報表 (F8)" className="pos-topbar-action">
           📊 報表 (F8)
         </button>
-        <button type="button" onClick={openCustomerDisplay} title="開啟顧客顯示器" style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 14px', cursor: 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>
+        <button type="button" onClick={openCustomerDisplay} title="開啟顧客顯示器" className="pos-topbar-action">
           🖥 顧客
         </button>
-        <button type="button" onClick={() => setShowStaffModal(true)} style={{ background: 'none', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 16px', cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
+        <button type="button" onClick={() => setShowStaffModal(true)} className="pos-topbar-action pos-topbar-action--wide">
           👤 {currentStaffName}
         </button>
-        <button type="button" onClick={() => shift.setShowCloseShift(true)} style={{ background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: 'var(--radius-full)', padding: '6px 16px', cursor: 'pointer', fontSize: 13, color: 'var(--danger)', fontWeight: 600 }}>
+        <button type="button" onClick={() => shift.setShowCloseShift(true)} className="pos-topbar-action pos-topbar-action--danger">
           交班
         </button>
       </div>
@@ -328,7 +328,7 @@ export default function POSCheckoutPage() {
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
         <div className="pos-cart">
-          <div style={{ padding: recommendations.length > 0 ? '10px 12px 0' : 0 }}>
+          <div className="pos-recommendation-strip">
             <RecommendationChips recommendations={recommendations} onAdd={handleAddRecommendation} />
           </div>
           <CartPanel
