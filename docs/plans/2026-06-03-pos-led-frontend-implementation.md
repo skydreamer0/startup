@@ -227,4 +227,3 @@ git commit -m "docs(admin-ui): plan POS-led frontend implementation"
 ```
 
 Skip this commit if the file is already committed.
-

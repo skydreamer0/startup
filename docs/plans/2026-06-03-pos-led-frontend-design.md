@@ -171,4 +171,3 @@ Visual verification should include:
 - No backend or API behavior change.
 - No full rewrite of admin pages.
 - No attempt to make admin as large or touch-first as POS.
-
