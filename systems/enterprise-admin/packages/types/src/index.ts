@@ -481,10 +481,37 @@ export interface SplitCheckoutPayload extends CheckoutPayload {
 
 // ─── API response wrappers ────────────────────────────────────────────────────
 
-/** Standard JSend success envelope used by the backend */
-export interface ApiSuccess<T> {
-  status: 'success';
+export interface ApiErrorBody {
+  code: string;
+  message: string;
+  details?: unknown;
+}
+
+/** Standard success envelope used by the backend API contract. */
+export interface ApiSuccess<T, M = ApiMeta | undefined> {
+  success: true;
   data: T;
+  meta?: M;
+}
+
+/** Standard error envelope used by the backend API contract. */
+export interface ApiFailure {
+  success: false;
+  error: ApiErrorBody;
+}
+
+export type ApiResponse<T, M = ApiMeta | undefined> = ApiSuccess<T, M> | ApiFailure;
+
+export interface ApiMeta {
+  page?: number;
+  limit?: number;
+  total?: number;
+}
+
+/** Common paginated payload shape used by legacy list endpoints. */
+export interface PaginatedData<T> {
+  data: T[];
+  meta?: ApiMeta;
 }
 
 /** Standard paginated list response */

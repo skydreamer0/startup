@@ -11,64 +11,65 @@ import type {
   PosRecommendation,
   ReorderForecastItem,
   ReorderUrgency,
+  ApiSuccess,
 } from '@pharmasaas/types';
 
 export type { PosProduct, PosStaff, ActiveShift, CheckoutPayload, CheckoutResult, PosOrderSummary, ShiftReport, PosCustomerLookup, PosRecommendation, ReorderForecastItem, ReorderUrgency };
 
 export const posApi = {
   getProducts: (q?: string, categoryId?: string, inStockOnly = true) =>
-    api.get<{ success: boolean; data: PosProduct[] }>('/pos/products', {
+    api.get<ApiSuccess<PosProduct[]>>('/pos/products', {
       params: { q, categoryId, inStockOnly: inStockOnly ? 'true' : 'false' },
     }),
 
   getStaff: () =>
-    api.get<{ success: boolean; data: PosStaff[] }>('/pos/staff'),
+    api.get<ApiSuccess<PosStaff[]>>('/pos/staff'),
 
   lookupCustomer: (q: string) =>
-    api.get<{ success: boolean; data: PosCustomerLookup | null }>('/pos/customer-lookup', {
+    api.get<ApiSuccess<PosCustomerLookup | null>>('/pos/customer-lookup', {
       params: { q },
     }),
 
   createCustomer: (payload: { phone: string; name?: string }) =>
-    api.post<{ success: boolean; data: PosCustomerLookup }>('/pos/customers', payload),
+    api.post<ApiSuccess<PosCustomerLookup>>('/pos/customers', payload),
 
   getRecommendations: (customerId: string) =>
-    api.get<{ success: boolean; data: PosRecommendation[] }>(`/pos/recommendations/${customerId}`),
+    api.get<ApiSuccess<PosRecommendation[]>>(`/pos/recommendations/${customerId}`),
 
   getHotRecommendations: () =>
-    api.get<{ success: boolean; data: PosRecommendation[] }>('/pos/recommendations'),
+    api.get<ApiSuccess<PosRecommendation[]>>('/pos/recommendations'),
 
   getReorderForecast: (limit = 20) =>
-    api.get<{ success: boolean; data: ReorderForecastItem[] }>('/pos/reorder-forecast', {
+    api.get<ApiSuccess<ReorderForecastItem[]>>('/pos/reorder-forecast', {
       params: { limit },
     }),
 
   getActiveShift: () =>
-    api.get<{ success: boolean; data: ActiveShift | null }>('/pos/shift/active'),
+    api.get<ApiSuccess<ActiveShift | null>>('/pos/shift/active'),
 
   checkout: (payload: CheckoutPayload) =>
-    api.post<{ success: boolean; data: CheckoutResult }>('/pos/checkout', payload),
+    api.post<ApiSuccess<CheckoutResult>>('/pos/checkout', payload),
 
   getReceipt: (orderId: string) =>
-    api.get<{ success: boolean; data: { buffer: string } }>(`/pos/receipt/${orderId}`),
+    api.get<ApiSuccess<{ buffer: string }>>(`/pos/receipt/${orderId}`),
 
   getTodayOrders: (shiftId?: string) =>
-    api.get<{ success: boolean; data: PosOrderSummary[] }>('/pos/orders/today', {
+    api.get<ApiSuccess<PosOrderSummary[]>>('/pos/orders/today', {
       params: shiftId ? { shiftId } : undefined,
     }),
 
   getOrderById: (orderId: string) =>
-    api.get<{ success: boolean; data: PosOrderSummary }>(`/pos/orders/${orderId}`),
+    api.get<ApiSuccess<PosOrderSummary>>(`/pos/orders/${orderId}`),
 
   refundOrder: (orderId: string, reason?: string) =>
-    api.post<{ success: boolean; data: PosOrderSummary }>(`/pos/orders/${orderId}/refund`, { reason }),
+    api.post<ApiSuccess<PosOrderSummary>>(`/pos/orders/${orderId}/refund`, { reason }),
 
   openShift: (staffId: string, openingCash = 0) =>
-    api.post<{ success: boolean; data: ActiveShift }>('/shifts', { staffId, openingCash }),
+    api.post<ApiSuccess<ActiveShift>>('/shifts', { staffId, openingCash }),
 
   closeShift: (shiftId: string, closingCash = 0) =>
-    api.patch<{ success: boolean; data: ActiveShift }>(`/shifts/${shiftId}/close`, { closingCash }),
+    api.patch<ApiSuccess<ActiveShift>>(`/shifts/${shiftId}/close`, { closingCash }),
 
   getShiftReport: (shiftId: string) =>
-    api.get<{ success: boolean; data: ShiftReport }>(`/shifts/${shiftId}/report`),
+    api.get<ApiSuccess<ShiftReport>>(`/shifts/${shiftId}/report`),
 };

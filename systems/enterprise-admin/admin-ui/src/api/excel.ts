@@ -1,5 +1,6 @@
 import api from './client';
 import { downloadBlob } from '../lib/downloadBlob';
+import type { ApiSuccess } from '@pharmasaas/types';
 
 const BASE = '/excel';
 
@@ -25,7 +26,7 @@ export const excelApi = {
     previewImportProducts: async (file: File): Promise<ImportSummary> => {
         const fd = new FormData();
         fd.append('file', file);
-        const res = await api.post<{ success: boolean; data: ImportSummary }>(
+        const res = await api.post<ApiSuccess<ImportSummary>>(
             '/excel/import/products/preview',
             fd,
             { headers: { 'Content-Type': 'multipart/form-data' } },
@@ -36,7 +37,7 @@ export const excelApi = {
     confirmImportProducts: async (file: File): Promise<ImportSummary> => {
         const fd = new FormData();
         fd.append('file', file);
-        const res = await api.post<{ success: boolean; data: ImportSummary }>(
+        const res = await api.post<ApiSuccess<ImportSummary>>(
             '/excel/import/products/confirm',
             fd,
             { headers: { 'Content-Type': 'multipart/form-data' } },

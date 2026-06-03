@@ -428,7 +428,7 @@
 ### P2：測試 locality 與 contract drift
 - [x] **ARCH-14-03**: Deepen tenant-scoped persistence tests。為 backend tenant context/scoped Prisma 建立一致 test adapter，並評估 schema-derived tenant model map，避免測試各自 mock AsyncLocalStorage 或手寫 mapped model knowledge。
   - [x] **ARCH-14-03a**: 新增 backend tenant context test helper，並將 `accounting.service.test.ts` 從直接 mock tenant context 改為使用真實 `tenantContext.run()`。
-- [ ] **ARCH-14-04**: Reduce backend/UI contract drift。評估讓 backend Zod validation、`packages/types`、admin/pos API client return shapes 從單一 contract source module 派生，減少 hand-crafted shared types 與 UI request shape 漂移。
+- [x] **ARCH-14-04**: Reduce backend/UI contract drift。評估讓 backend Zod validation、`packages/types`、admin/pos API client return shapes 從單一 contract source module 派生，減少 hand-crafted shared types 與 UI request shape 漂移。
 
 ---
 
