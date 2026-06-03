@@ -1,4 +1,5 @@
 import api from './client';
+import type { ApiSuccess } from '@pharmasaas/types';
 
 export type LineSegment = 'all' | 'vip' | 'first_time' | 'at_risk';
 
@@ -24,7 +25,7 @@ export interface BroadcastsPage {
 
 export const lineApi = {
     listBroadcasts: async (): Promise<BroadcastsPage> => {
-        const res = await api.get<{ success: boolean; data: BroadcastsPage }>('/line/broadcasts');
+        const res = await api.get<ApiSuccess<BroadcastsPage>>('/line/broadcasts');
         return res.data.data;
     },
 
@@ -33,7 +34,7 @@ export const lineApi = {
         title: string;
         content: string;
     }): Promise<MessageBroadcast> => {
-        const res = await api.post<{ success: boolean; data: MessageBroadcast }>(
+        const res = await api.post<ApiSuccess<MessageBroadcast>>(
             '/line/broadcast',
             payload,
         );

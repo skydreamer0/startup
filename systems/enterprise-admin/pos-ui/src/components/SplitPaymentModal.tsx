@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { useCartStore } from '../store/cartStore';
-import { PAYMENT_LABELS, PaymentMethod } from '../constants';
-
-export interface PaymentEntry {
-  method: PaymentMethod;
-  amount: number;
-}
+import type { PaymentEntry, PaymentMethod } from '@pharmasaas/types';
+import { PAYMENT_LABELS } from '../constants';
 
 interface Props {
   onConfirm: (payments: PaymentEntry[]) => void;

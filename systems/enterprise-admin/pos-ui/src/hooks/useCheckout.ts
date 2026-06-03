@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { posApi, CheckoutResult } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { PosToastMessage } from '../components/PosToast';
-import { PaymentEntry } from '../components/SplitPaymentModal';
+import type { PaymentEntry } from '@pharmasaas/types';
 import { buildCheckoutPayload } from '../services/checkoutIntent';
 
 interface UseCheckoutOptions {

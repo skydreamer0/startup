@@ -78,3 +78,28 @@ export async function markSynced(localId: number): Promise<void> {
     getReq.onerror = () => reject(getReq.error);
   });
 }
+
+export interface SyncPendingResult {
+  successCount: number;
+  failureCount: number;
+}
+
+export async function syncPendingTransactions(
+  submit: (payload: CheckoutPayload) => Promise<unknown>,
+): Promise<SyncPendingResult> {
+  const pending = await getPending();
+  let successCount = 0;
+  let failureCount = 0;
+
+  for (const transaction of pending) {
+    try {
+      await submit(transaction.payload);
+      if (transaction.localId !== undefined) await markSynced(transaction.localId);
+      successCount += 1;
+    } catch {
+      failureCount += 1;
+    }
+  }
+
+  return { successCount, failureCount };
+}

@@ -129,6 +129,22 @@ describe('offlineQueue', () => {
     await expect(getPendingCount()).resolves.toBe(0);
   });
 
+
+  it('syncs pending transactions through a single checkout submission seam', async () => {
+    const { syncPendingTransactions, getPendingCount } = await import('../services/offlineQueue');
+    installIndexedDbFake([
+      { localId: 1, localOrderNumber: 'LOCAL-1', payload, createdAt: 'now', synced: false },
+      { localId: 2, localOrderNumber: 'LOCAL-2', payload, createdAt: 'now', synced: false },
+    ]);
+    const submit = vi.fn()
+      .mockResolvedValueOnce({ data: { success: true } })
+      .mockRejectedValueOnce(new Error('network'));
+
+    await expect(syncPendingTransactions(submit)).resolves.toEqual({ successCount: 1, failureCount: 1 });
+    expect(submit).toHaveBeenCalledTimes(2);
+    await expect(getPendingCount()).resolves.toBe(1);
+  });
+
   it('rejects new pending transactions when the queue reaches fifty records', async () => {
     const { enqueuePending } = await import('../services/offlineQueue');
     installIndexedDbFake(

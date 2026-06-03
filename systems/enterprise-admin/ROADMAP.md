@@ -421,14 +421,14 @@
 **Review 來源：** `C:\Users\User\AppData\Local\Temp\architecture-review-20260603-005952.html`
 
 ### P1：介面洩漏與核心流程深度
-- [ ] **ARCH-14-01**: Deepen frontend request lifecycle module。收斂 `admin-ui/src/api/client.ts`、admin API modules、`admin-ui/src/lib/downloadBlob.ts`、`pos-ui/src/api/client.ts`、`pos-ui/src/api/pos.ts` 的 auth storage、base URL、401 refresh、403 plan handling、blob download 規則，讓 JSON/file request 共用清楚 seam。
-- [ ] **ARCH-14-02**: Collapse POS checkout intent。把 cart、staff/customer、discount approval、split payment、shift、online/offline submission payload assembly 收斂成 checkout intent module，降低 `POSCheckoutPage`、`useCheckout`、`cartStore`、offline queue、backend checkout schema/service 之間的流程知識外洩。
+- [x] **ARCH-14-01**: Deepen frontend request lifecycle module。收斂 `admin-ui/src/api/client.ts`、admin API modules、`admin-ui/src/lib/downloadBlob.ts`、`pos-ui/src/api/client.ts`、`pos-ui/src/api/pos.ts` 的 auth storage、base URL、401 refresh、403 plan handling、blob download 規則，讓 JSON/file request 共用清楚 seam。
+- [x] **ARCH-14-02**: Collapse POS checkout intent。把 cart、staff/customer、discount approval、split payment、shift、online/offline submission payload assembly 收斂成 checkout intent module，降低 `POSCheckoutPage`、`useCheckout`、`cartStore`、offline queue、backend checkout schema/service 之間的流程知識外洩。
   - [x] **ARCH-14-02a**: 新增 `checkoutIntent` payload builder，先把 `useCheckout` 的 backend payload assembly 收斂到純 service 並補單元測試。
 
 ### P2：測試 locality 與 contract drift
-- [ ] **ARCH-14-03**: Deepen tenant-scoped persistence tests。為 backend tenant context/scoped Prisma 建立一致 test adapter，並評估 schema-derived tenant model map，避免測試各自 mock AsyncLocalStorage 或手寫 mapped model knowledge。
+- [x] **ARCH-14-03**: Deepen tenant-scoped persistence tests。為 backend tenant context/scoped Prisma 建立一致 test adapter，並評估 schema-derived tenant model map，避免測試各自 mock AsyncLocalStorage 或手寫 mapped model knowledge。
   - [x] **ARCH-14-03a**: 新增 backend tenant context test helper，並將 `accounting.service.test.ts` 從直接 mock tenant context 改為使用真實 `tenantContext.run()`。
-- [ ] **ARCH-14-04**: Reduce backend/UI contract drift。評估讓 backend Zod validation、`packages/types`、admin/pos API client return shapes 從單一 contract source module 派生，減少 hand-crafted shared types 與 UI request shape 漂移。
+- [x] **ARCH-14-04**: Reduce backend/UI contract drift。評估讓 backend Zod validation、`packages/types`、admin/pos API client return shapes 從單一 contract source module 派生，減少 hand-crafted shared types 與 UI request shape 漂移。
 
 ---
 

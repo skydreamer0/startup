@@ -1,31 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 import { tenantContext } from './tenant.context';
+import { isTenantScopedModel } from './tenant-scoped-models';
 
 const globalForPrisma = globalThis as unknown as {
     prisma: PrismaClient | undefined;
 };
 
-// List of models that contain tenantId (exclude models like Tenant itself)
-const MappedModels = [
-    'User',
-    'Role',
-    'AuditLog',
-    'Customer',
-    'Tag',
-    'Interaction',
-    'Supplier',
-    'ProductCategory',
-    'Product',
-    'Order',
-    'InventoryTransaction',
-    'Expense',
-    'Shift',
-    'ProductBatch',
-    'DailySettlement',
-    'AccountingSyncLog',
-    'MessageBroadcast',
-    'OrderPayment',
-] as const;
+type PrismaQueryArgs = {
+    where?: Record<string, unknown>;
+    data?: Record<string, unknown> | Array<Record<string, unknown>>;
+    [key: string]: unknown;
+};
 
 export const basePrisma =
     globalForPrisma.prisma ??
@@ -39,14 +24,14 @@ export const prisma = basePrisma.$extends({
         $allModels: {
             async $allOperations({ model, operation, args, query }) {
                 // If this model isn't multi-tenant, execute normally
-                if (!MappedModels.includes(model as any)) {
+                if (!isTenantScopedModel(model)) {
                     return query(args);
                 }
 
                 // Get current tenant context
                 const context = tenantContext.getStore();
 
-                // If no context exists (e.g., seeding, startup scripts), we must fail safe 
+                // If no context exists (e.g., seeding, startup scripts), we must fail safe
                 // UNLESS it's a known non-tenant operation. For now, enforce it.
                 if (!context || !context.tenantId) {
                     throw new Error(`[Security] Missing tenant context for operation ${operation} on ${model}`);
@@ -55,14 +40,14 @@ export const prisma = basePrisma.$extends({
                 const { tenantId } = context;
 
                 // Auto-inject tenantId based on operation type
-                const argsAny = args as any;
+                const argsAny = args as PrismaQueryArgs;
                 if (['findUnique', 'findUniqueOrThrow', 'findFirst', 'findFirstOrThrow', 'findMany', 'count', 'aggregate', 'groupBy'].includes(operation)) {
                     // Read operations: add to 'where'
                     argsAny.where = { ...argsAny.where, tenantId };
                 } else if (['create', 'createMany'].includes(operation)) {
                     // Create operations: add to 'data'
                     if (Array.isArray(argsAny.data)) {
-                        argsAny.data = argsAny.data.map((d: any) => ({ ...d, tenantId }));
+                        argsAny.data = argsAny.data.map((item) => ({ ...item, tenantId }));
                     } else {
                         argsAny.data = { ...argsAny.data, tenantId };
                     }
