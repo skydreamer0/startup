@@ -78,17 +78,7 @@ The backend remains only partially verified because Prisma generation was blocke
 
 **Recommended follow-up:** Re-run `pnpm run db:generate && pnpm run build` in an environment with Prisma engine access. If `TS2742` remains, annotate Express `app`/`router` exports explicitly. If strictness errors remain, triage by module and avoid broad type suppressions.
 
-### P1-3: POS Vitest command imports Playwright E2E specs
-
-**Evidence:** `pnpm run test` in `pos-ui` completed 22 Vitest files / 126 tests, then failed because `e2e/checkout-flow.spec.ts` calls Playwright `test.describe()` under the Vitest runner.
-
-**Likely owner area:** POS UI test configuration.
-
-**Classification:** Resolved test-runner boundary bug. The standard unit/component test command should not collect Playwright specs.
-
-**2026-06-02 follow-up:** POS Vitest now includes only `src/**/*.{test,spec}.{ts,tsx}` and excludes `e2e/**`; `pnpm run test` passes 22 files / 126 tests, while Playwright remains isolated behind `pnpm run test:e2e`.
-
-### P1-4: POS E2E verification depends on undeclared Playwright browser installation
+### P1-3: POS E2E verification depends on undeclared Playwright browser installation
 
 **Evidence:** `pnpm run test:e2e` discovered 6 tests but failed before executing assertions because the Chromium headless shell was missing.
 
@@ -112,23 +102,13 @@ The backend remains only partially verified because Prisma generation was blocke
 
 **Recommended follow-up:** Convert warnings into tracked cleanup issues by module. Consider tightening lint severity only after the current warning inventory is reduced.
 
-### P2-2: Admin UI has minimal automated test coverage despite healthy build/lint status
-
-**Evidence:** Admin UI lint and build passed, but `pnpm run test` currently runs only `src/hooks/authDemo.test.ts` with 6 tests.
-
-**Likely owner area:** Admin UI.
-
-**Classification:** Improved coverage, continue expanding as behavior changes.
-
-**2026-06-02 follow-up:** Added focused admin render smoke tests for Dashboard, Users, Roles, Margin, Cash Flow, and Sales Ranking pages. These tests verify the Phase 12 visual wrapper/classes and key rendered content without changing API behavior.
-
----
-
 ## Clean Areas Checked
 
 - **Agent context routing:** Root validation and workspace `agent:context` both passed.
 - **Admin UI build/lint/unit tests:** All checked commands passed.
 - **POS UI production build:** TypeScript + Vite build passed.
+- **POS UI unit/component test boundary:** Resolved 2026-06-02; Vitest now includes only `src/**/*.{test,spec}.{ts,tsx}` and excludes Playwright `e2e/**`.
+- **Admin UI smoke coverage:** Improved 2026-06-02 with focused render smoke tests for Dashboard, Users, Roles, Margin, Cash Flow, and Sales Ranking pages.
 - **Backend lint hard failures:** No ESLint errors were reported.
 - **Backend non-DB unit-style tests:** 19 files / 124 tests passed before DB/generated-client-dependent suites failed.
 
@@ -136,9 +116,9 @@ The backend remains only partially verified because Prisma generation was blocke
 
 ## Follow-Up Placement
 
-No new ROADMAP phase was created during this audit. The findings above should feed the existing Phase 13 execution order:
+Active follow-up now belongs in `ROADMAP.md`:
 
-1. Roadmap B should document production/developer dependency expectations for Prisma generation and Playwright installation where relevant.
-2. Roadmap C can proceed after acknowledging that Admin UI build/lint/test are currently green.
-3. Roadmap D should not extract shared UI primitives until Roadmap C creates concrete duplication pressure.
-4. A future backend hardening slice should re-run backend build/test in an environment where Prisma engines can be generated, then fix any remaining non-cascading TypeScript errors.
+1. Phase 14 tracks the 2026-06-03 architecture deepening candidates from `architecture-review-20260603-005952.html`.
+2. Backend hardening should re-run `pnpm run db:generate && pnpm run build` in an environment where Prisma engines can be generated, then fix any remaining non-cascading TypeScript errors.
+3. POS E2E remains an environment/readiness item until runners have Playwright Chromium access or a pre-populated browser cache.
+4. Shared UI library extraction is not active work; ADR-012 keeps `packages/ui/` deferred until cross-app primitive reuse is proven.
