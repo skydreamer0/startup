@@ -8,6 +8,7 @@ This repo is a GitHub-hosted monorepo centered on `systems/enterprise-admin/`.
 - Keep DB/API names in `snake_case`
 - Keep React components in `PascalCase`
 - Read ADRs from `systems/enterprise-admin/infrastructure/adr/`
+- Preserve UTF-8 for all text files. For Chinese documentation, avoid PowerShell `>`, `>>`, `Out-File`, or `Set-Content` unless UTF-8 is explicit, and do not rely on terminal output alone to judge whether content is valid.
 
 ## Agent skills
 
