@@ -3,6 +3,7 @@ import { posApi, CheckoutResult } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { PosToastMessage } from '../components/PosToast';
 import { PaymentEntry } from '../components/SplitPaymentModal';
+import { buildCheckoutPayload } from '../services/checkoutIntent';
 
 interface UseCheckoutOptions {
   shiftId: string | undefined;
@@ -28,20 +29,16 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
 
     setCheckoutLoading(true);
     try {
-      const response = await posApi.checkout({
-        cartItems: items.map((item) => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-          discountRate: item.discountRate,
-        })),
-        paymentMethod: splitPayments ? splitPayments[0].method : paymentMethod,
-        payments: splitPayments,
+      const response = await posApi.checkout(buildCheckoutPayload({
+        items,
+        paymentMethod,
+        splitPayments,
         orderDiscountAmount,
-        orderDiscountNote: orderDiscountNote || undefined,
+        orderDiscountNote,
         customerId,
         shiftId,
-        salesStaffId: staffId ?? undefined,
-      });
+        salesStaffId: staffId,
+      }));
       clearCart();
       onSuccess();
       setCheckoutResult(response.data.data);
