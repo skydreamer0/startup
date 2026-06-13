@@ -73,6 +73,8 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 
 **2026-06-14 status:** Closed for the current local runner. Prisma generation, backend build, and DB-backed tests passed after Docker Desktop / repo Postgres were available.
 
+**2026-06-14 status:** Closed for the current local runner. Prisma generation, backend build, and DB-backed tests passed after Docker Desktop / repo Postgres were available.
+
 **Likely owner area:** Backend / CI / dependency management.
 
 **Classification:** Environment readiness gap. Backend build health is no longer blocked by Prisma generation in the current workspace, but DB-backed tests still require the ADR-007 local PostgreSQL workflow (`docker compose up -d postgres`) plus seeded data.
@@ -82,6 +84,8 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 ### P1-2: Backend warning-level type debt is cleared
 
 **Evidence:** `pnpm run lint` passed with 0 warnings on 2026-06-05 after typed Prisma inputs replaced the remaining explicit `any` casts and unused parameters/imports were removed. `pnpm run build` also passed after Prisma Client was generated.
+
+**2026-06-14 status:** Closed for the current local runner. A clean Prisma-generated backend build passed.
 
 **2026-06-14 status:** Closed for the current local runner. A clean Prisma-generated backend build passed.
 
@@ -120,6 +124,8 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 ### P2-2: Backend explicit-`any` cleanup is tracked by module
 
 **Evidence:** On 2026-06-14, backend ESLint reported 0 errors and 12 warnings, all `@typescript-eslint/no-explicit-any`.
+
+**2026-06-14 status:** Triaged. Backend ESLint now reports 0 errors and 12 warnings, all explicit `any`. Remaining ownership is tracked in `ROADMAP.md` MAINT-02 through MAINT-04.
 
 **Likely owner area:** Backend.
 
