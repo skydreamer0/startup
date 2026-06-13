@@ -143,7 +143,6 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 ## Follow-Up Placement
 
 Active follow-up now belongs in `ROADMAP.md`:
-
 1. Phase 14 tracks the 2026-06-03 architecture deepening candidates from `architecture-review-20260603-005952.html`.
 2. Backend lint explicit-`any` cleanup is now split by module in `ROADMAP.md` MAINT-02 through MAINT-04.
 3. Shared UI library extraction is not active work; ADR-012 keeps `packages/ui/` deferred until cross-app primitive reuse is proven.
