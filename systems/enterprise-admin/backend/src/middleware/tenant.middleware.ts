@@ -42,7 +42,7 @@ export async function setTenantContext(req: Request, res: Response, next: NextFu
                     plan = tenantRow?.plan ?? 'free';
                 }
             }
-        } catch (e) {
+        } catch {
             // Ignore token verification errors here; auth.middleware will catch them later
         }
     }

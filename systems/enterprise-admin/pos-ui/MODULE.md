@@ -20,7 +20,7 @@
 | `src/hooks/` | POS hooks. |
 | `src/lib/` | POS utilities. |
 | `src/pages/` | POS screens. |
-| `src/services/` | POS workflow services. |
+| `src/services/` | POS workflow services, including checkout intent and offline transaction ledger modules. |
 | `src/store/` | POS state management. |
 | `src/__tests__/` | POS unit/integration tests. |
 | `e2e/` | Playwright E2E tests. |
@@ -40,9 +40,10 @@
 ### Change checkout or cart behavior
 
 1. Open the nearest POS page/component/store/service files.
-2. Read backend API spec if requests or persistence are involved.
-3. Open nearest POS tests or E2E flow.
-4. Update context if workflow meaning, task routing, or API contract assumptions change.
+2. Use `src/services/checkoutIntent.ts` for checkout payload assembly and `src/services/posOfflineLedger.ts` for offline sync behavior before adding page-level workflow logic.
+3. Read backend API spec if requests or persistence are involved.
+4. Open nearest POS tests or E2E flow.
+5. Update context if workflow meaning, task routing, or API contract assumptions change.
 
 ### Debug POS test failure
 

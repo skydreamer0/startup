@@ -84,6 +84,12 @@ export interface SyncPendingResult {
   failureCount: number;
 }
 
+export interface OfflineTransactionLedger {
+  enqueueCheckout(payload: CheckoutPayload): Promise<PendingTransaction>;
+  status(): Promise<{ pendingCount: number }>;
+  syncPendingCheckouts(): Promise<SyncPendingResult & { attemptedCount: number }>;
+}
+
 export async function syncPendingTransactions(
   submit: (payload: CheckoutPayload) => Promise<unknown>,
 ): Promise<SyncPendingResult> {
@@ -102,4 +108,23 @@ export async function syncPendingTransactions(
   }
 
   return { successCount, failureCount };
+}
+
+export function createOfflineTransactionLedger(submitter: {
+  checkout(payload: CheckoutPayload): Promise<unknown>;
+}): OfflineTransactionLedger {
+  return {
+    enqueueCheckout: enqueuePending,
+    async status() {
+      return { pendingCount: await getPendingCount() };
+    },
+    async syncPendingCheckouts() {
+      const before = await getPendingCount();
+      const result = await syncPendingTransactions((payload) => submitter.checkout(payload));
+      return {
+        attemptedCount: before,
+        ...result,
+      };
+    },
+  };
 }

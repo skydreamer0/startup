@@ -145,6 +145,28 @@ describe('offlineQueue', () => {
     await expect(getPendingCount()).resolves.toBe(1);
   });
 
+  it('creates a transaction ledger that owns checkout sync policy', async () => {
+    const { createOfflineTransactionLedger, getPendingCount } = await import('../services/offlineQueue');
+    installIndexedDbFake([
+      { localId: 1, localOrderNumber: 'LOCAL-1', payload, createdAt: 'now', synced: false },
+      { localId: 2, localOrderNumber: 'LOCAL-2', payload, createdAt: 'now', synced: false },
+    ]);
+    const checkout = vi.fn()
+      .mockResolvedValueOnce({ data: { success: true } })
+      .mockRejectedValueOnce(new Error('network'));
+
+    const ledger = createOfflineTransactionLedger({ checkout });
+
+    await expect(ledger.status()).resolves.toEqual({ pendingCount: 2 });
+    await expect(ledger.syncPendingCheckouts()).resolves.toEqual({
+      attemptedCount: 2,
+      successCount: 1,
+      failureCount: 1,
+    });
+    expect(checkout).toHaveBeenCalledTimes(2);
+    await expect(getPendingCount()).resolves.toBe(1);
+  });
+
   it('rejects new pending transactions when the queue reaches fifty records', async () => {
     const { enqueuePending } = await import('../services/offlineQueue');
     installIndexedDbFake(

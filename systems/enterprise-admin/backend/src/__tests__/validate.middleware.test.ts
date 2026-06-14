@@ -23,7 +23,7 @@ function createMocks(body?: unknown, query?: Record<string, unknown>) {
     } as unknown as Response;
 
     let nextCalled = false;
-    const next = (err?: unknown) => {
+    const next = (_err?: unknown) => {
         nextCalled = true;
     };
 

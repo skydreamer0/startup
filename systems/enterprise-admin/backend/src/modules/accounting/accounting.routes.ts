@@ -1,33 +1,27 @@
 import { Router } from 'express';
 import { AccountingController } from './accounting.controller';
-import { authMiddleware } from '../../middleware/auth.middleware';
-import { requirePermission } from '../../middleware/rbac.middleware';
-import { requirePlan } from '../../middleware/plan.middleware';
+import { routePolicy } from '../../lib/admin-route-policy';
 
 const router = Router();
 
-// Authentication for all routes.
-router.use(authMiddleware);
-
-// All accounting integration endpoints require the `pro` plan tier.
-router.use(requirePlan('pro'));
+router.use(...routePolicy({ plan: 'pro' }));
 
 // Inspect the currently configured provider (used by the UI to render
 // a "not configured" prompt or the provider name badge).
-router.get('/provider', requirePermission('read:accounting'), AccountingController.getProviderInfo);
+router.get('/provider', ...routePolicy({ auth: false, permission: 'read:accounting' }), AccountingController.getProviderInfo);
 
 // List sync history.
-router.get('/sync/status', requirePermission('read:accounting'), AccountingController.getSyncStatus);
+router.get('/sync/status', ...routePolicy({ auth: false, permission: 'read:accounting' }), AccountingController.getSyncStatus);
 
 // Trigger a sync for a specific order or expense.
 router.post(
     '/sync/orders/:orderId',
-    requirePermission('manage:accounting'),
+    ...routePolicy({ auth: false, permission: 'manage:accounting' }),
     AccountingController.syncOrder,
 );
 router.post(
     '/sync/expenses/:expenseId',
-    requirePermission('manage:accounting'),
+    ...routePolicy({ auth: false, permission: 'manage:accounting' }),
     AccountingController.syncExpense,
 );
 

@@ -1,6 +1,8 @@
 import { prisma } from '../../lib/prisma';
+import type { Prisma } from '@prisma/client';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
+import { tenantPersistence } from '../../lib/tenant-persistence';
 import { ProductAnalyticsService } from '../analytics/product-analytics.service';
 import { CrmService } from '../crm/crm.service';
 import { CheckoutDto } from './pos.schema';
@@ -22,11 +24,11 @@ function classifyCustomer(totalSpent: number, purchaseCount: number, daysSinceLa
 
 export class CheckoutService {
   static async checkout(dto: CheckoutDto) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
 
     return prisma.$transaction(async (tx) => {
       // 1. Validate shift
-      const shift = await tx.shift.findFirst({ where: { id: dto.shiftId, tenantId } });
+      const shift = await tx.shift.findFirst({ where: tenant.where({ id: dto.shiftId }) });
       if (!shift) throw new AppError(404, 'Shift not found');
       if (shift.status !== 'OPEN') throw new AppError(400, 'Shift is not open');
 
@@ -37,12 +39,12 @@ export class CheckoutService {
       let customerId = dto.customerId;
       if (customerId) {
         const customer = await tx.customer.findFirst({
-          where: { id: customerId, tenantId },
+          where: tenant.where({ id: customerId }),
           select: { id: true },
         });
         if (!customer) throw new AppError(404, 'Customer not found');
       } else {
-        const walkIn = await tx.customer.findFirst({ where: { phone: 'WALK_IN', tenantId } });
+        const walkIn = await tx.customer.findFirst({ where: tenant.where({ phone: 'WALK_IN' }) });
         if (!walkIn) throw new AppError(500, 'WALK_IN system customer not seeded');
         customerId = walkIn.id;
       }
@@ -60,7 +62,7 @@ export class CheckoutService {
 
       for (const cartItem of dto.cartItems) {
         const product = await tx.product.findFirst({
-          where: { id: cartItem.productId, tenantId },
+          where: tenant.where({ id: cartItem.productId }),
         });
         if (!product) throw new AppError(404, `Product ${cartItem.productId} not found`);
         if (product.stockQuantity < cartItem.quantity) {
@@ -69,7 +71,7 @@ export class CheckoutService {
 
         // FIFO: select batches ordered by expiry date
         const batches = await tx.productBatch.findMany({
-          where: { productId: cartItem.productId, tenantId, quantity: { gt: 0 } },
+          where: tenant.where({ productId: cartItem.productId, quantity: { gt: 0 } }),
           orderBy: { expiryDate: 'asc' },
         });
 
@@ -108,7 +110,7 @@ export class CheckoutService {
       const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const prefix = `POS-${todayStr}-`;
       const lastOrder = await tx.order.findFirst({
-        where: { tenantId, orderNumber: { startsWith: prefix } },
+        where: tenant.where({ orderNumber: { startsWith: prefix } }),
         orderBy: { orderNumber: 'desc' },
       });
       const nextSeq = lastOrder?.orderNumber
@@ -127,7 +129,7 @@ export class CheckoutService {
       // 7. Create Order + OrderItems
       const order = await tx.order.create({
         data: {
-          tenantId,
+          tenantId: tenant.tenantId,
           customerId,
           orderNumber,
           orderType: 'WALK_IN',
@@ -151,7 +153,7 @@ export class CheckoutService {
           ...(dto.payments && dto.payments.length > 0 ? {
             payments: {
               create: dto.payments.map((p) => ({
-                tenantId,
+                tenantId: tenant.tenantId,
                 method: p.method,
                 amount: p.amount,
               })),
@@ -175,7 +177,7 @@ export class CheckoutService {
         });
         await tx.inventoryTransaction.create({
           data: {
-            tenantId,
+            tenantId: tenant.tenantId,
             productId: item.productId,
             type: 'OUT',
             quantity: item.quantity,
@@ -190,21 +192,22 @@ export class CheckoutService {
   }
 
   static async getProducts(filters: { q?: string; categoryId?: string; inStockOnly?: string }) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
+    const where: Prisma.ProductWhereInput = tenant.where({
+      ...(filters.q
+        ? {
+            OR: [
+              { name: { contains: filters.q, mode: 'insensitive' } },
+              { sku: { contains: filters.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+      ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+      ...(filters.inStockOnly === 'true' ? { stockQuantity: { gt: 0 } } : {}),
+    });
+
     return prisma.product.findMany({
-      where: {
-        tenantId,
-        ...(filters.q
-          ? {
-              OR: [
-                { name: { contains: filters.q, mode: 'insensitive' } },
-                { sku: { contains: filters.q, mode: 'insensitive' } },
-              ],
-            }
-          : {}),
-        ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-        ...(filters.inStockOnly === 'true' ? { stockQuantity: { gt: 0 } } : {}),
-      },
+      where,
       include: {
         category: { select: { id: true, name: true } },
       },
@@ -214,22 +217,22 @@ export class CheckoutService {
   }
 
   static async getStaff() {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
     return prisma.user.findMany({
-      where: { tenantId, status: 'active', deletedAt: null },
+      where: tenant.where({ status: 'active', deletedAt: null }),
       select: { id: true, fullName: true, email: true, employeeCode: true },
       orderBy: { fullName: 'asc' },
     });
   }
 
   static async lookupCustomer(q: string, now = new Date()) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
     const query = q.trim();
     if (!query) return null;
 
     const customer = await prisma.customer.findFirst({
       where: {
-        tenantId,
+        tenantId: tenant.tenantId,
         OR: [
           { phone: { contains: query } },
           { id: query },
@@ -237,7 +240,7 @@ export class CheckoutService {
       },
       include: {
         orders: {
-          where: { tenantId },
+          where: tenant.where(),
           orderBy: { createdAt: 'desc' },
           take: 3,
           include: {
@@ -320,10 +323,10 @@ export class CheckoutService {
   }
 
   static async getRecommendations(customerId: string, now = new Date()) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
 
     const customer = await prisma.customer.findFirst({
-      where: { id: customerId, tenantId },
+      where: tenant.where({ id: customerId }),
       select: { id: true },
     });
     if (!customer) throw new AppError(404, 'Customer not found');
@@ -335,10 +338,10 @@ export class CheckoutService {
       where: {
         order: {
           customerId,
-          tenantId,
+          tenantId: tenant.tenantId,
           createdAt: { lte: cutoff },
         },
-        product: { tenantId, stockQuantity: { gt: 0 } },
+        product: tenant.where({ stockQuantity: { gt: 0 } }),
       },
       include: {
         order: { select: { createdAt: true } },
@@ -378,18 +381,18 @@ export class CheckoutService {
   }
 
   static async getHotRecommendations(now = new Date()) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
     const startDate = new Date(now);
     startDate.setDate(startDate.getDate() - 7);
 
     const soldItems = await prisma.orderItem.findMany({
       where: {
         order: {
-          tenantId,
+          tenantId: tenant.tenantId,
           status: 'completed',
           createdAt: { gte: startDate, lte: now },
         },
-        product: { tenantId, stockQuantity: { gt: 0 } },
+        product: tenant.where({ stockQuantity: { gt: 0 } }),
       },
       include: {
         product: { select: { id: true, name: true, sku: true, retailPrice: true, stockQuantity: true } },
@@ -435,24 +438,23 @@ export class CheckoutService {
   }
 
   static async getActiveShift() {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
     return prisma.shift.findFirst({
-      where: { tenantId, status: 'OPEN' },
+      where: tenant.where({ status: 'OPEN' }),
       include: { staff: { select: { id: true, fullName: true } } },
       orderBy: { openedAt: 'desc' },
     });
   }
 
   static async getTodayOrders(shiftId?: string) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
     return prisma.order.findMany({
-      where: {
-        tenantId,
+      where: tenant.where({
         createdAt: { gte: startOfDay },
         ...(shiftId ? { shiftId } : {}),
-      },
+      }),
       include: {
         items: {
           include: { product: { select: { id: true, name: true, sku: true } } },
@@ -464,9 +466,9 @@ export class CheckoutService {
   }
 
   static async getOrderById(orderId: string) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
     const order = await prisma.order.findFirst({
-      where: { id: orderId, tenantId },
+      where: tenant.where({ id: orderId }),
       include: {
         items: {
           include: { product: { select: { id: true, name: true, sku: true } } },
@@ -478,11 +480,11 @@ export class CheckoutService {
   }
 
   static async refundOrder(orderId: string, reason?: string) {
-    const tenantId = requireTenantId();
+    const tenant = tenantPersistence();
 
     return prisma.$transaction(async (tx) => {
       const order = await tx.order.findFirst({
-        where: { id: orderId, tenantId },
+        where: tenant.where({ id: orderId }),
         include: { items: true },
       });
       if (!order) throw new AppError(404, 'Order not found');
@@ -504,7 +506,7 @@ export class CheckoutService {
         });
         await tx.inventoryTransaction.create({
           data: {
-            tenantId,
+            tenantId: tenant.tenantId,
             productId: item.productId,
             type: 'IN',
             quantity: item.quantity,

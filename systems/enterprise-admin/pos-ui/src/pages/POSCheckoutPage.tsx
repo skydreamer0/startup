@@ -17,7 +17,7 @@ import OrderLookupModal from '../components/OrderLookupModal';
 import RefundModal from '../components/RefundModal';
 import ShiftReportModal from '../components/ShiftReportModal';
 import { printReceipt, openCashDrawer } from '../services/receiptService';
-import { syncPendingTransactions } from '../services/offlineQueue';
+import { posOfflineLedger } from '../services/posOfflineLedger';
 import OfflineStatus from '../components/OfflineStatus';
 import PrinterStatus from '../components/PrinterStatus';
 import { useShift } from '../hooks/useShift';
@@ -243,8 +243,8 @@ export default function POSCheckoutPage() {
   }
 
   async function handleSync() {
-    const { successCount, failureCount } = await syncPendingTransactions((payload) => posApi.checkout(payload));
-    if (successCount + failureCount === 0) {
+    const { attemptedCount, successCount, failureCount } = await posOfflineLedger.syncPendingCheckouts();
+    if (attemptedCount === 0) {
       showToast({ type: 'info', message: '沒有待同步的交易' });
       return;
     }

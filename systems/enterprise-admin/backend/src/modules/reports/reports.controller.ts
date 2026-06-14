@@ -59,7 +59,8 @@ export class ReportsController {
     static async getSalesRanking(req: Request, res: Response, next: NextFunction) {
         try {
             const period = req.query.period as string;
-            const sortBy = (req.query.sort as string) || 'revenue';
+            const sort = req.query.sort;
+            const sortBy = sort === 'quantity' ? 'quantity' : 'revenue';
             const limit = parseInt((req.query.limit as string) || '10');
 
             if (!period) throw new AppError(400, 'Period query parameter required (YYYY-MM)');
@@ -67,7 +68,7 @@ export class ReportsController {
                 throw new AppError(400, 'Sort parameter must be "revenue" or "quantity"');
             }
 
-            const products = await SalesRankingService.getTopProducts(period, limit, sortBy as any);
+            const products = await SalesRankingService.getTopProducts(period, limit, sortBy);
             const categories = await SalesRankingService.getCategoryBreakdown(period);
 
             res.json({

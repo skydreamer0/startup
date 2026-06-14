@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { ExcelController } from './excel.controller';
-import { authMiddleware } from '../../middleware/auth.middleware';
-import { requirePermission } from '../../middleware/rbac.middleware';
-import { requirePlan } from '../../middleware/plan.middleware';
+import { routePolicy } from '../../lib/admin-route-policy';
 
 const router = Router();
 
@@ -14,47 +12,37 @@ const upload = multer({
     limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-router.use(authMiddleware);
-
 // ─── Exports ─────────────────────────────────────────────
 router.get(
     '/export/products',
-    requirePlan('starter'),
-    requirePermission('read:products'),
+    ...routePolicy({ plan: 'starter', permission: 'read:products' }),
     ExcelController.exportProducts,
 );
 router.get(
     '/export/customers',
-    requirePlan('starter'),
-    requirePermission('read:crm'),
+    ...routePolicy({ plan: 'starter', permission: 'read:crm' }),
     ExcelController.exportCustomers,
 );
 router.get(
     '/export/orders',
-    requirePlan('starter'),
-    requirePermission('read:orders'),
+    ...routePolicy({ plan: 'starter', permission: 'read:orders' }),
     ExcelController.exportOrders,
 );
 router.get(
     '/export/inventory',
-    requirePlan('starter'),
-    requirePermission('read:products'),
+    ...routePolicy({ plan: 'starter', permission: 'read:products' }),
     ExcelController.exportInventory,
 );
 
 // ─── Imports ─────────────────────────────────────────────
 router.post(
     '/import/products/preview',
-    requirePlan('starter'),
-    requirePermission('create:products'),
-    upload.single('file'),
+    ...routePolicy({ plan: 'starter', permission: 'create:products', beforeValidation: [upload.single('file')] }),
     ExcelController.previewImportProducts,
 );
 router.post(
     '/import/products/confirm',
-    requirePlan('starter'),
-    requirePermission('create:products'),
-    upload.single('file'),
+    ...routePolicy({ plan: 'starter', permission: 'create:products', beforeValidation: [upload.single('file')] }),
     ExcelController.confirmImportProducts,
 );
 

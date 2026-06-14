@@ -22,7 +22,7 @@ export function signAccessToken(payload: AccessTokenPayload): string {
 
 export function signRefreshToken(payload: RefreshTokenPayload): string {
     return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
-        expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
+        expiresIn: env.JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn'],
     });
 }
 

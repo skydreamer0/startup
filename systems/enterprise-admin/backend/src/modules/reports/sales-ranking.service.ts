@@ -1,6 +1,16 @@
 import { prisma } from '../../lib/prisma';
 import { startOfMonth, endOfMonth, parseISO, isValid } from 'date-fns';
 
+interface RankedProduct {
+    id: string;
+    name: string;
+    sku: string;
+    categoryName: string;
+    revenue: number;
+    quantity: number;
+    margin: number;
+}
+
 export class SalesRankingService {
     /**
      * Get Top selling products by Revenue, Quantity, or Margin Contribution
@@ -22,7 +32,7 @@ export class SalesRankingService {
             include: { product: { include: { category: true } } }
         });
 
-        const productMap = new Map<string, any>();
+        const productMap = new Map<string, RankedProduct>();
 
         for (const item of orderItems) {
             const rev = item.quantity * Number(item.unitPrice);

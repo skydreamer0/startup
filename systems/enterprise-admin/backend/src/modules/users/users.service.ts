@@ -1,5 +1,7 @@
 import { prisma } from '../../lib/prisma';
+import type { Prisma } from '@prisma/client';
 import { hashPassword } from '../../lib/password';
+import { tenantPersistence } from '../../lib/tenant-persistence';
 import type { CreateUserInput, UpdateUserInput, ListUsersQuery } from './users.schema';
 
 export class UsersService {
@@ -104,6 +106,7 @@ export class UsersService {
      * Create a new user.
      */
     async create(data: CreateUserInput, createdBy: string) {
+        const tenant = tenantPersistence();
         const existing = await prisma.user.findUnique({ where: { email: data.email } });
         if (existing) {
             throw new ServiceError('Email already exists', 409);
@@ -111,29 +114,36 @@ export class UsersService {
 
         const passwordHash = await hashPassword(data.password);
 
-        const user = await prisma.user.create({
-            data: {
+        const user = await prisma.$transaction(async (tx) => {
+            const userData: Prisma.UserUncheckedCreateInput = tenant.data({
                 email: data.email,
                 passwordHash,
                 fullName: data.fullName,
-                ...(data.roleIds && {
-                    userRoles: {
-                        create: data.roleIds.map((roleId: string) => ({ roleId })),
-                    },
-                }),
-            } as any,
-            select: { id: true, email: true, fullName: true, status: true, createdAt: true },
+            });
+
+            const created = await tx.user.create({
+                data: userData,
+                select: { id: true, email: true, fullName: true, status: true, createdAt: true },
+            });
+
+            if (data.roleIds?.length) {
+                await tx.userRole.createMany({
+                    data: data.roleIds.map((roleId: string) => ({ userId: created.id, roleId })),
+                });
+            }
+
+            return created;
         });
 
         // Audit log
         await prisma.auditLog.create({
-            data: {
+            data: tenant.data({
                 userId: createdBy,
                 action: 'CREATE_USER',
                 resourceType: 'users',
                 resourceId: user.id,
                 newValue: JSON.stringify({ email: data.email, fullName: data.fullName }),
-            } as any,
+            }),
         });
 
         return user;
@@ -143,6 +153,7 @@ export class UsersService {
      * Update a user.
      */
     async update(id: string, data: UpdateUserInput, updatedBy: string) {
+        const tenant = tenantPersistence();
         const user = await prisma.user.findUnique({ where: { id, deletedAt: null } });
         if (!user) throw new ServiceError('User not found', 404);
 
@@ -168,14 +179,14 @@ export class UsersService {
 
         // Audit log
         await prisma.auditLog.create({
-            data: {
+            data: tenant.data({
                 userId: updatedBy,
                 action: 'UPDATE_USER',
                 resourceType: 'users',
                 resourceId: id,
                 oldValue: JSON.stringify(oldValue),
                 newValue: JSON.stringify(data),
-            } as any,
+            }),
         });
 
         return updated;
@@ -185,6 +196,7 @@ export class UsersService {
      * Soft delete a user.
      */
     async delete(id: string, deletedBy: string) {
+        const tenant = tenantPersistence();
         const user = await prisma.user.findUnique({ where: { id, deletedAt: null } });
         if (!user) throw new ServiceError('User not found', 404);
 
@@ -195,13 +207,13 @@ export class UsersService {
 
         // Audit log
         await prisma.auditLog.create({
-            data: {
+            data: tenant.data({
                 userId: deletedBy,
                 action: 'DELETE_USER',
                 resourceType: 'users',
                 resourceId: id,
                 oldValue: JSON.stringify({ email: user.email, status: user.status }),
-            } as any,
+            }),
         });
 
         return { message: 'User deactivated successfully' };

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService, AuthError } from './auth.service';
+import { tenantPersistence } from '../../lib/tenant-persistence';
 
 const authService = new AuthService();
 
@@ -14,15 +15,16 @@ export class AuthController {
 
             // Log audit
             const { prisma } = await import('../../lib/prisma');
+            const tenant = tenantPersistence();
             await prisma.auditLog.create({
-                data: {
+                data: tenant.data({
                     userId: result.user.id,
                     action: 'LOGIN',
                     resourceType: 'users',
                     resourceId: result.user.id,
                     ipAddress: req.ip || null,
                     userAgent: req.headers['user-agent'] || null,
-                } as any,
+                }),
             });
 
             res.json({
@@ -71,15 +73,16 @@ export class AuthController {
         // In production, add the token to a Redis blacklist here.
         if (req.user) {
             const { prisma } = await import('../../lib/prisma');
+            const tenant = tenantPersistence();
             await prisma.auditLog.create({
-                data: {
+                data: tenant.data({
                     userId: req.user.userId,
                     action: 'LOGOUT',
                     resourceType: 'users',
                     resourceId: req.user.userId,
                     ipAddress: req.ip || null,
                     userAgent: req.headers['user-agent'] || null,
-                } as any,
+                }),
             });
         }
 

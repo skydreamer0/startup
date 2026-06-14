@@ -120,7 +120,7 @@ export interface Order {
   /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
   totalAmount: number | string;
   paymentMethod?: PaymentMethod | string;
-  paymentStatus?: string;
+  paymentStatus: string;
   shippingAddress?: string;
   createdAt: string;
   customer?: {
@@ -221,6 +221,27 @@ export interface ActiveShift {
   status: string;
   openedAt: string;
   staff: { id: string; fullName: string };
+}
+
+export interface Shift {
+  id: string;
+  staffId: string;
+  status: 'OPEN' | 'CLOSED';
+  /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+  openingCash: number | string | null;
+  /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
+  closingCash: number | string | null;
+  openedAt: string;
+  closedAt: string | null;
+  notes: string | null;
+  staff?: {
+    id: string;
+    fullName: string;
+    email: string;
+  };
+  _count?: {
+    orders: number;
+  };
 }
 
 // ─── Dashboard ───────────────────────────────────────────────────────────────

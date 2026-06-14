@@ -1,10 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import { ExpensesService } from './expenses.service';
 
+type ExpenseListQuery = {
+    period?: string;
+    type?: string;
+    page?: string;
+    limit?: string;
+};
+
 export class ExpensesController {
     static async getExpenses(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await ExpensesService.getExpenses(req.query as any);
+            const result = await ExpensesService.getExpenses(req.query as ExpenseListQuery);
             res.json({ success: true, data: result });
         } catch (error) {
             next(error);

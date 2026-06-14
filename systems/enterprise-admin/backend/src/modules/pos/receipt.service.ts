@@ -17,11 +17,6 @@ const CMD = {
   FEED: '\n',
 };
 
-function center(text: string, width = 42): string {
-  const pad = Math.max(0, Math.floor((width - text.length) / 2));
-  return ' '.repeat(pad) + text;
-}
-
 function leftRight(left: string, right: string, width = 42): string {
   const gap = Math.max(1, width - left.length - right.length);
   return left + ' '.repeat(gap) + right;

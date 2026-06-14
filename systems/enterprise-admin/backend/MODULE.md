@@ -17,7 +17,7 @@
 | ---- | ------- |
 | `src/server.ts` | API process entry point. |
 | `src/config/` | Runtime configuration. |
-| `src/lib/` | Shared backend utilities and infrastructure helpers. |
+| `src/lib/` | Shared backend utilities and infrastructure helpers, including route policy assembly and tenant persistence helpers. |
 | `src/middleware/` | Express middleware, including auth / request safety concerns. |
 | `src/modules/` | Domain modules such as auth, inventory, orders, POS, CRM, analytics, users, roles, and reports. |
 | `src/types/` | Backend-local TypeScript types. |
@@ -41,15 +41,17 @@
 
 1. Read `../infrastructure/api/api_spec.md`.
 2. Open the nearest `src/modules/<domain>/` route/controller/service files.
-3. Open the nearest tests for that module.
-4. Update API spec and context if the contract meaning changes.
+3. Use `src/lib/admin-route-policy.ts` / `src/lib/route-policy.ts` for auth, plan, permission, and validation middleware assembly.
+4. Open the nearest tests for that module.
+5. Update API spec and context if the contract meaning changes.
 
 ### Change persistence or model meaning
 
 1. Read `prisma/schema.prisma`.
 2. Open affected module services/repositories.
-3. Check seed/migration impact.
-4. Update context if model meaning, tenant boundaries, or source-of-truth assumptions change.
+3. Use `src/lib/tenant-persistence.ts` for tenant-scoped `where` / `data` injection before adding hand-written `tenantId` filters.
+4. Check seed/migration impact.
+5. Update context if model meaning, tenant boundaries, or source-of-truth assumptions change.
 
 ### Debug a backend test failure
 

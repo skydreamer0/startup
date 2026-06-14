@@ -1,50 +1,7 @@
 import api from './client';
+import type { CashFlowStatement, MarginAnalysis, SalesRankingProduct } from '@pharmasaas/types';
 
-export interface MarginProduct {
-    id: string;
-    sku: string;
-    name: string;
-    revenue: number;
-    cogs: number;
-    qty: number;
-    margin: number;
-    marginPct: number;
-    contributionPct: number;
-}
-
-export interface MarginAnalysis {
-    period: string;
-    summary: {
-        totalRevenue: number;
-        totalCogs: number;
-        totalMargin: number;
-        totalMarginPct: number;
-    };
-    products: MarginProduct[];
-}
-
-export interface CashFlowStatement {
-    period: string;
-    beginningCash: number;
-    operatingInflows: number;
-    operatingOutflows: number;
-    investingOutflows: number;
-    financingCashFlow: number;
-    netCashFlow: number;
-    endingCash: number;
-    expensesBreakdown: { type: string; amount: number; description?: string }[];
-}
-
-export interface SalesRankingProduct {
-    id: string;
-    sku: string;
-    name: string;
-    categoryName: string;
-    revenue: number;
-    quantity: number;
-    margin: number;
-    marginPct: number;
-}
+export type { CashFlowStatement, MarginAnalysis, SalesRankingProduct };
 
 export const reportsApi = {
     getMarginAnalysis: async (period: string): Promise<MarginAnalysis> => {

@@ -14,7 +14,7 @@
 
 | Path | Purpose |
 | ---- | ------- |
-| `src/` | Shared TypeScript type definitions. |
+| `src/` | Shared TypeScript type definitions for backend-facing domain, report, POS, shift, and API envelope shapes. |
 | `package.json` | Workspace package metadata and typecheck command. |
 
 ## Source-of-truth documents

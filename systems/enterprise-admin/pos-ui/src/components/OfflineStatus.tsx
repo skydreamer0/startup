@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getPendingCount } from '../services/offlineQueue';
+import { posOfflineLedger } from '../services/posOfflineLedger';
 
 interface Props {
   onSync?: () => void;
@@ -23,7 +23,7 @@ export default function OfflineStatus({ onSync }: Props) {
   useEffect(() => {
     let cancelled = false;
     function refresh() {
-      getPendingCount().then((n) => { if (!cancelled) setPendingCount(n); }).catch(() => {});
+      posOfflineLedger.status().then(({ pendingCount }) => { if (!cancelled) setPendingCount(pendingCount); }).catch(() => {});
     }
     refresh();
     const id = setInterval(refresh, 5000);

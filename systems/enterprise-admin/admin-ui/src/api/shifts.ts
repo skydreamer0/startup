@@ -1,25 +1,7 @@
 import api from './client';
+import type { Shift } from '@pharmasaas/types';
 
-export interface Shift {
-    id: string;
-    staffId: string;
-    status: 'OPEN' | 'CLOSED';
-    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
-    openingCash: number | string | null;
-    /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
-    closingCash: number | string | null;
-    openedAt: string;
-    closedAt: string | null;
-    notes: string | null;
-    staff?: {
-        id: string;
-        fullName: string;
-        email: string;
-    };
-    _count?: {
-        orders: number;
-    };
-}
+export type { Shift };
 
 export const shiftsApi = {
     getAll: async (filters: { status?: string } = {}) => {

@@ -1,5 +1,7 @@
 import { prisma } from '../../lib/prisma';
+import type { Prisma } from '@prisma/client';
 import { AppError } from '../../lib/errors';
+import { tenantPersistence } from '../../lib/tenant-persistence';
 
 export class ExpensesService {
     /**
@@ -10,7 +12,7 @@ export class ExpensesService {
         const limit = parseInt(query.limit || '50');
         const skip = (page - 1) * limit;
 
-        const where: any = {};
+        const where: Prisma.ExpenseWhereInput = {};
         if (query.period) where.period = query.period;
         if (query.type) where.type = query.type;
 
@@ -41,7 +43,7 @@ export class ExpensesService {
         }
 
         return await prisma.expense.create({
-            data: data as any
+            data: tenantPersistence().data(data)
         });
     }
 
