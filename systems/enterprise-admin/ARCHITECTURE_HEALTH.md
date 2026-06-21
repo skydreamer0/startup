@@ -1,6 +1,6 @@
 # Architecture Health Report — Enterprise Admin System
 
-> Last refreshed: 2026-06-14
+> Last refreshed: 2026-06-21
 > Scope: `systems/enterprise-admin/` (`backend`, `admin-ui`, `pos-ui`, workspace CI/context)  
 > Method: Roadmap A fresh audit from the completed Phase 13 cloud-improvement work; command output and nearest source-of-truth inspection only.
 
@@ -52,6 +52,13 @@ This document now tracks the current health snapshot from 2026-06-02 onward.
 | `cd systems/enterprise-admin/pos-ui && pnpm run test:e2e:install` | Pass | Playwright browser availability verified locally | `playwright install chromium` completed with exit 0. |
 | `cd systems/enterprise-admin/pos-ui && pnpm run test:e2e` | Pass | POS E2E verified locally | 6 Playwright tests passed with backend and POS dev servers running against seeded Postgres. |
 | `cd systems/enterprise-admin/backend && pnpm run lint` | Pass with warnings | Maintenance debt now scoped by module | 0 errors, 12 warnings, all `@typescript-eslint/no-explicit-any`; unused warning debt was removed and the remaining inventory was converted into `ROADMAP.md` MAINT-02 through MAINT-04. |
+
+### 2026-06-21 Maintenance Refresh
+
+| Command | Result | Classification | Evidence |
+| --- | --- | --- | --- |
+| `cd systems/enterprise-admin/backend && pnpm run lint` | Pass | Backend lint clean | ESLint completed with 0 errors and 0 warnings. |
+| `cd systems/enterprise-admin/backend && rg -n "@typescript-eslint/no-explicit-any|\bany\b|as any|: any|<any>" src` | Pass | Explicit-`any` cleanup verified | Search found only prose uses of "any" in accounting provider comments, not TypeScript `any` types or casts. |
 
 ---
 
@@ -121,17 +128,19 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 
 **Recommended follow-up:** Keep dependency install guidance explicit for fresh agents and CI workers: run `pnpm install`, then `backend pnpm run db:generate`; DB-backed tests additionally require Docker/PostgreSQL per ADR-007.
 
-### P2-2: Backend explicit-`any` cleanup is tracked by module
+### P2-2: Backend explicit-`any` cleanup is closed
 
 **Evidence:** On 2026-06-14, backend ESLint reported 0 errors and 12 warnings, all `@typescript-eslint/no-explicit-any`.
 
 **2026-06-14 status:** Triaged. Backend ESLint now reports 0 errors and 12 warnings, all explicit `any`. Remaining ownership is tracked in `ROADMAP.md` MAINT-02 through MAINT-04.
 
+**2026-06-21 status:** Closed. Backend ESLint now reports 0 errors and 0 warnings, and a targeted explicit-`any` search found no remaining TypeScript `any` types or casts in `src/`.
+
 **Likely owner area:** Backend.
 
-**Classification:** Maintenance debt, not a current blocker.
+**Classification:** Resolved.
 
-**Recommended follow-up:** Complete the module-scoped cleanup tracked in `ROADMAP.md` MAINT-02 through MAINT-04.
+**Recommended follow-up:** Keep lint at 0 warnings; avoid reintroducing broad `any` types or casts.
 
 ## Clean Areas Checked
 
@@ -150,5 +159,5 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 
 Active follow-up now belongs in `ROADMAP.md`:
 1. Phase 14 tracks the 2026-06-03 architecture deepening candidates from `architecture-review-20260603-005952.html`.
-2. Backend lint explicit-`any` cleanup is now split by module in `ROADMAP.md` MAINT-02 through MAINT-04.
+2. Backend lint explicit-`any` cleanup has been closed in `ROADMAP.md` MAINT-02 through MAINT-04.
 3. Shared UI library extraction is not active work; ADR-012 keeps `packages/ui/` deferred until cross-app primitive reuse is proven.

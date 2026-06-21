@@ -29,17 +29,17 @@ Use this file as the active status source of truth. Use ADRs, standards, health 
   - Source: `ARCHITECTURE_HEALTH.md` P2-1.
   - Completion evidence: 2026-06-14 backend lint warning inventory was reduced from 17 to 12 by removing unused warning debt; remaining explicit-`any` warnings were converted into scoped cleanup items below.
 
-- [ ] **MAINT-02**: Replace JWT/auth explicit `any` usage with typed JWT payload and request-body shapes.
+- [x] **MAINT-02**: Replace JWT/auth explicit `any` usage with typed JWT payload and request-body shapes.
   - Source: `pnpm run lint` warnings in `backend/src/lib/jwt.ts` and `backend/src/modules/auth/auth.controller.ts`.
-  - Completion evidence: auth/JWT files no longer emit `@typescript-eslint/no-explicit-any` warnings and auth tests/build still pass.
+  - Completion evidence: 2026-06-21 local rerun found no explicit-`any` lint warnings in the auth/JWT files, and backend `pnpm run lint` passed cleanly.
 
-- [ ] **MAINT-03**: Replace expenses/reporting explicit `any` usage with Prisma-derived or local DTO result types.
+- [x] **MAINT-03**: Replace expenses/reporting explicit `any` usage with Prisma-derived or local DTO result types.
   - Source: `pnpm run lint` warnings in `backend/src/modules/expenses/**`, `backend/src/modules/reports/reports.controller.ts`, and `backend/src/modules/reports/sales-ranking.service.ts`.
-  - Completion evidence: expenses/reporting files no longer emit `@typescript-eslint/no-explicit-any` warnings and reporting/expense tests or backend build still pass.
+  - Completion evidence: 2026-06-21 local rerun found no explicit-`any` lint warnings in expenses/reporting files, and backend `pnpm run lint` passed cleanly.
 
-- [ ] **MAINT-04**: Replace users service explicit `any` payloads with typed Prisma update/create inputs.
+- [x] **MAINT-04**: Replace users service explicit `any` payloads with typed Prisma update/create inputs.
   - Source: `pnpm run lint` warnings in `backend/src/modules/users/users.service.ts`.
-  - Completion evidence: users service no longer emits `@typescript-eslint/no-explicit-any` warnings and user integration tests/build still pass.
+  - Completion evidence: 2026-06-21 local rerun found no explicit-`any` lint warnings in users service, and backend `pnpm run lint` passed cleanly.
 
 ## Deferred Decisions
 
