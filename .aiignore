@@ -30,9 +30,7 @@ systems/enterprise-admin/backend/dist/
 business/
 startup_template_pack/
 
-# Completed plans archive (historical reference only)
-docs/archive/
-systems/enterprise-admin/infrastructure/plans/archive/
+# Completed execution plans are removed from the working tree instead of archived.
 
 # Superpowers tooling artifacts
 docs/superpowers/

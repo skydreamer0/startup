@@ -32,7 +32,7 @@
 | POS roadmap / status | `../ROADMAP.md` |
 | Backend API contract | `../infrastructure/api/api_spec.md` |
 | Shared types | `../packages/types/MODULE.md` and `../packages/types/src/` |
-| POS plans | `../../docs/plans/` and `../../docs/archive/superpowers/plans/` only when referenced by roadmap or task |
+| POS planning history | Use `../ROADMAP.md`, ADRs, and git history; completed POS execution plans are not kept in the active working tree. |
 | Agent route selection | `../../../docs/agents/navigation.md` from repo root |
 
 ## Common task routes

@@ -64,4 +64,25 @@ describe('api client', () => {
 
     expect(localStorage.getItem('pos_accessToken')).toBeNull();
   });
+
+  it('lets exempt 401 responses reach the caller without clearing POS auth', async () => {
+    localStorage.setItem('pos_accessToken', 'token-1');
+    const { createPosJsonApiClient } = await import('../api/requestLifecycle');
+
+    createPosJsonApiClient({
+      baseURL: '/api/v1/admin',
+      accessTokenKey: 'pos_accessToken',
+      loginPath: '/login',
+      authRedirectExemptPaths: ['/pos/staff-login'],
+    });
+    const onRejected = responseUse.mock.calls[0][1] as (error: {
+      config?: { url?: string };
+      response?: { status: number };
+    }) => Promise<never>;
+    const error = { config: { url: '/pos/staff-login' }, response: { status: 401 } };
+
+    await expect(onRejected(error)).rejects.toEqual(error);
+
+    expect(localStorage.getItem('pos_accessToken')).toBe('token-1');
+  });
 });

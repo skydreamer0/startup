@@ -4,7 +4,7 @@
 
 ## 目前進度
 
-Phase 1–7.6 完成。詳見 [ROADMAP.md](ROADMAP.md)。
+已完成既定產品與架構階段；目前只保留活 backlog 與延後決策。詳見 [ROADMAP.md](ROADMAP.md)。
 
 ## 本地開發
 
@@ -45,7 +45,7 @@ enterprise-admin/
 └── infrastructure/
     ├── adr/            架構決策記錄
     ├── api/            API 規格文件
-    └── plans/archive/  已完成的實作計畫（封存）
+    └── standards/      工程標準與操作流程
 ```
 
 ## 測試

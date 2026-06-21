@@ -132,12 +132,15 @@ async function main() {
     const passwordHash = await argon2.hash('Admin@123!');
     const adminUser = await prisma.user.upsert({
         where: { email: 'admin@system.local' },
-        update: {},
+        update: {
+            employeeCode: 'A001',
+        },
         create: {
             email: 'admin@system.local',
             passwordHash,
             fullName: 'System Administrator',
             status: 'active',
+            employeeCode: 'A001',
             tenantId,
         },
     });
@@ -274,10 +277,34 @@ async function main() {
     ];
 
     for (const p of products) {
-        await prisma.product.upsert({
+        const product = await prisma.product.upsert({
             where: { sku_tenantId: { sku: p.sku, tenantId } },
             create: p,
-            update: {},
+            update: {
+                stockQuantity: p.stockQuantity,
+            },
+        });
+        await prisma.productBatch.upsert({
+            where: {
+                productId_batchNumber_tenantId: {
+                    productId: product.id,
+                    batchNumber: `${p.sku}-SEED`,
+                    tenantId,
+                },
+            },
+            create: {
+                productId: product.id,
+                tenantId,
+                batchNumber: `${p.sku}-SEED`,
+                expiryDate: new Date('2027-12-31T00:00:00.000Z'),
+                quantity: p.stockQuantity,
+                costPrice: p.costPrice,
+            },
+            update: {
+                expiryDate: new Date('2027-12-31T00:00:00.000Z'),
+                quantity: p.stockQuantity,
+                costPrice: p.costPrice,
+            },
         });
     }
     console.log(`  ✅ Inventory dummy data seeded (${products.length} products, 2 suppliers)`);

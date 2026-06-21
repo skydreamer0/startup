@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, APIRequestContext } from '@playwright/test';
 
 /**
  * POS Checkout Flow — E2E Happy-Path Tests (AF-19)
@@ -7,7 +7,7 @@ import { test, expect, Page } from '@playwright/test';
  *   - Backend running on http://localhost:3000
  *   - POS UI dev server running on http://localhost:5174
  *   - A seeded tenant with:
- *       Employee code : E001  (or set POS_TEST_EMPLOYEE_CODE env var)
+ *       Employee code : A001  (or set POS_TEST_EMPLOYEE_CODE env var)
  *       At least one product in stock
  *
  * Run:
@@ -17,9 +17,10 @@ import { test, expect, Page } from '@playwright/test';
 // ---------------------------------------------------------------------------
 // Configuration — override via environment variables in CI
 // ---------------------------------------------------------------------------
-const EMPLOYEE_CODE = process.env.POS_TEST_EMPLOYEE_CODE ?? 'E001';
+const EMPLOYEE_CODE = process.env.POS_TEST_EMPLOYEE_CODE ?? 'A001';
 const OPENING_CASH  = '1000';
 const TENDERED_CASH = '999999'; // large value to guarantee change is positive
+const BACKEND_URL = process.env.POS_TEST_BACKEND_URL ?? 'http://localhost:3000/api/v1/admin';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -27,7 +28,9 @@ const TENDERED_CASH = '999999'; // large value to guarantee change is positive
 
 /** Navigate to the POS login page and clear any leftover session. */
 async function goToLogin(page: Page) {
-  // Clear storage so we always start unauthenticated
+  // Navigate to the app origin first; Chromium denies localStorage on about:blank.
+  await page.goto('/login');
+  // Clear storage so we always start unauthenticated.
   await page.evaluate(() => localStorage.removeItem('pos_accessToken'));
   await page.goto('/login');
   await page.waitForSelector('[data-testid="login-employee-code-input"]');
@@ -39,12 +42,39 @@ async function login(page: Page, employeeCode: string = EMPLOYEE_CODE) {
   await page.click('[data-testid="login-submit-button"]');
 }
 
+/** Close any previously-open POS shift so tests start from the same state. */
+async function closeActiveShift(request: APIRequestContext) {
+  const loginResponse = await request.post(`${BACKEND_URL}/pos/staff-login`, {
+    data: { employeeCode: EMPLOYEE_CODE },
+  });
+  expect(loginResponse.ok()).toBeTruthy();
+  const loginJson = await loginResponse.json();
+  const token = loginJson.data.accessToken as string;
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const activeResponse = await request.get(`${BACKEND_URL}/pos/shift/active`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(activeResponse.ok()).toBeTruthy();
+    const activeJson = await activeResponse.json();
+    const shift = activeJson.data as { id?: string } | null;
+    if (!shift?.id) return;
+
+    const closeResponse = await request.patch(`${BACKEND_URL}/shifts/${shift.id}/close`, {
+      headers: { Authorization: `Bearer ${token}` },
+      data: { closingCash: Number(OPENING_CASH), notes: 'Closed by POS E2E setup' },
+    });
+    expect(closeResponse.ok()).toBeTruthy();
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
 test.describe('POS Checkout Flow', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    await closeActiveShift(request);
     await goToLogin(page);
   });
 
@@ -133,7 +163,8 @@ test.describe('POS Checkout Flow', () => {
     await expect(confirmBtn).toBeVisible({ timeout: 5_000 });
 
     // — Select CASH payment method (it's the default, but let's be explicit) —
-    await page.getByRole('button', { name: '現金' }).click();
+    const paymentModal = page.getByRole('heading', { name: '確認結帳' }).locator('..');
+    await paymentModal.getByRole('button', { name: '現金' }).click();
 
     // — Enter tendered amount so change is valid —
     const tenderedInput = page.getByTestId('payment-tendered-input');

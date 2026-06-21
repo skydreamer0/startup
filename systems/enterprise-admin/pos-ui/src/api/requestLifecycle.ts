@@ -4,6 +4,7 @@ export interface PosJsonClientOptions {
   baseURL: string;
   accessTokenKey: string;
   loginPath: string;
+  authRedirectExemptPaths?: string[];
 }
 
 function clearPosAuthAndRedirect(accessTokenKey: string, loginPath: string): void {
@@ -26,7 +27,9 @@ export function createPosJsonApiClient(options: PosJsonClientOptions): AxiosInst
   api.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      if (error.response?.status === 401) {
+      const requestUrl = error.config?.url ?? '';
+      const isAuthRedirectExempt = options.authRedirectExemptPaths?.some((path) => requestUrl === path);
+      if (error.response?.status === 401 && !isAuthRedirectExempt) {
         clearPosAuthAndRedirect(options.accessTokenKey, options.loginPath);
       }
       return Promise.reject(error);

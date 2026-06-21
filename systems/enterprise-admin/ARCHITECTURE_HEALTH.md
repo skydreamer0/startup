@@ -1,8 +1,8 @@
 # Architecture Health Report — Enterprise Admin System
 
-> Last refreshed: 2026-06-05
+> Last refreshed: 2026-06-14
 > Scope: `systems/enterprise-admin/` (`backend`, `admin-ui`, `pos-ui`, workspace CI/context)  
-> Method: Roadmap A fresh audit from `docs/plans/2026-06-02-cloud-improvement-roadmaps.md`; command output and nearest source-of-truth inspection only.
+> Method: Roadmap A fresh audit from the completed Phase 13 cloud-improvement work; command output and nearest source-of-truth inspection only.
 
 ---
 
@@ -42,6 +42,17 @@ This document now tracks the current health snapshot from 2026-06-02 onward.
 | `cd systems/enterprise-admin/pos-ui && pnpm run test` | Pass | POS unit/component test boundary fixed | 22 files / 126 tests passed; Vitest now excludes Playwright `e2e/**` specs. |
 | `cd systems/enterprise-admin/pos-ui && pnpm run test:e2e` | Fail | Environment gap | Playwright found 6 tests but Chromium executable was not installed in `/root/.cache/ms-playwright`. |
 
+### 2026-06-14 Verification Refresh
+
+| Command | Result | Classification | Evidence |
+| --- | --- | --- | --- |
+| `cd systems/enterprise-admin/backend && pnpm run db:generate` | Pass | Backend Prisma generation verified locally | Prisma Client v6.19.3 generated successfully after Docker Desktop / repo Postgres were available. |
+| `cd systems/enterprise-admin/backend && pnpm run build` | Pass | Backend TypeScript build verified | `tsc` completed with exit 0. |
+| `cd systems/enterprise-admin/backend && pnpm run test` | Pass | Backend DB-backed tests verified locally | 23 files / 151 tests passed after `docker compose up -d postgres`, `pnpm prisma migrate deploy`, and `pnpm run db:seed`. |
+| `cd systems/enterprise-admin/pos-ui && pnpm run test:e2e:install` | Pass | Playwright browser availability verified locally | `playwright install chromium` completed with exit 0. |
+| `cd systems/enterprise-admin/pos-ui && pnpm run test:e2e` | Pass | POS E2E verified locally | 6 Playwright tests passed with backend and POS dev servers running against seeded Postgres. |
+| `cd systems/enterprise-admin/backend && pnpm run lint` | Pass with warnings | Maintenance debt now scoped by module | 0 errors, 12 warnings, all `@typescript-eslint/no-explicit-any`; unused warning debt was removed and the remaining inventory was converted into `ROADMAP.md` MAINT-02 through MAINT-04. |
+
 ---
 
 ## P0 Findings — Release Blockers
@@ -60,6 +71,8 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 
 **Evidence:** On 2026-06-05, `pnpm run db:generate` and `pnpm run build` both passed after workspace dependency parity was restored. `pnpm run test` then advanced to 24 passing files / 137 passing tests, but `api.integration.test.ts` failed because PostgreSQL was not reachable at `127.0.0.1:5433`. Attempting `docker compose ps` failed because the local Docker daemon was not running.
 
+**2026-06-14 status:** Closed for the current local runner. Prisma generation, backend build, and DB-backed tests passed after Docker Desktop / repo Postgres were available.
+
 **Likely owner area:** Backend / CI / dependency management.
 
 **Classification:** Environment readiness gap. Backend build health is no longer blocked by Prisma generation in the current workspace, but DB-backed tests still require the ADR-007 local PostgreSQL workflow (`docker compose up -d postgres`) plus seeded data.
@@ -69,6 +82,8 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 ### P1-2: Backend warning-level type debt is cleared
 
 **Evidence:** `pnpm run lint` passed with 0 warnings on 2026-06-05 after typed Prisma inputs replaced the remaining explicit `any` casts and unused parameters/imports were removed. `pnpm run build` also passed after Prisma Client was generated.
+
+**2026-06-14 status:** Closed for the current local runner. A clean Prisma-generated backend build passed.
 
 **Likely owner area:** Backend.
 
@@ -86,6 +101,8 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 
 **2026-06-02 follow-up:** POS now exposes `pnpm run test:e2e:install` for Chromium installation, and the Playwright config plus test standards document that E2E still requires a running backend and seeded POS data before it becomes a default PR gate. In this cloud environment, Chromium download still returns 403 from the Playwright CDN, so runners need allowlisting or a pre-populated browser cache.
 
+**2026-06-14 status:** Closed for the current local runner. `pnpm run test:e2e:install` and `pnpm run test:e2e` passed after the POS E2E harness was aligned with seeded staff code `A001`, isolated open-shift state between tests, and seed data created product batches for POS checkout stock.
+
 ---
 
 ## P2 Findings — Maintenance and Observability Improvements
@@ -99,6 +116,16 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 **Classification:** Environment reproducibility risk.
 
 **Recommended follow-up:** Keep dependency install guidance explicit for fresh agents and CI workers: run `pnpm install`, then `backend pnpm run db:generate`; DB-backed tests additionally require Docker/PostgreSQL per ADR-007.
+
+### P2-2: Backend explicit-`any` cleanup is tracked by module
+
+**Evidence:** On 2026-06-14, backend ESLint reported 0 errors and 12 warnings, all `@typescript-eslint/no-explicit-any`.
+
+**Likely owner area:** Backend.
+
+**Classification:** Maintenance debt, not a current blocker.
+
+**Recommended follow-up:** Complete the module-scoped cleanup tracked in `ROADMAP.md` MAINT-02 through MAINT-04.
 
 ## Clean Areas Checked
 
@@ -118,6 +145,5 @@ The backend build and non-DB test surface are verified. The remaining backend ga
 Active follow-up now belongs in `ROADMAP.md`:
 
 1. Phase 14 tracks the 2026-06-03 architecture deepening candidates from `architecture-review-20260603-005952.html`.
-2. Backend hardening should start Docker/PostgreSQL and seed data, then rerun the full backend integration suite.
-3. POS E2E remains an environment/readiness item until runners have Playwright Chromium access or a pre-populated browser cache.
-4. Shared UI library extraction is not active work; ADR-012 keeps `packages/ui/` deferred until cross-app primitive reuse is proven.
+2. Backend lint explicit-`any` cleanup is now split by module in `ROADMAP.md` MAINT-02 through MAINT-04.
+3. Shared UI library extraction is not active work; ADR-012 keeps `packages/ui/` deferred until cross-app primitive reuse is proven.
