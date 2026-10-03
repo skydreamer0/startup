@@ -1,61 +1,88 @@
-# PharmaSaaS
+<div align="center">
 
-**藥局營運管理平台，整合企業後台與獨立 POS。**
+# 💊 PharmaSaaS
 
-PharmaSaaS 將會員、商品庫存、銷售訂單與營運報表整合於同一套 API，供管理人員與門市收銀人員使用。專案採 TypeScript monorepo，包含兩個 React 應用程式、Express 後端與共用型別，並具備多租戶、角色權限及操作稽核機制。
+**從一家藥局出發的營運工作台**
 
-[功能概覽](#功能概覽) · [快速開始](#快速開始) · [專案結構](#專案結構) · [文件](#文件)
+整合門市 POS、商品庫存、會員與營運報表，  
+先把單店日常工作做好，再保留未來擴充的空間。
 
-## 功能概覽
+![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169e1?style=flat-square&logo=postgresql&logoColor=white)
+![Status](https://img.shields.io/badge/status-in%20development-f59e0b?style=flat-square)
 
-| 領域 | 目前實作 |
-| --- | --- |
-| **企業後台** | 營運儀表板、使用者與角色管理、RBAC 權限、操作稽核、租戶方案存取控制 |
-| **會員 CRM** | 會員資料、標籤、互動紀錄、購買紀錄與客群分析 |
-| **商品與庫存** | 商品、分類、供應商、庫存異動、批號與效期管理，以及 FEFO 批次扣庫 |
-| **門市 POS** | 員工登入、商品查找、購物車、掛單、折扣、結帳與拆分付款紀錄、退貨、收據及顧客顯示畫面 |
-| **營運與報表** | 訂單、費用、班次與日結，毛利、現金流、銷售排行及商品／CRM 分析 |
-| **資料與訊息整合** | Excel／CSV 匯入匯出、LINE 訊息推播與分眾發送；會計同步提供 adapter 與 mock provider |
+[功能概覽](#-功能概覽) · [快速開始](#-快速開始) · [架構](#-架構) · [目前進度](#-目前進度) · [文件](#-文件)
 
-### 專案狀態
+</div>
 
-依 [Roadmap](systems/enterprise-admin/ROADMAP.md)，既定產品與架構階段已完成；正式部署與外部整合仍有以下界線：
+---
 
-- QuickBooks／Xero 的正式 OAuth 與 SDK 串接尚未完成
-- TLS／憑證設定須待部署主機與 DNS 確定；電子發票串接仍延後
-- POS 已有離線佇列基礎，但結帳流程尚未接上離線入列，不應視為可離線收銀
-- 拆分付款為交易紀錄功能，不代表已串接刷卡或 LINE Pay 金流
+## ✨ 為什麼做這個
 
-## 專案結構
+收銀、收貨、查效期、找商品，都是同一間藥局每天會遇到的事。PharmaSaaS 以這些工作為中心，讓門市與後台共用資料，逐步減少重複建檔與人工對帳。
 
-目前啟用的系統集中於 `systems/enterprise-admin`。Admin UI 與 POS UI 各自建置、共用後端 API；POS 已有獨立應用程式。
+- 🧾 **門市接上後台**：POS 與管理介面各自專注操作情境，共用訂單、會員與庫存 API
+- 📦 **從商品看到批次**：以商品、批號、效期與異動紀錄為基礎，往可追溯的收貨與出庫流程前進
+- 🏪 **先服務一家店**：以店內共用主機為部署方向，保留既有權限與多租戶基礎，逐步評估擴充
+
+## 🧩 功能概覽
+
+下列功能已有程式實作；庫存與交易正確性、設備相容性及實店使用流程仍待驗收。
+
+| 工作 | 現有功能 |
+|---|---|
+| 🛒 **門市收銀** | 員工登入、商品查找、購物車、掛單、折扣、結帳、拆分付款紀錄、退貨與收據 |
+| 📦 **商品庫存** | 商品、分類、供應商、庫存異動、批號與效期、批次扣庫 |
+| 👥 **會員經營** | 會員資料、標籤、互動與購買紀錄、客群分析、LINE 推播與分眾發送 |
+| 📊 **日常營運** | 儀表板、訂單、費用、班次、日結、毛利、現金流及銷售排行 |
+| 🔐 **管理基礎** | 使用者與角色、RBAC 權限、操作稽核、租戶方案存取控制、Excel／CSV 匯入匯出 |
+
+<details>
+<summary>整合範圍與目前限制</summary>
+
+- LINE 整合需設定對應憑證；會計同步目前為 adapter 與 mock provider，QuickBooks／Xero 正式串接尚未完成
+- 拆分付款是交易紀錄功能，尚不代表已串接刷卡或 LINE Pay 金流
+- 已有離線佇列基礎，但結帳尚未接上離線入列，不能用作離線收銀
+- TLS／憑證與正式環境設定仍待完成；電子發票串接延後
+
+</details>
+
+## 🗺️ 目前進度
+
+**功能基礎已建立，實店驗收尚未完成。** 接下來的重點是資料可靠、收貨順手，以及店內每天都能穩定使用。最新範圍與驗收門檻見 [單店藥局整備追蹤 #37](https://github.com/skydreamer0/startup/issues/37)。
+
+| 順序 | 下一步 |
+|---|---|
+| **先修正** | 庫存一致性、批次追溯、結帳重送與併發扣庫、金額對帳，以及掃碼查找與庫存更新 |
+| **優先補上** | 有條碼／無條碼收貨、照片與單據 OCR 建檔草稿；保留原圖，由人工確認商品、批號與效期 |
+| **接完整流程** | 庫位、部分收貨、調貨與處方出庫、待辦工作區；外盒 QR 與標籤列印依規格及真機驗證推進 |
+| **落地到店內** | 專用主機＋Docker Compose、單一操作入口、啟動就緒檢查，以及資料庫與影像成套備份還原 |
+
+以上均為待實作或待驗收項目。OCR／本地 AI 與處方照片辨識尚未啟用；處方流程須有藥師覆核。Mac mini 為候選主機，得力標籤機相容性及外盒 QR 規格仍待確認。
+
+## 🏗️ 架構
+
+兩個操作介面，共用一套 API 與資料庫；目前維持模組化單體架構。
 
 ```text
-startup/
-├── docs/                            # 專案文件與導覽
-├── scripts/                         # 儲存庫檢查工具
-└── systems/enterprise-admin/         # pnpm workspace
-    ├── admin-ui/                    # 企業管理後台
-    ├── pos-ui/                      # 門市 POS
-    ├── backend/                     # Express API、Prisma schema 與 migrations
-    ├── packages/types/              # @pharmasaas/types 共用型別
-    ├── infrastructure/              # ADR、API 規格與工程標準
-    ├── nginx/                       # 反向代理與 TLS 範本
-    └── docker-compose.yml           # PostgreSQL 與容器部署骨架
+門市 POS   pos-ui   ─┐
+                    ├── Express API ── Prisma ── PostgreSQL
+管理後台   admin-ui ─┘   backend
 ```
 
-| 層級 | 技術 |
-| --- | --- |
-| 前端 | React 19、Vite 6、TypeScript、Tailwind CSS 4、TanStack Query；POS 使用 Zustand |
-| 後端 | Express 5、Prisma 6、Zod、JWT、Argon2 |
-| 資料庫 | PostgreSQL 15 |
-| 測試與交付 | Vitest、Testing Library、Supertest、Playwright、GitHub Actions、Docker Compose、Nginx |
+前端使用 **React 19／Vite 6**，後端使用 **Express 5／Prisma 6**。程式集中於 `systems/enterprise-admin`，以 pnpm workspace 管理；`packages/types` 提供兩個前端共用型別。[查看模組導覽](systems/enterprise-admin/CONTEXT.md)
 
-## 快速開始
+## 🚀 快速開始
 
-### 1. 準備環境
+需要 **Node.js 20+、pnpm 10、Docker Compose**，以及此儲存庫的存取權限。目前使用開發環境啟動流程，完整設定與指令如下。
 
-需要 Node.js 20+、pnpm 10、Docker Compose，以及此儲存庫的存取權限。以下指令使用 Bash；Windows 可使用 Git Bash 或 WSL。
+<details>
+<summary><strong>展開本機設定與啟動步驟</strong></summary>
+
+以下指令使用 Bash；Windows 可使用 Git Bash 或 WSL。
+
+**1. 取得專案與啟動資料庫**
 
 ```bash
 git clone https://github.com/skydreamer0/startup.git
@@ -64,7 +91,7 @@ pnpm install --frozen-lockfile
 docker compose up -d postgres
 ```
 
-### 2. 設定後端環境變數
+**2. 設定後端環境變數**
 
 建立 `backend/.env`，替換以下佔位符。資料庫帳號、密碼須與 [Compose 的 postgres 設定](systems/enterprise-admin/docker-compose.yml) 一致；本機連線埠為 **5433**。
 
@@ -85,7 +112,7 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 
 完整設定以 [`backend/src/config/env.ts`](systems/enterprise-admin/backend/src/config/env.ts) 為準。LINE 憑證為選填；未設定時不啟用 LINE 整合。兩個前端的開發伺服器皆已將 `/api` 代理至後端。
 
-### 3. 初始化本機資料庫
+**3. 初始化本機資料庫**
 
 以下指令仍從 `systems/enterprise-admin` 執行。請使用可重建的本機開發資料庫，並先確認 PostgreSQL 已就緒。
 
@@ -97,7 +124,7 @@ pnpm --filter startup-backend run db:seed
 
 開發用帳號與 POS 員工代碼由 [`backend/prisma/seed.ts`](systems/enterprise-admin/backend/prisma/seed.ts) 建立。Seed 僅供開發及測試，請勿將範例帳號、密碼或資料直接用於正式環境；`.env` 不應提交至 Git。
 
-### 4. 啟動服務
+**4. 啟動服務**
 
 開啟三個終端機，皆切換至 `systems/enterprise-admin`，分別執行：
 
@@ -109,7 +136,11 @@ pnpm --filter pos-ui run dev           # 門市 POS  http://localhost:5174
 
 API 基底路徑為 `/api/v1/admin`，健康檢查位於 `http://localhost:3000/health`。正式環境的遷移、備份與部署流程請見 [Production Runbook](systems/enterprise-admin/infrastructure/standards/production_runbook.md)；目前 Compose 含開發用設定，部署前須完成憑證、機密與資料庫網路設定。
 
-## 開發與驗證
+
+</details>
+
+<details>
+<summary>建置、測試與驗證指令</summary>
 
 以下指令從 `systems/enterprise-admin` 執行：
 
@@ -124,18 +155,17 @@ API 基底路徑為 `/api/v1/admin`，健康檢查位於 `http://localhost:3000/
 
 後端整合測試需要已初始化的 PostgreSQL。POS E2E 另需已安裝的 Chromium，以及運行中的後端與 POS 開發伺服器。詳細範圍見 [測試策略](systems/enterprise-admin/infrastructure/standards/test_pyramid.md) 與 [CI 設定](.github/workflows/ci.yml)。
 
-## 文件
 
-| 文件 | 用途 |
-| --- | --- |
-| [Roadmap](systems/enterprise-admin/ROADMAP.md) | 目前進度、待辦與延後決策 |
-| [系統導覽](systems/enterprise-admin/CONTEXT.md) | 系統邊界與各模組入口 |
-| [架構決策 ADR](systems/enterprise-admin/infrastructure/adr/) | 多租戶、獨立 POS、會計 adapter 與部署決策 |
-| [API 規格](systems/enterprise-admin/infrastructure/api/api_spec.md) | REST API 契約 |
-| [Prisma Schema](systems/enterprise-admin/backend/prisma/schema.prisma) | 資料模型與關聯 |
-| [Production Runbook](systems/enterprise-admin/infrastructure/standards/production_runbook.md) | 部署、遷移、回復、備份與維運 |
-| [工程標準](systems/enterprise-admin/infrastructure/standards/) | 程式風格、測試、Git 與審查流程 |
+</details>
 
-## 參與開發
+## 📚 文件
 
-開始前閱讀 [AGENTS.md](AGENTS.md) 與 [Git 工作流程](systems/enterprise-admin/infrastructure/standards/git_workflow.md)。採用短週期分支與 Conventional Commits；功能變動須同步更新 Roadmap，架構變動須補充 ADR。提交 PR 時請遵循 [PR 範本](.github/pull_request_template.md)，並清楚列出驗證結果與未完成項目。
+| 想了解什麼 | 從這裡開始 |
+|---|---|
+| **現在要做什麼** | [單店整備與驗收 #37](https://github.com/skydreamer0/startup/issues/37) · [既有工程 Roadmap](systems/enterprise-admin/ROADMAP.md) |
+| **程式在哪裡** | [系統與模組導覽](systems/enterprise-admin/CONTEXT.md) · [架構決策 ADR](systems/enterprise-admin/infrastructure/adr/) |
+| **資料如何串接** | [API 規格](systems/enterprise-admin/infrastructure/api/api_spec.md) · [Prisma Schema](systems/enterprise-admin/backend/prisma/schema.prisma) |
+| **如何部署與維護** | [Production Runbook](systems/enterprise-admin/infrastructure/standards/production_runbook.md) |
+| **如何參與開發** | [AGENTS.md](AGENTS.md) · [Git 工作流程](systems/enterprise-admin/infrastructure/standards/git_workflow.md) · [PR 範本](.github/pull_request_template.md) |
+
+功能與驗收進度以目前追蹤議題為準；既有 Roadmap 的歷史完成紀錄不代表實店已驗收。
