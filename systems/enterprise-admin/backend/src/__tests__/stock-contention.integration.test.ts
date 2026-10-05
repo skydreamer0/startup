@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
+import { PrismaClient } from '@prisma/client';
 
 // Synchronize actual PostgreSQL reads so both callers observe the last unit
 // before either can debit it. No query results or writes are mocked.
@@ -10,6 +11,8 @@ const race = vi.hoisted(() => ({
   gate: Promise.resolve(),
   batchProductId: '',
   beforeBatchDebit: () => Promise.resolve(),
+  failAllocationAfter: -1,
+  allocationWrites: 0,
 }));
 
 vi.mock('../lib/prisma', async (importOriginal) => {
@@ -42,6 +45,12 @@ vi.mock('../lib/prisma', async (importOriginal) => {
             return result;
           },
         },
+        saleBatchAllocation: {
+          async createMany({ args, query }) {
+            if (race.failAllocationAfter === race.allocationWrites++) throw new Error('Injected allocation persistence failure');
+            return query(args);
+          },
+        },
       },
     }),
   };
@@ -51,6 +60,9 @@ import { basePrisma } from '../lib/prisma';
 import { tenantContext } from '../lib/tenant.context';
 import { CheckoutService } from '../modules/pos/checkout.service';
 import { OrderService } from '../modules/orders/order.service';
+import { ProductBatchService } from '../modules/product-batches/product-batches.service';
+import { saleExpiryCutoff } from '../lib/batch-expiry';
+import { createProductBatchSchema } from '../modules/product-batches/product-batches.schema';
 
 const tenants: string[] = [];
 
@@ -69,6 +81,7 @@ async function fixture(quantity: number) {
   const batch = await basePrisma.productBatch.create({ data: {
     tenantId, productId: product.id, batchNumber: 'LOT-1', expiryDate: new Date('2099-01-01'),
     quantity, costPrice: 40,
+    status: 'RELEASED',
   } });
   return { tenantId, customer, shift, product, batch };
 }
@@ -98,7 +111,11 @@ afterEach(async () => {
   race.productId = '';
   race.batchProductId = '';
   race.beforeBatchDebit = () => Promise.resolve();
+  race.failAllocationAfter = -1;
+  race.allocationWrites = 0;
+  vi.useRealTimers();
   for (const tenantId of tenants.splice(0)) {
+    await basePrisma.saleBatchAllocation.deleteMany({ where: { tenantId } });
     await basePrisma.order.deleteMany({ where: { tenantId } });
     await basePrisma.inventoryTransaction.deleteMany({ where: { tenantId } });
     await basePrisma.shift.deleteMany({ where: { tenantId } });
@@ -108,6 +125,144 @@ afterEach(async () => {
     await basePrisma.user.deleteMany({ where: { tenantId } });
     await basePrisma.tenant.delete({ where: { id: tenantId } });
   }
+});
+
+describe('FEFO and durable sale allocations (real PostgreSQL)', () => {
+  it.each(['POS', 'order'] as const)('persists an actual two-lot split for %s and reads it through a fresh DB client', async (writer) => {
+    const f = await fixture(4);
+    await basePrisma.productBatch.update({ where: { id: f.batch.id }, data: { quantity: 2 } });
+    const second = await basePrisma.productBatch.create({ data: {
+      tenantId: f.tenantId, productId: f.product.id, batchNumber: 'LOT-2',
+      expiryDate: new Date('2099-02-01'), status: 'RELEASED', quantity: 2, costPrice: 40,
+    } });
+    const sale = await (writer === 'POS' ? checkout(f, [3]) : order(f, [3]));
+    const freshClient = new PrismaClient();
+    try {
+      const allocations = await freshClient.saleBatchAllocation.findMany({
+        where: { tenantId: f.tenantId, orderId: sale.id }, orderBy: { expiryDateAtSale: 'asc' },
+        include: { movement: true, orderItem: true },
+      });
+      expect(allocations.map(({ batchId, quantity }) => ({ batchId, quantity }))).toEqual([
+        { batchId: f.batch.id, quantity: 2 }, { batchId: second.id, quantity: 1 },
+      ]);
+      expect(allocations.every((a) => a.orderItemId === sale.items[0].id && a.movement.referenceId === sale.id && a.movement.quantity === 3)).toBe(true);
+    } finally { await freshClient.$disconnect(); }
+    const detail = await inTenant(f, () => writer === 'POS' ? CheckoutService.getOrderById(sale.id) : OrderService.getOrderById(sale.id));
+    expect(detail.items[0].batchAllocations).toHaveLength(2);
+    const lot = await inTenant(f, () => ProductBatchService.getById(second.id));
+    expect(lot.saleAllocations).toMatchObject([{ orderId: sale.id, quantity: 1 }]);
+    expect(lot._count.saleAllocations).toBe(1);
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(1);
+    expect((await basePrisma.productBatch.aggregate({ where: { tenantId: f.tenantId }, _sum: { quantity: true } }))._sum.quantity).toBe(1);
+  });
+
+  it.each(['POS', 'order'] as const)('skips expired, expiry-day, quarantined and blocked batches for %s', async (writer) => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-06T00:00:00Z'));
+    const f = await fixture(5);
+    await basePrisma.productBatch.update({ where: { id: f.batch.id }, data: { quantity: 1 } });
+    await basePrisma.productBatch.createMany({ data: [
+      { batchNumber: 'EXPIRED', expiryDate: new Date('2026-10-05T00:00:00Z'), status: 'RELEASED' as const },
+      { batchNumber: 'TODAY', expiryDate: new Date('2026-10-06T15:00:00Z'), status: 'RELEASED' as const },
+      { batchNumber: 'ISOLATED', expiryDate: new Date('2026-10-07T00:00:00Z'), status: 'QUARANTINE' as const },
+      { batchNumber: 'BLOCKED', expiryDate: new Date('2026-10-08T00:00:00Z'), status: 'BLOCKED' as const },
+    ].map((lot) => ({ ...lot, tenantId: f.tenantId, productId: f.product.id, quantity: 1, costPrice: 40 })) });
+    const sale = await (writer === 'POS' ? checkout(f) : order(f));
+    expect(await basePrisma.saleBatchAllocation.findMany({ where: { orderId: sale.id } })).toMatchObject([{ batchId: f.batch.id, quantity: 1 }]);
+    expect((await basePrisma.productBatch.aggregate({ where: { productId: f.product.id }, _sum: { quantity: true } }))._sum.quantity).toBe(4);
+  });
+
+  it.each(['QUARANTINE', 'BLOCKED', 'EXPIRED', 'TODAY'] as const)('rejects %s-only stock without leaving any sale writes', async (state) => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-06T00:00:00Z'));
+    const f = await fixture(2);
+    await basePrisma.productBatch.update({ where: { id: f.batch.id }, data: {
+      ...(state === 'QUARANTINE' || state === 'BLOCKED' ? { status: state } : {
+        expiryDate: new Date(state === 'EXPIRED' ? '2026-10-05T00:00:00Z' : '2026-10-06T15:59:59Z'),
+      }),
+    } });
+    await expect(checkout(f)).rejects.toMatchObject({ statusCode: 400, message: expect.stringContaining('無足夠可出庫批次') });
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(2);
+    expect((await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } })).quantity).toBe(2);
+    expect(await basePrisma.order.count({ where: { tenantId: f.tenantId } })).toBe(0);
+    expect(await basePrisma.saleBatchAllocation.count({ where: { tenantId: f.tenantId } })).toBe(0);
+  });
+
+  it('stops expiry-day stock at Taipei midnight rather than UTC midnight', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-05T15:59:59Z'));
+    expect(saleExpiryCutoff().toISOString()).toBe('2026-10-05T16:00:00.000Z');
+    const f = await fixture(2);
+    await basePrisma.productBatch.update({ where: { id: f.batch.id }, data: { expiryDate: new Date('2026-10-06T04:00:00Z') } });
+    await checkout(f);
+    vi.setSystemTime(new Date('2026-10-05T16:00:00Z'));
+    expect(saleExpiryCutoff().toISOString()).toBe('2026-10-06T16:00:00.000Z');
+    await expect(order(f)).rejects.toMatchObject({ statusCode: 400 });
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(1);
+  });
+
+  it.each(['quarantine', 'midnight'] as const)('rechecks %s eligibility after selection', async (change) => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-05T15:59:59Z'));
+    const f = await fixture(2);
+    await basePrisma.productBatch.update({ where: { id: f.batch.id }, data: { expiryDate: new Date('2026-10-06T04:00:00Z') } });
+    race.batchProductId = f.product.id;
+    race.beforeBatchDebit = async () => {
+      if (change === 'quarantine') await basePrisma.productBatch.update({ where: { id: f.batch.id }, data: { status: 'QUARANTINE' } });
+      else vi.setSystemTime(new Date('2026-10-05T16:00:00Z'));
+    };
+    await expect(checkout(f)).rejects.toMatchObject({ statusCode: 400 });
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(2);
+    expect((await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } })).quantity).toBe(2);
+    expect(await basePrisma.saleBatchAllocation.count({ where: { tenantId: f.tenantId } })).toBe(0);
+  });
+
+  it.each(['POS', 'order'] as const)('rolls back %s stock, order, movements and the first allocation when the next allocation fails', async (writer) => {
+    const f = await fixture(2);
+    race.allocationWrites = 0;
+    race.failAllocationAfter = 1;
+    await expect(writer === 'POS' ? checkout(f, [1, 1]) : order(f, [1, 1])).rejects.toThrow('allocation persistence failure');
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(2);
+    expect((await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } })).quantity).toBe(2);
+    expect(await basePrisma.order.count({ where: { tenantId: f.tenantId } })).toBe(0);
+    expect(await basePrisma.inventoryTransaction.count({ where: { tenantId: f.tenantId } })).toBe(0);
+    expect(await basePrisma.saleBatchAllocation.count({ where: { tenantId: f.tenantId } })).toBe(0);
+  });
+
+  it('defaults unreviewed batches to quarantine and rejects unknown/month-only expiry inputs', async () => {
+    const f = await fixture(1);
+    const created = await inTenant(f, () => ProductBatchService.create({
+      productId: f.product.id, batchNumber: 'UNREVIEWED', expiryDate: '2099-02-01T00:00:00Z', quantity: 1, costPrice: 40,
+    }));
+    expect(created.status).toBe('QUARANTINE');
+    for (const expiryDate of ['2026-10', '', 'unknown']) {
+      expect(createProductBatchSchema.body.safeParse({ productId: f.product.id, batchNumber: 'BAD-DATE', expiryDate, quantity: 1, costPrice: 40 }).success).toBe(false);
+    }
+  });
+
+  it('preserves referenced zero-stock batches and enforces allocation references and positive quantities in PostgreSQL', async () => {
+    const f = await fixture(1);
+    const other = await fixture(1);
+    await checkout(f);
+    const allocation = await basePrisma.saleBatchAllocation.findFirstOrThrow({ where: { tenantId: f.tenantId } });
+    await expect(inTenant(f, () => ProductBatchService.delete(f.batch.id))).rejects.toMatchObject({ statusCode: 400 });
+    await expect(basePrisma.productBatch.delete({ where: { id: f.batch.id } })).rejects.toMatchObject({ code: 'P2003' });
+    await expect(basePrisma.saleBatchAllocation.create({ data: { ...allocation, id: randomUUID(), batchId: other.batch.id } })).rejects.toMatchObject({ code: 'P2003' });
+    await expect(basePrisma.saleBatchAllocation.update({ where: { id: allocation.id }, data: { quantity: 0 } })).rejects.toBeDefined();
+    await expect(inTenant(other, () => ProductBatchService.getById(f.batch.id))).rejects.toMatchObject({ statusCode: 404 });
+  });
+
+  it('warns before expiry through day 30 and omits zero stock and day 31', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-06T00:00:00Z'));
+    const f = await fixture(1);
+    await basePrisma.productBatch.createMany({ data: [
+      { batchNumber: 'DAY30', expiryDate: new Date('2026-11-05T15:59:59Z'), quantity: 1 },
+      { batchNumber: 'DAY31', expiryDate: new Date('2026-11-05T16:00:00Z'), quantity: 1 },
+      { batchNumber: 'ZERO', expiryDate: new Date('2026-10-07T00:00:00Z'), quantity: 0 },
+    ].map((lot) => ({ ...lot, productId: f.product.id, tenantId: f.tenantId, costPrice: 40 })) });
+    expect((await inTenant(f, () => ProductBatchService.getAll({ expiringSoon: true }))).map((batch) => batch.batchNumber)).toEqual(['DAY30']);
+  });
 });
 
 afterAll(() => basePrisma.$disconnect());
@@ -143,6 +298,7 @@ describe('Sales stock safety (real PostgreSQL)', () => {
     const secondBatch = await basePrisma.productBatch.create({ data: {
       tenantId: f.tenantId, productId: f.product.id, batchNumber: 'LOT-2',
       expiryDate: new Date('2099-02-01'), quantity: 2, costPrice: 40,
+      status: 'RELEASED',
     } });
     const result = await inTenant(f, () => CheckoutService.checkout({
       shiftId: f.shift.id, paymentMethod: 'CASH', orderDiscountAmount: 0,
@@ -234,6 +390,7 @@ describe('Sales stock safety (real PostgreSQL)', () => {
     await basePrisma.productBatch.create({ data: {
       tenantId: f.tenantId, productId: second.id, batchNumber: 'LOT-SECOND',
       expiryDate: new Date('2099-01-01'), quantity: 2, costPrice: 20,
+      status: 'RELEASED',
     } });
     race.productId = [f.product.id, second.id].sort()[0];
     race.arrivals = 0;

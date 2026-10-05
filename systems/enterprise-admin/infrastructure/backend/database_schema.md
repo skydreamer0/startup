@@ -92,3 +92,14 @@
 ## 5. 擴充建議
 1. 若支援多租戶 (Multi-tenant B2B 架構)，所有主要資源表皆須加入 `tenant_id` 欄位並建立 Row-Level Security (RLS)。
 2. 若涉及複雜組織架構，可導入 `departments` 或 `groups` 表，建立 User -> Group -> Role 的層級繼承授權模組。
+
+## 6. 銷售批次過帳切片（2026-10-06 / ADR-014）
+
+實際 schema 以 `backend/prisma/schema.prisma` 為準；migration 為 `20261006090000_sale_batch_allocations`。
+
+- `product_batches.status` 是 `BatchStockStatus`：`RELEASED`、`QUARANTINE`、`BLOCKED`。既有／未指定批次預設隔離；數量原值保留，需確認後明確釋出。
+- `sale_batch_allocations` 保存 tenant、order、order item、product、batch、OUT movement、正整數 quantity、出庫時 expiry snapshot 與 created_at。複合外鍵防止跨租戶、跨商品或錯誤訂單明細連結；一個明細對同一批次只能分攤一次。
+- allocation 引用的批次／訂單／明細／movement 採 delete restrict。批次數量歸零仍保留來源追溯；目前不開放 allocation 更正／刪除 API。
+- POS 與一般訂單在同一 transaction 寫入商品與批次扣量、訂單、movement 和 allocation。`Product.stockQuantity` 仍代表總實體 projection，包含不可售批次，不是 released availability。
+- 舊單不 backfill 不明來源。空 allocation 是「未能追溯」，不可補造 lot。完整 immutable reversal、multi-bin、全 writer 一致性與重建仍在 #29。
+- `backend/prisma/diagnostics/preflight-sales-stock.sql` 是只讀的商品／批次差異報表，兼容前後 schema。差異須盤點確認，不能用任意批次補平。

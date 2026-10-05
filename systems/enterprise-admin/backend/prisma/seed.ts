@@ -297,11 +297,13 @@ async function main() {
                 tenantId,
                 batchNumber: `${p.sku}-SEED`,
                 expiryDate: new Date('2027-12-31T00:00:00.000Z'),
+                status: 'RELEASED',
                 quantity: p.stockQuantity,
                 costPrice: p.costPrice,
             },
             update: {
                 expiryDate: new Date('2027-12-31T00:00:00.000Z'),
+                status: 'RELEASED',
                 quantity: p.stockQuantity,
                 costPrice: p.costPrice,
             },

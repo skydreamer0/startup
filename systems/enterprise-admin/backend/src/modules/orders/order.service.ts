@@ -1,7 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
-import { deductSaleStock } from '../../lib/sale-stock';
+import { InventoryPostingService } from '../../lib/inventory-posting';
+import { requireTenantId } from '../../lib/tenant.context';
 
 export interface CreateOrderDto {
     customerId: string;
@@ -17,6 +18,7 @@ export class OrderService {
      * Create a new order with automatic stock reduction and transaction log
      */
     static async createOrder(data: CreateOrderDto) {
+        const tenantId = requireTenantId();
         return await prisma.$transaction(async (tx) => {
             // 1. Validate Customer
             const customer = await tx.customer.findUnique({
@@ -26,12 +28,10 @@ export class OrderService {
 
             let totalOrderAmount = 0;
             const orderItemsData = [];
-            const transactions = [];
-
-            const products = await deductSaleStock(tx, data.items);
+            const { products, lines } = await InventoryPostingService.debitSale(tx, data.items);
 
             // 2. Process Items
-            for (const item of data.items) {
+            for (const [index, item] of data.items.entries()) {
                 const product = products.get(item.productId)!;
 
                 const retailPrice = Number(product.retailPrice);
@@ -39,23 +39,17 @@ export class OrderService {
                 totalOrderAmount += itemTotal;
 
                 orderItemsData.push({
+                    id: lines[index].id,
                     productId: product.id,
                     quantity: item.quantity,
                     unitPrice: retailPrice
-                });
-
-                // Prepare inventory transaction
-                transactions.push({
-                    productId: product.id,
-                    type: 'OUT',
-                    quantity: item.quantity,
-                    notes: `Order fulfillment`
                 });
             }
 
             // 3. Create Order
             const order = await tx.order.create({
                 data: {
+                    tenantId,
                     customerId: data.customerId,
                     totalAmount: totalOrderAmount,
                     shippingAddress: data.shippingAddress,
@@ -63,19 +57,12 @@ export class OrderService {
                     items: {
                         create: orderItemsData
                     }
-                } as Prisma.OrderUncheckedCreateInput,
+                },
                 include: { items: true }
             });
 
             // 4. Log the stock debit in the same transaction.
-            for (const t of transactions) {
-                await tx.inventoryTransaction.create({
-                    data: {
-                        ...t,
-                        referenceId: order.id
-                    } as Prisma.InventoryTransactionUncheckedCreateInput
-                });
-            }
+            await InventoryPostingService.recordSale(tx, order.id, lines, 'Order fulfillment');
 
             // 5. Update Customer aggregated stats
             await tx.customer.update({
@@ -117,12 +104,19 @@ export class OrderService {
     }
 
     static async getOrderById(id: string) {
+        const tenantId = requireTenantId();
         const order = await prisma.order.findUnique({
             where: { id },
             include: {
                 customer: true,
                 items: {
-                    include: { product: true }
+                    include: {
+                        product: true,
+                        batchAllocations: {
+                            where: { tenantId },
+                            include: { batch: { select: { id: true, batchNumber: true, expiryDate: true } } },
+                        },
+                    }
                 }
             }
         });
