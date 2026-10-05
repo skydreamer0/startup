@@ -12,7 +12,6 @@ type ProductForm = {
     supplierId: string;
     costPrice: string;
     retailPrice: string;
-    stockQuantity: string;
     safetyStock: string;
 };
 
@@ -33,7 +32,6 @@ const emptyProductForm: ProductForm = {
     supplierId: '',
     costPrice: '0',
     retailPrice: '0',
-    stockQuantity: '0',
     safetyStock: '10',
 };
 
@@ -85,7 +83,6 @@ export default function ProductListPage() {
             supplierId: product.supplierId || product.supplier?.id || '',
             costPrice: String(product.costPrice),
             retailPrice: String(product.retailPrice),
-            stockQuantity: String(product.stockQuantity),
             safetyStock: String(product.safetyStock),
         });
     }
@@ -106,7 +103,6 @@ export default function ProductListPage() {
             supplierId: productForm.supplierId || undefined,
             costPrice: Number(productForm.costPrice),
             retailPrice: Number(productForm.retailPrice),
-            stockQuantity: Number(productForm.stockQuantity),
             safetyStock: Number(productForm.safetyStock),
         };
 
@@ -285,8 +281,8 @@ export default function ProductListPage() {
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label">Stock Quantity</label>
-                                    <input className="input-field" type="number" min="0" step="1" required value={productForm.stockQuantity}
-                                        onChange={(e) => setProductForm({ ...productForm, stockQuantity: e.target.value })} />
+                                    <output>{editProduct?.stockQuantity ?? 0}</output>
+                                    <p>庫存由批次進貨與出庫更新；新商品請另行登記批次進貨。</p>
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label">Safety Stock</label>

@@ -7,6 +7,7 @@ export interface ProductBatch {
     batchNumber: string;
     expiryDate: string;
     quantity: number;
+    status: 'RELEASED' | 'QUARANTINE' | 'BLOCKED';
     /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
     costPrice: number | string;
     receivedAt: string;
@@ -56,12 +57,13 @@ export const batchesApi = {
         expiryDate: string;
         quantity: number;
         costPrice: number;
+        status?: ProductBatch['status'];
     }) => {
         const { data } = await api.post('/product-batches', payload);
         return data;
     },
 
-    update: async (id: string, payload: { quantity?: number; notes?: string }) => {
+    update: async (id: string, payload: { status?: ProductBatch['status']; expiryDate?: string; costPrice?: number }) => {
         const { data } = await api.patch(`/product-batches/${id}`, payload);
         return data;
     },

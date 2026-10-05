@@ -31,8 +31,8 @@ router.put('/suppliers/:id', requirePermission('update:suppliers'), validate({ b
 // --- Products ---
 router.get('/products', requirePermission('read:products'), InventoryController.getProducts);
 router.get('/products/:id', requirePermission('read:products'), InventoryController.getProductById);
-router.post('/products', requirePermission('create:products'), validate({ body: createProductSchema }), InventoryController.createProduct);
-router.put('/products/:id', requirePermission('update:products'), validate({ body: updateProductSchema }), InventoryController.updateProduct);
+router.post('/products', requirePermission('create:products'), validate({ body: createProductSchema.shape.body }), InventoryController.createProduct);
+router.put('/products/:id', requirePermission('update:products'), validate({ body: updateProductSchema.shape.body }), InventoryController.updateProduct);
 
 // CSV Export/Import
 router.get('/products/export/csv', requirePermission('read:products'), CsvController.exportProducts);

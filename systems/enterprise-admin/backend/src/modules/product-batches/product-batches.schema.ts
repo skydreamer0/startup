@@ -6,7 +6,7 @@ export const createProductBatchSchema = {
     productId: z.string().min(1, 'productId is required'),
     batchNumber: z.string().min(1, 'batchNumber is required'),
     expiryDate: z.string().datetime({ message: 'expiryDate must be a valid ISO 8601 datetime string' }),
-    quantity: z.number().int().positive('quantity must be a positive integer'),
+    quantity: z.number().int().positive('quantity must be a positive integer').max(2_147_483_647),
     costPrice: z.number().positive('costPrice must be a positive number'),
     status: z.nativeEnum(BatchStockStatus).optional(),
   }),
@@ -14,7 +14,7 @@ export const createProductBatchSchema = {
 
 export const updateProductBatchSchema = {
   body: z.object({
-    quantity: z.number().int().min(0).optional(),
+    quantity: z.never().optional(),
     costPrice: z.number().positive().optional(),
     expiryDate: z.string().datetime().optional(),
     status: z.nativeEnum(BatchStockStatus).optional(),

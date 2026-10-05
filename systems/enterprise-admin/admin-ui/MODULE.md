@@ -52,6 +52,12 @@
 2. `src/components/ImportProductsModal.tsx` pairs preview identity with the selected File and must send that token through `src/api/excel.ts` on confirmation. Changing the file or a rejected confirmation requires preview again.
 3. Use the nearest modal tests for file/token pairing and recovery. Backend `excel-import.integration.test.ts` supplies real PostgreSQL stock-preservation and preview-integrity evidence.
 
+### Change initial batch receipt
+
+1. Read API spec §3.10 and ADR-017. Product metadata cannot edit physical stock; receipt is the batch creation operation and unreviewed stock defaults to quarantine.
+2. `pages/Inventory/BatchListPage.tsx` consumes paginated product data, sends a complete expiry date and refreshes both batch/product queries after receipt. Show API errors and keep expiry/inspection states distinct, using Asia/Taipei dates.
+3. Use its nearest screen tests and a real API/browser receipt flow. Physical-return receipt and approval remain separate pending work.
+
 ### Debug a UI test failure
 
 1. Read the failing test.

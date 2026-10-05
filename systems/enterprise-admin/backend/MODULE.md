@@ -53,6 +53,7 @@
 4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention, FEFO, persistence and rollback evidence. Use `prisma/diagnostics/preflight-sales-stock.sql` for read-only legacy balance discrepancies. This partial boundary does not complete G1/G2/G4 or command dedupe.
 5. POS `refundOrder` registers money-only refund status with a conditional transition; it must not receive stock or modify sale allocations. Read ADR-015 before changing refund/return semantics. Physical-return receipt remains separate pending work.
 6. Excel product import is metadata-only and cannot set physical stock. Read ADR-016, `src/lib/product-import-preview.ts` and `src/__tests__/excel-import.integration.test.ts` before changing preview/confirm identity or normalization. Confirm requires a signed tenant/file/normalized-revision preview; bump parser version when semantics change.
+7. Initial batch receipt uses `InventoryPostingService.receiveBatch` in the caller-owned transaction, product lock first, then lot + IN movement with receipt cost snapshot. Product/batch editors reject direct quantity writes; CSV creates at zero. Read ADR-017 and `inventory-receipt.integration.test.ts`. Batch RBAC uses the existing product permission catalogue. This does not implement physical returns, same-lot additional delivery, bins or reversal/rebuild.
 
 ### Change persistence or model meaning
 

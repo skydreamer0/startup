@@ -19,6 +19,7 @@ type BatchForm = {
     expiryDate: string;
     quantity: string;
     costPrice: string;
+    status: ProductBatch['status'];
 };
 
 const emptyBatchForm: BatchForm = {
@@ -27,16 +28,16 @@ const emptyBatchForm: BatchForm = {
     expiryDate: '',
     quantity: '',
     costPrice: '',
+    status: 'QUARANTINE',
 };
 
 function getExpiryStatus(expiryDate: string): { label: string; badgeClass: string } {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const expiry = new Date(expiryDate);
-    expiry.setHours(0, 0, 0, 0);
+    const calendar = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' });
+    const today = new Date(`${calendar.format(new Date())}T00:00:00Z`);
+    const expiry = new Date(`${calendar.format(new Date(expiryDate))}T00:00:00Z`);
 
-    if (expiry < today) {
-        return { label: '已過期', badgeClass: 'badge-danger' };
+    if (expiry <= today) {
+        return { label: '到期不可出庫', badgeClass: 'badge-danger' };
     }
 
     const diffMs = expiry.getTime() - today.getTime();
@@ -46,7 +47,7 @@ function getExpiryStatus(expiryDate: string): { label: string; badgeClass: strin
         return { label: '即將到期', badgeClass: 'badge-warning' };
     }
 
-    return { label: '正常', badgeClass: 'badge-success' };
+    return { label: '效期有效', badgeClass: 'badge-success' };
 }
 
 export default function BatchListPage() {
@@ -56,14 +57,23 @@ export default function BatchListPage() {
     const [saving, setSaving] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data: batchesData, isLoading: loading } = useQuery({
+    const { data: batchesData, isLoading: loading, isError: batchError } = useQuery({
         queryKey: ['batches', expiringSoon],
         queryFn: () => batchesApi.getAll({ expiringSoon: expiringSoon || undefined }),
     });
 
-    const { data: products } = useQuery({
+    const { data: products, isError: productError, isPending: productsPending } = useQuery({
         queryKey: ['inventory', 'products', 'batches'],
-        queryFn: () => inventoryApi.getProducts(),
+        queryFn: async () => {
+            const all: Product[] = [];
+            let page = 1;
+            while (true) {
+                const result = await inventoryApi.getProducts({ page: String(page) });
+                all.push(...result.data);
+                if (all.length >= result.total || result.data.length === 0) return all;
+                page++;
+            }
+        },
     });
 
     const batches: ProductBatch[] = batchesData?.data || [];
@@ -86,12 +96,14 @@ export default function BatchListPage() {
             await batchesApi.create({
                 productId: batchForm.productId,
                 batchNumber: batchForm.batchNumber,
-                expiryDate: batchForm.expiryDate,
+                expiryDate: `${batchForm.expiryDate}T00:00:00.000Z`,
                 quantity: Number(batchForm.quantity),
                 costPrice: Number(batchForm.costPrice),
+                status: batchForm.status,
             });
             closeCreate();
             queryClient.invalidateQueries({ queryKey: ['batches'] });
+            queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
         } catch (err) {
             const message = (err as ApiError).response?.data?.error?.message || 'Failed to create batch';
             alert(message);
@@ -130,15 +142,15 @@ export default function BatchListPage() {
                             className={`btn ${expiringSoon ? 'btn-primary' : 'btn-ghost'}`}
                             onClick={() => setExpiringSoon(true)}
                         >
-                            30天內到期
+                            到期／30天內需處理
                         </button>
                     </div>
-                    <button className="btn btn-primary" onClick={openCreate}>+ 新增批號</button>
+                    <button className="btn btn-primary" onClick={openCreate}>+ 登記批次進貨</button>
                 </div>
             </header>
 
             <div className="card table-container">
-                {loading ? (
+                {batchError ? <p role="alert">無法載入批次資料，請重新整理後再試。</p> : loading ? (
                     <div className="card"><p>Loading...</p></div>
                 ) : (
                     <table className="table">
@@ -175,10 +187,11 @@ export default function BatchListPage() {
                                                 <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{batch.product?.sku}</div>
                                             </td>
                                             <td>
-                                                {new Date(batch.expiryDate).toLocaleDateString('zh-TW')}
+                                                {new Date(batch.expiryDate).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' })}
                                             </td>
                                             <td>
                                                 <span className={`badge ${badgeClass}`}>{label}</span>
+                                                <span className="badge">{batch.status === 'RELEASED' ? '已驗收' : batch.status === 'BLOCKED' ? '封鎖' : '待驗收隔離'}</span>
                                             </td>
                                             <td>{batch.quantity.toLocaleString()}</td>
                                             <td>${Number(batch.costPrice).toLocaleString()}</td>
@@ -200,14 +213,18 @@ export default function BatchListPage() {
             </div>
 
             {showCreate && (
-                <div className="modal-overlay" onClick={closeCreate}>
+                <div className="modal-overlay" onClick={() => { if (!saving) closeCreate(); }}>
                     <div className="modal-content card" onClick={(e) => e.stopPropagation()}>
-                        <h2 className="modal-title">新增批號</h2>
+                        <h2 className="modal-title">登記批次進貨</h2>
+                        <p>登記後同步增加商品與批次帳量。未驗收的商品保持隔離，不可出庫；到期當日不可出庫。</p>
+                        {productError && <p role="alert">無法載入商品，請重新整理後再試。</p>}
                         <form onSubmit={handleCreate}>
+                            <fieldset disabled={saving} style={{ border: 0, padding: 0 }}>
                             <div className="login-form">
                                 <div className="input-group">
-                                    <label className="input-label">商品</label>
+                                    <label className="input-label" htmlFor="receipt-product">商品</label>
                                     <select
+                                        id="receipt-product"
                                         className="input-field"
                                         required
                                         value={batchForm.productId}
@@ -222,8 +239,9 @@ export default function BatchListPage() {
                                     </select>
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">批號</label>
+                                    <label className="input-label" htmlFor="receipt-batch">批號</label>
                                     <input
+                                        id="receipt-batch"
                                         className="input-field"
                                         type="text"
                                         required
@@ -233,8 +251,9 @@ export default function BatchListPage() {
                                     />
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">到期日</label>
+                                    <label className="input-label" htmlFor="receipt-expiry">到期日</label>
                                     <input
+                                        id="receipt-expiry"
                                         className="input-field"
                                         type="date"
                                         required
@@ -243,8 +262,9 @@ export default function BatchListPage() {
                                     />
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">數量</label>
+                                    <label className="input-label" htmlFor="receipt-quantity">數量</label>
                                     <input
+                                        id="receipt-quantity"
                                         className="input-field"
                                         type="number"
                                         min="1"
@@ -255,8 +275,9 @@ export default function BatchListPage() {
                                     />
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">進貨成本</label>
+                                    <label className="input-label" htmlFor="receipt-cost">進貨成本</label>
                                     <input
+                                        id="receipt-cost"
                                         className="input-field"
                                         type="number"
                                         min="0"
@@ -266,11 +287,23 @@ export default function BatchListPage() {
                                         onChange={(e) => setBatchForm({ ...batchForm, costPrice: e.target.value })}
                                     />
                                 </div>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="receipt-status">驗收狀態</label>
+                                    <select id="receipt-status" className="input-field" value={batchForm.status} onChange={(e) => {
+                                        const status = e.target.value;
+                                        if (status === 'QUARANTINE' || status === 'RELEASED' || status === 'BLOCKED') setBatchForm({ ...batchForm, status });
+                                    }}>
+                                        <option value="QUARANTINE">待驗收隔離</option>
+                                        <option value="RELEASED">已驗收可售</option>
+                                        <option value="BLOCKED">封鎖</option>
+                                    </select>
+                                </div>
                             </div>
+                            </fieldset>
                             <div className="modal-actions">
-                                <button type="button" className="btn btn-ghost" onClick={closeCreate}>取消</button>
-                                <button type="submit" className="btn btn-primary" disabled={saving}>
-                                    {saving ? '建立中...' : '建立批號'}
+                                <button type="button" className="btn btn-ghost" onClick={closeCreate} disabled={saving}>取消</button>
+                                <button type="submit" className="btn btn-primary" disabled={saving || productsPending || productError}>
+                                    {saving ? '登記中...' : '登記進貨'}
                                 </button>
                             </div>
                         </form>

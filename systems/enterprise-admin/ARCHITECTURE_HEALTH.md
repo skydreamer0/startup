@@ -36,6 +36,15 @@ admin upload/preview/confirm smoke kept API stock 2 when the file requested 999;
 unknown opening lots were not invented. Existing product/batch editor writers,
 receipt/return posting and full reconciliation still need cutover.
 
+ADR-017 initial receipts now share the product lock and transaction for aggregate,
+lot and IN movement writes, with durable lot/cost provenance. Direct product/lot
+quantity edits are rejected, and CSV creates at zero. Eight failures were reproduced;
+full backend 28 files / 218 tests and Admin UI 7 files / 21 tests passed, including
+15 new real DB receipt/API cases. Build/lint/generation passed; migration/schema
+diff found no drift. Actual Chromium create/receipt/trace/edit conserved 3 / 3 / 3
+with no page errors. Receipt and prior sale provenance survived a real API process
+restart. The synthetic legacy 9 / 4 discrepancy remains unchanged; physical
+return, bin/reversal/rebuild and production reconciliation are still incomplete.
 The first #29/#30 slice repairs aggregate duplicate demand and competing POS/general-order product debits. PostgreSQL tests synchronized real reads and reproduced 5 failures before the fix, including two buyers of the last unit and a negative batch balance. ADR-013 records the transaction boundary and its limits.
 
 | Check | Result | Evidence / scope |

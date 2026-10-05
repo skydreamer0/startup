@@ -142,6 +142,16 @@ HTTP Status Code 需精確映射錯誤類別：
 
 既有逐列錯誤回報保留；預覽的新增／更新數量是當時資料庫的估計。此憑證不是一次性的庫存命令，也未提供 durable result recovery；重試商品資料更新不會增加實體庫存。
 
+### 3.10 批次初次進貨與禁止直接改量（2026-10-06 / ADR-017）
+
+- `POST /product-batches` 使用 `create:products`。接受既有 productId、batchNumber、完整 ISO expiryDate、正整數 quantity（上限 2147483647）、正成本 costPrice、選填 status。同一 transaction 鎖定並增加商品總量、建立批次、寫 IN movement；預設 QUARANTINE。RELEASED 在取得鎖後再次檢查到期當日規則。重複批號回 `409`，庫存不再增加；不是追加同批第二次到貨或 command 結果查詢。
+- `GET /product-batches` 與 `GET /product-batches/:id` 使用 `read:products`。明細增加 `receiptMovements`，含實收 quantity、batchId、costPriceAtReceipt；舊 movement 無已知批次時保持 null。
+- `PATCH /product-batches/:id` 使用 `update:products`，可改既有 metadata／status，quantity 欄位回 `400`。`DELETE` 同權限，剩餘量或任何出庫／進貨引用回 `400`。
+- `POST /inventory/products` 使用 `create:products`，flat metadata body，新商品 stockQuantity 必為 0（可省略或明確傳 0）；其他值回 `400`。`PUT /inventory/products/:id` 使用 `update:products`，任何 stockQuantity 欄位回 `400`。UI 顯示帳量但不提供數量編輯。
+- `POST /inventory/products/import/csv` 仍跳過既有 SKU；新 SKU 從 0 開始，回 warnings 說明庫存欄位未匯入。
+
+商品總量包括隔離／到期實體庫存，不能當可售承諾。此切片未提供實體退回、multi-bin、調整反向過帳、完整 immutable ledger／rebuild 或正式開帳對帳；父 issue 保持開啟。
+
 ## 4. API 開發防呆規範 (Best Practices)
 1. **輸入過濾 (Input Sanitization)**: 所有外部輸入 `body`, `query`, `params` 皆須經 Schema Validator (如 Zod, Class-Validator) 的過濾，防止 SQL Injection 與 XSS。
 2. **分頁參數 (Pagination)**: `GET` 列表類型 API 強制支援 `?page=1&limit=20` 或 `cursor`，並限制 最大 `limit` (避免撈取整表拖垮 DB)。
