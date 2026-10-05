@@ -8,6 +8,18 @@
 
 ## 2026-10-06 Sales Stock Refresh
 
+The second #29 slice now shares eligible batch posting between POS and general
+orders and persists actual allocations (ADR-014). The latest local full backend
+suite passed 26 files / 187 tests, including 31 real PostgreSQL stock cases.
+Prisma generation, build and lint passed. A synthetic seven-migration upgrade
+preserved a 9 / 4 legacy discrepancy, quarantined the old lot, and left the old
+order untraceable with zero fabricated allocations. The read-only preflight
+reports that difference. Existing/unreviewed lots require review before release;
+there was no production data migration or complete G1/G2/G4 acceptance. Refunds,
+other writer cutover, commands and monetary correctness remain active work.
+
+The following table records the first slice's earlier evidence:
+
 The first #29/#30 slice repairs aggregate duplicate demand and competing POS/general-order product debits. PostgreSQL tests synchronized real reads and reproduced 5 failures before the fix, including two buyers of the last unit and a negative batch balance. ADR-013 records the transaction boundary and its limits.
 
 | Check | Result | Evidence / scope |
@@ -19,7 +31,7 @@ The first #29/#30 slice repairs aggregate duplicate demand and competing POS/gen
 | Agent context | Passed | `./scripts/validate-agent-context.sh` |
 | UI/E2E and complete G1/G2 acceptance | Not run / incomplete | No claim of full command, allocation, monetary, all-writer or production acceptance |
 
-Tests used an isolated PostgreSQL 15 container/database at localhost:5544, existing migrations and synthetic fixtures. General orders still do not debit batches; adjustment/import cutover, eligible FEFO, durable allocations, refund safety, command identity and monetary correctness remain active #29/#30 work. Consult the current ROADMAP and #37 rather than treating the historical closed findings below as release acceptance.
+Tests used an isolated PostgreSQL 15 container/database at localhost:5544, migrations and synthetic fixtures. The latest sales slice resolves eligible batch debits/allocations for both sale writers; other authority, refund, command and money requirements remain. Consult the current ROADMAP and #37 rather than treating historical closed findings below as release acceptance.
 
 ---
 

@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
 import { tenantPersistence } from '../../lib/tenant-persistence';
-import { deductSaleStock } from '../../lib/sale-stock';
+import { InventoryPostingService } from '../../lib/inventory-posting';
 import { ProductAnalyticsService } from '../analytics/product-analytics.service';
 import { CrmService } from '../crm/crm.service';
 import { CheckoutDto } from './pos.schema';
@@ -51,9 +51,10 @@ export class CheckoutService {
       }
 
       // 4. Claim aggregate product demand before processing the original price lines.
-      const products = await deductSaleStock(tx, dto.cartItems);
+      const { products, lines } = await InventoryPostingService.debitSale(tx, dto.cartItems);
       let subtotal = 0;
       const itemsData: {
+        id: string;
         productId: string;
         quantity: number;
         unitPrice: number;
@@ -61,30 +62,8 @@ export class CheckoutService {
         finalUnitPrice: number;
       }[] = [];
 
-      for (const cartItem of dto.cartItems) {
+      for (const [index, cartItem] of dto.cartItems.entries()) {
         const product = products.get(cartItem.productId)!;
-
-        // FEFO ordering. Eligibility policy and durable allocations remain #29 work.
-        const batches = await tx.productBatch.findMany({
-          where: tenant.where({ productId: cartItem.productId, quantity: { gt: 0 } }),
-          orderBy: [{ expiryDate: 'asc' }, { receivedAt: 'asc' }, { id: 'asc' }],
-        });
-
-        let remaining = cartItem.quantity;
-        for (const batch of batches) {
-          if (remaining <= 0) break;
-          const deduct = Math.min(batch.quantity, remaining);
-          const result = await tx.productBatch.updateMany({
-            where: tenant.where({ id: batch.id, productId: cartItem.productId, quantity: { gte: deduct } }),
-            data: { quantity: { decrement: deduct } },
-          });
-          if (result.count !== 1) throw new AppError(400, `Insufficient batch stock for "${product.name}"`);
-          remaining -= deduct;
-        }
-
-        if (remaining > 0) {
-          throw new AppError(400, `Insufficient batch stock for "${product.name}"`);
-        }
 
         const discountRate = cartItem.discountRate ?? 0;
         const retailPrice = Number(product.retailPrice);
@@ -92,6 +71,7 @@ export class CheckoutService {
         subtotal += finalUnitPrice * cartItem.quantity;
 
         itemsData.push({
+          id: lines[index].id,
           productId: cartItem.productId,
           quantity: cartItem.quantity,
           unitPrice: retailPrice,
@@ -140,6 +120,7 @@ export class CheckoutService {
           salesStaffId,
           items: {
             create: itemsData.map((item) => ({
+              id: item.id,
               productId: item.productId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
@@ -161,18 +142,7 @@ export class CheckoutService {
       });
 
       // 8. Log the already-debited stock in the same transaction as the order.
-      for (const item of itemsData) {
-        await tx.inventoryTransaction.create({
-          data: {
-            tenantId: tenant.tenantId,
-            productId: item.productId,
-            type: 'OUT',
-            quantity: item.quantity,
-            referenceId: order.id,
-            notes: `POS sale — ${orderNumber}`,
-          },
-        });
-      }
+      await InventoryPostingService.recordSale(tx, order.id, lines, `POS sale — ${orderNumber}`);
 
       return order;
     });
@@ -458,7 +428,13 @@ export class CheckoutService {
       where: tenant.where({ id: orderId }),
       include: {
         items: {
-          include: { product: { select: { id: true, name: true, sku: true } } },
+          include: {
+            product: { select: { id: true, name: true, sku: true } },
+            batchAllocations: {
+              where: tenant.where(),
+              include: { batch: { select: { id: true, batchNumber: true, expiryDate: true } } },
+            },
+          },
         },
       },
     });

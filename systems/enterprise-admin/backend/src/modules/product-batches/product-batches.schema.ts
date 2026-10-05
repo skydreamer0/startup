@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BatchStockStatus } from '@prisma/client';
 
 export const createProductBatchSchema = {
   body: z.object({
@@ -7,6 +8,7 @@ export const createProductBatchSchema = {
     expiryDate: z.string().datetime({ message: 'expiryDate must be a valid ISO 8601 datetime string' }),
     quantity: z.number().int().positive('quantity must be a positive integer'),
     costPrice: z.number().positive('costPrice must be a positive number'),
+    status: z.nativeEnum(BatchStockStatus).optional(),
   }),
 };
 
@@ -15,6 +17,7 @@ export const updateProductBatchSchema = {
     quantity: z.number().int().min(0).optional(),
     costPrice: z.number().positive().optional(),
     expiryDate: z.string().datetime().optional(),
+    status: z.nativeEnum(BatchStockStatus).optional(),
   }),
 };
 

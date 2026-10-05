@@ -25,3 +25,4 @@ Each ADR should follow the standard format:
 - [ADR-011: Production Deployment Topology](adr_011_production_deployment.md)
 - [ADR-012: Shared UI Library Boundary Decision](adr_012_shared_ui_library_decision.md)
 - [ADR-013: Conditional Sales Stock Debit](adr_013_conditional_sales_stock_debit.md)
+- [ADR-014: Eligible Sale Batch Posting and Durable Allocations](adr_014_sale_batch_posting.md)

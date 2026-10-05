@@ -8,9 +8,8 @@ interface SaleQuantity {
   quantity: number;
 }
 
-/** Debits only the product projection, inside the caller's transaction.
- * Batch posting, allocations, command dedupe and other writers remain separate
- * work in #29/#30. This helper is not the complete InventoryPostingService.
+/** Internal aggregate projection debit used by InventoryPostingService.
+ * Command dedupe and other writers remain separate work in #29/#30.
  */
 export async function deductSaleStock(tx: Pick<typeof prisma, 'product'>, items: readonly SaleQuantity[]) {
   const tenantId = requireTenantId();

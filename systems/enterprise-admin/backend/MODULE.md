@@ -47,10 +47,10 @@
 
 ### Change sale stock deduction
 
-1. Read `../infrastructure/adr/adr_013_conditional_sales_stock_debit.md` and active issues linked from `../ROADMAP.md`.
-2. POS checkout and general orders share `src/lib/sale-stock.ts` for aggregate, tenant-scoped conditional product debits inside the caller's transaction.
-3. POS batch debits remain in its checkout service; general orders and other writers are not yet a complete common batch/ledger authority.
-4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention/rollback evidence. This partial boundary does not complete G1/G2 or command dedupe.
+1. Read ADR-013, `../infrastructure/adr/adr_014_sale_batch_posting.md` and active issues linked from `../ROADMAP.md`.
+2. POS and general orders call `src/lib/inventory-posting.ts` with the same caller-owned transaction for aggregate product/batch debits, OUT movements and durable `SaleBatchAllocation` rows. `sale-stock.ts` is its internal product-debit helper.
+3. Eligibility uses released stock and Asia/Taipei calendar dates from `batch-expiry.ts`; stock is unusable on its expiry day. Existing/unreviewed batches default to quarantine. Other writers still await common-authority cutover.
+4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention, FEFO, persistence and rollback evidence. Use `prisma/diagnostics/preflight-sales-stock.sql` for read-only legacy balance discrepancies. This partial boundary does not complete G1/G2/G4 or command dedupe.
 
 ### Change persistence or model meaning
 

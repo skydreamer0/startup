@@ -8,6 +8,7 @@ vi.mock('../lib/prisma', () => ({
     customer: { findFirst: vi.fn() },
     order: { findFirst: vi.fn(), create: vi.fn() },
     inventoryTransaction: { create: vi.fn() },
+    saleBatchAllocation: { createMany: vi.fn() },
     $transaction: vi.fn(),
   },
 }));
@@ -27,6 +28,7 @@ const mockTx = {
   customer: { findFirst: vi.fn() },
   order: { findFirst: vi.fn(), create: vi.fn() },
   inventoryTransaction: { create: vi.fn() },
+  saleBatchAllocation: { createMany: vi.fn() },
 };
 
 beforeEach(() => {

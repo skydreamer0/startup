@@ -40,6 +40,7 @@ model Tenant {
   accountingSyncLogs AccountingSyncLog[]
   messageBroadcasts  MessageBroadcast[]
   orderPayments      OrderPayment[]
+  saleBatchAllocations SaleBatchAllocation[]
 
   @@map("tenants")
 }
@@ -341,7 +342,9 @@ model Order {
   payments   OrderPayment[]
   shift      Shift?         @relation(fields: [shiftId], references: [id])
   salesStaff User?          @relation("SalesOrders", fields: [salesStaffId], references: [id])
+  batchAllocations SaleBatchAllocation[]
 
+  @@unique([id, tenantId])
   @@index([tenantId])
   @@index([customerId])
   @@index([shiftId])
@@ -362,6 +365,8 @@ model OrderItem {
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
+  batchAllocations SaleBatchAllocation[]
+  @@unique([id, orderId, productId])
   @@map("order_items")
 }
 
@@ -395,6 +400,8 @@ model InventoryTransaction {
   tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  batchAllocations SaleBatchAllocation[]
+  @@unique([id, productId, tenantId])
   @@index([tenantId])
   @@index([productId])
   @@map("inventory_transactions")
@@ -449,17 +456,53 @@ model ProductBatch {
   batchNumber String   @map("batch_number")   // 批號，如 "LOT-20240101"
   expiryDate  DateTime @map("expiry_date")    // 到期日
   quantity    Int      @default(0)            // 此批次剩餘庫存
+  status      BatchStockStatus @default(QUARANTINE)
   costPrice   Decimal  @map("cost_price")     @db.Decimal(12, 4) // 此批次進貨成本
   receivedAt  DateTime @default(now()) @map("received_at")
 
   tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  saleAllocations SaleBatchAllocation[]
+
   @@unique([productId, batchNumber, tenantId])
+  @@unique([id, productId, tenantId])
   @@index([tenantId])
   @@index([productId])
   @@index([expiryDate])
   @@map("product_batches")
+}
+
+enum BatchStockStatus {
+  RELEASED
+  QUARANTINE
+  BLOCKED
+}
+
+// Actual sale deductions only. Historical orders are deliberately not backfilled.
+model SaleBatchAllocation {
+  id               String @id @default(uuid())
+  tenantId         String @map("tenant_id")
+  orderId          String @map("order_id")
+  orderItemId      String @map("order_item_id")
+  productId        String @map("product_id")
+  batchId          String @map("batch_id")
+  movementId       String @map("movement_id")
+  quantity         Int
+  expiryDateAtSale DateTime @map("expiry_date_at_sale")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  order     Order @relation(fields: [orderId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  orderItem OrderItem @relation(fields: [orderItemId, orderId, productId], references: [id, orderId, productId], onDelete: Restrict)
+  batch     ProductBatch @relation(fields: [batchId, productId, tenantId], references: [id, productId, tenantId], onDelete: Restrict)
+  movement  InventoryTransaction @relation(fields: [movementId, productId, tenantId], references: [id, productId, tenantId], onDelete: Restrict)
+
+  @@unique([orderItemId, batchId])
+  @@index([tenantId, orderId])
+  @@index([tenantId, batchId])
+  @@index([movementId])
+  @@map("sale_batch_allocations")
 }
 
 model DailySettlement {

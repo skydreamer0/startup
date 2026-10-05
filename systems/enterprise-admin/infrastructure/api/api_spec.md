@@ -106,6 +106,23 @@ HTTP Status Code 需精確映射錯誤類別：
 | `POST` | `/inventory/suppliers`          | 新增供應商                                   | `suppliers:create`  |
 | `PUT`  | `/inventory/suppliers/:id`      | 更新供應商評比與狀態                         | `suppliers:update`  |
 
+### 3.7 銷售批次追溯（2026-10-06 / ADR-014）
+
+既有路徑與 RBAC 維持，以下是新增的回應欄位及過帳約束：
+
+| 路徑 | 契約 |
+| ---- | ---- |
+| `POST /pos/checkout`、`POST /orders` | 同一 transaction 扣商品與合格批次，並保存出庫 movement / allocation。沒有合格批次回 `400`，任何寫入失敗全部回滾。 |
+| `GET /pos/orders/:orderId`、`GET /orders/:id` | `items[].batchAllocations[]` 提供實扣 `batchId`、`quantity`、`movementId`、`expiryDateAtSale`、`createdAt`，及 `batch: { id, batchNumber, expiryDate }`。舊單空陣列表示尚無可追溯批次。 |
+| `GET /product-batches/:id` | 新增 `saleAllocations[]`（最近 100 筆，含 `order: { id, orderNumber, createdAt }`）及 `_count.saleAllocations`；超過 100 筆時明確由 count 辨識截斷。跨租戶資源回 `404`。 |
+| `POST /product-batches`、`PATCH /product-batches/:id` | 可接受 `status: RELEASED / QUARANTINE / BLOCKED`，沿用 `manage:inventory`。新增未指定狀態時預設 `QUARANTINE`；遷移舊批次同樣待確認。 |
+| `GET /product-batches?expiringSoon=true` | 有剩餘數量且台北日期落在未來 30 天內的批次（含已逾期，供處理），排除零庫存；不等於可售庫存清單。 |
+| `DELETE /product-batches/:id` | 有剩餘數量或曾被 sale allocation 引用時回 `400`，保留零庫存出庫歷史。 |
+
+門店採 `Asia/Taipei` 日曆日期；**到期當天即不可出庫**。只有 `RELEASED`、正數庫存且效期日期晚於今天的批次可被 FEFO 選用。扣庫時再次驗證狀態、效期與數量。效期仍要求完整 ISO datetime；未知或僅年月不會推定成任意日期。
+
+這個切片沒有提供退款後實體回補、完整收貨／調整／Excel 共用權威、冪等命令、唯一單號或精確金額承諾；完整 #29/#30 驗收持續追蹤。
+
 ## 4. API 開發防呆規範 (Best Practices)
 1. **輸入過濾 (Input Sanitization)**: 所有外部輸入 `body`, `query`, `params` 皆須經 Schema Validator (如 Zod, Class-Validator) 的過濾，防止 SQL Injection 與 XSS。
 2. **分頁參數 (Pagination)**: `GET` 列表類型 API 強制支援 `?page=1&limit=20` 或 `cursor`，並限制 最大 `limit` (避免撈取整表拖垮 DB)。

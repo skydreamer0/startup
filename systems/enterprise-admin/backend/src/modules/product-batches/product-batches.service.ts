@@ -1,6 +1,8 @@
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
+import { BatchStockStatus, Prisma } from '@prisma/client';
+import { saleExpiryCutoff } from '../../lib/batch-expiry';
 
 export interface CreateProductBatchDto {
   productId: string;
@@ -8,12 +10,14 @@ export interface CreateProductBatchDto {
   expiryDate: string;
   quantity: number;
   costPrice: number;
+  status?: BatchStockStatus;
 }
 
 export interface UpdateProductBatchDto {
   quantity?: number;
   costPrice?: number;
   expiryDate?: string;
+  status?: BatchStockStatus;
 }
 
 export class ProductBatchService {
@@ -27,9 +31,10 @@ export class ProductBatchService {
     }
 
     if (filters?.expiringSoon) {
-      const thirtyDaysFromNow = new Date();
-      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-      where.expiryDate = { lte: thirtyDaysFromNow };
+      // Include expired stock for action as well as advance warnings through
+      // calendar day 30, regardless of the server's local timezone.
+      where.expiryDate = { lt: new Date(saleExpiryCutoff().getTime() + 30 * 86_400_000) };
+      where.quantity = { gt: 0 };
     }
 
     return prisma.productBatch.findMany({
@@ -47,6 +52,13 @@ export class ProductBatchService {
       where: { id, tenantId },
       include: {
         product: { select: { id: true, name: true, sku: true } },
+        saleAllocations: {
+          where: { tenantId },
+          take: 100,
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+          include: { order: { select: { id: true, orderNumber: true, createdAt: true } } },
+        },
+        _count: { select: { saleAllocations: true } },
       },
     });
     if (!batch) throw new AppError(404, 'Product batch not found');
@@ -70,6 +82,7 @@ export class ProductBatchService {
         expiryDate: new Date(data.expiryDate),
         quantity: data.quantity,
         costPrice: data.costPrice,
+        status: data.status ?? 'QUARANTINE',
       },
       include: {
         product: { select: { id: true, name: true, sku: true } },
@@ -88,6 +101,7 @@ export class ProductBatchService {
         ...(data.quantity !== undefined ? { quantity: data.quantity } : {}),
         ...(data.costPrice !== undefined ? { costPrice: data.costPrice } : {}),
         ...(data.expiryDate !== undefined ? { expiryDate: new Date(data.expiryDate) } : {}),
+        ...(data.status !== undefined ? { status: data.status } : {}),
       },
       include: {
         product: { select: { id: true, name: true, sku: true } },
@@ -101,6 +115,16 @@ export class ProductBatchService {
     if (!batch) throw new AppError(404, 'Product batch not found');
     if (batch.quantity !== 0) throw new AppError(400, 'Cannot delete a batch with remaining quantity');
 
-    await prisma.productBatch.delete({ where: { id } });
+    if (await prisma.saleBatchAllocation.count({ where: { tenantId, batchId: id } })) {
+      throw new AppError(400, 'Cannot delete a batch referenced by a sale');
+    }
+    try {
+      await prisma.productBatch.delete({ where: { id } });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
+        throw new AppError(400, 'Cannot delete a batch referenced by a sale');
+      }
+      throw error;
+    }
   }
 }
