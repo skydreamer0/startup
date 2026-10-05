@@ -28,6 +28,14 @@ with unchanged product stock. Refund registration no longer receives physical
 goods; partial return/quarantine/release and financial command execution are
 still pending.
 
+ADR-016 now binds product-import confirmation to signed tenant/file/normalized
+preview identity and prevents master-data imports from changing physical stock.
+Latest backend suite: 27 files / 203 tests passed, including 9 real PostgreSQL
+import cases. Admin UI: 6 files / 18 tests, lint and build passed. A real Chromium
+admin upload/preview/confirm smoke kept API stock 2 when the file requested 999;
+unknown opening lots were not invented. Existing product/batch editor writers,
+receipt/return posting and full reconciliation still need cutover.
+
 The first #29/#30 slice repairs aggregate duplicate demand and competing POS/general-order product debits. PostgreSQL tests synchronized real reads and reproduced 5 failures before the fix, including two buyers of the last unit and a negative batch balance. ADR-013 records the transaction boundary and its limits.
 
 | Check | Result | Evidence / scope |

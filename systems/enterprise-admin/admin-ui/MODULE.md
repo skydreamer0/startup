@@ -46,6 +46,12 @@
 3. Open affected page/hook consumers.
 4. Update context if API contract meaning or source-of-truth routing changes.
 
+### Change product Excel import
+
+1. Read API spec §3.9 and ADR-016. This is master-data import: quantities are not inventory postings; existing stock stays unchanged and new products start at zero.
+2. `src/components/ImportProductsModal.tsx` pairs preview identity with the selected File and must send that token through `src/api/excel.ts` on confirmation. Changing the file or a rejected confirmation requires preview again.
+3. Use the nearest modal tests for file/token pairing and recovery. Backend `excel-import.integration.test.ts` supplies real PostgreSQL stock-preservation and preview-integrity evidence.
+
 ### Debug a UI test failure
 
 1. Read the failing test.

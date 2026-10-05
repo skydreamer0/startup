@@ -1,9 +1,10 @@
 import ExcelJS from 'exceljs';
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { requireTenantId } from '../../lib/tenant.context';
 import { AppError } from '../../lib/errors';
+import { createHash } from 'node:crypto';
+import { issueProductImportPreview, verifyProductImportPreview } from '../../lib/product-import-preview';
 
 // ─── Validation Schemas ─────────────────────────────────────
 const productImportSchema = z.object({
@@ -25,6 +26,14 @@ export interface ImportSummary {
     created: number;
     updated: number;
     errors: ImportError[];
+    warnings: string[];
+}
+
+export interface ImportPreview extends ImportSummary {
+    previewToken: string;
+    fileHash: string;
+    normalizedRevision: string;
+    expiresAt: number;
 }
 
 interface ParsedProductRow {
@@ -32,6 +41,16 @@ interface ParsedProductRow {
     raw: Record<string, unknown>;
     parsed?: z.infer<typeof productImportSchema>;
     error?: string;
+}
+
+const IMPORT_WARNINGS = ['此匯入只更新商品資料，不匯入庫存數量；既有庫存保持原值，新商品庫存從 0 開始，請另行收貨或開帳。'];
+// Bump when normalization/validation semantics change; never approve a changed
+// parse under an older preview, even if the uploaded bytes are identical.
+const PRODUCT_IMPORT_PARSER_VERSION = 'master-data-v1';
+function normalizedRevision(rows: readonly ParsedProductRow[]) {
+    return createHash('sha256').update(JSON.stringify({ version: PRODUCT_IMPORT_PARSER_VERSION,
+        rows: rows.map(({ rowNumber, parsed, error }) => ({ rowNumber, parsed, error })),
+    })).digest('hex');
 }
 
 const SHEET_FONT_HEADER: Partial<ExcelJS.Font> = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -382,7 +401,7 @@ export class ExcelService {
         return out;
     }
 
-    static async previewImport(buffer: Buffer): Promise<ImportSummary> {
+    static async previewImport(buffer: Buffer): Promise<ImportPreview> {
         requireTenantId();
         const rows = await ExcelService.parseProductBuffer(buffer);
 
@@ -412,12 +431,20 @@ export class ExcelService {
             else created++;
         }
 
-        return { created, updated, errors };
+        const identity = issueProductImportPreview(createHash('sha256').update(buffer).digest('hex'), normalizedRevision(rows));
+        return { created, updated, errors, warnings: [...IMPORT_WARNINGS], ...identity };
     }
 
-    static async importProducts(buffer: Buffer): Promise<ImportSummary> {
-        requireTenantId();
+    static async importProducts(buffer: Buffer, previewToken: string): Promise<ImportSummary> {
+        const tenantId = requireTenantId();
+        const preview = verifyProductImportPreview(previewToken);
+        if (preview.fileHash !== createHash('sha256').update(buffer).digest('hex')) {
+            throw new AppError(409, '匯入檔案已變更，請重新預覽');
+        }
         const rows = await ExcelService.parseProductBuffer(buffer);
+        if (preview.normalizedRevision !== normalizedRevision(rows)) {
+            throw new AppError(409, '匯入解析版本已變更，請重新預覽');
+        }
 
         const errors: ImportError[] = [];
         let created = 0;
@@ -442,23 +469,21 @@ export class ExcelService {
                             description: data.description ?? null,
                             costPrice: data.costPrice,
                             retailPrice: data.retailPrice,
-                            stockQuantity: data.stockQuantity,
                             safetyStock: data.safetyStock,
                         },
                     });
                     updated++;
                 } else {
-                    // tenantId is auto-injected by the Prisma extension at runtime;
-                    // cast matches the pattern in inventory.service.ts.
                     const createData = {
+                        tenantId,
                         sku: data.sku,
                         name: data.name,
                         description: data.description ?? null,
                         costPrice: data.costPrice,
                         retailPrice: data.retailPrice,
-                        stockQuantity: data.stockQuantity,
+                        stockQuantity: 0,
                         safetyStock: data.safetyStock,
-                    } as Prisma.ProductUncheckedCreateInput;
+                    };
                     await prisma.product.create({ data: createData });
                     created++;
                 }
@@ -468,6 +493,6 @@ export class ExcelService {
             }
         }
 
-        return { created, updated, errors };
+        return { created, updated, errors, warnings: [...IMPORT_WARNINGS] };
     }
 }

@@ -27,3 +27,4 @@ Each ADR should follow the standard format:
 - [ADR-013: Conditional Sales Stock Debit](adr_013_conditional_sales_stock_debit.md)
 - [ADR-014: Eligible Sale Batch Posting and Durable Allocations](adr_014_sale_batch_posting.md)
 - [ADR-015: Refund Registration Without Stock Receipt](adr_015_refund_without_stock_receipt.md)
+- [ADR-016: Reviewed Product Master-Data Import](adr_016_reviewed_master_data_import.md)

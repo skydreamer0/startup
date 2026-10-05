@@ -71,7 +71,8 @@ export class ExcelController {
             if (!req.file) {
                 throw new AppError(400, 'No file uploaded (expected field "file")');
             }
-            const summary = await ExcelService.importProducts(req.file.buffer);
+            const previewToken = typeof req.body?.previewToken === 'string' ? req.body.previewToken : '';
+            const summary = await ExcelService.importProducts(req.file.buffer, previewToken);
             res.json({ success: true, data: summary });
         } catch (err) {
             next(err);
