@@ -51,6 +51,7 @@
 2. POS and general orders call `src/lib/inventory-posting.ts` with the same caller-owned transaction for aggregate product/batch debits, OUT movements and durable `SaleBatchAllocation` rows. `sale-stock.ts` is its internal product-debit helper.
 3. Eligibility uses released stock and Asia/Taipei calendar dates from `batch-expiry.ts`; stock is unusable on its expiry day. Existing/unreviewed batches default to quarantine. Other writers still await common-authority cutover.
 4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention, FEFO, persistence and rollback evidence. Use `prisma/diagnostics/preflight-sales-stock.sql` for read-only legacy balance discrepancies. This partial boundary does not complete G1/G2/G4 or command dedupe.
+5. POS `refundOrder` registers money-only refund status with a conditional transition; it must not receive stock or modify sale allocations. Read ADR-015 before changing refund/return semantics. Physical-return receipt remains separate pending work.
 
 ### Change persistence or model meaning
 

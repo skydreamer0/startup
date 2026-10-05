@@ -130,7 +130,7 @@ test.describe('POS Checkout Flow', () => {
   // -------------------------------------------------------------------------
   // Full Happy Path
   // -------------------------------------------------------------------------
-  test('4. Full checkout: login → open shift → add product → pay → receipt modal', async ({ page }) => {
+  test('4. Full checkout and refund: refund registration leaves physical stock unchanged', async ({ page, request }, testInfo) => {
     // — Login —
     await login(page);
 
@@ -174,7 +174,9 @@ test.describe('POS Checkout Flow', () => {
     await expect(confirmBtn).toBeEnabled({ timeout: 3_000 });
 
     // — Confirm payment —
+    const checkoutResponse = page.waitForResponse((response) => response.url().endsWith('/pos/checkout') && response.request().method() === 'POST');
     await confirmBtn.click();
+    const sale: { id: string; orderNumber: string; items: { productId: string }[] } = (await (await checkoutResponse).json()).data;
 
     // — Receipt modal should appear —
     const receiptModal = page.getByTestId('receipt-modal');
@@ -190,6 +192,31 @@ test.describe('POS Checkout Flow', () => {
 
     // Receipt modal should be gone
     await expect(receiptModal).not.toBeVisible({ timeout: 3_000 });
+
+    // Money-only refund must not imply that physical goods were received.
+    const auth = await request.post(`${BACKEND_URL}/pos/staff-login`, { data: { employeeCode: EMPLOYEE_CODE } });
+    const headers = { Authorization: `Bearer ${(await auth.json()).data.accessToken}` };
+    async function productStock() {
+      const response = await request.get(`${BACKEND_URL}/pos/products`, { headers });
+      expect(response.ok()).toBeTruthy();
+      const products: { id: string; stockQuantity: number }[] = (await response.json()).data;
+      return products.find((product) => product.id === sale.items[0].productId)!.stockQuantity;
+    }
+    const stockAfterSale = await productStock();
+    await page.getByRole('button', { name: '📋 訂單 (F7)' }).click();
+    await page.getByText(sale.orderNumber, { exact: true }).click();
+    await page.getByRole('button', { name: '退款此訂單' }).click();
+    await expect(page.getByRole('heading', { name: '登記退款' })).toBeVisible();
+    await expect(page.getByText('此操作只登記退款，不會增加庫存。實體退回商品須另行驗收，才可處理回補。')).toBeVisible();
+    await page.getByLabel('退款原因（選填）').fill('E2E 金流退款，未收回商品');
+    await page.screenshot({ path: testInfo.outputPath('refund-registration.png'), fullPage: true });
+    const refundResponse = page.waitForResponse((response) => response.url().endsWith(`/orders/${sale.id}/refund`) && response.request().method() === 'POST');
+    await page.getByRole('button', { name: '確認退款', exact: true }).click();
+    expect((await refundResponse).ok()).toBeTruthy();
+    await expect(page.getByText('退款已登記，庫存不變')).toBeVisible();
+    expect(await productStock()).toBe(stockAfterSale);
+    const stored = await request.get(`${BACKEND_URL}/pos/orders/${sale.id}`, { headers });
+    expect((await stored.json()).data.status).toBe('refunded');
   });
 
   // -------------------------------------------------------------------------

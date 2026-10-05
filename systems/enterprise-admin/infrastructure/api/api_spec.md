@@ -123,6 +123,14 @@ HTTP Status Code 需精確映射錯誤類別：
 
 這個切片沒有提供退款後實體回補、完整收貨／調整／Excel 共用權威、冪等命令、唯一單號或精確金額承諾；完整 #29/#30 驗收持續追蹤。
 
+### 3.8 退款登記與實體退回分離（2026-10-06 / ADR-015）
+
+`POST /pos/orders/:orderId/refund` 沿用 `manage:pos`，接受 UUID orderId 及選填 `reason`（trim 後最多 1000 字元）。僅完成狀態的訂單可登記退款，回傳資料庫更新後的訂單與明細；保留原折扣備註，追加 `[退款]` 原因。
+
+此操作**不增加商品／批次庫存，不新增 IN movement，不改動出庫 allocation**。只登記全額退款狀態，不代表執行支付平台退款或已收到實體商品。已退款回 `400`；兩請求同時讀到 completed 後競爭更新，只允許一個成功，另一個回 `409`。跨租戶回 `404`。
+
+實體退回需另行追查原批次、驗收、隔離及確認可退數量；目前尚未提供這個過帳 API，不可用退款登記替代收貨。
+
 ## 4. API 開發防呆規範 (Best Practices)
 1. **輸入過濾 (Input Sanitization)**: 所有外部輸入 `body`, `query`, `params` 皆須經 Schema Validator (如 Zod, Class-Validator) 的過濾，防止 SQL Injection 與 XSS。
 2. **分頁參數 (Pagination)**: `GET` 列表類型 API 強制支援 `?page=1&limit=20` 或 `cursor`，並限制 最大 `limit` (避免撈取整表拖垮 DB)。

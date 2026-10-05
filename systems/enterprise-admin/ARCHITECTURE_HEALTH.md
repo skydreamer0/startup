@@ -20,6 +20,14 @@ other writer cutover, commands and monetary correctness remain active work.
 
 The following table records the first slice's earlier evidence:
 
+The subsequent ADR-015 refund correction reproduced 4 failures before the fix
+and passed the full backend 194 tests afterward (38 real DB stock/refund cases).
+POS unit/render tests passed 23 files / 135 tests and production build passed.
+Chromium E2E passed 6/6, including actual checkout/receipt/refund registration
+with unchanged product stock. Refund registration no longer receives physical
+goods; partial return/quarantine/release and financial command execution are
+still pending.
+
 The first #29/#30 slice repairs aggregate duplicate demand and competing POS/general-order product debits. PostgreSQL tests synchronized real reads and reproduced 5 failures before the fix, including two buyers of the last unit and a negative batch balance. ADR-013 records the transaction boundary and its limits.
 
 | Check | Result | Evidence / scope |

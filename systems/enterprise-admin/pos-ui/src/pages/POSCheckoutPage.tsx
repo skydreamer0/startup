@@ -169,10 +169,10 @@ export default function POSCheckoutPage() {
       queryClient.invalidateQueries({ queryKey: ['pos-today-orders'] });
       setRefundTarget(null);
       setShowOrderLookup(false);
-      showToast({ type: 'success', message: '退貨完成，庫存已還原' });
+      showToast({ type: 'success', message: '退款已登記，庫存不變' });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
-      showToast({ type: 'error', message: msg ?? '退貨失敗，請稍後再試' });
+      showToast({ type: 'error', message: msg ?? '退款登記失敗，請稍後再試' });
     } finally {
       setRefundLoading(false);
     }

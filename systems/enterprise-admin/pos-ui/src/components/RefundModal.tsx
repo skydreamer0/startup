@@ -15,14 +15,14 @@ export default function RefundModal({ order, onConfirm, onClose, loading }: Prop
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }} onClick={onClose}>
       <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 420, boxShadow: 'var(--shadow-lg)' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ fontSize: 28, textAlign: 'center', marginBottom: 8 }}>↩️</div>
-        <h3 style={{ margin: '0 0 4px', textAlign: 'center', fontSize: 16 }}>確認退貨</h3>
+        <h3 style={{ margin: '0 0 4px', textAlign: 'center', fontSize: 16 }}>登記退款</h3>
         <p style={{ margin: '0 0 20px', textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
-          訂單 {order.orderNumber} — 將退還 ${Number(order.totalAmount).toFixed(0)} 元
+          訂單 {order.orderNumber} — 退款金額 ${Number(order.totalAmount).toFixed(0)} 元
         </p>
 
         {/* Items */}
         <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: 14, marginBottom: 18, background: 'var(--bg-app)' }}>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8, fontWeight: 700 }}>退貨品項（全部）</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8, fontWeight: 700 }}>退款品項（全部）</div>
           {order.items.map((item) => (
             <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>
               <span>{item.product.name} × {item.quantity}</span>
@@ -38,7 +38,7 @@ export default function RefundModal({ order, onConfirm, onClose, loading }: Prop
         {/* Reason */}
         <div style={{ marginBottom: 20 }}>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 700, marginBottom: 6 }} htmlFor="refund-reason">
-            退貨原因（選填）
+            退款原因（選填）
           </label>
           <input
             id="refund-reason"
@@ -51,7 +51,7 @@ export default function RefundModal({ order, onConfirm, onClose, loading }: Prop
         </div>
 
         <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 'var(--radius-sm)', padding: '10px 14px', marginBottom: 20, fontSize: 12, color: '#92400E' }}>
-          ⚠ 退貨後庫存將自動還原，此操作無法撤銷。
+          此操作只登記退款，不會增加庫存。實體退回商品須另行驗收，才可處理回補。
         </div>
 
         <div style={{ display: 'flex', gap: 12 }}>
@@ -69,7 +69,7 @@ export default function RefundModal({ order, onConfirm, onClose, loading }: Prop
             disabled={loading}
             style={{ flex: 2, padding: '12px', background: loading ? 'var(--border)' : '#DC2626', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 15, fontWeight: 700 }}
           >
-            {loading ? '退貨處理中...' : '確認退貨'}
+            {loading ? '退款登記中...' : '確認退款'}
           </button>
         </div>
       </div>

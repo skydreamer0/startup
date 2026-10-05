@@ -4,7 +4,7 @@ import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
 import { requirePlan } from '../../middleware/plan.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { checkoutSchema, createPosCustomerSchema, customerLookupSchema, customerRecommendationsSchema, posProductsSchema } from './pos.schema';
+import { checkoutSchema, createPosCustomerSchema, customerLookupSchema, customerRecommendationsSchema, posProductsSchema, refundOrderSchema } from './pos.schema';
 import { posRateLimit } from '../../middleware/rate-limit.middleware';
 
 const router = Router();
@@ -29,6 +29,6 @@ router.get('/shift/active', PosController.getActiveShift);
 router.get('/receipt/:orderId', PosController.getReceipt);
 router.get('/orders/today', PosController.getTodayOrders);
 router.get('/orders/:orderId', PosController.getOrderById);
-router.post('/orders/:orderId/refund', PosController.refundOrder);
+router.post('/orders/:orderId/refund', validate(refundOrderSchema), PosController.refundOrder);
 
 export default router;

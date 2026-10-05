@@ -45,6 +45,12 @@
 4. Open nearest POS tests or E2E flow.
 5. Update context if workflow meaning, task routing, or API contract assumptions change.
 
+### Change refund or physical-return behavior
+
+1. Read API spec §3.8 and ADR-015. `posApi.refundOrder` registers a monetary refund status; it does not restore physical inventory or execute a payment-provider transfer.
+2. Keep `RefundModal`, order lookup, checkout toasts and shift-report labels consistent with refund registration. Actual goods receipt/inspection is a separate pending workflow.
+3. Use `e2e/checkout-flow.spec.ts` for the real checkout-to-refund flow; backend PostgreSQL cases verify unchanged product/lot/movement/allocation balances and competing refund requests.
+
 ### Debug POS test failure
 
 1. Read the failing unit/integration/E2E test.
