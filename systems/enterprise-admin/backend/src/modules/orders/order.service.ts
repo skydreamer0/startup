@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
+import { deductSaleStock } from '../../lib/sale-stock';
 
 export interface CreateOrderDto {
     customerId: string;
@@ -25,19 +26,13 @@ export class OrderService {
 
             let totalOrderAmount = 0;
             const orderItemsData = [];
-            const inventoryUpdates = [];
             const transactions = [];
+
+            const products = await deductSaleStock(tx, data.items);
 
             // 2. Process Items
             for (const item of data.items) {
-                const product = await tx.product.findUnique({
-                    where: { id: item.productId }
-                });
-
-                if (!product) throw new AppError(404, `Product ${item.productId} not found`);
-                if (product.stockQuantity < item.quantity) {
-                    throw new AppError(400, `Insufficient stock for product ${product.name}`);
-                }
+                const product = products.get(item.productId)!;
 
                 const retailPrice = Number(product.retailPrice);
                 const itemTotal = retailPrice * item.quantity;
@@ -48,14 +43,6 @@ export class OrderService {
                     quantity: item.quantity,
                     unitPrice: retailPrice
                 });
-
-                // Prepare stock update
-                inventoryUpdates.push(
-                    tx.product.update({
-                        where: { id: product.id },
-                        data: { stockQuantity: { decrement: item.quantity } }
-                    })
-                );
 
                 // Prepare inventory transaction
                 transactions.push({
@@ -80,9 +67,7 @@ export class OrderService {
                 include: { items: true }
             });
 
-            // 4. Update Stock & Log Transactions
-            await Promise.all(inventoryUpdates);
-
+            // 4. Log the stock debit in the same transaction.
             for (const t of transactions) {
                 await tx.inventoryTransaction.create({
                     data: {

@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.mock('../lib/prisma', () => ({
   prisma: {
     shift: { findFirst: vi.fn() },
-    product: { findFirst: vi.fn(), update: vi.fn() },
-    productBatch: { findMany: vi.fn(), update: vi.fn() },
+    product: { findFirst: vi.fn(), updateMany: vi.fn() },
+    productBatch: { findMany: vi.fn(), updateMany: vi.fn() },
     customer: { findFirst: vi.fn() },
     order: { findFirst: vi.fn(), create: vi.fn() },
     inventoryTransaction: { create: vi.fn() },
@@ -22,8 +22,8 @@ import { CheckoutDto } from '../modules/pos/pos.schema';
 
 const mockTx = {
   shift: { findFirst: vi.fn() },
-  product: { findFirst: vi.fn(), update: vi.fn() },
-  productBatch: { findMany: vi.fn(), update: vi.fn() },
+  product: { findFirst: vi.fn(), updateMany: vi.fn() },
+  productBatch: { findMany: vi.fn(), updateMany: vi.fn() },
   customer: { findFirst: vi.fn() },
   order: { findFirst: vi.fn(), create: vi.fn() },
   inventoryTransaction: { create: vi.fn() },
@@ -31,6 +31,8 @@ const mockTx = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockTx.product.updateMany.mockResolvedValue({ count: 1 });
+  mockTx.productBatch.updateMany.mockResolvedValue({ count: 1 });
   vi.mocked(prisma.$transaction).mockImplementation(async (fn: (tx: typeof mockTx) => Promise<unknown>) => fn(mockTx));
 });
 
