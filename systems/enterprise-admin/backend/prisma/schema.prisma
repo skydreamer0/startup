@@ -393,6 +393,8 @@ model InventoryTransaction {
   type        String // IN (Purchase/Restock) | OUT (Sale/Order) | ADJUSTMENT
   quantity    Int
   referenceId String?  @map("reference_id") // Order ID or Purchase ID
+  batchId     String?  @map("batch_id") // Receipt lot; unknown historical receipts remain null
+  costPriceAtReceipt Decimal? @map("cost_price_at_receipt") @db.Decimal(12, 4)
   notes       String?
   tenantId    String   @map("tenant_id")
   createdAt   DateTime @default(now()) @map("created_at")
@@ -401,6 +403,8 @@ model InventoryTransaction {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   batchAllocations SaleBatchAllocation[]
+  receiptBatch ProductBatch? @relation("BatchReceipts", fields: [batchId, productId, tenantId], references: [id, productId, tenantId], onDelete: Restrict, map: "inventory_transactions_receipt_batch_fkey")
+  @@index([tenantId, batchId])
   @@unique([id, productId, tenantId])
   @@index([tenantId])
   @@index([productId])
@@ -464,6 +468,7 @@ model ProductBatch {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   saleAllocations SaleBatchAllocation[]
+  receiptMovements InventoryTransaction[] @relation("BatchReceipts")
 
   @@unique([productId, batchNumber, tenantId])
   @@unique([id, productId, tenantId])

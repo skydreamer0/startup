@@ -47,12 +47,12 @@ export class CsvController {
           continue;
         }
         await prisma.product.create({
-          data: { ...row, tenantId },
+          data: { ...row, tenantId, stockQuantity: 0 },
         });
         created++;
       }
 
-      return res.json({ success: true, data: { created, skipped, errors: [] } });
+      return res.json({ success: true, data: { created, skipped, errors: [], warnings: ['CSV 僅匯入商品資料，不匯入庫存數量；新商品從零庫存開始，請另行登記批次進貨。'] } });
     } catch (err) {
       next(err);
     }

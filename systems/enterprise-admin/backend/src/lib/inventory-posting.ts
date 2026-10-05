@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import type { BatchStockStatus } from '@prisma/client';
+import { z } from 'zod';
 import type { prisma } from './prisma';
 import { AppError } from './errors';
 import { requireTenantId } from './tenant.context';
@@ -17,9 +19,42 @@ interface DebitedLine extends SaleLine {
 
 /** Sale posting boundary. The caller owns the transaction and creates the
  * order between debitSale and recordSale; neither method commits separately.
- * Receipts, returns, adjustments and import cutover remain follow-up work.
+ * Receipts use the same product-row lock before lot and movement writes.
+ * Physical returns, adjustments and reconciliation remain follow-up work.
  */
 export class InventoryPostingService {
+  static async receiveBatch(
+    tx: Pick<typeof prisma, 'product' | 'productBatch' | 'inventoryTransaction'>,
+    data: { productId: string; batchNumber: string; expiryDate: string; quantity: number; costPrice: number; status?: BatchStockStatus },
+  ) {
+    const tenantId = requireTenantId();
+    if (!Number.isSafeInteger(data.quantity) || data.quantity <= 0 || data.quantity > 2_147_483_647) {
+      throw new AppError(400, '進貨數量必須為有效正整數');
+    }
+    const expiryDate = new Date(data.expiryDate);
+    if (!z.string().datetime().safeParse(data.expiryDate).success || !Number.isFinite(expiryDate.getTime())) throw new AppError(400, '請提供完整且有效的批次效期');
+    if (!Number.isFinite(data.costPrice) || data.costPrice <= 0) throw new AppError(400, '進貨成本必須大於零');
+    const product = await tx.product.findFirst({ where: { id: data.productId, tenantId } });
+    if (!product) throw new AppError(404, 'Product not found');
+    const claimed = await tx.product.updateMany({
+      where: { id: data.productId, tenantId, stockQuantity: { gte: 0, lte: 2_147_483_647 - data.quantity } },
+      data: { stockQuantity: { increment: data.quantity } },
+    });
+    if (claimed.count !== 1) throw new AppError(400, '商品庫存帳量異常或超出數量上限，請先核對');
+    // A receipt can wait on a competing sale/receipt through store midnight.
+    if (data.status === 'RELEASED' && expiryDate < saleExpiryCutoff()) throw new AppError(400, '到期當日或過期批次不可驗收為可售');
+    const batch = await tx.productBatch.create({
+      data: { tenantId, productId: data.productId, batchNumber: data.batchNumber,
+        quantity: data.quantity, costPrice: data.costPrice, expiryDate, status: data.status ?? 'QUARANTINE' },
+      include: { product: { select: { id: true, name: true, sku: true } } },
+    });
+    await tx.inventoryTransaction.create({ data: {
+      tenantId, productId: data.productId, batchId: batch.id, referenceId: batch.id,
+      type: 'IN', quantity: data.quantity, costPriceAtReceipt: batch.costPrice, notes: `批次進貨 ${batch.batchNumber}`,
+    } });
+    return batch;
+  }
+
   static async debitSale(tx: Pick<typeof prisma, 'product' | 'productBatch'>, items: readonly SaleLine[]) {
     const tenantId = requireTenantId();
     const products = await deductSaleStock(tx, items);

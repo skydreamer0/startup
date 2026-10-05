@@ -32,7 +32,7 @@ export const createProductSchema = z.object({
         supplierId: z.string().optional(),
         costPrice: z.number().min(0),
         retailPrice: z.number().min(0),
-        stockQuantity: z.number().int().min(0).default(0),
+        stockQuantity: z.literal(0).optional(),
         safetyStock: z.number().int().min(0).default(10),
     }),
 });
@@ -46,7 +46,7 @@ export const updateProductSchema = z.object({
         supplierId: z.string().optional(),
         costPrice: z.number().min(0).optional(),
         retailPrice: z.number().min(0).optional(),
-        stockQuantity: z.number().int().min(0).optional(),
+        stockQuantity: z.never().optional(),
         safetyStock: z.number().int().min(0).optional(),
     }),
 });

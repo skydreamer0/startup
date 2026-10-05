@@ -15,23 +15,23 @@ router.use(authMiddleware);
 
 router.get(
   '/',
-  requirePermission('read:inventory'),
+  requirePermission('read:products'),
   validate(getProductBatchesSchema),
   ProductBatchController.getAll,
 );
-router.get('/:id', requirePermission('read:inventory'), ProductBatchController.getById);
+router.get('/:id', requirePermission('read:products'), ProductBatchController.getById);
 router.post(
   '/',
-  requirePermission('manage:inventory'),
+  requirePermission('create:products'),
   validate(createProductBatchSchema),
   ProductBatchController.create,
 );
 router.patch(
   '/:id',
-  requirePermission('manage:inventory'),
+  requirePermission('update:products'),
   validate(updateProductBatchSchema),
   ProductBatchController.update,
 );
-router.delete('/:id', requirePermission('manage:inventory'), ProductBatchController.delete);
+router.delete('/:id', requirePermission('update:products'), ProductBatchController.delete);
 
 export default router;

@@ -3,6 +3,7 @@ import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
 import { BatchStockStatus, Prisma } from '@prisma/client';
 import { saleExpiryCutoff } from '../../lib/batch-expiry';
+import { InventoryPostingService } from '../../lib/inventory-posting';
 
 export interface CreateProductBatchDto {
   productId: string;
@@ -59,6 +60,7 @@ export class ProductBatchService {
           include: { order: { select: { id: true, orderNumber: true, createdAt: true } } },
         },
         _count: { select: { saleAllocations: true } },
+        receiptMovements: { where: { tenantId }, orderBy: { createdAt: 'asc' } },
       },
     });
     if (!batch) throw new AppError(404, 'Product batch not found');
@@ -66,39 +68,24 @@ export class ProductBatchService {
   }
 
   static async create(data: CreateProductBatchDto) {
-    const tenantId = requireTenantId();
-
-    // Verify product belongs to tenant
-    const product = await prisma.product.findFirst({
-      where: { id: data.productId, tenantId },
-    });
-    if (!product) throw new AppError(404, 'Product not found');
-
-    return prisma.productBatch.create({
-      data: {
-        tenantId,
-        productId: data.productId,
-        batchNumber: data.batchNumber,
-        expiryDate: new Date(data.expiryDate),
-        quantity: data.quantity,
-        costPrice: data.costPrice,
-        status: data.status ?? 'QUARANTINE',
-      },
-      include: {
-        product: { select: { id: true, name: true, sku: true } },
-      },
-    });
+    requireTenantId();
+    try {
+      return await prisma.$transaction((tx) => InventoryPostingService.receiveBatch(tx, data));
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') throw new AppError(409, '批號已存在，請核對原進貨紀錄');
+      throw error;
+    }
   }
 
   static async update(id: string, data: UpdateProductBatchDto) {
     const tenantId = requireTenantId();
+    if (data.quantity !== undefined) throw new AppError(400, '批次数量不能直接修改，請使用庫存過帳作業');
     const batch = await prisma.productBatch.findFirst({ where: { id, tenantId } });
     if (!batch) throw new AppError(404, 'Product batch not found');
 
     return prisma.productBatch.update({
       where: { id },
       data: {
-        ...(data.quantity !== undefined ? { quantity: data.quantity } : {}),
         ...(data.costPrice !== undefined ? { costPrice: data.costPrice } : {}),
         ...(data.expiryDate !== undefined ? { expiryDate: new Date(data.expiryDate) } : {}),
         ...(data.status !== undefined ? { status: data.status } : {}),
@@ -115,14 +102,14 @@ export class ProductBatchService {
     if (!batch) throw new AppError(404, 'Product batch not found');
     if (batch.quantity !== 0) throw new AppError(400, 'Cannot delete a batch with remaining quantity');
 
-    if (await prisma.saleBatchAllocation.count({ where: { tenantId, batchId: id } })) {
-      throw new AppError(400, 'Cannot delete a batch referenced by a sale');
+    if (await prisma.saleBatchAllocation.count({ where: { tenantId, batchId: id } }) || await prisma.inventoryTransaction.count({ where: { tenantId, batchId: id } })) {
+      throw new AppError(400, 'Cannot delete a batch referenced by a posting');
     }
     try {
       await prisma.productBatch.delete({ where: { id } });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
-        throw new AppError(400, 'Cannot delete a batch referenced by a sale');
+        throw new AppError(400, 'Cannot delete a batch referenced by a posting');
       }
       throw error;
     }

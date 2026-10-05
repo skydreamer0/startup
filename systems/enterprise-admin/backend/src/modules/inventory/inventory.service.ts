@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
+import { requireTenantId } from '../../lib/tenant.context';
 
 export class InventoryService {
     // --- Suppliers ---
@@ -98,7 +99,8 @@ export class InventoryService {
         categoryId?: string;
         supplierId?: string;
     }) {
-        return await prisma.product.create({ data: data as Prisma.ProductUncheckedCreateInput });
+        if (data.stockQuantity !== undefined && data.stockQuantity !== 0) throw new AppError(400, '新商品從零庫存開始，請另行登記批次進貨');
+        return await prisma.product.create({ data: { ...data, tenantId: requireTenantId(), stockQuantity: 0 } });
     }
 
     static async updateProduct(id: string, data: {
@@ -110,6 +112,7 @@ export class InventoryService {
         categoryId?: string;
         supplierId?: string;
     }) {
+        if (data.stockQuantity !== undefined) throw new AppError(400, '商品庫存不能直接修改，請使用庫存過帳作業');
         return await prisma.product.update({
             where: { id },
             data,
