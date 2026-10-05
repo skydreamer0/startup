@@ -23,10 +23,10 @@ export const excelApi = {
     exportInventory: () =>
         downloadBlob(`${BASE}/export/inventory`, `inventory-${todayStamp()}.xlsx`),
 
-    previewImportProducts: async (file: File): Promise<ImportSummary> => {
+    previewImportProducts: async (file: File): Promise<ImportPreview> => {
         const fd = new FormData();
         fd.append('file', file);
-        const res = await api.post<ApiSuccess<ImportSummary>>(
+        const res = await api.post<ApiSuccess<ImportPreview>>(
             '/excel/import/products/preview',
             fd,
             { headers: { 'Content-Type': 'multipart/form-data' } },
@@ -34,9 +34,10 @@ export const excelApi = {
         return res.data.data;
     },
 
-    confirmImportProducts: async (file: File): Promise<ImportSummary> => {
+    confirmImportProducts: async (file: File, previewToken: string): Promise<ImportSummary> => {
         const fd = new FormData();
         fd.append('file', file);
+        fd.append('previewToken', previewToken);
         const res = await api.post<ApiSuccess<ImportSummary>>(
             '/excel/import/products/confirm',
             fd,
@@ -55,4 +56,12 @@ export interface ImportSummary {
     created: number;
     updated: number;
     errors: ImportError[];
+    warnings: string[];
+}
+
+export interface ImportPreview extends ImportSummary {
+    previewToken: string;
+    fileHash: string;
+    normalizedRevision: string;
+    expiresAt: number;
 }

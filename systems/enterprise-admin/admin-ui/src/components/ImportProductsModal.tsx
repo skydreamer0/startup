@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { excelApi, ImportSummary } from '../api/excel';
+import { excelApi, ImportPreview, ImportSummary } from '../api/excel';
 
 interface ImportProductsModalProps {
     onClose: () => void;
@@ -13,13 +13,14 @@ type ApiError = {
 
 export default function ImportProductsModal({ onClose, onSuccess }: ImportProductsModalProps) {
     const [file, setFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<ImportSummary | null>(null);
+    const [reviewed, setReviewed] = useState<{ file: File; summary: ImportPreview } | null>(null);
+    const preview = reviewed?.file === file ? reviewed.summary : null;
     const [confirmResult, setConfirmResult] = useState<ImportSummary | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const previewMutation = useMutation({
         mutationFn: (f: File) => excelApi.previewImportProducts(f),
-        onSuccess: (data) => setPreview(data),
+        onSuccess: (data, reviewedFile) => setReviewed({ file: reviewedFile, summary: data }),
         onError: (err: unknown) => {
             const msg = (err as ApiError).response?.data?.error?.message
                 ?? (err instanceof Error ? err.message : 'Preview failed');
@@ -28,22 +29,25 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     });
 
     const confirmMutation = useMutation({
-        mutationFn: (f: File) => excelApi.confirmImportProducts(f),
+        mutationFn: (input: { file: File; previewToken: string }) => excelApi.confirmImportProducts(input.file, input.previewToken),
         onSuccess: (data) => {
             setConfirmResult(data);
             onSuccess();
         },
         onError: (err: unknown) => {
+            setReviewed(null);
             const msg = (err as ApiError).response?.data?.error?.message
                 ?? (err instanceof Error ? err.message : 'Import failed');
             alert(msg);
         },
     });
 
+    const busy = previewMutation.isPending || confirmMutation.isPending;
+
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const f = e.target.files?.[0] ?? null;
         setFile(f);
-        setPreview(null);
+        setReviewed(null);
         setConfirmResult(null);
     }
 
@@ -56,13 +60,14 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     }
 
     function handleConfirm() {
-        if (!file) return;
-        confirmMutation.mutate(file);
+        if (!file || !preview || busy) return;
+        confirmMutation.mutate({ file, previewToken: preview.previewToken });
     }
 
     function handleClose() {
+        if (busy) return;
         setFile(null);
-        setPreview(null);
+        setReviewed(null);
         setConfirmResult(null);
         if (fileInputRef.current) fileInputRef.current.value = '';
         onClose();
@@ -79,10 +84,12 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
 
                 {!confirmResult && (
                     <div className="input-group">
-                        <label className="input-label">Excel File (.xlsx)</label>
+                        <label className="input-label" htmlFor="product-import-file">Excel File (.xlsx)</label>
                         <input
+                            id="product-import-file"
                             ref={fileInputRef}
                             type="file"
+                            disabled={busy}
                             accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                             className="input-field"
                             onChange={handleFileChange}
@@ -90,12 +97,16 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                         <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>
                             Expected columns: sku, name, description, cost_price, retail_price, stock_quantity, safety_stock.
                         </p>
+                        {!preview && <p style={{ fontSize: '13px', marginTop: '8px' }}>
+                            此匯入只更新商品資料。庫存欄位不會匯入；既有庫存保持原值，新商品庫存從 0 開始，請另行收貨或開帳。
+                        </p>}
                     </div>
                 )}
 
                 {preview && !confirmResult && (
                     <div style={{ marginTop: '16px' }}>
                         <h3 style={{ marginBottom: '8px' }}>Preview</h3>
+                        {preview.warnings.map((warning) => <p key={warning}>{warning}</p>)}
                         <div className="flex gap-12" style={{ marginBottom: '12px' }}>
                             <span className="badge badge-success">{preview.created} to create</span>
                             <span className="badge badge-warning">{preview.updated} to update</span>
@@ -140,7 +151,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                 )}
 
                 <div className="modal-actions">
-                    <button type="button" className="btn btn-ghost" onClick={handleClose}>
+                    <button type="button" className="btn btn-ghost" onClick={handleClose} disabled={busy}>
                         {confirmResult ? 'Close' : 'Cancel'}
                     </button>
                     {!preview && !confirmResult && (
@@ -158,7 +169,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                             type="button"
                             className="btn btn-primary"
                             onClick={handleConfirm}
-                            disabled={confirmMutation.isPending}
+                            disabled={busy || !preview.previewToken}
                         >
                             {confirmMutation.isPending ? 'Importing...' : 'Confirm Import'}
                         </button>

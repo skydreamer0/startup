@@ -52,6 +52,7 @@
 3. Eligibility uses released stock and Asia/Taipei calendar dates from `batch-expiry.ts`; stock is unusable on its expiry day. Existing/unreviewed batches default to quarantine. Other writers still await common-authority cutover.
 4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention, FEFO, persistence and rollback evidence. Use `prisma/diagnostics/preflight-sales-stock.sql` for read-only legacy balance discrepancies. This partial boundary does not complete G1/G2/G4 or command dedupe.
 5. POS `refundOrder` registers money-only refund status with a conditional transition; it must not receive stock or modify sale allocations. Read ADR-015 before changing refund/return semantics. Physical-return receipt remains separate pending work.
+6. Excel product import is metadata-only and cannot set physical stock. Read ADR-016, `src/lib/product-import-preview.ts` and `src/__tests__/excel-import.integration.test.ts` before changing preview/confirm identity or normalization. Confirm requires a signed tenant/file/normalized-revision preview; bump parser version when semantics change.
 
 ### Change persistence or model meaning
 

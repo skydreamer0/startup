@@ -131,6 +131,17 @@ HTTP Status Code 需精確映射錯誤類別：
 
 實體退回需另行追查原批次、驗收、隔離及確認可退數量；目前尚未提供這個過帳 API，不可用退款登記替代收貨。
 
+### 3.9 商品 Excel 覆核匯入（2026-10-06 / ADR-016）
+
+兩端點沿用 starter plan 與 `create:products`，multipart `file` 上限 10 MB：
+
+- `POST /excel/import/products/preview`：回 `created / updated / errors / warnings`，另帶 `fileHash`、`normalizedRevision`、`expiresAt`（Unix milliseconds）及 `previewToken`。預覽有效 15 分鐘，綁定門店、原檔案位元組與解析版本。
+- `POST /excel/import/products/confirm`：必須帶同一 `file` 與 `previewToken`。在任何資料寫入前驗證；缺少／無效憑證回 `400`，別門店回 `403`，換檔、解析版本變更或預覽過期回 `409`，需重新預覽。舊客戶端直接 confirm 將被拒絕。
+
+這是**商品資料匯入**：更新名稱、描述、價格與安全庫存；既有 `stockQuantity` 不變，新商品初始庫存為 0。舊檔的庫存欄位不會過帳，preview／confirm 都提供清楚 warnings；收貨與開帳需另一個庫存操作，不會補造批次。
+
+既有逐列錯誤回報保留；預覽的新增／更新數量是當時資料庫的估計。此憑證不是一次性的庫存命令，也未提供 durable result recovery；重試商品資料更新不會增加實體庫存。
+
 ## 4. API 開發防呆規範 (Best Practices)
 1. **輸入過濾 (Input Sanitization)**: 所有外部輸入 `body`, `query`, `params` 皆須經 Schema Validator (如 Zod, Class-Validator) 的過濾，防止 SQL Injection 與 XSS。
 2. **分頁參數 (Pagination)**: `GET` 列表類型 API 強制支援 `?page=1&limit=20` 或 `cursor`，並限制 最大 `limit` (避免撈取整表拖垮 DB)。

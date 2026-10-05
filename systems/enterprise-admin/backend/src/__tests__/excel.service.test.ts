@@ -168,6 +168,7 @@ describe('ExcelService.previewImport', () => {
 describe('ExcelService.importProducts', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockProductFindMany.mockResolvedValue([]);
     });
 
     it('upserts rows and returns counts', async () => {
@@ -191,7 +192,8 @@ describe('ExcelService.importProducts', () => {
         mockProductCreate.mockResolvedValue({ id: 'p-new-1' } as never);
         mockProductUpdate.mockResolvedValue({ id: 'p-exist-1' } as never);
 
-        const summary = await ExcelService.importProducts(buffer);
+        const preview = await ExcelService.previewImport(buffer);
+        const summary = await ExcelService.importProducts(buffer, preview.previewToken);
 
         expect(summary.created).toBe(1);
         expect(summary.updated).toBe(1);
@@ -226,7 +228,8 @@ describe('ExcelService.importProducts', () => {
             .mockResolvedValueOnce({ id: 'p-ok-1' } as never)
             .mockRejectedValueOnce(new Error('DB exploded'));
 
-        const summary = await ExcelService.importProducts(buffer);
+        const preview = await ExcelService.previewImport(buffer);
+        const summary = await ExcelService.importProducts(buffer, preview.previewToken);
 
         expect(summary.created).toBe(1);
         expect(summary.updated).toBe(0);
