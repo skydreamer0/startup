@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
 import { tenantPersistence } from '../../lib/tenant-persistence';
+import { deductSaleStock } from '../../lib/sale-stock';
 import { ProductAnalyticsService } from '../analytics/product-analytics.service';
 import { CrmService } from '../crm/crm.service';
 import { CheckoutDto } from './pos.schema';
@@ -49,7 +50,8 @@ export class CheckoutService {
         customerId = walkIn.id;
       }
 
-      // 4. Process each cart item: validate + FIFO batch deduction plan
+      // 4. Claim aggregate product demand before processing the original price lines.
+      const products = await deductSaleStock(tx, dto.cartItems);
       let subtotal = 0;
       const itemsData: {
         productId: string;
@@ -57,30 +59,26 @@ export class CheckoutService {
         unitPrice: number;
         discountRate: number;
         finalUnitPrice: number;
-        batchDeductions: { id: string; deduct: number }[];
       }[] = [];
 
       for (const cartItem of dto.cartItems) {
-        const product = await tx.product.findFirst({
-          where: tenant.where({ id: cartItem.productId }),
-        });
-        if (!product) throw new AppError(404, `Product ${cartItem.productId} not found`);
-        if (product.stockQuantity < cartItem.quantity) {
-          throw new AppError(400, `Insufficient stock for "${product.name}": available ${product.stockQuantity}`);
-        }
+        const product = products.get(cartItem.productId)!;
 
-        // FIFO: select batches ordered by expiry date
+        // FEFO ordering. Eligibility policy and durable allocations remain #29 work.
         const batches = await tx.productBatch.findMany({
           where: tenant.where({ productId: cartItem.productId, quantity: { gt: 0 } }),
-          orderBy: { expiryDate: 'asc' },
+          orderBy: [{ expiryDate: 'asc' }, { receivedAt: 'asc' }, { id: 'asc' }],
         });
 
         let remaining = cartItem.quantity;
-        const batchDeductions: { id: string; deduct: number }[] = [];
         for (const batch of batches) {
           if (remaining <= 0) break;
           const deduct = Math.min(batch.quantity, remaining);
-          batchDeductions.push({ id: batch.id, deduct });
+          const result = await tx.productBatch.updateMany({
+            where: tenant.where({ id: batch.id, productId: cartItem.productId, quantity: { gte: deduct } }),
+            data: { quantity: { decrement: deduct } },
+          });
+          if (result.count !== 1) throw new AppError(400, `Insufficient batch stock for "${product.name}"`);
           remaining -= deduct;
         }
 
@@ -99,7 +97,6 @@ export class CheckoutService {
           unitPrice: retailPrice,
           discountRate,
           finalUnitPrice,
-          batchDeductions,
         });
       }
 
@@ -163,18 +160,8 @@ export class CheckoutService {
         include: { items: true, payments: true },
       });
 
-      // 8. Apply FIFO batch deductions + update product stock
+      // 8. Log the already-debited stock in the same transaction as the order.
       for (const item of itemsData) {
-        for (const { id, deduct } of item.batchDeductions) {
-          await tx.productBatch.update({
-            where: { id },
-            data: { quantity: { decrement: deduct } },
-          });
-        }
-        await tx.product.update({
-          where: { id: item.productId },
-          data: { stockQuantity: { decrement: item.quantity } },
-        });
         await tx.inventoryTransaction.create({
           data: {
             tenantId: tenant.tenantId,

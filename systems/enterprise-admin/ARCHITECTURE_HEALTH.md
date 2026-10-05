@@ -1,8 +1,25 @@
 # Architecture Health Report — Enterprise Admin System
 
-> Last refreshed: 2026-06-21
+> Last refreshed: 2026-10-06 (backend sales-stock slice; previous cross-app results remain dated below)
 > Scope: `systems/enterprise-admin/` (`backend`, `admin-ui`, `pos-ui`, workspace CI/context)  
 > Method: Roadmap A fresh audit from the completed Phase 13 cloud-improvement work; command output and nearest source-of-truth inspection only.
+
+---
+
+## 2026-10-06 Sales Stock Refresh
+
+The first #29/#30 slice repairs aggregate duplicate demand and competing POS/general-order product debits. PostgreSQL tests synchronized real reads and reproduced 5 failures before the fix, including two buyers of the last unit and a negative batch balance. ADR-013 records the transaction boundary and its limits.
+
+| Check | Result | Evidence / scope |
+| --- | --- | --- |
+| Backend Prisma generation | Passed | npm/CI install path, Prisma Client 6.19.2 |
+| Backend build | Passed | `npm run build` |
+| Backend lint | Passed | `npm run lint`, no errors or warnings |
+| Backend full suite | Passed | `npm test`: 26 files / 171 tests, including 15 new real PostgreSQL regression cases |
+| Agent context | Passed | `./scripts/validate-agent-context.sh` |
+| UI/E2E and complete G1/G2 acceptance | Not run / incomplete | No claim of full command, allocation, monetary, all-writer or production acceptance |
+
+Tests used an isolated PostgreSQL 15 container/database at localhost:5544, existing migrations and synthetic fixtures. General orders still do not debit batches; adjustment/import cutover, eligible FEFO, durable allocations, refund safety, command identity and monetary correctness remain active #29/#30 work. Consult the current ROADMAP and #37 rather than treating the historical closed findings below as release acceptance.
 
 ---
 

@@ -5,11 +5,25 @@
 
 ## Current Status
 
-`enterprise-admin` is feature-complete through the last planned product and architecture phases. The admin UI, POS UI, backend, deployment scaffolding, agent context routing, and POS-led frontend convergence work are all treated as completed unless a new roadmap item below says otherwise.
+The earlier product and architecture phases are complete. New single-pharmacy reliability and workflow requirements are active below; historical completion does not mean these issues or production acceptance gates are complete.
 
 Use this file as the active status source of truth. Use ADRs, standards, health reports, and git history for historical evidence.
 
 ## Active Backlog
+
+### Single-Pharmacy Reliability And Delivery
+
+The engineering entry point is [#37](https://github.com/skydreamer0/startup/issues/37). It retains the complete acceptance criteria and consolidated receipt, outflow, evidence/OCR, printing, and deployment work from #32–#36. Consolidation is not completion.
+
+- [ ] **PHARM-29**: [#29 — inventory authority and batch traceability](https://github.com/skydreamer0/startup/issues/29). Common posting, eligible FEFO, durable allocations, refund/physical-return separation, reconciliation, and all-writer cutover remain pending.
+- [ ] **PHARM-30**: [#30 — reliable checkout commands](https://github.com/skydreamer0/startup/issues/30). Durable command identity/result recovery, unique order numbers, exact money, and the complete PostgreSQL G1 gate remain pending.
+  - First 29A/30A slice: POS and general-order product demand is aggregated and debited with tenant-scoped balance predicates in their existing transaction. POS duplicate lines share updated batch availability. See ADR-013 and `backend/src/__tests__/stock-contention.integration.test.ts`.
+  - 2026-10-06 evidence: real PostgreSQL regressions reproduced 5 failures before the fix. After the fix, all 15 new DB regression cases and the full backend suite passed (26 files / 171 tests); backend Prisma generation, build, lint, and agent-context validation passed. UI E2E and the full G1/G2 gates were not run/completed by this slice.
+  - This slice does not add a schema or API contract version, persist allocations, exclude expired batches, reconcile general-order batches, or complete command/money/adjustment/import acceptance. Keep #29/#30 open.
+- [ ] **PHARM-31**: [#31 — batch/POS operation and frontend freshness](https://github.com/skydreamer0/startup/issues/31). Permission/error states, paginated product contracts, modal interaction, exact scans, and stock refresh remain pending.
+- [ ] **PHARM-36**: Production fail-fast, DB readiness, backup/restore and final-host verification remain P0 prerequisites, tracked in the consolidated [#37 deployment backlog](https://github.com/skydreamer0/startup/issues/37) with the full original #36 criteria preserved.
+
+Only record passed/failed/not-run evidence for the implemented slice. A passing CI or partial fix does not complete G0–G7 or close its parent issue.
 
 ### Verification And Environment Parity
 

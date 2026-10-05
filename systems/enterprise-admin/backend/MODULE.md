@@ -45,6 +45,13 @@
 4. Open the nearest tests for that module.
 5. Update API spec and context if the contract meaning changes.
 
+### Change sale stock deduction
+
+1. Read `../infrastructure/adr/adr_013_conditional_sales_stock_debit.md` and active issues linked from `../ROADMAP.md`.
+2. POS checkout and general orders share `src/lib/sale-stock.ts` for aggregate, tenant-scoped conditional product debits inside the caller's transaction.
+3. POS batch debits remain in its checkout service; general orders and other writers are not yet a complete common batch/ledger authority.
+4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention/rollback evidence. This partial boundary does not complete G1/G2 or command dedupe.
+
 ### Change persistence or model meaning
 
 1. Read `prisma/schema.prisma`.
