@@ -26,11 +26,11 @@ function printReport(report: ShiftReport) {
     report.closedAt ? `關班：${new Date(report.closedAt).toLocaleString('zh-TW')}` : '（班別進行中）',
     '----------------------------',
     `銷售筆數：${report.orderCount}`,
-    `退貨筆數：${report.refundCount}`,
+    `退款筆數：${report.refundCount}`,
     '----------------------------',
     `毛銷售額：$${report.grossSales.toFixed(0)}`,
     `折扣合計：-$${report.discountTotal.toFixed(0)}`,
-    `退貨合計：-$${report.refundTotal.toFixed(0)}`,
+    `退款合計：-$${report.refundTotal.toFixed(0)}`,
     `淨銷售額：$${report.netTotal.toFixed(0)}`,
     '----------------------------',
     '付款方式明細：',
@@ -87,12 +87,12 @@ export default function ShiftReportModal({ shiftId, onClose }: Props) {
               </div>
 
               <ReportRow label="銷售筆數" value={`${report.orderCount} 筆`} />
-              <ReportRow label="退貨筆數" value={`${report.refundCount} 筆`} danger={report.refundCount > 0} />
+              <ReportRow label="退款筆數" value={`${report.refundCount} 筆`} danger={report.refundCount > 0} />
 
               <div style={{ marginTop: 12, marginBottom: 4, fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>銷售摘要</div>
               <ReportRow label="毛銷售額" value={`$${report.grossSales.toFixed(0)}`} />
               <ReportRow label="折扣合計" value={`-$${report.discountTotal.toFixed(0)}`} danger={report.discountTotal > 0} />
-              <ReportRow label="退貨合計" value={`-$${report.refundTotal.toFixed(0)}`} danger={report.refundTotal > 0} />
+              <ReportRow label="退款合計" value={`-$${report.refundTotal.toFixed(0)}`} danger={report.refundTotal > 0} />
               <ReportRow label="淨銷售額" value={`$${report.netTotal.toFixed(0)}`} bold />
 
               <div style={{ marginTop: 12, marginBottom: 4, fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>付款方式</div>

@@ -26,3 +26,4 @@ Each ADR should follow the standard format:
 - [ADR-012: Shared UI Library Boundary Decision](adr_012_shared_ui_library_decision.md)
 - [ADR-013: Conditional Sales Stock Debit](adr_013_conditional_sales_stock_debit.md)
 - [ADR-014: Eligible Sale Batch Posting and Durable Allocations](adr_014_sale_batch_posting.md)
+- [ADR-015: Refund Registration Without Stock Receipt](adr_015_refund_without_stock_receipt.md)

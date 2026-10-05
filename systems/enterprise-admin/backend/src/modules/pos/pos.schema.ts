@@ -48,6 +48,11 @@ export const customerRecommendationsSchema = {
 
 export type CheckoutDto = z.infer<typeof checkoutSchema.body>;
 
+export const refundOrderSchema = {
+  params: z.object({ orderId: z.string().uuid() }),
+  body: z.object({ reason: z.string().trim().max(1000).optional() }),
+};
+
 export const createPosCustomerSchema = {
   body: z.object({
     phone: z.string().trim().min(1),

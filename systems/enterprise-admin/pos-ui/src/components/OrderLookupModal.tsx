@@ -107,7 +107,7 @@ export default function OrderLookupModal({ shiftId, onRefund, onClose }: Props) 
                       onClick={() => onRefund(order)}
                       style={{ marginTop: 10, width: '100%', padding: '9px', background: '#FEF2F2', color: 'var(--danger)', border: '1px solid #FECACA', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
                     >
-                      退貨此訂單
+                      退款此訂單
                     </button>
                   )}
                 </div>

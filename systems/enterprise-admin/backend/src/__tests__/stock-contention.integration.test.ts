@@ -13,6 +13,7 @@ const race = vi.hoisted(() => ({
   beforeBatchDebit: () => Promise.resolve(),
   failAllocationAfter: -1,
   allocationWrites: 0,
+  refundOrderId: '',
 }));
 
 vi.mock('../lib/prisma', async (importOriginal) => {
@@ -49,6 +50,16 @@ vi.mock('../lib/prisma', async (importOriginal) => {
           async createMany({ args, query }) {
             if (race.failAllocationAfter === race.allocationWrites++) throw new Error('Injected allocation persistence failure');
             return query(args);
+          },
+        },
+        order: {
+          async findFirst({ args, query }) {
+            const result = await query(args);
+            if (result?.id === race.refundOrderId && result.status === 'completed') {
+              if (++race.arrivals === 2) race.release();
+              await race.gate;
+            }
+            return result;
           },
         },
       },
@@ -113,6 +124,7 @@ afterEach(async () => {
   race.beforeBatchDebit = () => Promise.resolve();
   race.failAllocationAfter = -1;
   race.allocationWrites = 0;
+  race.refundOrderId = '';
   vi.useRealTimers();
   for (const tenantId of tenants.splice(0)) {
     await basePrisma.saleBatchAllocation.deleteMany({ where: { tenantId } });
@@ -266,6 +278,76 @@ describe('FEFO and durable sale allocations (real PostgreSQL)', () => {
 });
 
 afterAll(() => basePrisma.$disconnect());
+
+describe('Refund registration does not receive physical stock (real PostgreSQL)', () => {
+  it('keeps product, lot, OUT movements and allocations unchanged after a money-only refund', async () => {
+    const f = await fixture(2);
+    const sale = await checkout(f);
+    const originalAllocations = await basePrisma.saleBatchAllocation.findMany({ where: { orderId: sale.id } });
+    const originalMovements = await basePrisma.inventoryTransaction.findMany({ where: { referenceId: sale.id } });
+    const refund = await inTenant(f, () => CheckoutService.refundOrder(sale.id, '顧客取消，未收到退回商品'));
+    expect(refund.status).toBe('refunded');
+    expect(refund.discountNote).toContain('[退款]');
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(1);
+    expect((await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } })).quantity).toBe(1);
+    expect(await basePrisma.saleBatchAllocation.findMany({ where: { orderId: sale.id } })).toEqual(originalAllocations);
+    expect(await basePrisma.inventoryTransaction.findMany({ where: { referenceId: sale.id } })).toEqual(originalMovements);
+  });
+
+  it('rejects repeat refunds without adding stock or replacing the first reason and original discount note', async () => {
+    const f = await fixture(2);
+    const sale = await checkout(f);
+    await basePrisma.order.update({ where: { id: sale.id }, data: { discountNote: '會員折扣理由' } });
+    await inTenant(f, () => CheckoutService.refundOrder(sale.id, '第一次退款'));
+    await expect(inTenant(f, () => CheckoutService.refundOrder(sale.id, '第二次重試'))).rejects.toMatchObject({ statusCode: 400 });
+    const stored = await basePrisma.order.findUniqueOrThrow({ where: { id: sale.id } });
+    expect(stored.discountNote).toBe('會員折扣理由\n[退款] 第一次退款');
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(1);
+    expect(await basePrisma.inventoryTransaction.count({ where: { referenceId: sale.id, type: 'IN' } })).toBe(0);
+  });
+
+  it('allows only one concurrent refund status transition after both read completed', async () => {
+    const f = await fixture(2);
+    const sale = await checkout(f);
+    race.refundOrderId = sale.id;
+    race.arrivals = 0;
+    race.gate = new Promise<void>((resolve) => { race.release = resolve; });
+    const results = await Promise.allSettled(['退款一', '退款二'].map((reason) => inTenant(f, () => CheckoutService.refundOrder(sale.id, reason))));
+    expect(race.arrivals).toBe(2);
+    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
+    expect(results.find((r) => r.status === 'rejected')).toMatchObject({ reason: { statusCode: 409 } });
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(1);
+    expect(await basePrisma.inventoryTransaction.count({ where: { referenceId: sale.id, type: 'IN' } })).toBe(0);
+  }, 15000);
+
+  it('does not fabricate stock receipt or allocations for a historical untraceable order', async () => {
+    const f = await fixture(2);
+    const historical = await basePrisma.order.create({ data: {
+      tenantId: f.tenantId, customerId: f.customer.id, status: 'completed', totalAmount: 100,
+      items: { create: { productId: f.product.id, quantity: 1, unitPrice: 100 } },
+    } });
+    await inTenant(f, () => CheckoutService.refundOrder(historical.id));
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(2);
+    expect(await basePrisma.inventoryTransaction.count({ where: { referenceId: historical.id } })).toBe(0);
+    expect(await basePrisma.saleBatchAllocation.count({ where: { orderId: historical.id } })).toBe(0);
+  });
+
+  it('rejects a refund from another tenant', async () => {
+    const f = await fixture(2);
+    const other = await fixture(2);
+    const sale = await checkout(f);
+    await expect(inTenant(other, () => CheckoutService.refundOrder(sale.id))).rejects.toMatchObject({ statusCode: 404 });
+    expect((await basePrisma.order.findUniqueOrThrow({ where: { id: sale.id } })).status).toBe('completed');
+  });
+
+  it.each(['pending', 'cancelled'])('rejects refunding %s orders without changing stock', async (status) => {
+    const f = await fixture(2);
+    const sale = await checkout(f);
+    await basePrisma.order.update({ where: { id: sale.id }, data: { status } });
+    await expect(inTenant(f, () => CheckoutService.refundOrder(sale.id))).rejects.toMatchObject({ statusCode: 400 });
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(1);
+  });
+});
 
 describe('Sales stock safety (real PostgreSQL)', () => {
   it.each(['POS', 'order'] as const)('rejects aggregate duplicate demand in %s without partial writes', async (writer) => {

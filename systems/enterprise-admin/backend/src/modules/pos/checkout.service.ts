@@ -452,34 +452,21 @@ export class CheckoutService {
       });
       if (!order) throw new AppError(404, 'Order not found');
       if (order.status === 'refunded') throw new AppError(400, '此訂單已退款');
-      if (order.status !== 'completed') throw new AppError(400, '只能退貨已完成的訂單');
+      if (order.status !== 'completed') throw new AppError(400, '只能退款已完成的訂單');
 
-      await tx.order.update({
-        where: { id: orderId },
+      const discountNote = [order.discountNote, reason ? `[退款] ${reason}` : '[退款]'].filter(Boolean).join('\n');
+      const result = await tx.order.updateMany({
+        where: tenant.where({ id: orderId, status: 'completed' }),
         data: {
           status: 'refunded',
-          discountNote: reason ? `[退貨] ${reason}` : '[退貨]',
+          discountNote,
         },
       });
+      if (result.count !== 1) throw new AppError(409, '訂單狀態已變更，請重新確認');
 
-      for (const item of order.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: { stockQuantity: { increment: item.quantity } },
-        });
-        await tx.inventoryTransaction.create({
-          data: {
-            tenantId: tenant.tenantId,
-            productId: item.productId,
-            type: 'IN',
-            quantity: item.quantity,
-            referenceId: orderId,
-            notes: `POS 退貨 — ${order.orderNumber}`,
-          },
-        });
-      }
-
-      return { ...order, status: 'refunded' };
+      // Register the monetary refund only. Receipt of physical goods needs its
+      // own validated return operation; never guess lots or release stock here.
+      return tx.order.findFirstOrThrow({ where: tenant.where({ id: orderId }), include: { items: true } });
     });
   }
 }
