@@ -2,7 +2,8 @@
 
 2026-10-06; base master `12c415d5e677e38ec2dfa23d425c600d7395080e`
 (#44 merged 13:19:07 UTC). This follow-up is test/harness/evidence only, in the
-original executor. Draft review only; no merge, deployment, real-store data,
+original executor. [Draft PR #45](https://github.com/skydreamer0/startup/pull/45)
+review only; no merge, deployment, real-store data,
 credential changes or production gate approval. #30/#31/#37 remain open; #29
 inventory acceptance is unchanged.
 
@@ -92,14 +93,13 @@ empty administration DB named `checkout_http_recovery_base`, with a test user
 allowed to create the per-case databases. Never use a store connection.
 
 ```sh
+# systems/enterprise-admin (POS workspace dependencies first)
+pnpm install --frozen-lockfile
+
 # systems/enterprise-admin/backend (existing dependencies / lockfile)
 npm ci
 npm run db:generate
 npm run build
-
-# systems/enterprise-admin (POS workspace dependencies)
-pnpm install --frozen-lockfile
-# If workspace installation replaced backend dependencies, repeat backend npm ci/generate/build.
 
 # systems/enterprise-admin/pos-ui
 npm run test:e2e:install
@@ -110,7 +110,7 @@ npm test -- src/__tests__/useCheckout.test.tsx src/__tests__/checkoutPayloadHash
 npm run build
 ```
 
-The harness copies only test migration inputs into a temporary cwd, migrates each
+The harness copies the existing Prisma inputs into a temporary cwd, migrates each
 fresh DB, seeds it, and owns both server lifecycles. No manual API/POS server or
 application seed is required. Local browser cache can be selected with
 `PLAYWRIGHT_BROWSERS_PATH=/workspace/.cache/playwright`. CI adds these two cases to
@@ -122,7 +122,8 @@ The focused backend regression uses a separate
 explicit DATABASE_URL + NODE_ENV=test + fresh test JWT secrets, migrate deploy,
 then `npm test -- src/__tests__/checkout-command.integration.test.ts`.
 [Raw execution](raw/backend-command-regression.txt), [POS regression](raw/pos-recovery-regression.txt),
-and [POS build](raw/pos-build.txt) are retained.
+and [POS build](raw/pos-build.txt) are retained. [Final static checks](raw/static-checks.txt)
+record the harness typecheck, backend build/lint, context and whitespace exit codes.
 
 ## Not run / remaining scope
 
