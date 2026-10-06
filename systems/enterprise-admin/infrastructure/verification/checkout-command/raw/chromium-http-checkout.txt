@@ -1,0 +1,24 @@
+
+> pos-ui@1.0.0 test:e2e
+> playwright test e2e/checkout-flow.spec.ts
+
+
+Running 6 tests using 1 worker
+
+(node:15373) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:15373) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/checkout-flow.spec.ts:84:7 › POS Checkout Flow › 1. Login page renders and accepts employee code (868ms)
+  ✓  2 [chromium] › e2e/checkout-flow.spec.ts:98:7 › POS Checkout Flow › 2. After login, shift-open screen appears and shift can be opened (1.1s)
+  ✓  3 [chromium] › e2e/checkout-flow.spec.ts:113:7 › POS Checkout Flow › 3. POS checkout page: product search input is present and reacts to input (1.2s)
+  ✓  4 [chromium] › e2e/checkout-flow.spec.ts:133:7 › POS Checkout Flow › 4. Full checkout and refund: refund registration leaves physical stock unchanged (2.4s)
+  ✓  5 [chromium] › e2e/checkout-flow.spec.ts:225:7 › POS Checkout Flow › 5. Login shows error message when employee code is wrong (695ms)
+  ✓  6 [chromium] › e2e/checkout-flow.spec.ts:238:7 › POS Checkout Flow › 6. Barcode scanner simulation: typing a barcode in search adds product to cart (807ms)
+
+  6 passed (8.0s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

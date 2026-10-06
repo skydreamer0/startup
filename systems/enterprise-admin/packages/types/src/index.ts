@@ -142,6 +142,7 @@ export interface CartItemPayload {
 }
 
 export interface CheckoutPayload {
+  commandId: string;
   cartItems: CartItemPayload[];
   paymentMethod: PaymentMethod;
   payments?: PaymentEntry[];
@@ -167,6 +168,15 @@ export interface CheckoutResult {
     /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
     finalUnitPrice: number | string;
   }[];
+}
+
+export type CheckoutCommandResult =
+  | { commandId: string; status: 'UNKNOWN' }
+  | { commandId: string; status: 'SUCCEEDED'; payloadHash: string; result: CheckoutResult };
+
+export interface CheckoutContext {
+  tenantId: string;
+  userId: string;
 }
 
 // ─── Shifts / Staff ──────────────────────────────────────────────────────────

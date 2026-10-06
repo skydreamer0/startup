@@ -82,7 +82,7 @@ export function resolveCheckoutAuthorization({
   return { status: 'manager_pin_required', action, splitPayments: intent.splitPayments };
 }
 
-export function checkoutIntentToPayload(intent: CheckoutIntent): CheckoutPayload {
+export function checkoutIntentToPayload(intent: CheckoutIntent): Omit<CheckoutPayload, 'commandId'> {
   if (!intent.shiftId) {
     throw new Error('Checkout intent requires an active shift before payload submission');
   }
@@ -103,6 +103,6 @@ export function checkoutIntentToPayload(intent: CheckoutIntent): CheckoutPayload
   };
 }
 
-export function buildCheckoutPayload(input: CheckoutIntentInput): CheckoutPayload {
+export function buildCheckoutPayload(input: CheckoutIntentInput): Omit<CheckoutPayload, 'commandId'> {
   return checkoutIntentToPayload(buildCheckoutIntent(input));
 }

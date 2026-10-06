@@ -7,9 +7,10 @@ const paymentEntrySchema = z.object({
 
 export const checkoutSchema = {
   body: z.object({
+    commandId: z.string().uuid().transform((id) => id.toLowerCase()),
     cartItems: z.array(
       z.object({
-        productId: z.string().uuid(),
+        productId: z.string().uuid().transform((id) => id.toLowerCase()),
         quantity: z.number().int().min(1),
         discountRate: z.number().min(0).max(100).optional().default(0),
       }),
@@ -19,9 +20,9 @@ export const checkoutSchema = {
     payments: z.array(paymentEntrySchema).optional(),
     orderDiscountAmount: z.number().min(0).optional().default(0),
     orderDiscountNote: z.string().optional(),
-    customerId: z.string().uuid().optional(),
-    shiftId: z.string().uuid(),
-    salesStaffId: z.string().uuid().optional(),
+    customerId: z.string().uuid().transform((id) => id.toLowerCase()).optional(),
+    shiftId: z.string().uuid().transform((id) => id.toLowerCase()),
+    salesStaffId: z.string().uuid().transform((id) => id.toLowerCase()).optional(),
     adminPin: z.string().optional(),
   }),
 };
@@ -29,7 +30,7 @@ export const checkoutSchema = {
 export const posProductsSchema = {
   query: z.object({
     q: z.string().optional(),
-    categoryId: z.string().uuid().optional(),
+    categoryId: z.string().uuid().transform((id) => id.toLowerCase()).optional(),
     inStockOnly: z.enum(['true', 'false']).optional(),
   }),
 };
@@ -42,14 +43,18 @@ export const customerLookupSchema = {
 
 export const customerRecommendationsSchema = {
   params: z.object({
-    customerId: z.string().uuid(),
+    customerId: z.string().uuid().transform((id) => id.toLowerCase()),
   }),
 };
 
 export type CheckoutDto = z.infer<typeof checkoutSchema.body>;
 
+export const checkoutCommandQuerySchema = {
+  params: z.object({ commandId: z.string().uuid().transform((id) => id.toLowerCase()) }),
+};
+
 export const refundOrderSchema = {
-  params: z.object({ orderId: z.string().uuid() }),
+  params: z.object({ orderId: z.string().uuid().transform((id) => id.toLowerCase()) }),
   body: z.object({ reason: z.string().trim().max(1000).optional() }),
 };
 

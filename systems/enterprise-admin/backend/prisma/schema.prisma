@@ -41,6 +41,7 @@ model Tenant {
   messageBroadcasts  MessageBroadcast[]
   orderPayments      OrderPayment[]
   saleBatchAllocations SaleBatchAllocation[]
+  checkoutCommands    CheckoutCommand[]
 
   @@map("tenants")
 }
@@ -344,6 +345,8 @@ model Order {
   salesStaff User?          @relation("SalesOrders", fields: [salesStaffId], references: [id])
   batchAllocations SaleBatchAllocation[]
 
+  checkoutCommands CheckoutCommand[]
+
   @@unique([id, tenantId])
   @@index([tenantId])
   @@index([customerId])
@@ -351,6 +354,30 @@ model Order {
   @@index([orderNumber])
   @@index([salesStaffId])
   @@map("orders")
+}
+
+enum CheckoutCommandStatus {
+  PENDING
+  SUCCEEDED
+}
+
+model CheckoutCommand {
+  id          String @id @default(uuid())
+  tenantId    String @map("tenant_id")
+  kind        String
+  commandId   String @map("command_id")
+  payloadHash String @map("payload_hash")
+  status      CheckoutCommandStatus @default(PENDING)
+  orderId     String? @map("order_id")
+  result      Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+  completedAt DateTime? @map("completed_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [orderId, tenantId], references: [id, tenantId], onDelete: Restrict)
+
+  @@unique([tenantId, kind, commandId])
+  @@map("checkout_commands")
 }
 
 model OrderItem {

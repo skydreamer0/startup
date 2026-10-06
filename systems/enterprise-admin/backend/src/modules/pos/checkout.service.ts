@@ -7,6 +7,7 @@ import { InventoryPostingService } from '../../lib/inventory-posting';
 import { ProductAnalyticsService } from '../analytics/product-analytics.service';
 import { CrmService } from '../crm/crm.service';
 import { CheckoutDto } from './pos.schema';
+import { CheckoutCommandService } from './checkout-command.service';
 
 type PosRfmSegment = 'vip' | 'loyal' | 'new' | 'at_risk';
 type PosRecommendationReason = 'REPLENISHMENT_DUE' | 'HOT_SELLER';
@@ -27,7 +28,7 @@ export class CheckoutService {
   static async checkout(dto: CheckoutDto) {
     const tenant = tenantPersistence();
 
-    return prisma.$transaction(async (tx) => {
+    return CheckoutCommandService.execute(dto, async (tx, dto) => {
       // 1. Validate shift
       const shift = await tx.shift.findFirst({ where: tenant.where({ id: dto.shiftId }) });
       if (!shift) throw new AppError(404, 'Shift not found');
@@ -128,15 +129,13 @@ export class CheckoutService {
               finalUnitPrice: item.finalUnitPrice,
             })),
           },
-          ...(dto.payments && dto.payments.length > 0 ? {
-            payments: {
-              create: dto.payments.map((p) => ({
-                tenantId: tenant.tenantId,
-                method: p.method,
-                amount: p.amount,
-              })),
-            },
-          } : {}),
+          payments: {
+            create: (dto.payments?.length ? dto.payments : [{ method: dto.paymentMethod, amount: totalAmount }]).map((p) => ({
+              tenantId: tenant.tenantId,
+              method: p.method,
+              amount: p.amount,
+            })),
+          },
         },
         include: { items: true, payments: true },
       });

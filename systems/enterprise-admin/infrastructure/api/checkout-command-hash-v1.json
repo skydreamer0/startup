@@ -1,0 +1,54 @@
+[
+  {
+    "name": "default payment and Unicode note",
+    "payload": {
+      "commandId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "shiftId": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      "cartItems": [
+        {
+          "productId": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "quantity": 2,
+          "discountRate": 0
+        }
+      ],
+      "paymentMethod": "CASH",
+      "orderDiscountAmount": 0,
+      "orderDiscountNote": "合成測試"
+    },
+    "sha256": "561c3d8d9bc34b77d698111778176d8d9e794e0ca4c73eb279bb09fdb2479a6a"
+  },
+  {
+    "name": "ordered discounts and split payments",
+    "payload": {
+      "commandId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "shiftId": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      "customerId": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+      "salesStaffId": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+      "cartItems": [
+        {
+          "productId": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "quantity": 1,
+          "discountRate": 10
+        },
+        {
+          "productId": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "quantity": 2,
+          "discountRate": 0
+        }
+      ],
+      "paymentMethod": "CARD",
+      "payments": [
+        {
+          "method": "CARD",
+          "amount": 100.1
+        },
+        {
+          "method": "CASH",
+          "amount": 199.9
+        }
+      ],
+      "orderDiscountAmount": 5.5
+    },
+    "sha256": "2145fcdcdf184f1c9a1ff27311965fa0b5eb3e2fcff2d9b6f17eb6fe93b3c268"
+  }
+]
