@@ -179,6 +179,7 @@ jobs:
     - name: Real HTTP restart and lost-response recovery
       env:
         POS_HTTP_RECOVERY_DATABASE_URL: "postgresql://test:test@127.0.0.1:5432/checkout_http_recovery_ci"
+      shell: bash
       run: |
         pnpm --filter pos-ui run test:e2e:http-recovery:types
         pnpm --filter pos-ui run test:e2e:http-recovery 2>&1 | tee pos-ui/http-recovery-ci.txt
