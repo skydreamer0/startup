@@ -55,10 +55,10 @@
 ### Change scanner matching or asynchronous scan behavior
 
 1. Start with `src/hooks/useBarcodeScanner.ts`, its nearest test, `POSCheckoutPage` and `cartStore`. Automatic additions require one exact string match on SKU or a barcode already present in supplied candidates. Do not treat a single fuzzy search result as exact.
-2. The hook keeps valid concurrent scan intents through product/callback rerenders. User search input calls its invalidator; clear/hold/recall advance the in-memory draft revision. Pending/unknown/conflict or authenticated checkout scope changes permanently invalidate older requests; unmount suppresses their results/errors. Scanner-driven search clearing does not cancel another valid scan.
+2. The hook keeps valid concurrent scan intents through product/callback rerenders. Search onChange passes its native event: matched insertText continues an unfinished keyboard source and pauses earlier effects; Enter completes it, while paste/delete/direct changes or a gap >300ms cancel older intents. Clear/hold/recall advance the in-memory draft revision. Pending/unknown/conflict or authenticated checkout scope changes permanently invalidate older requests and partial input, including ABA; unmount suppresses their results/errors. Scanner-driven search clearing does not cancel another valid scan.
 3. Keep `barcodeService` timing/hardware policy unchanged. Actual Product has no barcode field; current `/pos/products` is a name/SKU substring search limited to 100. Optional barcode fixtures verify conditional matching only, not complete manufacturer-barcode lookup support.
 4. See `../infrastructure/verification/pos-scanner/README.md` for RED/GREEN unit evidence and untested browser/native-input/hardware boundaries. Stock freshness, responsive layout and broader #31/G0 remain separate.
-5. Current candidate has a blocking focused-input wedge regression: ordinary onChange invalidation can cancel a prior valid scan while the next scan types. The user-event counterexample is RED; do not treat the existing 29-case GREEN as full scanner acceptance.
+5. Historical focused-input RED at `8824dd4` is retained. Source/completion/cancellation correction passes 44 scanner cases, focused 91/91 and full POS 193/193 with type/build. Independent review is pending; these are synthetic JSDOM/unit results, not browser/hardware or full scanner acceptance. A capped quantity must not claim +1 success.
 
 ### Debug POS test failure
 

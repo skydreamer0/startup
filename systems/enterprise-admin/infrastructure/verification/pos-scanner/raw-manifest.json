@@ -95,6 +95,41 @@
       "path": "19-blocked-type-build.txt",
       "bytes": 583,
       "sha256": "6edcae6d34341cd4062fcc9db3fb3feb7c5d121d8ecd2b4f6c5b963f68e0b67b"
+    },
+    {
+      "path": "20-sequence-and-noop-red.txt",
+      "bytes": 6456,
+      "sha256": "6b4273dc0acf3061d9cf65cdc5246c80dab366277f0141caa18b40f1e10935e0"
+    },
+    {
+      "path": "21-sequence-first-green.txt",
+      "bytes": 703,
+      "sha256": "f6a70ca862f8f86e219b181cae64692e83198d1b953b4460e9eec8ed939a1295"
+    },
+    {
+      "path": "22-sequence-boundaries-focused.txt",
+      "bytes": 7390,
+      "sha256": "403c053a7d08f6aab26649de70daa2d9ee6e3c2aa5d1269b23d1092430c87f4c"
+    },
+    {
+      "path": "23-sequence-boundaries-green.txt",
+      "bytes": 880,
+      "sha256": "aa3a19fa38469cd6840a79d40a063409a46ebdec663b5b82d6474cc090794c5d"
+    },
+    {
+      "path": "24-pos-full-sequence-green.txt",
+      "bytes": 1935,
+      "sha256": "9166bd242d0bc32b9f7af3261b210b78e132fb18f389647bfeab442cc7090e28"
+    },
+    {
+      "path": "25-pos-sequence-type-build.txt",
+      "bytes": 583,
+      "sha256": "33aef66648208fef8d81815898acc31901c77609f3ccd28d935070182cfd5f87"
+    },
+    {
+      "path": "26-sequence-context.txt",
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
     }
   ]
 }

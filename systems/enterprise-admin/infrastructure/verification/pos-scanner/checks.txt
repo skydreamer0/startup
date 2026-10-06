@@ -3,6 +3,8 @@ agent context validation passed.
 Exit: 0
 $ git diff --check
 Exit: 0
-Latest scanner result: 1 failed / 29 passed. Type/build passed.
-Prior full POS 174 GREEN belongs to initial coverage at 81f29f4.
-CI/browser not run; no implementation correction or acceptance.
+Latest focused: 91 passed (scanner 44, service 9, cart 24, checkout recovery 14).
+Latest full POS: 25 files / 193 tests passed. TypeScript/Vite build passed.
+Historical 8824dd4 blocking RED and all original raw bytes retained.
+Raw archive: 26 entries verified against originals and SHA256 manifest.
+CI/browser not run; independent acceptance pending; keep Draft.

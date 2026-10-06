@@ -2,7 +2,9 @@ import { MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef } fro
 import { posApi, PosProduct } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
-import { startBarcodeListener, stopBarcodeListener, onBarcode } from '../services/barcodeService';
+import {
+  startBarcodeListener, stopBarcodeListener, onBarcode, onBarcodeSequence, getBarcodeInputSequence,
+} from '../services/barcodeService';
 import { PosToastMessage } from '../components/PosToast';
 
 function exactMatches(products: PosProduct[], code: string) {
@@ -17,6 +19,8 @@ export function useBarcodeScanner(
   showToast: (msg: PosToastMessage) => void,
 ) {
   const generation = useRef(0);
+  const pausedSequence = useRef<number | null>(null);
+  const waiters = useRef(new Set<() => void>());
   const latest = useRef({ products, searchRef, setSearchQuery, addItem, showToast });
   useLayoutEffect(() => {
     latest.current = { products, searchRef, setSearchQuery, addItem, showToast };
@@ -24,35 +28,78 @@ export function useBarcodeScanner(
 
   // Only an explicit search/draft/checkout boundary invalidates scan intents.
   // Another scan or a product-query rerender must not swallow a valid earlier scan.
-  const invalidateLookups = useCallback(() => { generation.current += 1; }, []);
+  const releaseWaiters = useCallback(() => {
+    pausedSequence.current = null;
+    waiters.current.forEach((resume) => resume());
+    waiters.current.clear();
+  }, []);
+  const invalidateLookups = useCallback(() => {
+    generation.current += 1;
+    releaseWaiters();
+  }, [releaseWaiters]);
+  const handleSearchInput = useCallback((event?: Event) => {
+    const sequenceId = event ? getBarcodeInputSequence(event) : null;
+    if (sequenceId !== null) pausedSequence.current = sequenceId;
+    else invalidateLookups();
+  }, [invalidateLookups]);
 
   useEffect(() => {
     let active = true;
     const unsubscribeRecovery = useCheckoutRecoveryStore.subscribe((next, previous) => {
       if (next.pending || next.scope !== previous.scope) invalidateLookups();
     });
+    const unsubscribeCart = useCartStore.subscribe((next, previous) => {
+      if (next.draftRevision !== previous.draftRevision) invalidateLookups();
+    });
+    type IntentBoundary = { generation: number; draftRevision: number; blocked: boolean };
+    let startedBoundary: IntentBoundary | null = null;
+    let completedBoundary: IntentBoundary | null = null;
+    const unsubscribeSequence = onBarcodeSequence((event) => {
+      if (event.kind === 'started') {
+        startedBoundary = {
+          generation: generation.current,
+          draftRevision: useCartStore.getState().draftRevision,
+          blocked: !!useCheckoutRecoveryStore.getState().pending,
+        };
+        if (event.target === latest.current.searchRef.current) pausedSequence.current = event.id;
+      } else if (event.kind === 'completed') {
+        completedBoundary = startedBoundary;
+        startedBoundary = null;
+        if (pausedSequence.current === event.id) releaseWaiters();
+      } else {
+        startedBoundary = null;
+        if (pausedSequence.current === event.id) invalidateLookups();
+      }
+    });
     startBarcodeListener();
     const unsubscribe = onBarcode((code) => {
-      if (useCheckoutRecoveryStore.getState().pending) return;
-      const startedGeneration = generation.current;
-      const draftRevision = useCartStore.getState().draftRevision;
+      const boundary = completedBoundary;
+      completedBoundary = null;
+      if (!boundary || boundary.blocked) return;
       const isCurrent = () => active
-        && startedGeneration === generation.current
-        && draftRevision === useCartStore.getState().draftRevision
+        && boundary.generation === generation.current
+        && boundary.draftRevision === useCartStore.getState().draftRevision
         && !useCheckoutRecoveryStore.getState().pending;
+      if (!isCurrent()) return;
+      const canPublish = async () => {
+        while (isCurrent() && pausedSequence.current !== null) {
+          await new Promise<void>((resume) => waiters.current.add(resume));
+        }
+        return isCurrent();
+      };
 
       const applyMatchedProduct = (matched: PosProduct) => {
         if (!isCurrent()) return;
         const current = latest.current;
-        if (matched.stockQuantity === 0) {
+        const existing = useCartStore.getState().items.find((item) => item.product.id === matched.id);
+        if (matched.stockQuantity <= 0 || (existing && existing.quantity >= matched.stockQuantity)) {
           current.showToast({ type: 'warning', message: `庫存不足：${matched.name}` });
           return;
         }
-        const alreadyInCart = useCartStore.getState().items.some((item) => item.product.id === matched.id);
         current.addItem(matched);
         current.showToast({
           type: 'success',
-          message: alreadyInCart ? `數量 +1：${matched.name}` : `已加入 ${matched.name}`,
+          message: existing ? `數量 +1：${matched.name}` : `已加入 ${matched.name}`,
         });
         current.setSearchQuery('');
         current.searchRef.current?.focus();
@@ -67,7 +114,7 @@ export function useBarcodeScanner(
 
       void (async () => {
         const response = await posApi.getProducts(code);
-        if (!isCurrent()) return;
+        if (!await canPublish()) return;
         const results = response.data.data;
         const matches = exactMatches(results, code);
         if (results.length === 0) {
@@ -78,17 +125,20 @@ export function useBarcodeScanner(
           latest.current.showToast({ type: 'info', message: '沒有唯一完全相符商品，請手動選擇' });
         }
         latest.current.searchRef.current?.focus();
-      })().catch(() => {
-        if (isCurrent()) latest.current.showToast({ type: 'error', message: '查詢商品失敗，請保留草稿並重試' });
+      })().catch(async () => {
+        if (await canPublish()) latest.current.showToast({ type: 'error', message: '查詢商品失敗，請保留草稿並重試' });
       });
     });
     return () => {
       active = false;
+      invalidateLookups();
       stopBarcodeListener();
       unsubscribe();
+      unsubscribeSequence();
       unsubscribeRecovery();
+      unsubscribeCart();
     };
-  }, [invalidateLookups]);
+  }, [invalidateLookups, releaseWaiters]);
 
-  return invalidateLookups;
+  return handleSearchInput;
 }

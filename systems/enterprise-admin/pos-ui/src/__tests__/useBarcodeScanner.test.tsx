@@ -1,12 +1,13 @@
 import { MutableRefObject, useRef, useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { PosProduct } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import type { PosToastMessage } from '../components/PosToast';
+import { startBarcodeListener, stopBarcodeListener } from '../services/barcodeService';
 
 const { getProducts } = vi.hoisted(() => ({ getProducts: vi.fn() }));
 vi.mock('../api/pos', async () => {
@@ -31,7 +32,7 @@ function Harness({
   return <>
     <input ref={inputRef} aria-label="search" value={query}
       onChange={(event) => {
-        if (typeof invalidateLookups === 'function') invalidateLookups();
+        if (typeof invalidateLookups === 'function') invalidateLookups(event.nativeEvent);
         setQuery(event.target.value);
       }} />
     <button type="button">other</button>
@@ -64,6 +65,9 @@ function checkoutDraft() {
 
 describe('useBarcodeScanner', () => {
   beforeEach(() => {
+    startBarcodeListener();
+    fireEvent.keyDown(document, { key: 'Enter' });
+    stopBarcodeListener();
     vi.resetAllMocks();
     localStorage.clear();
     useCheckoutRecoveryStore.setState({ scope: null, pending: null });
@@ -73,6 +77,7 @@ describe('useBarcodeScanner', () => {
       orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: null,
     });
   });
+  afterEach(() => { vi.useRealTimers(); });
 
   it('stops listening on unmount', () => {
     const h = render(<Harness />);
@@ -377,5 +382,175 @@ describe('useBarcodeScanner', () => {
     await finish(firstLookup);
     expect(useCartStore.getState().items.map((item) => item.product.id)).toEqual([second.id, product.id]);
     expect(showToast.mock.calls.filter(([msg]) => msg.type === 'success')).toHaveLength(2);
+  });
+
+  it('pauses an earlier response during scanner input and keeps both intents after Enter', async () => {
+    const firstLookup = deferredLookup();
+    const secondLookup = deferredLookup();
+    const showToast = vi.fn();
+    getProducts.mockReturnValueOnce(firstLookup.promise).mockReturnValueOnce(secondLookup.promise);
+    render(<Harness products={[]} showToast={showToast} />);
+    const input = screen.getByRole('textbox', { name: 'search' });
+    const user = userEvent.setup();
+    await user.type(input, 'PAN{Enter}');
+    await user.type(input, 'P');
+    await finish(firstLookup);
+    expect(input).toHaveValue('PANP');
+    expect(useCartStore.getState().items).toEqual([]);
+    expect(showToast).not.toHaveBeenCalled();
+    await user.type(input, 'AN2{Enter}');
+    await finish(secondLookup, [second]);
+    expect(useCartStore.getState().items.map((item) => item.product.id)).toEqual([product.id, second.id]);
+    expect(showToast.mock.calls.filter(([msg]) => msg.type === 'success')).toHaveLength(2);
+  });
+
+  it('does not claim quantity plus one when a scan cannot increase the cart quantity', () => {
+    useCartStore.getState().addItem(product);
+    useCartStore.getState().updateQuantity(product.id, product.stockQuantity);
+    const showToast = vi.fn();
+    render(<Harness showToast={showToast} />);
+    const input = screen.getByRole('textbox', { name: 'search' });
+    fireEvent.change(input, { target: { value: 'keep search' } });
+    scan('PAN');
+    expect(useCartStore.getState().items[0].quantity).toBe(product.stockQuantity);
+    expect(showToast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
+    expect(input).toHaveValue('keep search');
+  });
+
+  it('preserves two focused scans of the same SKU with reverse responses', async () => {
+    const firstLookup = deferredLookup();
+    const secondLookup = deferredLookup();
+    const showToast = vi.fn();
+    getProducts.mockReturnValueOnce(firstLookup.promise).mockReturnValueOnce(secondLookup.promise);
+    render(<Harness products={[]} showToast={showToast} />);
+    const user = userEvent.setup();
+    const input = screen.getByRole('textbox', { name: 'search' });
+    await user.type(input, 'PAN{Enter}PAN{Enter}');
+    await finish(secondLookup);
+    await finish(firstLookup);
+    expect(useCartStore.getState().items).toMatchObject([{ product, quantity: 2 }]);
+    expect(showToast.mock.calls.filter(([msg]) => msg.type === 'success')).toHaveLength(2);
+  });
+
+  it.each(['paste', 'backspace', 'change'])('permanently cancels paused responses after manual %s', async (edit) => {
+    const lookup = deferredLookup();
+    const showToast = vi.fn();
+    getProducts.mockReturnValue(lookup.promise);
+    render(<Harness products={[]} showToast={showToast} />);
+    const user = userEvent.setup();
+    const input = screen.getByRole('textbox', { name: 'search' });
+    await user.type(input, 'PAN{Enter}P');
+    await finish(lookup);
+    expect(useCartStore.getState().items).toEqual([]);
+    if (edit === 'paste') await user.paste('manual');
+    else if (edit === 'backspace') await user.keyboard('{Backspace}');
+    else fireEvent.change(input, { target: { value: 'manual search' } });
+    const query = (input as HTMLInputElement).value;
+    const other = screen.getByRole('button', { name: 'other' });
+    other.focus();
+    await act(async () => { await Promise.resolve(); });
+    expect(useCartStore.getState().items).toEqual([]);
+    expect(showToast).not.toHaveBeenCalled();
+    expect(input).toHaveValue(query);
+    expect(other).toHaveFocus();
+  });
+
+  it('keeps unfinished input paused at 300ms and cancels it permanently at 301ms', async () => {
+    vi.useFakeTimers();
+    const lookup = deferredLookup();
+    const showToast = vi.fn();
+    getProducts.mockReturnValue(lookup.promise);
+    render(<Harness products={[]} showToast={showToast} />);
+    const input = screen.getByRole('textbox', { name: 'search' });
+    input.focus();
+    let value = '';
+    for (const key of 'PAN') {
+      fireEvent.keyDown(input, { key });
+      value += key;
+      fireEvent.input(input, { inputType: 'insertText', data: key, target: { value } });
+    }
+    fireEvent.keyDown(input, { key: 'Enter' });
+    fireEvent.keyDown(input, { key: 'P' });
+    fireEvent.input(input, { inputType: 'insertText', data: 'P', target: { value: 'PANP' } });
+    await finish(lookup);
+    await act(async () => { vi.advanceTimersByTime(300); });
+    expect(input).toHaveValue('PANP');
+    expect(useCartStore.getState().items).toEqual([]);
+    expect(showToast).not.toHaveBeenCalled();
+    await act(async () => { vi.advanceTimersByTime(1); });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(getProducts).toHaveBeenCalledTimes(1);
+    expect(input).toHaveValue('PANP');
+    expect(useCartStore.getState().items).toEqual([]);
+    expect(showToast).not.toHaveBeenCalled();
+  });
+
+  it.each(['clear', 'hold', 'recall', 'pending ABA', 'scope ABA'])(
+    'does not revive either intent after %s during partial input', async (boundary) => {
+      if (boundary === 'hold') useCartStore.getState().addItem(second);
+      if (boundary === 'recall') {
+        useCartStore.getState().addItem(second);
+        useCartStore.getState().holdCurrentCart();
+      }
+      const lookup = deferredLookup();
+      const showToast = vi.fn();
+      getProducts.mockReturnValue(lookup.promise);
+      render(<Harness products={[]} showToast={showToast} />);
+      const user = userEvent.setup();
+      const input = screen.getByRole('textbox', { name: 'search' });
+      await user.type(input, 'PAN{Enter}P');
+      await finish(lookup);
+      act(() => {
+        const cart = useCartStore.getState();
+        if (boundary === 'clear') cart.clearCart();
+        if (boundary === 'hold') cart.holdCurrentCart();
+        if (boundary === 'recall') cart.recallHeldCart(cart.heldCarts[0].id);
+        if (boundary === 'pending ABA') {
+          useCheckoutRecoveryStore.getState().prepare({ commandId: 'synthetic-partial',
+            cartItems: [], shiftId: 'synthetic-shift', paymentMethod: 'CASH', orderDiscountAmount: 0 }, checkoutDraft());
+          useCheckoutRecoveryStore.getState().confirm('synthetic-partial');
+        }
+        if (boundary === 'scope ABA') {
+          useCheckoutRecoveryStore.getState().hydrate('other-synthetic-tenant:cashier');
+          useCheckoutRecoveryStore.getState().hydrate('synthetic-tenant:cashier');
+        }
+      });
+      const itemsAfterBoundary = useCartStore.getState().items;
+      await user.type(input, 'AN2{Enter}');
+      expect(getProducts).toHaveBeenCalledTimes(1);
+      expect(useCartStore.getState().items).toEqual(itemsAfterBoundary);
+      expect(showToast).not.toHaveBeenCalled();
+      expect(input).toHaveValue('PANPAN2');
+    },
+  );
+
+  it('cancels a rejection received during partial input without publishing an error', async () => {
+    const lookup = deferredLookup();
+    const showToast = vi.fn();
+    getProducts.mockReturnValue(lookup.promise);
+    render(<Harness products={[]} showToast={showToast} />);
+    const user = userEvent.setup();
+    const input = screen.getByRole('textbox', { name: 'search' });
+    await user.type(input, 'PAN{Enter}P');
+    await act(async () => { lookup.reject(new Error('synthetic offline')); await lookup.promise.catch(() => undefined); });
+    expect(showToast).not.toHaveBeenCalled();
+    await user.keyboard('{Backspace}');
+    await act(async () => { await Promise.resolve(); });
+    expect(showToast).not.toHaveBeenCalled();
+    expect(useCartStore.getState().items).toEqual([]);
+  });
+
+  it('releases paused responses safely when unmounted', async () => {
+    const lookup = deferredLookup();
+    const showToast = vi.fn();
+    getProducts.mockReturnValue(lookup.promise);
+    const view = render(<Harness products={[]} showToast={showToast} />);
+    const user = userEvent.setup();
+    await user.type(screen.getByRole('textbox', { name: 'search' }), 'PAN{Enter}P');
+    await finish(lookup);
+    view.unmount();
+    await act(async () => { await Promise.resolve(); });
+    expect(useCartStore.getState().items).toEqual([]);
+    expect(showToast).not.toHaveBeenCalled();
   });
 });
