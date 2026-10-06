@@ -7,6 +7,8 @@ import type { PaymentEntry } from '@pharmasaas/types';
 import { buildCheckoutPayload } from '../services/checkoutIntent';
 import { checkoutPayloadHash } from '../services/checkoutPayloadHash';
 
+const CONFLICT_RECOVERY_MESSAGE = '此意圖曾發生衝突。請保留紀錄，由管理員核對原訂單，不能自動確認或建立新意圖';
+
 interface UseCheckoutOptions {
   shiftId: string | undefined;
   customerId?: string;
@@ -64,7 +66,7 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
       if (queryOnly) {
         const { data } = await posApi.getCheckoutCommand(intent.payload.commandId);
         if (intent.status === 'conflict') {
-          setRecoveryError('此意圖曾發生衝突。請保留紀錄，由管理員核對原訂單，不能自動確認或建立新意圖');
+          setRecoveryError(CONFLICT_RECOVERY_MESSAGE);
         } else if (data.data.status === 'SUCCEEDED') {
           if (data.data.payloadHash === await checkoutPayloadHash(intent.payload)) confirmed(intent, scope, data.data.result);
           else {
@@ -81,7 +83,9 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
       if (useCheckoutRecoveryStore.getState().scope !== scope) return;
       const response = (err as { response?: { status: number; data?: { error?: { message?: string } } } }).response;
       useCheckoutRecoveryStore.getState().mark(response?.status === 409 ? 'conflict' : 'unknown');
-      setRecoveryError(response?.data?.error?.message ?? '尚未確認結帳結果，請查詢或重送同一意圖');
+      setRecoveryError(useCheckoutRecoveryStore.getState().pending?.status === 'conflict'
+        ? CONFLICT_RECOVERY_MESSAGE
+        : response?.data?.error?.message ?? '尚未確認結帳結果，請查詢或重送同一意圖');
     }
   }
 

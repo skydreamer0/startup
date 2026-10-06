@@ -66,23 +66,92 @@ for (const recovery of ['query', 'retry'] as const) {
   });
 }
 
-test('conflict survives refresh, keeps evidence, and cannot be blindly resent', async ({ page }) => {
-  await page.route('**/api/v1/admin/**', async (route) => {
-    const path = new URL(route.request().url()).pathname;
-    if (path.endsWith('/pos/checkout')) { await route.fulfill({ status: 409, json: { success: false, error: { code: 'COMMAND_PAYLOAD_CONFLICT', message: 'Synthetic payload conflict' } } }); return; }
-    const data = path.endsWith('/pos/checkout-context') ? scope : path.endsWith('/pos/products') ? [product]
-      : path.endsWith('/pos/shift/active') ? shift : [];
-    await route.fulfill({ json: { success: true, data } });
+for (const lookup of ['UNKNOWN', 'SUCCEEDED'] as const) {
+  test(`conflict survives ${lookup} lookup and refresh without automatic confirmation`, async ({ page }) => {
+    let posts = 0;
+    await page.route('**/api/v1/admin/**', async (route) => {
+      const path = new URL(route.request().url()).pathname;
+      if (path.endsWith('/pos/checkout')) { posts++; await route.fulfill({ status: 409, json: { success: false, error: { code: 'COMMAND_PAYLOAD_CONFLICT', message: 'Synthetic payload conflict' } } }); return; }
+      if (path.includes('/pos/checkout-commands/')) {
+        await route.fulfill({ json: { success: true, data: lookup === 'SUCCEEDED' ? { status: lookup, result: original, payloadHash: 'synthetic-hash' } : { status: lookup } } }); return;
+      }
+      const data = path.endsWith('/pos/checkout-context') ? scope : path.endsWith('/pos/products') ? [product]
+        : path.endsWith('/pos/shift/active') ? shift : [];
+      await route.fulfill({ json: { success: true, data } });
+    });
+    await page.addInitScript(() => { localStorage.setItem('pos_accessToken', 'synthetic-token'); });
+    await page.goto('/');
+    await page.getByTestId(`product-card-${product.id}`).click();
+    await page.getByTestId('cart-checkout-button').click();
+    await page.getByTestId('payment-tendered-input').fill('100');
+    await page.getByTestId('payment-confirm-button').click();
+    await expect(page.getByTestId('checkout-recovery')).toContainText('結帳意圖衝突');
+    await expect(page.getByRole('button', { name: '重送同一意圖' })).toBeDisabled();
+    await page.getByRole('button', { name: '查詢原訂單' }).click();
+    await expect(page.getByTestId('checkout-recovery')).toContainText('不能自動確認或建立新意圖');
+    await expect(page.getByTestId('receipt-modal')).not.toBeVisible();
+    await page.reload();
+    await expect(page.getByTestId('checkout-recovery')).toContainText('結帳意圖衝突');
+    await expect(page.getByRole('button', { name: '重送同一意圖' })).toBeDisabled();
+    expect(posts).toBe(1);
   });
-  await page.addInitScript(() => { localStorage.setItem('pos_accessToken', 'synthetic-token'); });
-  await page.goto('/');
-  await page.getByTestId(`product-card-${product.id}`).click();
-  await page.getByTestId('cart-checkout-button').click();
-  await page.getByTestId('payment-tendered-input').fill('100');
-  await page.getByTestId('payment-confirm-button').click();
-  await expect(page.getByTestId('checkout-recovery')).toContainText('結帳意圖衝突');
-  await expect(page.getByRole('button', { name: '重送同一意圖' })).toBeDisabled();
-  await page.reload();
-  await expect(page.getByTestId('checkout-recovery')).toContainText('結帳意圖衝突');
-  await expect(page.getByRole('button', { name: '重送同一意圖' })).toBeDisabled();
-});
+}
+
+for (const failure of ['disconnect', 500, 401, 403] as const) {
+  test(`conflict remains frozen after ${failure} lookup, reauthentication and refresh`, async ({ page }) => {
+    let posts = 0;
+    await page.route('**/api/v1/admin/**', async (route) => {
+      const path = new URL(route.request().url()).pathname;
+      if (path.endsWith('/pos/checkout')) {
+        posts++;
+        await route.fulfill({ status: 409, json: { success: false, error: { code: 'COMMAND_PAYLOAD_CONFLICT', message: 'Synthetic conflict' } } }); return;
+      }
+      if (path.includes('/pos/checkout-commands/')) {
+        if (failure === 'disconnect') await route.abort('connectionreset');
+        else await route.fulfill({ status: failure, json: { success: false, error: { message: 'Synthetic query failure' } } });
+        return;
+      }
+      const data = path.endsWith('/pos/checkout-context') ? scope : path.endsWith('/pos/products') ? [product]
+        : path.endsWith('/pos/shift/active') ? shift : path.endsWith('/pos/staff-login') ? { accessToken: 'synthetic-token' } : [];
+      await route.fulfill({ json: { success: true, data } });
+    });
+    // Only initial navigation signs in; the 401 case exercises the real login UI.
+    await page.goto('/login');
+    await page.evaluate(() => { localStorage.setItem('pos_accessToken', 'synthetic-token'); });
+    await page.goto('/');
+    await page.getByTestId(`product-card-${product.id}`).click();
+    await page.getByTestId('cart-checkout-button').click();
+    await page.getByTestId('payment-tendered-input').fill('100');
+    await page.getByTestId('payment-confirm-button').click();
+    const panel = page.getByTestId('checkout-recovery');
+    await expect(panel).toContainText('結帳意圖衝突');
+    const key = `pos-checkout-intent-v1:${scope.tenantId}:${scope.userId}`;
+    const saved = await page.evaluate((key) => localStorage.getItem(key), key);
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: '查詢原訂單' })).toBeFocused();
+    await page.keyboard.press(failure === 403 ? 'Space' : 'Enter');
+    if (failure === 401) {
+      await expect(page).toHaveURL(/\/login$/);
+      await page.getByTestId('login-employee-code-input').fill('SYNTHETIC');
+      await page.getByTestId('login-submit-button').click();
+      await expect(panel).toContainText('結帳意圖衝突');
+    } else {
+      await expect(panel).toContainText('不能自動確認或建立新意圖');
+    }
+    expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(saved);
+    await expect(page.getByRole('button', { name: '重送同一意圖' })).toBeDisabled();
+    await expect(page.getByTestId('cart-checkout-button')).toBeDisabled();
+    await expect(page.getByRole('button', { name: '拆單', exact: true })).toBeDisabled();
+    await expect(page.getByTestId('receipt-modal')).not.toBeVisible();
+    await page.keyboard.press('Enter'); await page.keyboard.press('Escape');
+    expect(posts).toBe(1);
+    await page.reload();
+    await expect(panel).toContainText('結帳意圖衝突');
+    await expect(page.getByRole('button', { name: '重送同一意圖' })).toBeDisabled();
+    await expect(page.getByTestId('cart-checkout-button')).toBeDisabled();
+    await expect(page.getByRole('button', { name: '拆單', exact: true })).toBeDisabled();
+    await page.keyboard.press('Enter');
+    expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(saved);
+    expect(posts).toBe(1);
+  });
+}

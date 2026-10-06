@@ -37,6 +37,10 @@ Proposed — bounded #30 slice; Draft PR only. No production deployment or gate 
   refresh and authentication renewal; persistence failures block sending. Pending,
   unknown and conflict intents cannot be silently cleared or replaced. Credentials
   are never part of the saved command or hash.
+  Known conflict remains frozen through query disconnection, 500, 401/403,
+  UNKNOWN and successful lookup, including refresh and reauthentication. Query
+  errors update the message without downgrading the persisted conflict; even a
+  matching result hash cannot automatically resolve an already known conflict.
   `GET /pos/checkout-context` resolves tenant/user through the existing auth and
   manage:pos boundary; persisted keys do not contain the rotating access token.
 

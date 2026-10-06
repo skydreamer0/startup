@@ -1,0 +1,43 @@
+
+> pos-ui@1.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /workspace/startup/systems/enterprise-admin/pos-ui
+
+ ✓ src/__tests__/CartPanel.test.tsx (10 tests) 472ms
+ ✓ src/__tests__/CustomerLookupPanel.test.tsx (6 tests) 664ms
+ ✓ src/__tests__/useCheckout.test.tsx (14 tests) 1324ms
+ ✓ src/__tests__/PaymentModal.test.tsx (5 tests) 464ms
+ ✓ src/__tests__/CartItem.test.tsx (13 tests) 579ms
+ ✓ src/__tests__/useShift.test.tsx (5 tests) 325ms
+ ✓ src/__tests__/ShiftOpenScreen.test.tsx (4 tests) 329ms
+ ✓ src/__tests__/StaffSwitchModal.test.tsx (4 tests) 375ms
+ ✓ src/__tests__/useBarcodeScanner.test.tsx (6 tests) 208ms
+ ✓ src/__tests__/ReorderForecastBadge.test.tsx (5 tests) 208ms
+ ✓ src/__tests__/ProductCard.test.tsx (3 tests) 245ms
+ ✓ src/__tests__/CloseShiftDialog.test.tsx (3 tests) 199ms
+ ✓ src/__tests__/POSLoginPage.test.tsx (2 tests) 207ms
+ ✓ src/__tests__/ReceiptModal.test.tsx (1 test) 95ms
+ ✓ src/__tests__/CategoryNav.test.tsx (4 tests) 188ms
+ ✓ src/__tests__/offlineQueue.test.ts (6 tests) 30ms
+ ✓ src/__tests__/RecommendationChips.test.tsx (3 tests) 214ms
+ ✓ src/__tests__/ProductGrid.test.tsx (3 tests) 159ms
+ ✓ src/__tests__/apiClient.test.ts (5 tests) 27ms
+ ✓ src/__tests__/barcodeService.test.ts (5 tests) 13ms
+ ✓ src/__tests__/receiptService.test.ts (4 tests) 8ms
+ ✓ src/__tests__/posApi.test.ts (8 tests) 9ms
+ ✓ src/__tests__/checkoutPayloadHash.test.ts (2 tests) 14ms
+ ✓ src/__tests__/cartStore.test.ts (24 tests) 17ms
+ ✓ src/__tests__/checkoutIntent.test.ts (6 tests) 4ms
+
+ Test Files  25 passed (25)
+      Tests  151 passed (151)
+   Start at  12:26:32
+   Duration  10.54s (transform 994ms, setup 1.84s, collect 4.22s, tests 6.38s, environment 10.98s, prepare 2.18s)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

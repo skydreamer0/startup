@@ -70,6 +70,9 @@ export const useCheckoutRecoveryStore = create<RecoveryState>((set, get) => ({
   mark: (status) => {
     const { scope, pending } = get();
     if (!scope || !pending) return;
+    // A known payload conflict requires manual investigation. Transport failures
+    // and later lookups cannot downgrade this evidence or re-enable submission.
+    if (pending.status === 'conflict') return;
     const next = { ...pending, status };
     set({ pending: next });
     // Even if this write fails, the pre-submit frozen intent remains recoverable.

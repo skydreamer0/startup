@@ -1,0 +1,26 @@
+
+> pos-ui@1.0.0 test:e2e
+> playwright test e2e/checkout-recovery.spec.ts
+
+
+Running 8 tests using 1 worker
+
+(node:15738) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:15738) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/checkout-recovery.spec.ts:12:7 › unknown → refresh → query → confirmed retains the original command (1.1s)
+  ✓  2 [chromium] › e2e/checkout-recovery.spec.ts:12:7 › unknown → refresh → retry → confirmed retains the original command (1.1s)
+  ✓  3 [chromium] › e2e/checkout-recovery.spec.ts:70:7 › conflict survives UNKNOWN lookup and refresh without automatic confirmation (823ms)
+  ✓  4 [chromium] › e2e/checkout-recovery.spec.ts:70:7 › conflict survives SUCCEEDED lookup and refresh without automatic confirmation (824ms)
+  ✓  5 [chromium] › e2e/checkout-recovery.spec.ts:101:7 › conflict remains frozen after disconnect lookup, reauthentication and refresh (1.0s)
+  ✓  6 [chromium] › e2e/checkout-recovery.spec.ts:101:7 › conflict remains frozen after 500 lookup, reauthentication and refresh (972ms)
+  ✓  7 [chromium] › e2e/checkout-recovery.spec.ts:101:7 › conflict remains frozen after 401 lookup, reauthentication and refresh (1.3s)
+  ✓  8 [chromium] › e2e/checkout-recovery.spec.ts:101:7 › conflict remains frozen after 403 lookup, reauthentication and refresh (827ms)
+
+  8 passed (8.9s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

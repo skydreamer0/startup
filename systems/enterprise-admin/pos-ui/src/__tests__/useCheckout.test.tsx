@@ -78,6 +78,74 @@ describe('Frozen POS checkout recovery (synthetic API)', () => {
     expect(posApi.checkout).toHaveBeenCalledTimes(1); expect(localStorage.length).toBe(1);
   });
 
+  it.each([
+    ['disconnect', new Error('Disconnected')],
+    ['500', { response: { status: 500 } }],
+    ['401', { response: { status: 401 } }],
+    ['403', { response: { status: 403 } }],
+  ])('keeps conflict through a failed %s lookup and refresh, blocking every submit entry', async (_name, failure) => {
+    vi.mocked(posApi.checkout).mockRejectedValue({ response: { status: 409 } });
+    const h = hook(); await waitFor(() => expect(h.result.current.contextReady).toBe(true));
+    await act(async () => { await h.result.current.handleCheckout(); });
+    const payload = vi.mocked(posApi.checkout).mock.calls[0][0];
+    const storageKey = 'pos-checkout-intent-v1:tenant-1:cashier-1';
+    const conflictRecord = localStorage.getItem(storageKey);
+    vi.mocked(posApi.getCheckoutCommand).mockRejectedValue(failure);
+    await act(async () => { await h.result.current.queryCheckout(); });
+    expect(h.result.current.pending?.status).toBe('conflict');
+    expect(h.result.current.recoveryError).toContain('管理員');
+    expect(localStorage.getItem(storageKey)).toBe(conflictRecord);
+    act(() => {
+      useCheckoutRecoveryStore.getState().mark('pending');
+      useCheckoutRecoveryStore.getState().mark('unknown');
+    });
+    expect(h.result.current.pending?.status).toBe('conflict');
+    expect(localStorage.getItem(storageKey)).toBe(conflictRecord);
+    await act(async () => {
+      await h.result.current.handleCheckout();
+      await h.result.current.handleCheckout([{ method: 'CARD', amount: 100 }]);
+    });
+    expect(posApi.checkout).toHaveBeenCalledTimes(1);
+    h.unmount();
+    useCheckoutRecoveryStore.setState({ scope: null, pending: null });
+    useCartStore.setState({ items: [] });
+    const refreshed = hook(); await waitFor(() => expect(refreshed.result.current.contextReady).toBe(true));
+    expect(refreshed.result.current.pending).toMatchObject({ status: 'conflict', payload });
+    await act(async () => {
+      await refreshed.result.current.handleCheckout();
+      await refreshed.result.current.handleCheckout([{ method: 'CASH', amount: 100 }]);
+    });
+    expect(posApi.checkout).toHaveBeenCalledTimes(1);
+    expect(success).not.toHaveBeenCalled();
+    expect(useCartStore.getState().items).toHaveLength(1);
+    expect(localStorage.getItem(storageKey)).toBe(conflictRecord);
+  });
+
+  it.each(['UNKNOWN', 'SUCCEEDED'] as const)('keeps known conflict after a successful %s lookup and refresh', async (status) => {
+    vi.mocked(posApi.checkout).mockRejectedValue({ response: { status: 409 } });
+    const h = hook(); await waitFor(() => expect(h.result.current.contextReady).toBe(true));
+    await act(async () => { await h.result.current.handleCheckout(); });
+    const payload = vi.mocked(posApi.checkout).mock.calls[0][0];
+    const saved = localStorage.getItem('pos-checkout-intent-v1:tenant-1:cashier-1');
+    const response = status === 'SUCCEEDED'
+      ? { commandId: payload.commandId, status, payloadHash: await checkoutPayloadHash(payload), result }
+      : { commandId: payload.commandId, status };
+    vi.mocked(posApi.getCheckoutCommand).mockResolvedValue({ data: { data: response } } as Awaited<ReturnType<typeof posApi.getCheckoutCommand>>);
+    await act(async () => { await h.result.current.queryCheckout(); });
+    expect(h.result.current.pending?.status).toBe('conflict');
+    expect(h.result.current.checkoutResult).toBeNull();
+    expect(h.result.current.recoveryError).toContain('管理員');
+    expect(localStorage.getItem('pos-checkout-intent-v1:tenant-1:cashier-1')).toBe(saved);
+    h.unmount(); useCheckoutRecoveryStore.setState({ scope: null, pending: null });
+    const refreshed = hook(); await waitFor(() => expect(refreshed.result.current.contextReady).toBe(true));
+    expect(refreshed.result.current.pending).toMatchObject({ status: 'conflict', payload });
+    await act(async () => {
+      await refreshed.result.current.handleCheckout();
+      await refreshed.result.current.handleCheckout([{ method: 'CARD', amount: 100 }]);
+    });
+    expect(posApi.checkout).toHaveBeenCalledTimes(1); expect(success).not.toHaveBeenCalled();
+  });
+
   it('does not confirm a lookup result belonging to a different payload', async () => {
     vi.mocked(posApi.checkout).mockRejectedValue(new Error('Lost response'));
     const h = hook(); await waitFor(() => expect(h.result.current.contextReady).toBe(true));

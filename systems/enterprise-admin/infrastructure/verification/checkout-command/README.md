@@ -9,12 +9,12 @@ permissions or credentials changes. #30 and #29/#31/#37 gates remain open.
 | --- | --- |
 | Complete backend suite | 29 files / 239 tests |
 | New command coverage | 19 real PostgreSQL cases + 2 backend/browser hash contract vectors |
-| Complete POS suite | 25 files / 145 tests, including 8 new recovery interactions and 2 hash vectors |
+| Complete POS suite | 25 files / 151 tests, including 14 new recovery interactions and 2 hash vectors |
 | Backend Prisma generation, build, lint | passed with package-lock / Prisma 6.19.2 |
 | POS production build | passed; shared CheckoutPayload requires commandId |
 | Prisma migration/schema diff | no difference |
 | Agent context and git diff whitespace checks | passed |
-| Synthetic Chromium recovery | 3/3: unknown → refresh → query or retry → original confirmed order; conflict persists |
+| Synthetic Chromium recovery | 8/8: unknown → refresh → query or retry → original confirmed order; conflict stays frozen through disconnect/500/401/403, UNKNOWN and SUCCEEDED lookups, reauthentication and refresh |
 | Existing Chromium real API flow | 6/6 on isolated, synthetic-seeded PostgreSQL; checkout/refund keeps physical stock unchanged |
 | agent-browser visual verification | login content, controls and navigation present; no browser errors or error overlay |
 | Synthetic legacy upgrade | previous nine migrations + product 9 / lot 4 / completed historical order; additive command migration leaves those unchanged and creates zero historical commands |
@@ -41,6 +41,38 @@ the real checkout service without an HTTP host. Original result recovery remains
 unchanged after closing the shift, changing price, consuming all stock and refunding.
 The legacy Chromium suite uses the actual local HTTP API; the new recovery Chromium
 suite uses synthetic HTTP responses and is not database concurrency evidence.
+
+## Conflict review correction and raw execution logs
+
+Independent review found that a failed GET could downgrade a known conflict to
+unknown and re-enable resubmission after refresh. Four parameterized regression
+cases (disconnect, 500, 401, 403) reproduced that failure before the fix. The store
+now refuses every downgrade of known conflict, while the hook retains the manual
+investigation message. Successful UNKNOWN/SUCCEEDED lookups cannot unlock it,
+including a matching hash. No backend, migration or dependency change was needed.
+
+The six additional unit cases preserve the exact saved record through lookup and
+hydration and call both ordinary and split-payment submission entries without
+another POST. Synthetic Chromium exercises actual Tab + Enter/Space, disabled
+retry/ordinary/split controls, 401 login renewal and refresh with exactly one POST.
+The original unknown → query/retry → confirmed cases still pass.
+
+Captured stdout/stderr, including test names, totals and build output:
+
+- [POS unit suite: 25 files / 151 tests](raw/pos-unit-conflict-review.txt)
+  — `npm test` from `pos-ui`.
+- [Synthetic Chromium recovery: 8/8](raw/chromium-conflict-recovery.txt)
+  — `PLAYWRIGHT_BROWSERS_PATH=/workspace/.cache/playwright npm run test:e2e -- e2e/checkout-recovery.spec.ts` from `pos-ui`.
+- [Existing local HTTP checkout/refund: 6/6](raw/chromium-http-checkout.txt)
+  — the same browser command with `e2e/checkout-flow.spec.ts`, using the original
+  explicitly started test API and loopback synthetic PostgreSQL database.
+- [POS production build](raw/pos-build-conflict-review.txt) — `npm run build` from `pos-ui`.
+
+The optional re-audit of the running API process's `/proc/.../environ` was denied
+by filesystem permissions and stopped. The shell did not stop the HTTP test run
+after that audit failed; the 6/6 log is therefore evidence against the original
+explicit test-server startup configuration, not a successful process-environment
+re-audit. No escalation or alternate environment-read route was used.
 
 ## Reproduce
 
