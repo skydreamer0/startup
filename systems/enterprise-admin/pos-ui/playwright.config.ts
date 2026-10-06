@@ -21,6 +21,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
+  // Opt-in owned-process/isolated-DB suite has its own fail-closed config.
+  testIgnore: 'checkout-http-recovery.spec.ts',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

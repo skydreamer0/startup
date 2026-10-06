@@ -1,0 +1,11 @@
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+
+  ┌──────────────────────────────────────────┐
+  │                                          │
+  │    Server running on port 43339        │
+  │    Health: http://localhost:43339/health │
+  │    API:    http://localhost:43339/api/v1/admin  │
+  │    Env:    test                  │
+  │                                          │
+  └──────────────────────────────────────────┘
+  

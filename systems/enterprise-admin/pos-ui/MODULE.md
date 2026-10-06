@@ -74,6 +74,12 @@ npm run test:e2e
 npm run build
 ```
 
+For the opt-in real HTTP restart/lost-response suite, use
+`npm run test:e2e:http-recovery:types` then `npm run test:e2e:http-recovery` with
+explicit `POS_HTTP_RECOVERY_DATABASE_URL`. It creates isolated synthetic fixture
+databases and owns the API/POS processes; do not supply a store or existing server.
+See `../infrastructure/verification/checkout-command/http-restart/README.md`.
+
 ## Do not assume
 
 - Do not read admin UI unless the task involves shared behavior or shared components.

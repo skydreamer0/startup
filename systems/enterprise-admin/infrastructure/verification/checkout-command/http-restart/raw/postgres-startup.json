@@ -1,0 +1,11 @@
+{
+  "pid": 17947,
+  "dataDirectory": "/workspace/test-artifacts/http-recovery-postgres/data",
+  "host": "127.0.0.1",
+  "port": 55434,
+  "user": "test",
+  "version": "15.18",
+  "databasePrefix": "checkout_http_recovery_",
+  "command": "pg_ctl -D /workspace/test-artifacts/http-recovery-postgres/data -l server.txt -o \"-h 127.0.0.1 -p 55434 -k /workspace/test-artifacts/http-recovery-postgres/socket\" -w start",
+  "credentials": "no credential values captured"
+}

@@ -69,6 +69,7 @@
 1. Read the failing test file.
 2. Open only the module files referenced by the failing test.
 3. Use broader module inspection only after the local failure path is understood.
+4. Real HTTP restart/lost-response acceptance lives in `../pos-ui/e2e/checkout-http-recovery.spec.ts` with an owned-process harness and `src/__tests__/helpers/checkout-http-fixture.ts`. It requires explicit isolated loopback test databases; reproduction/evidence is in `../infrastructure/verification/checkout-command/http-restart/README.md`. The fixture is excluded from the API build.
 
 ## Commands
 

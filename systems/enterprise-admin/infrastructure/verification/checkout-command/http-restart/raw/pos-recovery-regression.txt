@@ -1,0 +1,20 @@
+
+> pos-ui@1.0.0 test
+> vitest run src/__tests__/useCheckout.test.tsx src/__tests__/checkoutPayloadHash.test.ts
+
+
+ RUN  v3.2.4 /workspace/startup/systems/enterprise-admin/pos-ui
+
+ ✓ src/__tests__/checkoutPayloadHash.test.ts (2 tests) 4ms
+ ✓ src/__tests__/useCheckout.test.tsx (14 tests) 1255ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  17:28:21
+   Duration  2.17s (transform 155ms, setup 126ms, collect 279ms, tests 1.26s, environment 739ms, prepare 177ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,0 +1,116 @@
+[
+  {
+    "event": "spawn",
+    "label": "api-first",
+    "pid": 19405,
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "args": [
+      "/workspace/startup/systems/enterprise-admin/backend/dist/server.js"
+    ],
+    "cwd": "/tmp/checkout-http-recovery-O0aQTA",
+    "NODE_ENV": "test",
+    "database": {
+      "host": "127.0.0.1",
+      "name": "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb",
+      "user": "test",
+      "port": 55434
+    },
+    "origin": "http://127.0.0.1:36563",
+    "jwtSecrets": "ephemeral, same across API restart; values omitted",
+    "at": "2026-10-06T17:29:26.675Z"
+  },
+  {
+    "event": "ready",
+    "label": "api-first",
+    "pid": 19405,
+    "at": "2026-10-06T17:29:27.488Z"
+  },
+  {
+    "event": "spawn",
+    "label": "pos",
+    "pid": 19420,
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "args": [
+      "/workspace/startup/systems/enterprise-admin/pos-ui/node_modules/vite/bin/vite.js",
+      "--config",
+      "/workspace/startup/systems/enterprise-admin/pos-ui/e2e/http-recovery.vite.config.mts",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "45705",
+      "--strictPort"
+    ],
+    "cwd": "/tmp/checkout-http-recovery-O0aQTA",
+    "NODE_ENV": "test",
+    "database": {
+      "host": "127.0.0.1",
+      "name": "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb",
+      "user": "test",
+      "port": 55434
+    },
+    "origin": "http://127.0.0.1:45705",
+    "jwtSecrets": "ephemeral, same across API restart; values omitted",
+    "at": "2026-10-06T17:29:27.490Z"
+  },
+  {
+    "event": "ready",
+    "label": "pos",
+    "pid": 19420,
+    "at": "2026-10-06T17:29:27.838Z"
+  },
+  {
+    "event": "exit",
+    "pid": 19405,
+    "requestedSignal": "SIGKILL",
+    "code": null,
+    "signal": "SIGKILL",
+    "at": "2026-10-06T17:29:30.536Z"
+  },
+  {
+    "event": "api-unavailable",
+    "pid": 19405,
+    "at": "2026-10-06T17:29:30.539Z"
+  },
+  {
+    "event": "spawn",
+    "label": "api-restarted",
+    "pid": 19498,
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "args": [
+      "/workspace/startup/systems/enterprise-admin/backend/dist/server.js"
+    ],
+    "cwd": "/tmp/checkout-http-recovery-O0aQTA",
+    "NODE_ENV": "test",
+    "database": {
+      "host": "127.0.0.1",
+      "name": "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb",
+      "user": "test",
+      "port": 55434
+    },
+    "origin": "http://127.0.0.1:36563",
+    "jwtSecrets": "ephemeral, same across API restart; values omitted",
+    "at": "2026-10-06T17:29:30.541Z"
+  },
+  {
+    "event": "ready",
+    "label": "api-restarted",
+    "pid": 19498,
+    "at": "2026-10-06T17:29:31.021Z"
+  },
+  {
+    "event": "exit",
+    "pid": 19498,
+    "requestedSignal": "SIGTERM",
+    "code": null,
+    "signal": "SIGTERM",
+    "at": "2026-10-06T17:29:31.589Z"
+  },
+  {
+    "event": "exit",
+    "pid": 19420,
+    "requestedSignal": "SIGTERM",
+    "code": 143,
+    "signal": null,
+    "at": "2026-10-06T17:29:31.605Z"
+  }
+]

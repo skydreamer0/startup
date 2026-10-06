@@ -1,7 +1,10 @@
 # Bounded #30 checkout recovery evidence
 
-2026-10-06; base master d8790798. Draft only; no merge, production data, deployment,
-permissions or credentials changes. #30 and #29/#31/#37 gates remain open.
+2026-10-06; original base master d8790798. #44 was merged at 13:19:07 UTC as
+`12c415d5e677e38ec2dfa23d425c600d7395080e`. No production data, deployment,
+permissions or credentials changes were part of that slice. #30 and #29/#31/#37
+gates remain open. The [real HTTP restart/lost-response follow-up](http-restart/README.md)
+is a separate Draft test/evidence slice and does not authorize merge or deployment.
 
 ## Passed
 
@@ -128,10 +131,12 @@ Both screenshots contain only the synthetic UI fixture.
   per cashier/browser is the verified UI boundary. Separate terminals and concurrent
   API commands are covered by the PostgreSQL identity/stock boundary. Clearing or
   tampering with browser storage is not a durable offline-ledger guarantee.
-- No standalone HTTP-server restart/lost-response browser test was run; the command
-  process restart and HTTP happy path are separate evidence. Deadlock/serialization
-  retries, full offline synchronization, mixed-writer production G1/G2/G4, restore
-  rehearsal and final-host checks remain outside this slice.
+- The original #44 run had separate command-process restart and HTTP happy-path
+  evidence. The [follow-up](http-restart/README.md) now verifies real HTTP
+  post-commit lost-response → API restart → browser refresh → GET/resend together.
+  Before-commit HTTP kill, deadlock/serialization retries, full offline sync,
+  mixed-writer production G1/G2/G4, restore rehearsal and final-host checks remain
+  outside this slice.
 - Unique order numbers/business date, exact money, historical cost snapshots and
   refund reconciliation remain #30 follow-up. The old last-order+1 sequence can
   collide for distinct commands on different products; payment rows are records,

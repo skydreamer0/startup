@@ -1,0 +1,41 @@
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb", schema "public" at "127.0.0.1:55434"
+
+10 migrations found in prisma/migrations
+
+Applying migration `20260301164756_init`
+Applying migration `20260516000001_phase9_pos_schema`
+Applying migration `20260516140834_phase_8_sales_foundation`
+Applying migration `20260519000001_phase_6_accounting_sync`
+Applying migration `20260519000001_phase_6_line_integration`
+Applying migration `20260520000001_arch_fix_5_float_to_decimal`
+Applying migration `20260522140840_phase_9_7_split_payment`
+Applying migration `20261006090000_sale_batch_allocations`
+Applying migration `20261006100000_atomic_batch_receipts`
+Applying migration `20261006110000_checkout_commands`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260301164756_init/
+    └─ migration.sql
+  └─ 20260516000001_phase9_pos_schema/
+    └─ migration.sql
+  └─ 20260516140834_phase_8_sales_foundation/
+    └─ migration.sql
+  └─ 20260519000001_phase_6_accounting_sync/
+    └─ migration.sql
+  └─ 20260519000001_phase_6_line_integration/
+    └─ migration.sql
+  └─ 20260520000001_arch_fix_5_float_to_decimal/
+    └─ migration.sql
+  └─ 20260522140840_phase_9_7_split_payment/
+    └─ migration.sql
+  └─ 20261006090000_sale_batch_allocations/
+    └─ migration.sql
+  └─ 20261006100000_atomic_batch_receipts/
+    └─ migration.sql
+  └─ 20261006110000_checkout_commands/
+    └─ migration.sql
+      
+All migrations have been successfully applied.
