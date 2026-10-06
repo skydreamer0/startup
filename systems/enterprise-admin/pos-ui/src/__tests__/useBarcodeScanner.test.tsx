@@ -1,6 +1,7 @@
 import { MutableRefObject, useRef, useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { PosProduct } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
@@ -358,5 +359,23 @@ describe('useBarcodeScanner', () => {
     await finish(lookup);
     expect(useCartStore.getState().items).toEqual([]);
     expect(showToast).not.toHaveBeenCalled();
+  });
+
+  it('preserves both wedge scans when keyboard characters also edit the focused search input', async () => {
+    const firstLookup = deferredLookup();
+    const secondLookup = deferredLookup();
+    const showToast = vi.fn();
+    getProducts.mockReturnValueOnce(firstLookup.promise).mockReturnValueOnce(secondLookup.promise);
+    render(<Harness products={[]} showToast={showToast} />);
+    const input = screen.getByRole('textbox', { name: 'search' });
+    input.focus();
+    const user = userEvent.setup();
+    await user.type(input, 'PAN{Enter}');
+    await user.type(input, 'PAN2{Enter}');
+    expect(getProducts.mock.calls.map(([code]) => code)).toEqual(['PAN', 'PAN2']);
+    await finish(secondLookup, [second]);
+    await finish(firstLookup);
+    expect(useCartStore.getState().items.map((item) => item.product.id)).toEqual([second.id, product.id]);
+    expect(showToast.mock.calls.filter(([msg]) => msg.type === 'success')).toHaveLength(2);
   });
 });

@@ -75,6 +75,26 @@
       "path": "14-staged-raw-whitespace-failure.txt",
       "bytes": 2766,
       "sha256": "a6326bf530bbf5a25625d56718c90951c0c15f314cc9f0677a901343137a1875"
+    },
+    {
+      "path": "16-focused-input-wedge-red.txt",
+      "bytes": 4254,
+      "sha256": "b6ee0eb75629b5e387667b8103f8e92b0510e34461b18ec04f47d6d7f11b2c7a"
+    },
+    {
+      "path": "17-user-event-wedge-red.txt",
+      "bytes": 4257,
+      "sha256": "3a2f89bf5e597b7c7a37b9086ea02d17ce334713d894708c37537bee4735ee62"
+    },
+    {
+      "path": "18-focused-review-red.txt",
+      "bytes": 4347,
+      "sha256": "97d2296dbb2b3eae591e737e3220b72b29a7aa9bf1401c43acd78f77d7d1b392"
+    },
+    {
+      "path": "19-blocked-type-build.txt",
+      "bytes": 583,
+      "sha256": "6edcae6d34341cd4062fcc9db3fb3feb7c5d121d8ecd2b4f6c5b963f68e0b67b"
     }
   ]
 }

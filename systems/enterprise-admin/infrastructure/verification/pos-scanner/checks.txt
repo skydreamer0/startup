@@ -1,9 +1,8 @@
 $ ./scripts/validate-agent-context.sh
 agent context validation passed.
 Exit: 0
-$ git diff --cached --check
-Exit: 0
 $ git diff --check
 Exit: 0
-15 raw entries checked against originals and SHA256 manifest; all text UTF-8.
-No configured POS lint script. CI/browser not run.
+Latest scanner result: 1 failed / 29 passed. Type/build passed.
+Prior full POS 174 GREEN belongs to initial coverage at 81f29f4.
+CI/browser not run; no implementation correction or acceptance.

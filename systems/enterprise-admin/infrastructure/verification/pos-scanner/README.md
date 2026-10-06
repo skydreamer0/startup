@@ -1,5 +1,7 @@
 # Bounded POS scanner safety verification
 
+**Candidate blocked:** after the initial `81f29f4` candidate, a focused-input regression was reproduced using existing `user-event`: `PAN{Enter}` starts a deferred lookup, `PAN2{Enter}` produces real JSDOM input/change events, and reverse responses add only PAN2. The page's unconditional search invalidation cancels the first valid scan. Latest focused suite: **1 failed / 29 passed**; latest TypeScript/build still passes. No implementation correction or acceptance is claimed. The earlier 174-test GREEN below applies to the initial 29-case coverage, which omitted this input path.
+
 Refs [#31](https://github.com/skydreamer0/startup/issues/31), [#37](https://github.com/skydreamer0/startup/issues/37). Base: `1f7eeb092af0fd66ca4f3533939c44662020c9d8`. Executed 2026-10-06 in the existing `/workspace/startup` checkout, with existing Node 24.19.0, npm 11.9.0, Vitest 3.2.4, TypeScript 5.9.3 and Vite 6.4.2. No other executor, database, store data, hardware or deployment was used.
 
 ## Behavior and boundary
@@ -27,6 +29,8 @@ Raw stdout/stderr is retained byte-for-byte in [raw.zip](raw.zip), including sta
 | Full POS unit GREEN | 25 files / 174 tests passed, no skips/unhandled errors reported. Includes existing frozen intent/known-conflict and barcode-service regressions. | `10-pos-full-green.txt` |
 | Type/build | `tsc && vite build` passed. | `11-pos-type-build.txt` |
 | Context/whitespace/environment | Agent context and diff checks passed; UTF-8 reads checked. POS has no configured lint script; no unrelated backend/admin lint was claimed. | `13-context-diff.txt` |
+| Focused-input blocking RED | Explicit keydown/input sequence, then existing user-event typing, both fail: API sees PAN and PAN2 but only PAN2 is added. Full scanner suite now has 1 failed / 29 passed; this is an unresolved candidate regression. | `16-focused-input-wedge-red.txt`, `17-user-event-wedge-red.txt`, `18-focused-review-red.txt` |
+| Blocking-candidate type/build | TypeScript and Vite still pass with the new regression test; this does not override its RED result. | `19-blocked-type-build.txt` |
 
 Unit tests use actual barcode-service document key events, the real cart/recovery stores and React/JSDOM. Only the external product API is mocked; deferred promises explicitly control response/rejection ordering. This is unit-level synthetic evidence, not a real HTTP/browser/scanner test.
 

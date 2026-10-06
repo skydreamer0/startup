@@ -58,6 +58,7 @@
 2. The hook keeps valid concurrent scan intents through product/callback rerenders. User search input calls its invalidator; clear/hold/recall advance the in-memory draft revision. Pending/unknown/conflict or authenticated checkout scope changes permanently invalidate older requests; unmount suppresses their results/errors. Scanner-driven search clearing does not cancel another valid scan.
 3. Keep `barcodeService` timing/hardware policy unchanged. Actual Product has no barcode field; current `/pos/products` is a name/SKU substring search limited to 100. Optional barcode fixtures verify conditional matching only, not complete manufacturer-barcode lookup support.
 4. See `../infrastructure/verification/pos-scanner/README.md` for RED/GREEN unit evidence and untested browser/native-input/hardware boundaries. Stock freshness, responsive layout and broader #31/G0 remain separate.
+5. Current candidate has a blocking focused-input wedge regression: ordinary onChange invalidation can cancel a prior valid scan while the next scan types. The user-event counterexample is RED; do not treat the existing 29-case GREEN as full scanner acceptance.
 
 ### Debug POS test failure
 
