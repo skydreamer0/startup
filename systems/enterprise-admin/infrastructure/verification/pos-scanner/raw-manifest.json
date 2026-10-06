@@ -1,0 +1,80 @@
+{
+  "base": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+  "entries": [
+    {
+      "path": "00-pnpm-startup-failure.txt",
+      "bytes": 2907,
+      "sha256": "843f05119ac445e2b6839de306c294c4f9bd6b1638c8e2f4fbb72decbec6af24"
+    },
+    {
+      "path": "01-exact-red.txt",
+      "bytes": 2262,
+      "sha256": "1d505332079e12d78aa8b81cf363f964c482723e0eed6c2a301b5fe3c98a9af4"
+    },
+    {
+      "path": "02-exact-green.txt",
+      "bytes": 597,
+      "sha256": "325c1f2980bdb319f66533e9bbdb4b892744297ed7908480f5a4319171801d00"
+    },
+    {
+      "path": "03-unmount-red.txt",
+      "bytes": 2235,
+      "sha256": "c5e467235eba8c471e35e55974154e1d5b09f7755b0678904951d110c88d3465"
+    },
+    {
+      "path": "04-unmount-green.txt",
+      "bytes": 597,
+      "sha256": "658dc741e35a46ab672f53a426bbe02c37d4685d9917decab86c5cb2e9cf38ab"
+    },
+    {
+      "path": "05-rejection-red.txt",
+      "bytes": 5814,
+      "sha256": "291b90b1fa953f4c7ba1f6beddf4b3ea307fbee898379a43d0bc9622a65beb91"
+    },
+    {
+      "path": "06-lifecycle-red.txt",
+      "bytes": 9991,
+      "sha256": "ac249df43635baee44fdeb7732a48e67bfabe91a3fbfbc6152999f9d13b1c03f"
+    },
+    {
+      "path": "07-lifecycle-green.txt",
+      "bytes": 781,
+      "sha256": "f2b261cffee83bb6db1d0e8318ab76d8d74f4659fb2604d736441887bff605fe"
+    },
+    {
+      "path": "08-focused-green.txt",
+      "bytes": 780,
+      "sha256": "82429448d74b88f48f996e2f99e363f4179f1893b89b34baebab6f63eaf25129"
+    },
+    {
+      "path": "09-baseline-full-red.txt",
+      "bytes": 31220,
+      "sha256": "ff204bfaec96eb18bb551bd46e27cbdb5da8c5431e50072136f52361213ff20c"
+    },
+    {
+      "path": "10-pos-full-green.txt",
+      "bytes": 1937,
+      "sha256": "9b055122cf3218d09322f395c515b6fbf1b42d61f68c68fcb1a1faf7c08c1c0d"
+    },
+    {
+      "path": "11-pos-type-build.txt",
+      "bytes": 583,
+      "sha256": "929fd9dff333e89a083a02c30b7e13eaa7d98b2a41eb4ff72ef3618270b3eb2c"
+    },
+    {
+      "path": "12-baseline-final-red.txt",
+      "bytes": 31215,
+      "sha256": "aef56d0f5ed091d38fa17a5e114b47f448f224b17c38011a523906937e4ad047"
+    },
+    {
+      "path": "13-context-diff.txt",
+      "bytes": 239,
+      "sha256": "0ed0e6979c01da4d52b5cdf07e78c18740b13bf4da4efd80e03f500b2f9422d5"
+    },
+    {
+      "path": "14-staged-raw-whitespace-failure.txt",
+      "bytes": 2766,
+      "sha256": "a6326bf530bbf5a25625d56718c90951c0c15f314cc9f0677a901343137a1875"
+    }
+  ]
+}

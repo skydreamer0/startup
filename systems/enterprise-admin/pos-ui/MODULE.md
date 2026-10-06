@@ -52,6 +52,13 @@
 2. Keep `RefundModal`, order lookup, checkout toasts and shift-report labels consistent with refund registration. Actual goods receipt/inspection is a separate pending workflow.
 3. Use `e2e/checkout-flow.spec.ts` for the real checkout-to-refund flow; backend PostgreSQL cases verify unchanged product/lot/movement/allocation balances and competing refund requests.
 
+### Change scanner matching or asynchronous scan behavior
+
+1. Start with `src/hooks/useBarcodeScanner.ts`, its nearest test, `POSCheckoutPage` and `cartStore`. Automatic additions require one exact string match on SKU or a barcode already present in supplied candidates. Do not treat a single fuzzy search result as exact.
+2. The hook keeps valid concurrent scan intents through product/callback rerenders. User search input calls its invalidator; clear/hold/recall advance the in-memory draft revision. Pending/unknown/conflict or authenticated checkout scope changes permanently invalidate older requests; unmount suppresses their results/errors. Scanner-driven search clearing does not cancel another valid scan.
+3. Keep `barcodeService` timing/hardware policy unchanged. Actual Product has no barcode field; current `/pos/products` is a name/SKU substring search limited to 100. Optional barcode fixtures verify conditional matching only, not complete manufacturer-barcode lookup support.
+4. See `../infrastructure/verification/pos-scanner/README.md` for RED/GREEN unit evidence and untested browser/native-input/hardware boundaries. Stock freshness, responsive layout and broader #31/G0 remain separate.
+
 ### Debug POS test failure
 
 1. Read the failing unit/integration/E2E test.

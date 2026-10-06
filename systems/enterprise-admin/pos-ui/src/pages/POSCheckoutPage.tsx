@@ -120,7 +120,7 @@ export default function POSCheckoutPage() {
     retry: false,
   });
 
-  useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast);
+  const invalidateScannerLookups = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast);
 
   function handleAddRecommendation(productId: string) {
     const recommendation = recommendations.find((item) => item.productId === productId);
@@ -308,7 +308,10 @@ export default function POSCheckoutPage() {
           ref={searchRef}
           data-testid="product-search-input"
           value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
+          onChange={(event) => {
+            invalidateScannerLookups();
+            setSearchQuery(event.target.value);
+          }}
           placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
           className="pos-search-input"
         />
