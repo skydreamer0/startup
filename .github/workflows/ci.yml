@@ -125,6 +125,20 @@ jobs:
   pos-ui:
     name: POS UI CI
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: checkout_http_recovery_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d checkout_http_recovery_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     defaults:
       run:
         working-directory: ./systems/enterprise-admin
@@ -152,3 +166,29 @@ jobs:
 
     - name: Build and Type Check
       run: pnpm --filter pos-ui run build
+
+    - name: Prepare real HTTP API for synthetic recovery
+      run: |
+        npm --prefix backend ci
+        npm --prefix backend run db:generate
+        npm --prefix backend run build
+
+    - name: Install Chromium for HTTP recovery
+      run: pnpm --filter pos-ui exec playwright install --with-deps chromium
+
+    - name: Real HTTP restart and lost-response recovery
+      env:
+        POS_HTTP_RECOVERY_DATABASE_URL: "postgresql://test:test@127.0.0.1:5432/checkout_http_recovery_ci"
+      shell: bash
+      run: |
+        pnpm --filter pos-ui run test:e2e:http-recovery:types
+        pnpm --filter pos-ui run test:e2e:http-recovery 2>&1 | tee pos-ui/http-recovery-ci.txt
+
+    - name: Preserve synthetic recovery evidence
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: pos-http-recovery
+        path: |
+          systems/enterprise-admin/pos-ui/test-results-http-recovery/
+          systems/enterprise-admin/pos-ui/http-recovery-ci.txt

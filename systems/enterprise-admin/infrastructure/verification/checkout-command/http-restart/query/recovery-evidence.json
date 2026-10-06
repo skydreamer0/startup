@@ -1,0 +1,515 @@
+{
+  "scenario": "query",
+  "fixture": {
+    "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+    "staffId": "21399846-bfdd-4095-a651-81df662463ab",
+    "employeeCode": "HTTP-QUERY",
+    "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+    "batchId": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+    "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+    "initialStock": 5,
+    "saleQuantity": 2
+  },
+  "posts": [
+    {
+      "commandId": "35750a01-f239-46e5-be99-f3b520af2f55",
+      "cartItems": [
+        {
+          "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+          "quantity": 2,
+          "discountRate": 0
+        }
+      ],
+      "paymentMethod": "CASH",
+      "orderDiscountAmount": 0,
+      "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+      "salesStaffId": "21399846-bfdd-4095-a651-81df662463ab"
+    }
+  ],
+  "original": {
+    "success": true,
+    "data": {
+      "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+      "customerId": "f8640774-e24e-48b4-b96c-871047ac5d34",
+      "status": "completed",
+      "totalAmount": "200",
+      "paymentStatus": "paid",
+      "shippingAddress": null,
+      "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+      "orderNumber": "POS-20261006-00001",
+      "orderType": "WALK_IN",
+      "paymentMethod": "CASH",
+      "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+      "discountAmount": "0",
+      "discountNote": null,
+      "salesStaffId": "21399846-bfdd-4095-a651-81df662463ab",
+      "createdAt": "2026-10-06T17:29:30.428Z",
+      "updatedAt": "2026-10-06T17:29:30.428Z",
+      "items": [
+        {
+          "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+          "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+          "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+          "quantity": 2,
+          "unitPrice": "100",
+          "discountRate": 0,
+          "finalUnitPrice": "100"
+        }
+      ],
+      "payments": [
+        {
+          "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+          "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+          "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+          "method": "CASH",
+          "amount": "200"
+        }
+      ]
+    }
+  },
+  "recovered": {
+    "success": true,
+    "data": {
+      "commandId": "35750a01-f239-46e5-be99-f3b520af2f55",
+      "status": "SUCCEEDED",
+      "payloadHash": "2a4cf0fb5db0deefba8434d11fad2f19f092bbed8c4ffbe0144192a630fbbdbf",
+      "result": {
+        "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "items": [
+          {
+            "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+            "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+            "quantity": 2,
+            "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+            "unitPrice": "100",
+            "discountRate": 0,
+            "finalUnitPrice": "100"
+          }
+        ],
+        "status": "completed",
+        "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+        "payments": [
+          {
+            "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+            "amount": "200",
+            "method": "CASH",
+            "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+            "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee"
+          }
+        ],
+        "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+        "createdAt": "2026-10-06T17:29:30.428Z",
+        "orderType": "WALK_IN",
+        "updatedAt": "2026-10-06T17:29:30.428Z",
+        "customerId": "f8640774-e24e-48b4-b96c-871047ac5d34",
+        "orderNumber": "POS-20261006-00001",
+        "totalAmount": "200",
+        "discountNote": null,
+        "salesStaffId": "21399846-bfdd-4095-a651-81df662463ab",
+        "paymentMethod": "CASH",
+        "paymentStatus": "paid",
+        "discountAmount": "0",
+        "shippingAddress": null
+      }
+    }
+  },
+  "intent": {
+    "payload": {
+      "commandId": "35750a01-f239-46e5-be99-f3b520af2f55",
+      "cartItems": [
+        {
+          "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+          "quantity": 2,
+          "discountRate": 0
+        }
+      ],
+      "paymentMethod": "CASH",
+      "orderDiscountAmount": 0,
+      "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+      "salesStaffId": "21399846-bfdd-4095-a651-81df662463ab"
+    },
+    "draft": {
+      "items": [
+        {
+          "product": {
+            "id": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+            "sku": "SYNTHETIC-HTTP",
+            "name": "合成 HTTP 恢復商品",
+            "description": null,
+            "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+            "categoryId": null,
+            "supplierId": null,
+            "costPrice": "40",
+            "retailPrice": "100",
+            "stockQuantity": 5,
+            "safetyStock": 10,
+            "createdAt": "2026-10-06T17:29:26.660Z",
+            "updatedAt": "2026-10-06T17:29:26.660Z",
+            "category": null
+          },
+          "quantity": 2,
+          "discountRate": 0
+        }
+      ],
+      "paymentMethod": "CASH",
+      "orderDiscountAmount": 0,
+      "orderDiscountNote": "",
+      "currentSalesStaffId": "21399846-bfdd-4095-a651-81df662463ab"
+    },
+    "status": "unknown"
+  },
+  "before": {
+    "database": [
+      {
+        "name": "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb",
+        "host": "127.0.0.1/32",
+        "port": 55434,
+        "version": "PostgreSQL 15.18 (Debian 15.18-0+deb12u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+        "started_at": "2026-10-06T17:21:52.571Z"
+      }
+    ],
+    "product": {
+      "id": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+      "stockQuantity": 5
+    },
+    "batch": {
+      "id": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+      "quantity": 5
+    },
+    "orders": [],
+    "payments": [],
+    "movements": [],
+    "allocations": [],
+    "commands": []
+  },
+  "committed": {
+    "database": [
+      {
+        "name": "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb",
+        "host": "127.0.0.1/32",
+        "port": 55434,
+        "version": "PostgreSQL 15.18 (Debian 15.18-0+deb12u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+        "started_at": "2026-10-06T17:21:52.571Z"
+      }
+    ],
+    "product": {
+      "id": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+      "stockQuantity": 3
+    },
+    "batch": {
+      "id": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+      "quantity": 3
+    },
+    "orders": [
+      {
+        "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "orderNumber": "POS-20261006-00001",
+        "items": [
+          {
+            "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+            "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+            "quantity": 2
+          }
+        ]
+      }
+    ],
+    "payments": [
+      {
+        "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "method": "CASH",
+        "amount": "200"
+      }
+    ],
+    "movements": [
+      {
+        "id": "dc669f8e-c102-44be-8eb0-ff331bb17964",
+        "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+        "type": "OUT",
+        "referenceId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "quantity": 2
+      }
+    ],
+    "allocations": [
+      {
+        "id": "5e2995a9-6d7f-4cbd-baef-fbcfcda0d2d7",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "orderItemId": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+        "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+        "batchId": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+        "movementId": "dc669f8e-c102-44be-8eb0-ff331bb17964",
+        "quantity": 2
+      }
+    ],
+    "commands": [
+      {
+        "commandId": "35750a01-f239-46e5-be99-f3b520af2f55",
+        "kind": "POS_CHECKOUT",
+        "status": "SUCCEEDED",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "payloadHash": "2a4cf0fb5db0deefba8434d11fad2f19f092bbed8c4ffbe0144192a630fbbdbf",
+        "result": {
+          "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+          "items": [
+            {
+              "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+              "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+              "quantity": 2,
+              "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+              "unitPrice": "100",
+              "discountRate": 0,
+              "finalUnitPrice": "100"
+            }
+          ],
+          "status": "completed",
+          "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+          "payments": [
+            {
+              "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+              "amount": "200",
+              "method": "CASH",
+              "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+              "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee"
+            }
+          ],
+          "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+          "createdAt": "2026-10-06T17:29:30.428Z",
+          "orderType": "WALK_IN",
+          "updatedAt": "2026-10-06T17:29:30.428Z",
+          "customerId": "f8640774-e24e-48b4-b96c-871047ac5d34",
+          "orderNumber": "POS-20261006-00001",
+          "totalAmount": "200",
+          "discountNote": null,
+          "salesStaffId": "21399846-bfdd-4095-a651-81df662463ab",
+          "paymentMethod": "CASH",
+          "paymentStatus": "paid",
+          "discountAmount": "0",
+          "shippingAddress": null
+        }
+      }
+    ]
+  },
+  "restarted": {
+    "database": [
+      {
+        "name": "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb",
+        "host": "127.0.0.1/32",
+        "port": 55434,
+        "version": "PostgreSQL 15.18 (Debian 15.18-0+deb12u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+        "started_at": "2026-10-06T17:21:52.571Z"
+      }
+    ],
+    "product": {
+      "id": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+      "stockQuantity": 3
+    },
+    "batch": {
+      "id": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+      "quantity": 3
+    },
+    "orders": [
+      {
+        "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "orderNumber": "POS-20261006-00001",
+        "items": [
+          {
+            "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+            "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+            "quantity": 2
+          }
+        ]
+      }
+    ],
+    "payments": [
+      {
+        "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "method": "CASH",
+        "amount": "200"
+      }
+    ],
+    "movements": [
+      {
+        "id": "dc669f8e-c102-44be-8eb0-ff331bb17964",
+        "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+        "type": "OUT",
+        "referenceId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "quantity": 2
+      }
+    ],
+    "allocations": [
+      {
+        "id": "5e2995a9-6d7f-4cbd-baef-fbcfcda0d2d7",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "orderItemId": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+        "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+        "batchId": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+        "movementId": "dc669f8e-c102-44be-8eb0-ff331bb17964",
+        "quantity": 2
+      }
+    ],
+    "commands": [
+      {
+        "commandId": "35750a01-f239-46e5-be99-f3b520af2f55",
+        "kind": "POS_CHECKOUT",
+        "status": "SUCCEEDED",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "payloadHash": "2a4cf0fb5db0deefba8434d11fad2f19f092bbed8c4ffbe0144192a630fbbdbf",
+        "result": {
+          "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+          "items": [
+            {
+              "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+              "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+              "quantity": 2,
+              "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+              "unitPrice": "100",
+              "discountRate": 0,
+              "finalUnitPrice": "100"
+            }
+          ],
+          "status": "completed",
+          "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+          "payments": [
+            {
+              "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+              "amount": "200",
+              "method": "CASH",
+              "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+              "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee"
+            }
+          ],
+          "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+          "createdAt": "2026-10-06T17:29:30.428Z",
+          "orderType": "WALK_IN",
+          "updatedAt": "2026-10-06T17:29:30.428Z",
+          "customerId": "f8640774-e24e-48b4-b96c-871047ac5d34",
+          "orderNumber": "POS-20261006-00001",
+          "totalAmount": "200",
+          "discountNote": null,
+          "salesStaffId": "21399846-bfdd-4095-a651-81df662463ab",
+          "paymentMethod": "CASH",
+          "paymentStatus": "paid",
+          "discountAmount": "0",
+          "shippingAddress": null
+        }
+      }
+    ]
+  },
+  "final": {
+    "database": [
+      {
+        "name": "checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb",
+        "host": "127.0.0.1/32",
+        "port": 55434,
+        "version": "PostgreSQL 15.18 (Debian 15.18-0+deb12u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+        "started_at": "2026-10-06T17:21:52.571Z"
+      }
+    ],
+    "product": {
+      "id": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+      "stockQuantity": 3
+    },
+    "batch": {
+      "id": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+      "quantity": 3
+    },
+    "orders": [
+      {
+        "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "orderNumber": "POS-20261006-00001",
+        "items": [
+          {
+            "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+            "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+            "quantity": 2
+          }
+        ]
+      }
+    ],
+    "payments": [
+      {
+        "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "method": "CASH",
+        "amount": "200"
+      }
+    ],
+    "movements": [
+      {
+        "id": "dc669f8e-c102-44be-8eb0-ff331bb17964",
+        "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+        "type": "OUT",
+        "referenceId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "quantity": 2
+      }
+    ],
+    "allocations": [
+      {
+        "id": "5e2995a9-6d7f-4cbd-baef-fbcfcda0d2d7",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "orderItemId": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+        "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+        "batchId": "3ef0712e-f6d5-4288-b43a-5adb0ca87b19",
+        "movementId": "dc669f8e-c102-44be-8eb0-ff331bb17964",
+        "quantity": 2
+      }
+    ],
+    "commands": [
+      {
+        "commandId": "35750a01-f239-46e5-be99-f3b520af2f55",
+        "kind": "POS_CHECKOUT",
+        "status": "SUCCEEDED",
+        "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+        "payloadHash": "2a4cf0fb5db0deefba8434d11fad2f19f092bbed8c4ffbe0144192a630fbbdbf",
+        "result": {
+          "id": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+          "items": [
+            {
+              "id": "36a8a14f-53c7-4115-b990-7ecb669d2d7f",
+              "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+              "quantity": 2,
+              "productId": "6b8bd8b1-ce7c-42eb-b1b1-7eb8cc0b03aa",
+              "unitPrice": "100",
+              "discountRate": 0,
+              "finalUnitPrice": "100"
+            }
+          ],
+          "status": "completed",
+          "shiftId": "cf938d72-b1e3-460b-83a4-b3d24b0c0d1b",
+          "payments": [
+            {
+              "id": "d07dbc3c-2c19-456c-ad4d-194cf97885a4",
+              "amount": "200",
+              "method": "CASH",
+              "orderId": "6c6a0516-359e-4b94-9abb-e05b9a82c702",
+              "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee"
+            }
+          ],
+          "tenantId": "f8999b04-4bae-41aa-8902-f7b0b4f71dee",
+          "createdAt": "2026-10-06T17:29:30.428Z",
+          "orderType": "WALK_IN",
+          "updatedAt": "2026-10-06T17:29:30.428Z",
+          "customerId": "f8640774-e24e-48b4-b96c-871047ac5d34",
+          "orderNumber": "POS-20261006-00001",
+          "totalAmount": "200",
+          "discountNote": null,
+          "salesStaffId": "21399846-bfdd-4095-a651-81df662463ab",
+          "paymentMethod": "CASH",
+          "paymentStatus": "paid",
+          "discountAmount": "0",
+          "shippingAddress": null
+        }
+      }
+    ]
+  },
+  "conservation": {
+    "productDebit": 2,
+    "lotDebit": 2,
+    "sold": 2,
+    "movementOut": 2,
+    "allocated": 2
+  },
+  "originalResultSha256": "53a876184949c284bd19127ce5534cd58c387c6890f6ed7a0ba8624571fc1f97",
+  "browserErrors": []
+}

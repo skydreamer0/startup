@@ -1,0 +1,22 @@
+
+> pos-ui@1.0.0 test:e2e:http-recovery
+> playwright test --config playwright.http-recovery.config.ts
+
+
+Running 2 tests using 1 worker
+
+(node:19262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"scenario":"query","database":"checkout_http_recovery_query_336e033da13e4d04ad1978c84f6d84fb","commandId":"35750a01-f239-46e5-be99-f3b520af2f55","orderId":"6c6a0516-359e-4b94-9abb-e05b9a82c702","orderNumber":"POS-20261006-00001","posts":1,"orders":1,"payments":1,"movements":1,"allocations":1,"commands":1,"conservation":{"productDebit":2,"lotDebit":2,"sold":2,"movementOut":2,"allocated":2}}
+  ✓  1 e2e/checkout-http-recovery.spec.ts:13:7 › lost committed response → real HTTP API restart → refresh → query confirms original order (6.5s)
+{"scenario":"retry","database":"checkout_http_recovery_retry_4da715d39d394d6da37662af40f2af87","commandId":"0f7f34fc-222f-492c-94c4-3755b82c27a4","orderId":"19c148b7-dc3a-462a-b3bf-5fc0e55565cc","orderNumber":"POS-20261006-00001","posts":2,"orders":1,"payments":1,"movements":1,"allocations":1,"commands":1,"conservation":{"productDebit":2,"lotDebit":2,"sold":2,"movementOut":2,"allocated":2}}
+  ✓  2 e2e/checkout-http-recovery.spec.ts:13:7 › lost committed response → real HTTP API restart → refresh → retry confirms original order (5.0s)
+
+  2 passed (12.7s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

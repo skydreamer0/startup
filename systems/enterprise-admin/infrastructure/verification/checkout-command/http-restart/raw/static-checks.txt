@@ -1,0 +1,48 @@
+Command: ['npm', 'run', 'test:e2e:http-recovery:types']
+Working directory: /workspace/startup/systems/enterprise-admin/pos-ui
+
+> pos-ui@1.0.0 test:e2e:http-recovery:types
+> tsc --project tsconfig.http-recovery.json
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+Exit code: 0
+
+Command: ['npm', 'run', 'build']
+Working directory: /workspace/startup/systems/enterprise-admin/backend
+
+> startup-backend@1.0.0 build
+> tsc
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+Exit code: 0
+
+Command: ['npm', 'run', 'lint']
+Working directory: /workspace/startup/systems/enterprise-admin/backend
+
+> startup-backend@1.0.0 lint
+> eslint src/
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+Exit code: 0
+
+Command: ['./scripts/validate-agent-context.sh']
+Working directory: /workspace/startup
+agent context validation passed.
+Exit code: 0
+
+Command: ['git', 'diff', '--check']
+Working directory: /workspace/startup
+Exit code: 0
+

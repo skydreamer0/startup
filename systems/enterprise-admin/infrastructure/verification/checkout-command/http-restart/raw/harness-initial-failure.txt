@@ -1,0 +1,52 @@
+
+> pos-ui@1.0.0 test:e2e
+> playwright test --config playwright.http-recovery.config.ts
+
+
+Running 1 test using 1 worker
+
+(node:18004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 e2e/checkout-http-recovery.spec.ts:12:5 › lost committed response → real HTTP API restart → refresh → GET confirms original order (31.8s)
+
+
+  1) e2e/checkout-http-recovery.spec.ts:12:5 › lost committed response → real HTTP API restart → refresh → GET confirms original order 
+
+    Error: pos did not become ready: Failed to resolve dependency: react, present in client 'optimizeDeps.include'
+    Failed to resolve dependency: react-dom, present in client 'optimizeDeps.include'
+    Failed to resolve dependency: react/jsx-dev-runtime, present in client 'optimizeDeps.include'
+    Failed to resolve dependency: react/jsx-runtime, present in client 'optimizeDeps.include'
+
+      VITE v6.4.2  ready in 217 ms
+
+      ➜  Local:   http://127.0.0.1:35403/
+
+
+       at helpers/checkout-http-harness.ts:68
+
+      66 |       await new Promise((done) => setTimeout(done, 50));
+      67 |     }
+    > 68 |     throw new Error(`${label} did not become ready: ${logs[label]}`);
+         |           ^
+      69 |   }
+      70 |
+      71 |   async function stop(child: ChildProcess, signal: NodeJS.Signals) {
+        at start (/workspace/startup/systems/enterprise-admin/pos-ui/e2e/helpers/checkout-http-harness.ts:68:11)
+        at checkoutHttpHarness (/workspace/startup/systems/enterprise-admin/pos-ui/e2e/helpers/checkout-http-harness.ts:84:5)
+        at /workspace/startup/systems/enterprise-admin/pos-ui/e2e/checkout-http-recovery.spec.ts:13:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-http-recovery/checkout-http-recovery-los-d6b9e-GET-confirms-original-order/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-http-recovery/checkout-http-recovery-los-d6b9e-GET-confirms-original-order/error-context.md
+
+  1 failed
+    e2e/checkout-http-recovery.spec.ts:12:5 › lost committed response → real HTTP API restart → refresh → GET confirms original order 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

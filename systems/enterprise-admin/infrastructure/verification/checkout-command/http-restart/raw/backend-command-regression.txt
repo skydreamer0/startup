@@ -1,0 +1,108 @@
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "checkout_http_recovery_regression", schema "public" at "127.0.0.1:55434"
+
+10 migrations found in prisma/migrations
+
+Applying migration `20260301164756_init`
+Applying migration `20260516000001_phase9_pos_schema`
+Applying migration `20260516140834_phase_8_sales_foundation`
+Applying migration `20260519000001_phase_6_accounting_sync`
+Applying migration `20260519000001_phase_6_line_integration`
+Applying migration `20260520000001_arch_fix_5_float_to_decimal`
+Applying migration `20260522140840_phase_9_7_split_payment`
+Applying migration `20261006090000_sale_batch_allocations`
+Applying migration `20261006100000_atomic_batch_receipts`
+Applying migration `20261006110000_checkout_commands`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260301164756_init/
+    └─ migration.sql
+  └─ 20260516000001_phase9_pos_schema/
+    └─ migration.sql
+  └─ 20260516140834_phase_8_sales_foundation/
+    └─ migration.sql
+  └─ 20260519000001_phase_6_accounting_sync/
+    └─ migration.sql
+  └─ 20260519000001_phase_6_line_integration/
+    └─ migration.sql
+  └─ 20260520000001_arch_fix_5_float_to_decimal/
+    └─ migration.sql
+  └─ 20260522140840_phase_9_7_split_payment/
+    └─ migration.sql
+  └─ 20261006090000_sale_batch_allocations/
+    └─ migration.sql
+  └─ 20261006100000_atomic_batch_receipts/
+    └─ migration.sql
+  └─ 20261006110000_checkout_commands/
+    └─ migration.sql
+      
+All migrations have been successfully applied.
+
+> startup-backend@1.0.0 test
+> vitest run src/__tests__/checkout-command.integration.test.ts
+
+
+ RUN  v3.2.4 /workspace/startup/systems/enterprise-admin/backend
+
+stdout | src/__tests__/checkout-command.integration.test.ts
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+stderr | src/__tests__/checkout-command.integration.test.ts > Checkout command recovery (real PostgreSQL) > returns HTTP 409 for a changed committed payload with no additional writes
+❌ Unhandled Error: AppError: commandId already belongs to a different checkout payload
+    at __vite_ssr_import_2__.prisma.$transaction.isolationLevel [90m(/workspace/startup/systems/enterprise-admin/backend/[39msrc/modules/pos/checkout-command.service.ts:54:57[90m)[39m
+    at Proxy._transactionWithCallback [90m(/workspace/startup/systems/enterprise-admin/backend/[39mnode_modules/[4m@prisma/client[24m/src/runtime/getPrismaClient.ts:722:18[90m)[39m
+    at checkout [90m(/workspace/startup/systems/enterprise-admin/backend/[39msrc/modules/pos/pos.controller.ts:29:21[90m)[39m {
+  statusCode: [33m409[39m,
+  errorCode: [32m'COMMAND_PAYLOAD_CONFLICT'[39m
+}
+
+stdout | src/__tests__/checkout-command.integration.test.ts > Checkout command recovery (real PostgreSQL) > rolls back stock, order/items and command when PostgreSQL rejects a payment record
+prisma:error 
+Invalid `tx.order.create()` invocation in
+/workspace/startup/systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts:108:36
+
+  105 }
+  106 
+  107 // 7. Create Order + OrderItems
+→ 108 const order = await tx.order.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "P0001", message: "Injected payment failure", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+
+stdout | src/__tests__/checkout-command.integration.test.ts > Checkout command recovery (real PostgreSQL) > enforces tenant/order/result identity constraints in PostgreSQL
+prisma:error 
+Invalid `expect(basePrisma.checkoutCommand.update()` invocation in
+/workspace/startup/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts:247:45
+
+  244 const f = await fixture(); const other = await fixture();
+  245 await inTenant(f, () => CheckoutService.checkout(f.payload));
+  246 const saved = await basePrisma.checkoutCommand.findFirstOrThrow({ where: { tenantId: f.tenantId } });
+→ 247 await expect(basePrisma.checkoutCommand.update(
+Foreign key constraint violated on the constraint: `checkout_commands_order_id_tenant_id_fkey`
+
+stdout | src/__tests__/checkout-command.integration.test.ts > Checkout command recovery (real PostgreSQL) > enforces tenant/order/result identity constraints in PostgreSQL
+prisma:error 
+Invalid `expect(basePrisma.checkoutCommand.update()` invocation in
+/workspace/startup/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts:248:45
+
+  245 await inTenant(f, () => CheckoutService.checkout(f.payload));
+  246 const saved = await basePrisma.checkoutCommand.findFirstOrThrow({ where: { tenantId: f.tenantId } });
+  247 await expect(basePrisma.checkoutCommand.update({ where: { id: saved.id }, data: { tenantId: other.tenantId } })).rejects.toMatchObject({ code: 'P2003' });
+→ 248 await expect(basePrisma.checkoutCommand.update(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "23514", message: "new row for relation \"checkout_commands\" violates check constraint \"checkout_commands_result_state_check\"", severity: "ERROR", detail: Some("Failing row contains (85be6781-2c02-4067-b202-0a4e06bc3f11, be5b63b8-b91b-40f9-a17c-826b460cdaa3, POS_CHECKOUT, 71b6a38c-cacd-45a8-b138-0a058e10ee69, f08216b3d4f113f27f905031ed62322a9fc7acd702aa2acabe9d572d3b775acb, SUCCEEDED, 801690f9-7290-433d-9dc1-bf7a945cfa35, {\"id\": \"3e5650e4-de84-46b2-9a20-e9908136a098\"}, 2026-10-06 17:30:34.358, 2026-10-06 17:30:34.366)."), column: None, hint: None }), transient: false })
+
+ ✓ src/__tests__/checkout-command.integration.test.ts (21 tests) 2131ms
+   ✓ Checkout command recovery (real PostgreSQL) > rolls back after a real process crash before commit and recovers in a new process  676ms
+   ✓ Checkout command recovery (real PostgreSQL) > recovers a committed lost response after the command service process exits and restarts  644ms
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  17:30:30
+   Duration  4.29s (transform 441ms, setup 0ms, collect 1.96s, tests 2.13s, environment 0ms, prepare 64ms)
+

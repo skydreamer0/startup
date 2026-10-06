@@ -9,6 +9,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:http-recovery": "playwright test --config playwright.http-recovery.config.ts",
+    "test:e2e:http-recovery:types": "tsc --project tsconfig.http-recovery.json",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "test:e2e:install": "playwright install chromium"

@@ -1,0 +1,18 @@
+
+> pos-ui@1.0.0 build
+> tsc && vite build
+
+vite v6.4.2 building for production...
+transforming...
+✓ 178 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   1.29 kB │ gzip:   0.61 kB
+dist/assets/index-PIxEdtWS.css   18.49 kB │ gzip:   4.78 kB
+dist/assets/index-R57sRvhI.js   391.04 kB │ gzip: 120.25 kB
+✓ built in 2.06s
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
