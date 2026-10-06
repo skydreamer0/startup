@@ -17,6 +17,7 @@ export const TENANT_SCOPED_MODELS = [
     'Product',
     'Order',
     'OrderPayment',
+    'CheckoutCommand',
     'InventoryTransaction',
     'Expense',
     'Shift',

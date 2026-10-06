@@ -7,6 +7,7 @@ const paymentEntrySchema = z.object({
 
 export const checkoutSchema = {
   body: z.object({
+    commandId: z.string().uuid().transform((id) => id.toLowerCase()),
     cartItems: z.array(
       z.object({
         productId: z.string().uuid(),
@@ -47,6 +48,10 @@ export const customerRecommendationsSchema = {
 };
 
 export type CheckoutDto = z.infer<typeof checkoutSchema.body>;
+
+export const checkoutCommandQuerySchema = {
+  params: z.object({ commandId: z.string().uuid().transform((id) => id.toLowerCase()) }),
+};
 
 export const refundOrderSchema = {
   params: z.object({ orderId: z.string().uuid() }),

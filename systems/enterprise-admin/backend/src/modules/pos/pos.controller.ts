@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CheckoutService } from './checkout.service';
+import { CheckoutCommandService } from './checkout-command.service';
 import { ReceiptService } from './receipt.service';
 import { prisma } from '../../lib/prisma';
 import { signAccessToken } from '../../lib/jwt';
@@ -35,6 +36,14 @@ export class PosController {
         q?: string; categoryId?: string; inStockOnly?: string;
       } ?? {};
       const data = await CheckoutService.getProducts(query);
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
+  static async getCheckoutCommand(req: Request, res: Response, next: NextFunction) {
+    try {
+      const commandId = Array.isArray(req.params.commandId) ? req.params.commandId[0] : req.params.commandId;
+      const data = await CheckoutCommandService.getResult(commandId);
       res.json({ success: true, data });
     } catch (err) { next(err); }
   }

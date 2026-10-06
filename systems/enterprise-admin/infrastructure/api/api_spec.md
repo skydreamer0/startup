@@ -121,7 +121,7 @@ HTTP Status Code 需精確映射錯誤類別：
 
 門店採 `Asia/Taipei` 日曆日期；**到期當天即不可出庫**。只有 `RELEASED`、正數庫存且效期日期晚於今天的批次可被 FEFO 選用。扣庫時再次驗證狀態、效期與數量。效期仍要求完整 ISO datetime；未知或僅年月不會推定成任意日期。
 
-這個切片沒有提供退款後實體回補、完整收貨／調整／Excel 共用權威、冪等命令、唯一單號或精確金額承諾；完整 #29/#30 驗收持續追蹤。
+這個批次切片沒有提供退款後實體回補、完整庫存共用權威、唯一單號或精確金額承諾；命令恢復另見 §3.10。完整 #29/#30 驗收持續追蹤。
 
 ### 3.8 退款登記與實體退回分離（2026-10-06 / ADR-015）
 
@@ -156,3 +156,12 @@ HTTP Status Code 需精確映射錯誤類別：
 1. **輸入過濾 (Input Sanitization)**: 所有外部輸入 `body`, `query`, `params` 皆須經 Schema Validator (如 Zod, Class-Validator) 的過濾，防止 SQL Injection 與 XSS。
 2. **分頁參數 (Pagination)**: `GET` 列表類型 API 強制支援 `?page=1&limit=20` 或 `cursor`，並限制 最大 `limit` (避免撈取整表拖垮 DB)。
 3. **軟刪除判斷**: `GET` List 時預設過濾掉 `deleted_at IS NOT NULL` 的資料。
+
+### 3.10 POS 結帳命令與結果恢復（Draft / ADR-018）
+
+- `POST /pos/checkout` 必須提供首次提交前產生的 UUID `commandId`；既有 body 業務欄位不變。HTTP 與直接 service 呼叫採相同 Zod defaults，ID 正規化小寫，hash 只含明列業務欄位，不含 commandId、adminPin 或其他認證資訊；明細及付款列保留順序。這是必要 client/server 契約升級，不支援無 key 的旧客戶端結帳。
+- 唯一範圍為當前 tenant + `POS_CHECKOUT` + commandId。相同 key／相同正規化 payload 回 `201` 和原始 order JSON（含 items/payments），即使班別已關閉、價格／庫存已改或訂單已退款；不從目前訂單狀態重建結果。相同 key／不同 payload 回 `409 COMMAND_PAYLOAD_CONFLICT`，不新增業務寫入。
+- `GET /pos/checkout-commands/:commandId` 沿用 auth + `manage:pos`。回 `{ success: true, data: { commandId, status: "SUCCEEDED", result: <原 order JSON> } }`；不存在、已 rollback 或尚未提交時回 `200`、`{ commandId, status: "UNKNOWN" }`。UNKNOWN 不代表一定未成交，只能查詢或重送同一 key／原意圖，不能換 key。其他 tenant 的 key 不洩漏結果。
+- PENDING claim、商品／批次扣庫、訂單／付款紀錄、movement／allocation 與 SUCCEEDED/result 同一 transaction。任何階段失敗全部 rollback；未成功的 claim 不永久綁定 key，等待者可接手。普通付款也保存一筆 payment record；沒有新增金流 provider 扣款。
+- UI 首次 POST 前必須成功保存 frozen payload／commandId；unknown 保留草稿與持續可見的恢復入口，refresh 後恢復為 unknown。409 保留證據。確認成功才清對應意圖；不得保存 PIN 或 token 到意圖紀錄。
+- 此片不承諾不同 command 的唯一單號、business date、精確金額、歷史成本或退款對帳；不完成 #30/#29/#31/#37 或 G1/G2/G4，也沒有正式部署。

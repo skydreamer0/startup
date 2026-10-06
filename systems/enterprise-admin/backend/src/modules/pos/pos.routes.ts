@@ -4,7 +4,7 @@ import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
 import { requirePlan } from '../../middleware/plan.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { checkoutSchema, createPosCustomerSchema, customerLookupSchema, customerRecommendationsSchema, posProductsSchema, refundOrderSchema } from './pos.schema';
+import { checkoutSchema, checkoutCommandQuerySchema, createPosCustomerSchema, customerLookupSchema, customerRecommendationsSchema, posProductsSchema, refundOrderSchema } from './pos.schema';
 import { posRateLimit } from '../../middleware/rate-limit.middleware';
 
 const router = Router();
@@ -18,6 +18,7 @@ router.use(authMiddleware);
 router.use(requirePermission('manage:pos'));
 
 router.post('/checkout', validate(checkoutSchema), PosController.checkout);
+router.get('/checkout-commands/:commandId', validate(checkoutCommandQuerySchema), PosController.getCheckoutCommand);
 router.get('/products', validate(posProductsSchema), PosController.getProducts);
 router.get('/customer-lookup', validate(customerLookupSchema), PosController.lookupCustomer);
 router.post('/customers', validate(createPosCustomerSchema), PosController.createCustomer);

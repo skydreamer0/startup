@@ -54,6 +54,7 @@
 5. POS `refundOrder` registers money-only refund status with a conditional transition; it must not receive stock or modify sale allocations. Read ADR-015 before changing refund/return semantics. Physical-return receipt remains separate pending work.
 6. Excel product import is metadata-only and cannot set physical stock. Read ADR-016, `src/lib/product-import-preview.ts` and `src/__tests__/excel-import.integration.test.ts` before changing preview/confirm identity or normalization. Confirm requires a signed tenant/file/normalized-revision preview; bump parser version when semantics change.
 7. Initial batch receipt uses `InventoryPostingService.receiveBatch` in the caller-owned transaction, product lock first, then lot + IN movement with receipt cost snapshot. Product/batch editors reject direct quantity writes; CSV creates at zero. Read ADR-017 and `inventory-receipt.integration.test.ts`. Batch RBAC uses the existing product permission catalogue. This does not implement physical returns, same-lot additional delivery, bins or reversal/rebuild.
+8. POS command orchestration uses `src/modules/pos/checkout-command.service.ts` (ADR-018). The tenant/kind/commandId claim and immutable result share the existing posting transaction. Replay precedes current business checks; result lookup requires manage:pos and missing results stay UNKNOWN. Read `checkout-command.integration.test.ts`; unique order numbers, exact money and full G1 remain pending.
 
 ### Change persistence or model meaning
 

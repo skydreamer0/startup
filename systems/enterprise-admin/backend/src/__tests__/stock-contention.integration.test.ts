@@ -105,6 +105,7 @@ function inTenant<T>(f: Fixture, callback: () => Promise<T>) {
 
 function checkout(f: Fixture, quantities = [1]) {
   return inTenant(f, () => CheckoutService.checkout({
+    commandId: randomUUID(),
     shiftId: f.shift.id, paymentMethod: 'CASH', orderDiscountAmount: 0,
     cartItems: quantities.map((quantity) => ({ productId: f.product.id, quantity, discountRate: 0 })),
   }));
@@ -127,6 +128,7 @@ afterEach(async () => {
   race.refundOrderId = '';
   vi.useRealTimers();
   for (const tenantId of tenants.splice(0)) {
+    await basePrisma.checkoutCommand.deleteMany({ where: { tenantId } });
     await basePrisma.saleBatchAllocation.deleteMany({ where: { tenantId } });
     await basePrisma.order.deleteMany({ where: { tenantId } });
     await basePrisma.inventoryTransaction.deleteMany({ where: { tenantId } });
@@ -383,6 +385,7 @@ describe('Sales stock safety (real PostgreSQL)', () => {
       status: 'RELEASED',
     } });
     const result = await inTenant(f, () => CheckoutService.checkout({
+    commandId: randomUUID(),
       shiftId: f.shift.id, paymentMethod: 'CASH', orderDiscountAmount: 0,
       cartItems: [
         { productId: f.product.id, quantity: 2, discountRate: 0 },
@@ -399,6 +402,7 @@ describe('Sales stock safety (real PostgreSQL)', () => {
   it('rolls back stock, batches and movements when order creation fails', async () => {
     const f = await fixture(2);
     await expect(inTenant(f, () => CheckoutService.checkout({
+    commandId: randomUUID(),
       shiftId: f.shift.id, salesStaffId: randomUUID(), paymentMethod: 'CASH', orderDiscountAmount: 0,
       cartItems: [{ productId: f.product.id, quantity: 1, discountRate: 0 }],
     }))).rejects.toBeDefined();
@@ -480,6 +484,7 @@ describe('Sales stock safety (real PostgreSQL)', () => {
     await Promise.all([
       [f.product.id, second.id], [second.id, f.product.id],
     ].map((productIds) => inTenant(f, () => CheckoutService.checkout({
+    commandId: randomUUID(),
       shiftId: f.shift.id, paymentMethod: 'CASH', orderDiscountAmount: 0,
       cartItems: productIds.map((productId) => ({ productId, quantity: 1, discountRate: 0 })),
     }))));
