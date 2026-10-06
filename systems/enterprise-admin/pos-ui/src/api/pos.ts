@@ -12,6 +12,8 @@ import type {
   ReorderForecastItem,
   ReorderUrgency,
   ApiSuccess,
+  CheckoutCommandResult,
+  CheckoutContext,
 } from '@pharmasaas/types';
 
 export type { PosProduct, PosStaff, ActiveShift, CheckoutPayload, CheckoutResult, PosOrderSummary, ShiftReport, PosCustomerLookup, PosRecommendation, ReorderForecastItem, ReorderUrgency };
@@ -49,6 +51,12 @@ export const posApi = {
 
   checkout: (payload: CheckoutPayload) =>
     api.post<ApiSuccess<CheckoutResult>>('/pos/checkout', payload),
+
+  getCheckoutCommand: (commandId: string) =>
+    api.get<ApiSuccess<CheckoutCommandResult>>(`/pos/checkout-commands/${commandId}`),
+
+  getCheckoutContext: () =>
+    api.get<ApiSuccess<CheckoutContext>>('/pos/checkout-context'),
 
   getReceipt: (orderId: string) =>
     api.get<ApiSuccess<{ buffer: string }>>(`/pos/receipt/${orderId}`),

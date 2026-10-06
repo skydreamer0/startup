@@ -30,10 +30,15 @@ Proposed — bounded #30 slice; Draft PR only. No production deployment or gate 
 - Authenticated manage:pos result lookup is tenant scoped. Missing/uncommitted
   results return UNKNOWN, never proof of failure. Query or resend the same key
   and intent. Refunds/metadata changes do not rebuild the original response.
+  Lookup includes the saved payloadHash; POS verifies the version-1 digest before
+  confirming a recovered result. Backend/browser normalization contract vectors
+  live in `infrastructure/api/checkout-command-hash-v1.json`.
 - POS persists a frozen intent before sending. Recovery survives modal closure,
   refresh and authentication renewal; persistence failures block sending. Pending,
   unknown and conflict intents cannot be silently cleared or replaced. Credentials
   are never part of the saved command or hash.
+  `GET /pos/checkout-context` resolves tenant/user through the existing auth and
+  manage:pos boundary; persisted keys do not contain the rotating access token.
 
 ## Migration and limits
 

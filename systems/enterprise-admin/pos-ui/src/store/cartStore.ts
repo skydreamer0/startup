@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useCheckoutRecoveryStore } from './checkoutRecoveryStore';
 import type { PosProduct } from '@pharmasaas/types';
 
 export interface CartItem {
@@ -42,7 +43,11 @@ interface CartState {
   total: () => number;
 }
 
-export const useCartStore = create<CartState>((set, get) => ({
+export const useCartStore = create<CartState>((set, get) => {
+  const mutate = (update: Partial<CartState> | ((state: CartState) => Partial<CartState> | CartState)) => {
+    if (!useCheckoutRecoveryStore.getState().pending) set(update);
+  };
+  return {
   items: [],
   orderDiscountAmount: 0,
   orderDiscountNote: '',
@@ -50,7 +55,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   currentSalesStaffId: null,
   heldCarts: [],
 
-  addItem: (product) => set((state) => {
+  addItem: (product) => mutate((state) => {
     const existing = state.items.find((item) => item.product.id === product.id);
     if (existing) {
       return {
@@ -64,11 +69,11 @@ export const useCartStore = create<CartState>((set, get) => ({
     return { items: [...state.items, { product, quantity: 1, discountRate: 0 }] };
   }),
 
-  removeItem: (productId) => set((state) => ({
+  removeItem: (productId) => mutate((state) => ({
     items: state.items.filter((item) => item.product.id !== productId),
   })),
 
-  updateQuantity: (productId, quantity) => set((state) => ({
+  updateQuantity: (productId, quantity) => mutate((state) => ({
     items: quantity <= 0
       ? state.items.filter((item) => item.product.id !== productId)
       : state.items.map((item) =>
@@ -76,26 +81,26 @@ export const useCartStore = create<CartState>((set, get) => ({
         ),
   })),
 
-  updateItemDiscount: (productId, discountRate) => set((state) => ({
+  updateItemDiscount: (productId, discountRate) => mutate((state) => ({
     items: state.items.map((item) =>
       item.product.id === productId ? { ...item, discountRate } : item,
     ),
   })),
 
-  setOrderDiscount: (amount, note = '') => set({ orderDiscountAmount: amount, orderDiscountNote: note }),
+  setOrderDiscount: (amount, note = '') => mutate({ orderDiscountAmount: amount, orderDiscountNote: note }),
 
-  setPaymentMethod: (method) => set({ paymentMethod: method }),
+  setPaymentMethod: (method) => mutate({ paymentMethod: method }),
 
-  setSalesStaff: (staffId) => set({ currentSalesStaffId: staffId }),
+  setSalesStaff: (staffId) => mutate({ currentSalesStaffId: staffId }),
 
-  clearCart: () => set({
+  clearCart: () => mutate({
     items: [],
     orderDiscountAmount: 0,
     orderDiscountNote: '',
     paymentMethod: 'CASH',
   }),
 
-  holdCurrentCart: (label) => set((state) => {
+  holdCurrentCart: (label) => mutate((state) => {
     if (state.items.length === 0) return state;
     const held: HeldCart = {
       id: crypto.randomUUID(),
@@ -115,7 +120,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     };
   }),
 
-  recallHeldCart: (id) => set((state) => {
+  recallHeldCart: (id) => mutate((state) => {
     const held = state.heldCarts.find((c) => c.id === id);
     if (!held) return state;
     // Save current cart back if non-empty
@@ -141,7 +146,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     };
   }),
 
-  deleteHeldCart: (id) => set((state) => ({
+  deleteHeldCart: (id) => mutate((state) => ({
     heldCarts: state.heldCarts.filter((c) => c.id !== id),
   })),
 
@@ -159,4 +164,5 @@ export const useCartStore = create<CartState>((set, get) => ({
     const { orderDiscountAmount } = get();
     return Math.max(0, get().subtotal() - orderDiscountAmount);
   },
-}));
+  };
+});

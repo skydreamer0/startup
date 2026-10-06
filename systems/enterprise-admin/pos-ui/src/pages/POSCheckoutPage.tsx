@@ -26,6 +26,7 @@ import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { useCustomerDisplay, openCustomerDisplay } from '../hooks/useCustomerDisplay';
 import ShiftOpenScreen from './ShiftOpenScreen';
 import CloseShiftDialog from '../components/CloseShiftDialog';
+import CheckoutRecovery from '../components/CheckoutRecovery';
 import CustomerLookupPanel from '../components/CustomerLookupPanel';
 import RecommendationChips from '../components/RecommendationChips';
 import ReorderForecastBadge from '../components/ReorderForecastBadge';
@@ -70,12 +71,16 @@ export default function POSCheckoutPage() {
   const shift = useShift(showToast, setSalesStaff);
   const hasHighDiscount = checkoutNeedsManagerApproval(items, orderDiscountAmount);
 
-  const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout } = useCheckout({
+  const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout, queryCheckout, pending, recoveryError, contextReady } = useCheckout({
     shiftId: shift.activeShift?.id,
     customerId: selectedCustomer?.id,
     onSuccess: () => { setShowPaymentModal(false); setShowSplitModal(false); },
     showToast,
   });
+
+  useEffect(() => {
+    if (pending) { setShowPaymentModal(false); setShowSplitModal(false); }
+  }, [pending]);
 
   useCustomerDisplay();
 
@@ -179,6 +184,7 @@ export default function POSCheckoutPage() {
   }
 
   const handleKeydown = useCallback((event: KeyboardEvent) => {
+    if (pending) return;
     if (event.target instanceof HTMLInputElement) return;
 
     switch (event.key) {
@@ -224,7 +230,7 @@ export default function POSCheckoutPage() {
         setShowOrderLookup(false);
         break;
     }
-  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift]);
+  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -260,7 +266,14 @@ export default function POSCheckoutPage() {
     new Map(products.filter((product) => product.category).map((product) => [product.category!.id, product.category!])).values(),
   );
 
+  const recoveryPanel = <CheckoutRecovery pending={pending} error={recoveryError} loading={checkoutLoading}
+    onQuery={queryCheckout} onRetry={() => handleCheckout()} />;
+
   if (!shift.activeShift) return (
+    <>
+      {recoveryPanel}
+      {checkoutResult && <ReceiptModal order={checkoutResult} onPrint={handlePrint} onClose={() => setCheckoutResult(null)} />}
+      <fieldset disabled={!!pending || !contextReady} style={{ border: 0, padding: 0, margin: 0 }}>
     <ShiftOpenScreen
       openingCash={shift.openingCash}
       onOpeningCashChange={shift.setOpeningCash}
@@ -269,11 +282,15 @@ export default function POSCheckoutPage() {
       toast={toast}
       onDismissToast={() => setToast(null)}
     />
+      </fieldset>
+    </>
   );
 
   return (
     <div className="pos-shell">
       <PosToast toast={toast} onDismiss={() => setToast(null)} />
+      {recoveryPanel}
+      <fieldset disabled={!!pending || !contextReady} style={{ border: 0, padding: 0, margin: 0, display: 'contents' }}>
       <div className="pos-topbar">
         <div className="pos-brand">
           <div className="pos-brand-mark">🌿</div>
@@ -344,6 +361,7 @@ export default function POSCheckoutPage() {
       <div className="pos-statusbar">
         <span>F2: 搜尋</span><span>F3: 折扣</span><span>F4: 掛單</span><span>F5: 清空確認</span><span>F6: 切換人員</span><span>F7: 訂單查詢</span><span>F8: 班報表</span><span>Enter: 結帳</span>
       </div>
+      </fieldset>
 
       {showStaffModal && (
         <StaffSwitchModal

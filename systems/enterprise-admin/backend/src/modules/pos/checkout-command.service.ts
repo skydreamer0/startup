@@ -73,6 +73,6 @@ export class CheckoutCommandService {
       where: tenant.where({ kind: CHECKOUT_COMMAND_KIND, commandId: commandId.toLowerCase() }),
     });
     if (!command || command.status !== 'SUCCEEDED') return { commandId, status: 'UNKNOWN' as const };
-    return { commandId: command.commandId, status: 'SUCCEEDED' as const, result: command.result };
+    return { commandId: command.commandId, status: 'SUCCEEDED' as const, payloadHash: command.payloadHash, result: command.result };
   }
 }

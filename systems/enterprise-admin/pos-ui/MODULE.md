@@ -44,6 +44,7 @@
 3. Read backend API spec if requests or persistence are involved.
 4. Open nearest POS tests or E2E flow.
 5. Update context if workflow meaning, task routing, or API contract assumptions change.
+6. Checkout recovery uses `src/store/checkoutRecoveryStore.ts`, `src/hooks/useCheckout.ts` and `CheckoutRecovery`. Authenticated checkout context scopes the frozen pre-submit intent to tenant/user, independently of modal and token renewal. Pending/unknown/conflict blocks cart mutations. Query verifies the saved normalized payloadHash before clearing only the confirmed intent; see ADR-018 and `e2e/checkout-recovery.spec.ts`. Full offline synchronization remains separate.
 
 ### Change refund or physical-return behavior
 

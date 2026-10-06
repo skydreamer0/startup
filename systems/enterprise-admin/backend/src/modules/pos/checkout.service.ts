@@ -129,13 +129,13 @@ export class CheckoutService {
               finalUnitPrice: item.finalUnitPrice,
             })),
           },
-            payments: {
-              create: (dto.payments?.length ? dto.payments : [{ method: dto.paymentMethod, amount: totalAmount }]).map((p) => ({
-                tenantId: tenant.tenantId,
-                method: p.method,
-                amount: p.amount,
-              })),
-            },
+          payments: {
+            create: (dto.payments?.length ? dto.payments : [{ method: dto.paymentMethod, amount: totalAmount }]).map((p) => ({
+              tenantId: tenant.tenantId,
+              method: p.method,
+              amount: p.amount,
+            })),
+          },
         },
         include: { items: true, payments: true },
       });

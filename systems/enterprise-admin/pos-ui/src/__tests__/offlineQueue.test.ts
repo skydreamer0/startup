@@ -80,7 +80,8 @@ function installIndexedDbFake(initialRecords: StoredRecord[] = []) {
 }
 
 const payload: CheckoutPayload = {
-  cartItems: [{ productId: 'p1', quantity: 2, discountRate: 0 }],
+  commandId: '11111111-1111-4111-8111-111111111111',
+        cartItems: [{ productId: 'p1', quantity: 2, discountRate: 0 }],
   paymentMethod: 'CASH',
   orderDiscountAmount: 0,
   shiftId: 'shift-1',
