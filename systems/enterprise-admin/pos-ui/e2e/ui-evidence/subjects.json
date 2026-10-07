@@ -1,0 +1,16 @@
+{
+  "scanner": {
+    "pr": 53,
+    "head": "6977e76fb764f83c46369d0eb78ca60c2ecaa5c9",
+    "tree": "df3d3d6c5a865157afc3dc0ba7f7fa8d396f36cb",
+    "app": "pos-ui",
+    "port": 4274
+  },
+  "suppliers": {
+    "pr": 54,
+    "head": "2b2d02a4cd54ed393f32e08ee60bdb35183cdb3d",
+    "tree": "d4945f074e8970977291db385b48808e9d049c13",
+    "app": "admin-ui",
+    "port": 4273
+  }
+}
