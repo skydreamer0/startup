@@ -58,6 +58,12 @@
 2. `pages/Inventory/BatchListPage.tsx` consumes paginated product data, sends a complete expiry date and refreshes both batch/product queries after receipt. Show API errors and keep expiry/inspection states distinct, using Asia/Taipei dates.
 3. Use its nearest screen tests and a real API/browser receipt flow. Physical-return receipt and approval remain separate pending work.
 
+### Change supplier list consumption
+
+1. `inventoryApi.getSuppliers()` unwraps the existing `ApiSuccess<Supplier[]>` wire envelope once and returns `Promise<Supplier[]>`. `ProductListPage` options and `SupplierListPage` rows consume that array directly.
+2. Keep successful empty, loading and failed supplier queries distinct. Retry is an explicit button and must not submit the product form. Missing/error/refetched options must preserve the current supplierId, visible selection and draft; no query effect may reset them or select the first option.
+3. `src/__tests__/supplierLists.test.tsx` uses typed synthetic wire fixtures through the real inventory client with only HTTP methods mocked. Execution evidence is in `../infrastructure/verification/admin-suppliers/README.md`; product pagination, backend low-stock filtering and full #31/G0 acceptance remain separate.
+
 ### Debug a UI test failure
 
 1. Read the failing test.
