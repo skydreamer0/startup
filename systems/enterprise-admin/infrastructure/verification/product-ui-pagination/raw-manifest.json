@@ -1,0 +1,410 @@
+{
+  "union_checkpoint": "8c1384e0373078dcda0f683a39bf0ca87a8e2c05",
+  "pr_base": "fix/admin-supplier-list-state",
+  "tracked_head_during_incremental_and_final_runs": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+  "archive": {
+    "file": "raw.zip",
+    "bytes": 22179,
+    "sha256": "5ec198d5789337b107771c49d076f4dfc5eb4e9f62843f68b3ca11d1c8f43bf5"
+  },
+  "entries": [
+    {
+      "file": "03-contract-types-red.txt",
+      "bytes": 590,
+      "sha256": "327eccfbe548f53bc52d2443f25b97336998330c5fd1dc2d8de8011fd0dde562"
+    },
+    {
+      "file": "04-contract-types-green.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "05-filter-red.txt",
+      "bytes": 12288,
+      "sha256": "39a64034ea5e3617e0785f13f2578346f3aea4b5f53b772357f3eaaf1bbcb8cb"
+    },
+    {
+      "file": "06-filter-green.txt",
+      "bytes": 601,
+      "sha256": "302e617f8a7b620b681ba41d7001fed2d4163cd736221564d15baf901536eeb8"
+    },
+    {
+      "file": "07-product-error-red.txt",
+      "bytes": 17651,
+      "sha256": "a8352e2d5c8cc8c343ae119a2cfa7c50ad8c3ec470e9e9a8d7f68ef739003d0f"
+    },
+    {
+      "file": "08-product-error-green.txt",
+      "bytes": 601,
+      "sha256": "0aa424162e1fa9accc75e2c435c1e8d5ee758d6e089c1ad917f3644f72432d66"
+    },
+    {
+      "file": "09-refetch-cache-red.txt",
+      "bytes": 2704,
+      "sha256": "0c88c90fde30c67c7595935b475ebcf5e86a0de4f69de81854720435c12cdbf3"
+    },
+    {
+      "file": "10-refetch-cache-green.txt",
+      "bytes": 749,
+      "sha256": "7e62db89e0452f9ffc85f4937760a3d1a686dcdd1a85c4e233dd73ffe735be98"
+    },
+    {
+      "file": "11-shrinking-total-red.txt",
+      "bytes": 18316,
+      "sha256": "617212120995e5c069bd38f921e175f6363c26f66c7b6c40dde2d23df4dfdf71"
+    },
+    {
+      "file": "12-shrinking-total-green.txt",
+      "bytes": 749,
+      "sha256": "711bc53ccc3d61713a0cc152a4a6e1662b73824096163cfd8277865571c8c160"
+    },
+    {
+      "file": "13-expanded-focused.txt",
+      "bytes": 9665,
+      "sha256": "9d47b86d81fd2719179f1ba671fc1ab835571fdc4a1111932abf2491d8c6be24"
+    },
+    {
+      "file": "14-fresh-cache-navigation-red.txt",
+      "bytes": 8225,
+      "sha256": "d82ba9e3d54e7cc885763aca8437d75551fe43226a3e665f00c4dcdd36c03359"
+    },
+    {
+      "file": "15-fresh-cache-navigation-green.txt",
+      "bytes": 958,
+      "sha256": "ac0a3c2145532018ca50a4f1bfe4f0125297b6bb5a7277413dbaad64a98e104f"
+    },
+    {
+      "file": "16-final-focused.txt",
+      "bytes": 1128,
+      "sha256": "3631066e6f8bb4c1636d93db53cba659559f77438493bdcb4b39a408ca890312"
+    },
+    {
+      "file": "17-full-admin.txt",
+      "bytes": 2191,
+      "sha256": "0aa8b52da26122669282211d89ea5d735e3d18094e73ea82b88a7bbca79a2ddd"
+    },
+    {
+      "file": "18-admin-build.txt",
+      "bytes": 1367,
+      "sha256": "7f458e49fdf6c94186c839aab72d3ada3babc1173a57e942ca6b1dc3d5d19df4"
+    },
+    {
+      "file": "19-admin-lint.txt",
+      "bytes": 246,
+      "sha256": "74df79e2bb61bc93f22c0b6257a3dd6c3783dc78ddefaaade06c656c461fbecb"
+    },
+    {
+      "file": "20-shared-types.txt",
+      "bytes": 261,
+      "sha256": "d167637a33ebf9388c98b0f97899fbbfc639d31d1e9b1aa6ece96ce3a47ddf27"
+    },
+    {
+      "file": "21-pos-types.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "22-context.txt",
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "file": "23-diff-check.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "final-source-snapshot.json",
+      "bytes": 1173,
+      "sha256": "f295e605ce85273ffe9319e76756c42dba35b871ca507aef99a4b6c2d60bd405"
+    },
+    {
+      "file": "union-before-commit.json",
+      "bytes": 6592,
+      "sha256": "b408ed16380d878ed9150536a7da4c59816f40b9471c6b8cd595b42f8853d983"
+    },
+    {
+      "file": "early-remote-readback.json",
+      "bytes": 360,
+      "sha256": "77ab2a870cc509009999f85ee9864eaf3ab5d87056a33a7a083edc46fbce305a"
+    },
+    {
+      "file": "preservation-check.json",
+      "bytes": 2124,
+      "sha256": "5dc0803425c25d87e3199db2f009e12c19ad4bf3af12ad29b53f0a6ca104a81c"
+    }
+  ],
+  "commands": [
+    {
+      "file": "03-contract-types-red.txt",
+      "exit_code": 2,
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "typed page/type equality and nullable fixture before client fix"
+    },
+    {
+      "file": "04-contract-types-green.txt",
+      "exit_code": 0,
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "typed client/null compatibility and complete Batch fixtures"
+    },
+    {
+      "file": "05-filter-red.txt",
+      "exit_code": 1,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "filter still requested page 2"
+    },
+    {
+      "file": "06-filter-green.txt",
+      "exit_code": 0,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "filter event resets page 1; 3 tests"
+    },
+    {
+      "file": "07-product-error-red.txt",
+      "exit_code": 1,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "error rendered as successful empty"
+    },
+    {
+      "file": "08-product-error-green.txt",
+      "exit_code": 0,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "error/retry branch; 4 tests"
+    },
+    {
+      "file": "09-refetch-cache-red.txt",
+      "exit_code": 1,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "cached row still presented during pending refetch"
+    },
+    {
+      "file": "10-refetch-cache-green.txt",
+      "exit_code": 0,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "mask pending/refetch data; 5 tests"
+    },
+    {
+      "file": "11-shrinking-total-red.txt",
+      "exit_code": 1,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "page 3 of 2 remained empty"
+    },
+    {
+      "file": "12-shrinking-total-green.txt",
+      "exit_code": 0,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "downward-only clamp; 6 tests"
+    },
+    {
+      "file": "13-expanded-focused.txt",
+      "exit_code": 1,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx src/__tests__/supplierLists.test.tsx src/pages/Inventory/BatchListPage.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "test-driver Batch fixture wrong envelope; 1 failed/47 passed/1 unhandled error"
+    },
+    {
+      "file": "14-fresh-cache-navigation-red.txt",
+      "exit_code": 1,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx src/__tests__/supplierLists.test.tsx src/pages/Inventory/BatchListPage.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "Batch driver fixed; rapid return to globally fresh cache did not revalidate; 1 failed/47 passed"
+    },
+    {
+      "file": "15-fresh-cache-navigation-green.txt",
+      "exit_code": 0,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx src/__tests__/supplierLists.test.tsx src/pages/Inventory/BatchListPage.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "local staleTime=0; 48 passed"
+    },
+    {
+      "file": "16-final-focused.txt",
+      "exit_code": 0,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx src/__tests__/supplierLists.test.tsx src/pages/Inventory/BatchListPage.test.tsx",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "final tested source; 49 passed",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/admin-ui/src/api/inventory.ts": "feadaa75cd505c904f98b57af45fc9cf9fc786b86f77d14ff198bd80dbca082f",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "798ab64f666ce3c2ba92304de59737692bde3f1a58fba9897fc43ad1a2b4a000",
+        "systems/enterprise-admin/packages/types/src/index.ts": "5d16d59a7e3c6293a5736967e8e5b0e150a2c58b07941afd7970f854c17bb1d1",
+        "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "8cf768e13e862c0c4371cff049c195d3a33759c8be70e3d71a8edbcb0fb21ba6",
+        "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx": "4ba9ad9274251a8e976adad02bce2d5fa425a549940adb9402b1d9f14aa78e49",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx": "55f72375c99bc07e7a2c7e5a574b953eb5745d61929b8825dbec99ab6f2a68ad"
+      }
+    },
+    {
+      "file": "17-full-admin.txt",
+      "exit_code": 0,
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "same final source; 9 files/67 passed",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/admin-ui/src/api/inventory.ts": "feadaa75cd505c904f98b57af45fc9cf9fc786b86f77d14ff198bd80dbca082f",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "798ab64f666ce3c2ba92304de59737692bde3f1a58fba9897fc43ad1a2b4a000",
+        "systems/enterprise-admin/packages/types/src/index.ts": "5d16d59a7e3c6293a5736967e8e5b0e150a2c58b07941afd7970f854c17bb1d1",
+        "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "8cf768e13e862c0c4371cff049c195d3a33759c8be70e3d71a8edbcb0fb21ba6",
+        "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx": "4ba9ad9274251a8e976adad02bce2d5fa425a549940adb9402b1d9f14aa78e49",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx": "55f72375c99bc07e7a2c7e5a574b953eb5745d61929b8825dbec99ab6f2a68ad"
+      }
+    },
+    {
+      "file": "18-admin-build.txt",
+      "exit_code": 0,
+      "command": "npm run build",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "same final source; TypeScript includes tests and Vite build",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/admin-ui/src/api/inventory.ts": "feadaa75cd505c904f98b57af45fc9cf9fc786b86f77d14ff198bd80dbca082f",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "798ab64f666ce3c2ba92304de59737692bde3f1a58fba9897fc43ad1a2b4a000",
+        "systems/enterprise-admin/packages/types/src/index.ts": "5d16d59a7e3c6293a5736967e8e5b0e150a2c58b07941afd7970f854c17bb1d1",
+        "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "8cf768e13e862c0c4371cff049c195d3a33759c8be70e3d71a8edbcb0fb21ba6",
+        "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx": "4ba9ad9274251a8e976adad02bce2d5fa425a549940adb9402b1d9f14aa78e49",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx": "55f72375c99bc07e7a2c7e5a574b953eb5745d61929b8825dbec99ab6f2a68ad"
+      }
+    },
+    {
+      "file": "19-admin-lint.txt",
+      "exit_code": 0,
+      "command": "npm run lint",
+      "cwd": "admin-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "same final source; whole admin lint",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/admin-ui/src/api/inventory.ts": "feadaa75cd505c904f98b57af45fc9cf9fc786b86f77d14ff198bd80dbca082f",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "798ab64f666ce3c2ba92304de59737692bde3f1a58fba9897fc43ad1a2b4a000",
+        "systems/enterprise-admin/packages/types/src/index.ts": "5d16d59a7e3c6293a5736967e8e5b0e150a2c58b07941afd7970f854c17bb1d1",
+        "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "8cf768e13e862c0c4371cff049c195d3a33759c8be70e3d71a8edbcb0fb21ba6",
+        "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx": "4ba9ad9274251a8e976adad02bce2d5fa425a549940adb9402b1d9f14aa78e49",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx": "55f72375c99bc07e7a2c7e5a574b953eb5745d61929b8825dbec99ab6f2a68ad"
+      }
+    },
+    {
+      "file": "20-shared-types.txt",
+      "exit_code": 0,
+      "command": "npm run typecheck",
+      "cwd": "packages/types",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "same final source; shared typecheck",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/admin-ui/src/api/inventory.ts": "feadaa75cd505c904f98b57af45fc9cf9fc786b86f77d14ff198bd80dbca082f",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "798ab64f666ce3c2ba92304de59737692bde3f1a58fba9897fc43ad1a2b4a000",
+        "systems/enterprise-admin/packages/types/src/index.ts": "5d16d59a7e3c6293a5736967e8e5b0e150a2c58b07941afd7970f854c17bb1d1",
+        "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "8cf768e13e862c0c4371cff049c195d3a33759c8be70e3d71a8edbcb0fb21ba6",
+        "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx": "4ba9ad9274251a8e976adad02bce2d5fa425a549940adb9402b1d9f14aa78e49",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx": "55f72375c99bc07e7a2c7e5a574b953eb5745d61929b8825dbec99ab6f2a68ad"
+      }
+    },
+    {
+      "file": "21-pos-types.txt",
+      "exit_code": 0,
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "cwd": "pos-ui",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "same final source; necessary POS static check only",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/admin-ui/src/api/inventory.ts": "feadaa75cd505c904f98b57af45fc9cf9fc786b86f77d14ff198bd80dbca082f",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "798ab64f666ce3c2ba92304de59737692bde3f1a58fba9897fc43ad1a2b4a000",
+        "systems/enterprise-admin/packages/types/src/index.ts": "5d16d59a7e3c6293a5736967e8e5b0e150a2c58b07941afd7970f854c17bb1d1",
+        "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "8cf768e13e862c0c4371cff049c195d3a33759c8be70e3d71a8edbcb0fb21ba6",
+        "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx": "4ba9ad9274251a8e976adad02bce2d5fa425a549940adb9402b1d9f14aa78e49",
+        "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx": "55f72375c99bc07e7a2c7e5a574b953eb5745d61929b8825dbec99ab6f2a68ad"
+      }
+    },
+    {
+      "file": "22-context.txt",
+      "exit_code": 0,
+      "command": "./scripts/validate-agent-context.sh",
+      "cwd": "repo root",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "context documents/evidence in progress"
+    },
+    {
+      "file": "23-diff-check.txt",
+      "exit_code": 0,
+      "command": "git diff --check",
+      "cwd": "repo root",
+      "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+      "working_tree_stage": "new docs; before raw artifacts added"
+    }
+  ],
+  "final_source_snapshot": {
+    "tracked_head": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+    "source_sha256": {
+      "systems/enterprise-admin/admin-ui/src/api/inventory.ts": "feadaa75cd505c904f98b57af45fc9cf9fc786b86f77d14ff198bd80dbca082f",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "798ab64f666ce3c2ba92304de59737692bde3f1a58fba9897fc43ad1a2b4a000",
+      "systems/enterprise-admin/packages/types/src/index.ts": "5d16d59a7e3c6293a5736967e8e5b0e150a2c58b07941afd7970f854c17bb1d1",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "8cf768e13e862c0c4371cff049c195d3a33759c8be70e3d71a8edbcb0fb21ba6",
+      "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx": "4ba9ad9274251a8e976adad02bce2d5fa425a549940adb9402b1d9f14aa78e49",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx": "55f72375c99bc07e7a2c7e5a574b953eb5745d61929b8825dbec99ab6f2a68ad"
+    },
+    "note": "Source unchanged between final focused/full/build/lint/static check launches and this capture; documentation/evidence additions follow. Earlier incremental runs retain stage labels, not fabricated source snapshots."
+  },
+  "source_relationship": "Six final source hashes bind final focused/full/build/lint/static checks to the source subsequently committed unchanged. Earlier incremental stages are labeled; missing per-stage source snapshots were not fabricated. No later-commit rerun claim. Early first tracer remains separate immutable evidence.",
+  "driver_error": "Entry13 used wrong empty batches envelope; only synthetic Batch fixture corrected. Entry14 reveals a separate real global-cache navigation gap, fixed by query-local staleTime=0. All prior raw retained.",
+  "not_run": [
+    "browser",
+    "real HTTP",
+    "CI",
+    "hardware/mobile/iPad/Safari",
+    "inherited backend/native reruns",
+    "inherited full POS runtime tests"
+  ],
+  "preservation": {
+    "union": "8c1384e0373078dcda0f683a39bf0ca87a8e2c05",
+    "inherited_blobs_unchanged": [
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/SupplierListPage.tsx",
+      "systems/enterprise-admin/backend/MODULE.md",
+      "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts",
+      "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts",
+      "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "systems/enterprise-admin/infrastructure/api/api_spec.md",
+      "systems/enterprise-admin/infrastructure/verification/admin-suppliers/README.md",
+      "systems/enterprise-admin/infrastructure/verification/admin-suppliers/checks.txt",
+      "systems/enterprise-admin/infrastructure/verification/admin-suppliers/raw-manifest.json",
+      "systems/enterprise-admin/infrastructure/verification/admin-suppliers/raw.zip",
+      "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/README.md",
+      "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/early-manifest.json",
+      "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/early-raw.zip",
+      "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/native-manifest.json",
+      "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/native-raw.zip"
+    ],
+    "union_evidence_lines_preserved": true,
+    "roadmap_checkboxes_unchanged": 14,
+    "supplier_api_block_unchanged": true,
+    "BatchList_production_blob_unchanged": "c1e69131c55119cf78f4e8b7fe89271c8b44a798",
+    "old_pagination_types_unchanged": true,
+    "prior_branch_refs_unchanged": {
+      "refs/heads/fix/admin-supplier-list-state": "283eec62a0499b0aeeee240ba0ec06064363ee77",
+      "refs/heads/fix/inventory-low-stock-pagination": "7b6e5276d74dc19a6c2adc28e659ce823912b945",
+      "refs/heads/fix/pos-scanner-intent-safety": "48f1e914d569055640e9e52aafa9c751a0b9ac31"
+    },
+    "scanner_not_ancestor": true,
+    "early_evidence_unchanged": true,
+    "final_source_snapshot_matches": true
+  }
+}

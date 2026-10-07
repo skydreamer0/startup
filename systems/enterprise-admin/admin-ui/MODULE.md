@@ -58,6 +58,12 @@
 2. `pages/Inventory/BatchListPage.tsx` consumes paginated product data, sends a complete expiry date and refreshes both batch/product queries after receipt. Show API errors and keep expiry/inspection states distinct, using Asia/Taipei dates.
 3. Use its nearest screen tests and a real API/browser receipt flow. Physical-return receipt and approval remain separate pending work.
 
+### Change inventory product pagination
+
+1. `inventoryApi.getProducts` consumes ApiSuccess<InventoryProductPage> with total/page/limit/data, not the shared meta/items pagination types.
+2. `ProductListPage` keys reads by page and lowStock; filter changes reset page one. Pending/error data is unavailable, no previous-page placeholder is shown, and server total reductions only clamp downward to the new last page. Supplier selection/draft handling is independent.
+3. `src/__tests__/productPagination.test.tsx` uses real clients with synthetic HTTP-boundary fixtures, deferred responses and BatchList cross-page options. Evidence/union checkpoint and reproduction are in `../infrastructure/verification/product-ui-pagination/README.md`. JSDOM is not browser/real HTTP acceptance.
+
 ### Change supplier list consumption
 
 1. `inventoryApi.getSuppliers()` unwraps the existing `ApiSuccess<Supplier[]>` wire envelope once and returns `Promise<Supplier[]>`. `ProductListPage` options and `SupplierListPage` rows consume that array directly.

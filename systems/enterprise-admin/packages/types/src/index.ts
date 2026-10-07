@@ -46,16 +46,26 @@ export interface Product {
   id: string;
   sku: string;
   name: string;
-  description?: string;
-  categoryId?: string;
-  supplierId?: string;
+  description?: string | null;
+  categoryId?: string | null;
+  supplierId?: string | null;
   /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
   costPrice: number | string;
   /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */
   retailPrice: number | string;
   stockQuantity: number;
   safetyStock: number;
-  supplier?: Supplier;
+  supplier?: Supplier | null;
+  category?: { id: string; name: string } | null;
+  isLowStock?: boolean;
+}
+
+/** Exact inventory products payload inside ApiSuccess; distinct from meta/items pagination. */
+export interface InventoryProductPage {
+  total: number;
+  page: number;
+  limit: number;
+  data: Product[];
 }
 
 /** Lightweight product shape returned by the POS products endpoint */

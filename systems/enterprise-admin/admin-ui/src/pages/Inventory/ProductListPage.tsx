@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi, Product, Supplier } from '../../api/inventory';
@@ -56,9 +56,14 @@ export default function ProductListPage() {
         onError: (err) => alert(err instanceof Error ? err.message : 'Export failed'),
     });
 
-    const { data: productsData, isLoading: loading } = useQuery({
+    const { data: productsData, isPending: productsPending, isFetching: productsFetching,
+        isSuccess: productsLoaded, isError: productsFailed,
+        error: productsError, refetch: retryProducts } = useQuery({
         queryKey: ['inventory', 'products', { page, lowStock: filter.lowStock }],
         queryFn: () => inventoryApi.getProducts({ ...filter, page: String(page) }),
+        retry: false,
+        staleTime: 0,
+        placeholderData: () => undefined,
     });
 
     const {
@@ -70,8 +75,21 @@ export default function ProductListPage() {
         retry: false,
     });
 
-    const products: Product[] = productsData?.data || [];
-    const totalPages = Math.max(1, Math.ceil((productsData?.total ?? 0) / (productsData?.limit ?? 50)));
+    const loadedProducts = productsLoaded && !productsFetching ? productsData : undefined;
+    const totalPages = loadedProducts ? Math.max(1, Math.ceil(loadedProducts.total / loadedProducts.limit)) : 1;
+    const recoveringPage = Boolean(loadedProducts && page > totalPages);
+    const confirmedProducts = recoveringPage ? undefined : loadedProducts;
+    const loading = productsPending || productsFetching || recoveringPage;
+    const products: Product[] = confirmedProducts?.data ?? [];
+    useEffect(() => {
+        if (loadedProducts && page > totalPages) setPage(totalPages);
+    }, [loadedProducts, page, totalPages]);
+    const productStatus = isAxiosError(productsError) ? productsError.response?.status : undefined;
+    const productErrorMessage = productStatus === 403
+        ? 'You do not have permission to view products (403).'
+        : productStatus
+            ? `Unable to load products (HTTP ${productStatus}).`
+            : 'Unable to load products. Check your connection and retry.';
     const suppliers: Supplier[] = suppliersData ?? [];
     const supplierStatus = isAxiosError(suppliersError) ? suppliersError.response?.status : undefined;
     const supplierErrorMessage = supplierStatus === 403
@@ -146,14 +164,15 @@ export default function ProductListPage() {
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Inventory (Products)</h1>
-                    <p className="page-subtitle">{productsData ? `${productsData.total} SKUs in catalog` : 'Loading catalog...'}</p>
+                    <p className="page-subtitle">{loading ? 'Loading catalog...' : productsFailed ? 'Catalog unavailable' : confirmedProducts ? `${confirmedProducts.total} SKUs in catalog` : 'Loading catalog...'}</p>
                 </div>
                 <div className="flex gap-12">
                     <select
+                        aria-label="Inventory filter"
                         className="input-field"
                         style={{ width: '180px' }}
                         value={filter.lowStock}
-                        onChange={(e) => setFilter({ lowStock: e.target.value })}
+                        onChange={(e) => { setFilter({ lowStock: e.target.value }); setPage(1); }}
                     >
                         <option value="">All Inventory</option>
                         <option value="true">{'\u26A0\uFE0F'} Low Stock Alerts</option>
@@ -191,7 +210,12 @@ export default function ProductListPage() {
 
             <div className="table-container">
                 {loading ? (
-                    <div className="shimmer" style={{ height: '300px' }}></div>
+                    <div role="status" className="shimmer" style={{ height: '300px' }}>Loading products...</div>
+                ) : productsFailed ? (
+                    <div role="alert">
+                        <p>{productErrorMessage}</p>
+                        <button type="button" className="btn btn-ghost" onClick={() => { void retryProducts(); }}>Retry products</button>
+                    </div>
                 ) : (
                     <table className="table">
                         <thead>
@@ -258,8 +282,8 @@ export default function ProductListPage() {
             <nav aria-label="Product pagination" className="flex gap-12">
                 <button type="button" className="btn btn-ghost" disabled={page === 1}
                     onClick={() => setPage((current) => current - 1)}>Previous page</button>
-                <span>Page {page} of {totalPages}</span>
-                <button type="button" className="btn btn-ghost" disabled={loading || page >= totalPages}
+                <span aria-live="polite">{loading ? `Page ${page} (loading)` : productsFailed ? `Page ${page} (unavailable)` : `Page ${page} of ${totalPages}`}</span>
+                <button type="button" className="btn btn-ghost" disabled={loading || productsFailed || page >= totalPages}
                     onClick={() => setPage((current) => current + 1)}>Next page</button>
             </nav>
 
