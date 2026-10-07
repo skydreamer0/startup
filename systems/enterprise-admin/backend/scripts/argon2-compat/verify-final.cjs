@@ -24,8 +24,8 @@ const { createRequire } = require('node:module');
   }
   const updates = [], issued = [];
   const user = { id: 'synthetic-user', tenantId: 'synthetic-tenant', email: 'compat@example.invalid', fullName: 'Synthetic Only', status: 'active', passwordHash: fixture.cases[0].hash };
-  const prisma = { user: { async findUnique(input) { return input.include ? { ...user, userRoles: [] } : { ...user }; }, async update(input) { updates.push(input); return user; } }, tenant: { async findUnique() { return { plan: 'free' }; } } };
-  const jwt = { signAccessToken(value) { issued.push(value); return 'synthetic-access'; }, signRefreshToken() { return 'synthetic-refresh'; }, verifyRefreshToken() { throw Error('unused'); } };
+  const prisma = { user: { async findUnique(input) { return input.include ? { ...user, userRoles: [] } : { ...user }; }, async update(input) { updates.push(structuredClone(input)); for (const [key,value] of Object.entries(input.data)) { user[key] = value && typeof value === 'object' && 'increment' in value ? (user[key] ?? 0) + value.increment : value; } return { ...user }; } }, tenant: { async findUnique() { return { plan: 'free' }; } } };
+  const jwt = { signAccessToken(value) { issued.push({ kind: 'access', value }); return 'synthetic-access'; }, signRefreshToken(value) { issued.push({ kind: 'refresh', value }); return 'synthetic-refresh'; }, verifyRefreshToken() { throw Error('unused'); } };
   // Execute the actual compiled AuthService. Only persistence and token issuance are synthetic.
   const module = { exports: {} };
   const requireIsolated = id => {
@@ -40,9 +40,11 @@ const { createRequire } = require('node:module');
   const service = new module.exports.AuthService();
   const result = await service.login(user.email, fixture.password);
   assert.equal(result.user.id, user.id); assert.equal(result.accessToken, 'synthetic-access');
-  assert.equal(issued.length, 1); assert.equal(updates[0].data.failedLoginAttempts, 0); checks++;
+  assert.deepEqual(issued.map(token => token.kind), ['access', 'refresh']); assert.equal(updates[0].data.failedLoginAttempts, 0);
+  assert.equal(user.passwordHash, fixture.cases[0].hash);
+  const issuedBeforeFailure = structuredClone(issued); checks++;
   await assert.rejects(service.login(user.email, fixture.password + '-wrong'), error => error.statusCode === 401);
-  assert.equal(issued.length, 1); assert.deepEqual(updates[1].data.failedLoginAttempts, { increment: 1 }); checks++;
+  assert.deepEqual(issued, issuedBeforeFailure); assert.deepEqual(updates[1].data.failedLoginAttempts, { increment: 1 }); checks++;
   assert.equal(user.passwordHash, fixture.cases[0].hash);
   const fresh = await password.hashPassword(fixture.password);
   assert.equal(await password.verifyPassword(fresh, fixture.password), true); checks++;

@@ -50,3 +50,17 @@ prove Node 22, musl, the final image, or HTTP login. No Docker/Podman/nerdctl bi
 or standard local daemon socket was available, so the final Alpine command was
 not run. Existing Alpine build and Prisma CLI smoke evidence remains separate
 and is not invalidated by this missing compatibility step.
+
+## Harness mutation controls
+
+The synthetic persistence mock applies update fields to its in-memory user, so a
+passwordHash overwrite is observable. Both access and refresh token issuance are
+recorded; rejected credentials must not add either token.
+
+Run `node /qa/mutation-controls.cjs /qa/legacy-0.44.0.synthetic.json --require-alpine`
+in the same final container/cwd, with the same read-only mount and `/tmp` tmpfs.
+It creates and removes only temporary compiled-module copies, injects a hash
+overwrite and refresh-token-before-401, and requires the verifier to reject both
+with assertion failures (not a missing module, timeout or signal). The untouched
+verifier must pass first. Host controls rejected both mutations; Alpine remains
+not run. These are QA blind spots corrected, not evidence of product bugs in #62.
