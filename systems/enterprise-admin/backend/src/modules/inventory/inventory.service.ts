@@ -56,14 +56,18 @@ export class InventoryService {
         const page = parseInt(query.page || '1');
         const limit = parseInt(query.limit || '50');
         const skip = (page - 1) * limit;
+        const where: Prisma.ProductWhereInput = query.lowStock === 'true'
+            ? { stockQuantity: { lte: prisma.product.fields.safetyStock } }
+            : {};
 
         const [total, products] = await Promise.all([
-            prisma.product.count(),
+            prisma.product.count({ where }),
             prisma.product.findMany({
+                where,
                 skip,
                 take: limit,
                 include: { supplier: true, category: true },
-                orderBy: { name: 'asc' },
+                orderBy: [{ name: 'asc' }, { id: 'asc' }],
             }),
         ]);
 
@@ -71,11 +75,6 @@ export class InventoryService {
             ...p,
             isLowStock: p.stockQuantity <= p.safetyStock,
         }));
-
-        if (query.lowStock === 'true') {
-            const lowStockProducts = processedProducts.filter((p) => p.isLowStock);
-            return { total: lowStockProducts.length, page, limit, data: lowStockProducts };
-        }
 
         return { total, page, limit, data: processedProducts };
     }
