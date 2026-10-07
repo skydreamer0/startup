@@ -38,6 +38,7 @@ const emptyProductForm: ProductForm = {
 
 export default function ProductListPage() {
     const [filter, setFilter] = useState({ lowStock: '' });
+    const [page, setPage] = useState(1);
     const [showCreate, setShowCreate] = useState(false);
     const [editProduct, setEditProduct] = useState<Product | null>(null);
     const [productForm, setProductForm] = useState<ProductForm>(emptyProductForm);
@@ -56,8 +57,8 @@ export default function ProductListPage() {
     });
 
     const { data: productsData, isLoading: loading } = useQuery({
-        queryKey: ['inventory', 'products', filter],
-        queryFn: () => inventoryApi.getProducts(filter),
+        queryKey: ['inventory', 'products', { page, lowStock: filter.lowStock }],
+        queryFn: () => inventoryApi.getProducts({ ...filter, page: String(page) }),
     });
 
     const {
@@ -70,6 +71,7 @@ export default function ProductListPage() {
     });
 
     const products: Product[] = productsData?.data || [];
+    const totalPages = Math.max(1, Math.ceil((productsData?.total ?? 0) / (productsData?.limit ?? 50)));
     const suppliers: Supplier[] = suppliersData ?? [];
     const supplierStatus = isAxiosError(suppliersError) ? suppliersError.response?.status : undefined;
     const supplierErrorMessage = supplierStatus === 403
@@ -144,7 +146,7 @@ export default function ProductListPage() {
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Inventory (Products)</h1>
-                    <p className="page-subtitle">{products.length} SKUs in catalog</p>
+                    <p className="page-subtitle">{productsData ? `${productsData.total} SKUs in catalog` : 'Loading catalog...'}</p>
                 </div>
                 <div className="flex gap-12">
                     <select
@@ -252,6 +254,14 @@ export default function ProductListPage() {
                     </table>
                 )}
             </div>
+
+            <nav aria-label="Product pagination" className="flex gap-12">
+                <button type="button" className="btn btn-ghost" disabled={page === 1}
+                    onClick={() => setPage((current) => current - 1)}>Previous page</button>
+                <span>Page {page} of {totalPages}</span>
+                <button type="button" className="btn btn-ghost" disabled={loading || page >= totalPages}
+                    onClick={() => setPage((current) => current + 1)}>Next page</button>
+            </nav>
 
             {(showCreate || editProduct) && (
                 <div className="modal-overlay" onClick={closeModal}>
