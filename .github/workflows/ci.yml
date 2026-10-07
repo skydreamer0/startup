@@ -3,8 +3,18 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ "master", "main" ]
+  # No base-branch filter: stacked PRs (based on another feature branch) also get CI.
   pull_request:
-    branches: [ "master", "main" ]
+  # Manual runs on any branch, so CI can be re-run without pushing empty commits.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same PR supersedes the older run; master pushes always finish.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
 
