@@ -26,6 +26,7 @@ Avoid broad source crawling until the route is selected.
 | POS UI | `systems/enterprise-admin/pos-ui/MODULE.md` | Nearest POS screen, component, state, test, and API call | Reading admin UI unless shared behavior is involved |
 | Shared types | `systems/enterprise-admin/packages/types/MODULE.md` | Relevant type source and consumers | Duplicating types in app-specific modules |
 | Standards / workflow | `systems/enterprise-admin/infrastructure/standards/README.md` | Specific standard file and PR template | Updating workflow without updating agent context |
+| Dependencies / lockfiles | `systems/enterprise-admin/infrastructure/standards/dependency_management.md` | Owning manifest, canonical lock, CI and Dockerfile | Adding a second lockfile or putting backend in the frontend workspace |
 | Tests | Nearest package.json and nearest test files | Test pyramid standard if scope is broad | Running unrelated full suites before localizing failure |
 
 ## End-of-work route

@@ -5,6 +5,7 @@ Consistency is the foundation of scale. These standards define how we write code
 
 ## 2. Standards Index
 - [Git Workflow & Branching Strategy](git_workflow.md)
+- [Dependency installation and updates](dependency_management.md)
 - [Agent Context Workflow](agent_context.md)
 - [Code Style & Pull Request (PR) Policy](code_style_pr.md)
 - [SLI, SLO & Error Budget Policy](slo_error_budget.md)

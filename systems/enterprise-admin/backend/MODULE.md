@@ -81,6 +81,10 @@
 
 Run from `systems/enterprise-admin/backend/`:
 
+Install with npm 11.21.0 and `npm ci` using this directory's package-lock.json;
+the backend is excluded from the frontend pnpm workspace. Node.js 22 is used by
+CI and Docker. See `../infrastructure/standards/dependency_management.md`.
+
 ```bash
 npm run test
 npm run lint
