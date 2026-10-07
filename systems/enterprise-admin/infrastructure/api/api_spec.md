@@ -96,6 +96,14 @@ HTTP Status Code 需精確映射錯誤類別：
 | `POST` | `/crm/customers/:id/interactions` | 新增手動互動紀錄                 | `interactions:write`|
 
 ### 3.6 供應鏈與庫存 (Inventory & Suppliers)
+
+`GET /inventory/products` 保留 `{ success: true, data: { total, page, limit, data } }`。
+預設 `page=1`、`limit=50`；只有 `lowStock=true` 篩選帳面庫存
+`stockQuantity <= safetyStock`（包含兩者為 0）。條件在資料庫分頁前套用，
+`total` 是目前 tenant 的完整篩選總數，超出末頁仍回該總數與空陣列。
+商品依 `name asc, id asc` 排序，保留 supplier/category 與逐筆 `isLowStock`。
+這是既有帳量投影的低庫存定義，不代表批次合格可售量；count 與資料查詢
+不承諾跨並行庫存更新的同一快照。參數錯誤與上限政策另案處理。
 資源名稱: `products`, `suppliers`
 | Method | Endpoint                        | Description                                  | Required Permission |
 | ------ | ------------------------------- | -------------------------------------------- | ------------------- |
