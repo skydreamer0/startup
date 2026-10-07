@@ -3,8 +3,18 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ "master", "main" ]
+  # No base-branch filter: stacked PRs (based on another feature branch) also get CI.
   pull_request:
-    branches: [ "master", "main" ]
+  # Manual runs on any branch, so CI can be re-run without pushing empty commits.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same PR supersedes the older run; master pushes always finish.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
 
@@ -13,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Validate agent context files
       run: ./scripts/validate-agent-context.sh
@@ -45,10 +55,10 @@ jobs:
       DATABASE_URL: "postgresql://test:test@localhost:5432/test_db"
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Setup Node.js 18
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: 18
         cache: 'npm'
@@ -58,7 +68,7 @@ jobs:
       run: npm ci
 
     - name: Cache Prisma engines
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.cache/prisma
         key: ${{ runner.os }}-prisma-${{ hashFiles('systems/enterprise-admin/backend/prisma/schema.prisma', 'systems/enterprise-admin/backend/package-lock.json') }}
@@ -96,15 +106,15 @@ jobs:
         working-directory: ./systems/enterprise-admin
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v6
       with:
         version: 10
 
     - name: Setup Node.js 20
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: 20
         cache: 'pnpm'
@@ -144,15 +154,15 @@ jobs:
         working-directory: ./systems/enterprise-admin
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v6
       with:
         version: 10
 
     - name: Setup Node.js 20
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: 20
         cache: 'pnpm'
@@ -186,7 +196,7 @@ jobs:
 
     - name: Preserve synthetic recovery evidence
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: pos-http-recovery
         path: |

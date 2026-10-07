@@ -1,0 +1,106 @@
+{
+  "base": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+  "branch": "fix/inventory-low-stock-pagination",
+  "note": "Runs are precommit working-tree stages on this tracked base, not exact committed-head executions. Raw logs are byte-preserved in ZIP. PostgreSQL metadata only confirms existing isolated cluster readiness.",
+  "archive": {
+    "file": "early-raw.zip",
+    "bytes": 4385,
+    "sha256": "20b8556a9013bd550a7caa7ab5e9c81478bbccf3e903bc0492b16ccdfcbf29f6"
+  },
+  "entries": [
+    {
+      "file": "01-first-red.txt",
+      "bytes": 1890,
+      "sha256": "4c4bbef25f63285722565de8640a32e365d1a39d2eadd931bed139b1d2a19b70",
+      "command": "npm test -- src/modules/inventory/__tests__/products-pagination.test.ts",
+      "exit_code": 1,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "base service; first tracer test"
+    },
+    {
+      "file": "02-filter-green.txt",
+      "bytes": 636,
+      "sha256": "54209d9097e31995a66c011c138b92f0b4fe28359feef3497405c48f67c49039",
+      "command": "npm test -- src/modules/inventory/__tests__/products-pagination.test.ts",
+      "exit_code": 0,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "field filter/count fix; name-only order"
+    },
+    {
+      "file": "03-tie-order-red.txt",
+      "bytes": 1895,
+      "sha256": "068f5692f2df67bd24868a47381949deba53a8116ebf8372f99ddf3218a7ed19",
+      "command": "npm test -- src/modules/inventory/__tests__/products-pagination.test.ts",
+      "exit_code": 1,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "added reversed same-name test; name-only order"
+    },
+    {
+      "file": "04-tie-order-green.txt",
+      "bytes": 639,
+      "sha256": "eff531dcb519f2b81d75ca3cd4e171e27b546b7c86c580ec14ef3cd55eb33f1c",
+      "command": "npm test -- src/modules/inventory/__tests__/products-pagination.test.ts",
+      "exit_code": 0,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "final name/id order; 2 tests"
+    },
+    {
+      "file": "05-mocked-acceptance-green.txt",
+      "bytes": 639,
+      "sha256": "0b32b326ba8b25e6c85de79ab41f9bc6dffcd73ab5c9a46ea0fd67a2ed9dccf4",
+      "command": "npm test -- src/modules/inventory/__tests__/products-pagination.test.ts",
+      "exit_code": 0,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "final service; expanded 6 mocked tests"
+    },
+    {
+      "file": "06-existing-postgres-readonly.json",
+      "bytes": 359,
+      "sha256": "7dc9110d33fdac2a9a6beb4bdc0eea4800a19d9b56f15c4edd27cf72dc3a2364",
+      "command": "guarded Prisma current_database()/version() at explicit loopback administration DB",
+      "exit_code": 0,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "metadata only; not product-list acceptance"
+    },
+    {
+      "file": "07-early-build.txt",
+      "bytes": 246,
+      "sha256": "05febab46c66ee769a3f5b38eecf3713a95a4d9e023a0e8606244ef0fa37b380",
+      "command": "npm run build",
+      "exit_code": 0,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "final service; early tests"
+    },
+    {
+      "file": "08-early-lint.txt",
+      "bytes": 253,
+      "sha256": "15c0f8b4154d6fd6785b0dbe7a0a783507b8ea826732b5891f8dec0f9e92297a",
+      "command": "npm run lint",
+      "exit_code": 0,
+      "cwd": "systems/enterprise-admin/backend",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "final service; early tests"
+    },
+    {
+      "file": "09-early-context.txt",
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695",
+      "command": "./scripts/validate-agent-context.sh",
+      "exit_code": 0,
+      "cwd": "repo root",
+      "tracked_head": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+      "working_tree_stage": "before final context additions"
+    }
+  ],
+  "early_candidate_source_sha256": {
+    "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+    "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef"
+  }
+}
