@@ -42,6 +42,9 @@ Vitest 4.1.11 removes the old Tinypool dependency and retains the existing test
 assertions. Axios is at least 1.20.0; Router 7.18 resolves advisories without v6
 patches and is used through the existing declarative routing APIs.
 CSV parse 7 is validated against the existing CSV/import regressions.
+Constructor mocks must use constructable functions/classes with Vitest 4.
+The POS Docker builder also copies the canonical checkout hash contract JSON
+required by the existing TypeScript-checked contract tests.
 
 Prisma stays on 6.19.3: both the client and migration CLI are runtime dependencies.
 The backend container invokes its installed CLI and never downloads a new CLI

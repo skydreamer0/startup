@@ -7,6 +7,7 @@ RUN npm install --global pnpm@10.34.6
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY packages ./packages
 COPY pos-ui ./pos-ui
+COPY infrastructure/api/checkout-command-hash-v1.json ./infrastructure/api/checkout-command-hash-v1.json
 
 WORKDIR /workspace/pos-ui
 RUN pnpm install --frozen-lockfile
