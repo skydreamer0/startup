@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { onBarcode, startBarcodeListener, stopBarcodeListener } from '../services/barcodeService';
+import {
+  onBarcode, onBarcodeSequence, getBarcodeInputSequence, startBarcodeListener, stopBarcodeListener,
+} from '../services/barcodeService';
 
 function press(key: string) {
   document.dispatchEvent(new KeyboardEvent('keydown', { key }));
@@ -9,6 +11,9 @@ describe('barcodeService', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-05-17T12:00:00.000Z'));
+    startBarcodeListener();
+    press('Enter');
+    stopBarcodeListener();
   });
 
   afterEach(() => {
@@ -89,5 +94,84 @@ describe('barcodeService', () => {
     press('Enter');
 
     expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('keeps exactly 300ms gaps valid and completes the source before decoding', () => {
+    const events: string[] = [];
+    const unsubscribeSequence = onBarcodeSequence((event) => events.push(event.kind));
+    const unsubscribe = onBarcode((code) => events.push(code));
+    startBarcodeListener();
+    press(' ');
+    vi.advanceTimersByTime(300);
+    press('A');
+    vi.advanceTimersByTime(300);
+    press('B');
+    vi.advanceTimersByTime(300);
+    press('C');
+    vi.advanceTimersByTime(300);
+    press(' ');
+    vi.advanceTimersByTime(300);
+    press('Enter');
+    expect(events).toEqual(['started', 'completed', 'ABC']);
+    unsubscribe();
+    unsubscribeSequence();
+  });
+
+  it('cancels unfinished source at 301ms and does not complete it later', () => {
+    const events = vi.fn();
+    const unsubscribe = onBarcodeSequence(events);
+    startBarcodeListener();
+    press('A');
+    press('B');
+    press('C');
+    vi.advanceTimersByTime(300);
+    expect(events.mock.calls.map(([event]) => event.kind)).toEqual(['started']);
+    vi.advanceTimersByTime(1);
+    press('Enter');
+    expect(events.mock.calls.map(([event]) => event.kind)).toEqual(['started', 'cancelled']);
+    unsubscribe();
+  });
+
+  it('attributes only insertText from the matching keyboard source', () => {
+    const input = document.createElement('input');
+    const other = document.createElement('input');
+    document.body.append(input, other);
+    const sources = vi.fn();
+    const unsubscribe = onBarcodeSequence(sources);
+    startBarcodeListener();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'A', bubbles: true }));
+    const inspect = (target: HTMLInputElement, inputType: string, data: string | null, isComposing = false) => {
+      const event = new InputEvent('input', { inputType, data, isComposing, bubbles: true });
+      target.dispatchEvent(event);
+      return getBarcodeInputSequence(event);
+    };
+    expect(inspect(input, 'insertText', 'A')).toBe(sources.mock.calls[0][0].id);
+    expect(inspect(other, 'insertText', 'A')).toBeNull();
+    expect(inspect(input, 'insertFromPaste', 'A')).toBeNull();
+    expect(inspect(input, 'deleteContentBackward', null)).toBeNull();
+    expect(inspect(input, 'insertText', 'B')).toBeNull();
+    expect(inspect(input, 'insertText', 'A', true)).toBeNull();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
+    expect(inspect(input, 'insertText', 'A')).toBeNull();
+    expect(sources.mock.calls.map(([event]) => event.kind)).toEqual(['started', 'cancelled']);
+    unsubscribe();
+    input.remove();
+    other.remove();
+  });
+
+  it('cancels a short sequence and an unfinished stopped listener', () => {
+    const events = vi.fn();
+    const unsubscribe = onBarcodeSequence(events);
+    startBarcodeListener();
+    press('A');
+    press('B');
+    press('Enter');
+    press('C');
+    stopBarcodeListener();
+    vi.advanceTimersByTime(301);
+    expect(events.mock.calls.map(([event]) => event.kind)).toEqual([
+      'started', 'cancelled', 'started', 'cancelled',
+    ]);
+    unsubscribe();
   });
 });
