@@ -9,20 +9,21 @@
 ## 本地開發
 
 ```bash
-# 前置條件：Docker Desktop 執行中，Node.js 20+
+# 前置條件：Docker Desktop 執行中，Node.js 22（至少 22.12）
+npm install --global npm@11.21.0 pnpm@10.34.6
+pnpm install --frozen-lockfile
 
 # 1. 啟動 PostgreSQL
 docker-compose up -d postgres
 
 # 2. 後端
 cd backend
-npm install
+npm ci
 npm run dev            # http://localhost:3000
 
 # 3. 前端
 cd ../admin-ui
-npm install
-npm run dev            # http://localhost:5173
+pnpm run dev           # http://localhost:5173
 ```
 
 預設帳號由 seed 資料建立，請參考 `backend/prisma/seed.ts`。
@@ -55,5 +56,5 @@ enterprise-admin/
 cd backend && npm test
 
 # 前端
-cd admin-ui && npx vitest run
+cd admin-ui && pnpm test
 ```

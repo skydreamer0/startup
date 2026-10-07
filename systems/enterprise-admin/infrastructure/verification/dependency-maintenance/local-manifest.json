@@ -1,0 +1,322 @@
+{
+  "baseCommit": "8ccb112e29890278e8b521565bc2200893d81229",
+  "stage": "local verification before remote CI",
+  "entries": [
+    {
+      "path": "backend-audit-before.txt",
+      "bytes": 50636,
+      "sha256": "b99766f19031583edf8b4ca265a51957e7bfa916e574981787851335c64aec6b"
+    },
+    {
+      "path": "backend-audit-before.json",
+      "bytes": 339,
+      "sha256": "72c917171122b81c835219e69c6f844229ec0648fa2dbb3f11949f679d66e808"
+    },
+    {
+      "path": "workspace-audit-before.txt",
+      "bytes": 776958,
+      "sha256": "0465af30b0b27b0604fd78c8963e27a81d514813af4c80302dfea66bd9e0875a"
+    },
+    {
+      "path": "workspace-audit-before.json",
+      "bytes": 336,
+      "sha256": "9c7f1eb7e952c778210436d45a6a46fa579a7741e6e851818a89372b75298e10"
+    },
+    {
+      "path": "backend-final-audit.txt",
+      "bytes": 365,
+      "sha256": "f902aa89383db34465e7ac2f148aab43b2e865e70744d08e0921579d6e8a8bc9"
+    },
+    {
+      "path": "backend-final-audit.json",
+      "bytes": 372,
+      "sha256": "b1fb7998e9c182341dd746bc1d6aa8ec9aee5c09e9512ba8a24db8b4d7a96218"
+    },
+    {
+      "path": "workspace-final-audit.txt",
+      "bytes": 310,
+      "sha256": "9441947577c2865e514cb48f771f4b085e39f6129d9d6986ee5655f16cdb6006"
+    },
+    {
+      "path": "workspace-final-audit.json",
+      "bytes": 366,
+      "sha256": "49ad769f60345b09d800d5ed9b2135935c20d1b271eb52adccd4c2b4046b7c25"
+    },
+    {
+      "path": "backend-clean-ci.txt",
+      "bytes": 1823,
+      "sha256": "8af837b2f98e8e1a63cdb3001d34b755cdbfa8123aec688105d846165f058a98"
+    },
+    {
+      "path": "backend-clean-ci.json",
+      "bytes": 352,
+      "sha256": "34c2356ad22364dfa7ba2a52bd99ad84207a5e29cc335aa1a1f65c9990c3ecac"
+    },
+    {
+      "path": "workspace-frozen-install.txt",
+      "bytes": 137,
+      "sha256": "2593361e903f67e97047b7f5602b7bb044746d7e127581bc6834e0ad4eac3d18"
+    },
+    {
+      "path": "workspace-frozen-install.json",
+      "bytes": 383,
+      "sha256": "1fc0e9ece720d69eb7a28338a9f4afeb8fa54f9f9a73dbb5699c4499a036ca59"
+    },
+    {
+      "path": "admin-final-test.txt",
+      "bytes": 374,
+      "sha256": "4b721333acbc19cb7ce1aa36dd1009e8146ef5775a244d4bd3728d1ded13f50e"
+    },
+    {
+      "path": "admin-final-test.json",
+      "bytes": 387,
+      "sha256": "de25b6719deb6af622408b471e19374e0a043ac82aea5c992dc9b6640004b7c9"
+    },
+    {
+      "path": "pos-final-test.txt",
+      "bytes": 4167,
+      "sha256": "6805e87a0a834524a20b9efa3e28c6dd9952b667689c0910566fce8ffac781b9"
+    },
+    {
+      "path": "pos-final-test.json",
+      "bytes": 383,
+      "sha256": "09eb725091fd0481ded9aaaa1af28378d2674ad03c3366f0529ba3be9458ba96"
+    },
+    {
+      "path": "admin-final-build.txt",
+      "bytes": 1233,
+      "sha256": "317ad6091aead37092fb8bd55f168b20440f372270aa6b9a825c288e797cf5ad"
+    },
+    {
+      "path": "admin-final-build.json",
+      "bytes": 357,
+      "sha256": "1ddc5c986d4728265bed3d956bb84bf88185596b2038fea7cb5750218f0cb5c4"
+    },
+    {
+      "path": "pos-final-build.txt",
+      "bytes": 447,
+      "sha256": "e8fcb8e7cdf4f984a9a365bc2a39317aab3b7591c9500f91015accf325c49635"
+    },
+    {
+      "path": "pos-final-build.json",
+      "bytes": 353,
+      "sha256": "6999fdefb9bfc9551cea38d13be7e85f738ff31b8b8a005b4dee1dfd211d93bd"
+    },
+    {
+      "path": "backend-prisma-generate.txt",
+      "bytes": 615,
+      "sha256": "23bc0614a8b0f1f40a6904581b074a8a939a9d6ea0b54b1d40be299a843cca58"
+    },
+    {
+      "path": "backend-prisma-generate.json",
+      "bytes": 345,
+      "sha256": "1f24ef713c33f7499ff29ca671e4c7ef08ac0723e666229b3365141a64db51bd"
+    },
+    {
+      "path": "backend-build.txt",
+      "bytes": 38,
+      "sha256": "a83ad38d49fc25104ccdb1690d304471d2b5e7fd4c0b42aa44b3e4b41df9b20d"
+    },
+    {
+      "path": "backend-build.json",
+      "bytes": 329,
+      "sha256": "df7bbf720e287872525a0eceb76645e551f8c0e57a2ec17518a853753747dff2"
+    },
+    {
+      "path": "backend-lint.txt",
+      "bytes": 45,
+      "sha256": "27c758c18394c18e2c6059316e0de80ab829b5db8ad3525f646ae661bf75b3e9"
+    },
+    {
+      "path": "backend-lint.json",
+      "bytes": 327,
+      "sha256": "fd88230c6548ccdd21037a85cc0acd725f87244aacec5f0d527571945bf5e50d"
+    },
+    {
+      "path": "admin-lint.txt",
+      "bytes": 112,
+      "sha256": "3c4c8b535be1d9fe201c92a3ebb49d0887785438f89ae1b860dc9683ecfa7247"
+    },
+    {
+      "path": "admin-lint.json",
+      "bytes": 349,
+      "sha256": "2b007b77459a7f9609d8ccf7ddf2df18078596d7fa06cbea1bd481162fb59450"
+    },
+    {
+      "path": "shared-typecheck.txt",
+      "bytes": 133,
+      "sha256": "b2ca7132a9407aee4ab273becc426d782779397cb3d6f94b353f3ea5bd1f45bb"
+    },
+    {
+      "path": "shared-typecheck.json",
+      "bytes": 406,
+      "sha256": "0dada0c0b7d34b11ac4c8510f5f71e2bd6006d2b11888c32d37826741774ffff"
+    },
+    {
+      "path": "http-recovery-typecheck.txt",
+      "bytes": 162,
+      "sha256": "7e22307e33d19a9b083a1daeb80b780ace3dcef55d2c7c4413b502250a1432ae"
+    },
+    {
+      "path": "http-recovery-typecheck.json",
+      "bytes": 421,
+      "sha256": "2becea7f2a11adc04b6e65eeab3b6e9c96f3937fbde9cbd34a0371f96a6b59c1"
+    },
+    {
+      "path": "csv-excel-regressions.txt",
+      "bytes": 1495,
+      "sha256": "999c14d5dd93270cc5aaa0b2d637acd16d87b4eaa0eb939ceefccc961540d659"
+    },
+    {
+      "path": "csv-excel-regressions.json",
+      "bytes": 421,
+      "sha256": "faa1a9c69c9c50b520b403f7ae60f4f5e3adec9ffe75b931ef13b959ed01d811"
+    },
+    {
+      "path": "csv-excel-regressions-confirmed.txt",
+      "bytes": 372,
+      "sha256": "bbd13e8590ffca1c96891be69125706375bb2d07a37848cfe88b613a7d721447"
+    },
+    {
+      "path": "csv-excel-regressions-confirmed.json",
+      "bytes": 431,
+      "sha256": "f295eb787c29ede879c01113537e5f851bf34e02952fc96282c5e24e78aa77bc"
+    },
+    {
+      "path": "agent-context.txt",
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "path": "agent-context.json",
+      "bytes": 349,
+      "sha256": "bb8c9112481308ffa2ca7800f4c4cbf2c42b3d5dbd5eea0230d9b0236411b573"
+    },
+    {
+      "path": "lock-boundary.txt",
+      "bytes": 91,
+      "sha256": "bd3a37b1003b5bb2814c099b66db91b3c36edd7a07bf17e929b4d58d64854bd1"
+    },
+    {
+      "path": "lock-boundary.json",
+      "bytes": 322,
+      "sha256": "f11619bfba11b4e1497a804b3daef467dc85db0871d818e92718155dc8f8fc3f"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": ".github/dependabot.yml",
+      "sha256": "a19a5e2f0f3adcee722f3511032c095686c1d12e3f6ac3c2a89440900540fead"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "a0d3c3eb84a54ae29466d7ea4ec052cde5781eceed729a567cc2606f5d872ea0"
+    },
+    {
+      "path": "README.md",
+      "sha256": "0b9ef05992c7ca5e471669563d0339e7ce772984cd0195176045e8248de5b0ab"
+    },
+    {
+      "path": "docs/agents/navigation.md",
+      "sha256": "04ad87756fc15782ad6d58145ec24e69d56e37a4275f69899f41577ea927e7a1"
+    },
+    {
+      "path": "scripts/validate-dependency-locks.mjs",
+      "sha256": "23676ac7ae2a2700d05c27a24f736d2b7b1a2f0410c7fa71a322693e3aabbfda"
+    },
+    {
+      "path": "systems/enterprise-admin/CONTEXT.md",
+      "sha256": "2b390fedb5c4c7537d8d213e78b4d0f6993934921760bc959193d94eb5e9410a"
+    },
+    {
+      "path": "systems/enterprise-admin/README.md",
+      "sha256": "14172e424ed4e0fcd2e2d1c55b0a63d4d7cf7c1a75227ec70fe3675e238f21d1"
+    },
+    {
+      "path": "systems/enterprise-admin/ROADMAP.md",
+      "sha256": "798db689774912526248116f7646e5b0550a004f905f42e03a9430b5ec52e6e8"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/Dockerfile",
+      "sha256": "147270de0e3994afa91ac2b30afb2ba3ced5ba3f018cd5d8a2c1e81f849baabe"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+      "sha256": "f7f7ff4a59029aa417336baa8969b7229531b8e9dbe23af7e0d8d0f6d509c8fe"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/package.json",
+      "sha256": "aac22afd654e83ab51aec89ee32fe0df13381e54c4939c78069c2ae499ad84f6"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/index.css",
+      "sha256": "56309377a63cefe6eff8f0c21a69a0ffa54319e97261f4b01f9427a8da29a87c"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/styles/vendor/README.md",
+      "sha256": "61d3583572df46db1cfb1f4c4512e6b37e30a50c0f6d963fa25d21bdf796524b"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/styles/vendor/shadcn.LICENSE.md",
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/styles/vendor/shadcn.css",
+      "sha256": "146941ac3ff65496fdf1cb306e697255328e4dadc7c105d66e36bb031b00f6d6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/Dockerfile",
+      "sha256": "39ab93a4f596fa6601804ca0f05d5a277bebb8d2328222e057d8caf408536132"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/MODULE.md",
+      "sha256": "e21f1a0ee62af946da0b9993dfd0579bef15975b99e6bf2a67047f11e1dca13b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package-lock.json",
+      "sha256": "41bb16c7ea587acc1e06531e9a5f75ef6fefe4187f272b617f9e954d19c75a04"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "sha256": "3496397514207a28b04c857a4d90c01f36130ad2539b1b363428b7f0119eab54"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/README.md",
+      "sha256": "8ed3b18d626a9f48a6a951265f32237e21169b6d909ee95234e120df65bda2cc"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/dependency_management.md",
+      "sha256": "37649d7bb632f0599d9ef2b7c51425a84d27e30117ddb01003bc1cdc484c3c04"
+    },
+    {
+      "path": "systems/enterprise-admin/package.json",
+      "sha256": "c9e50d8cad8c88b7ec17bf949c3fe35c77e5a47801b647668df89a86d8a34159"
+    },
+    {
+      "path": "systems/enterprise-admin/pnpm-lock.yaml",
+      "sha256": "120f6f8030ad4d8824c457b28ef3e01395d19fb4d34dc040e39a35e78c2a67fd"
+    },
+    {
+      "path": "systems/enterprise-admin/pnpm-workspace.yaml",
+      "sha256": "23550b8c9c7336610b4d582552c780b4c125f93564c9ad8ae79f683472aa7b30"
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/Dockerfile",
+      "sha256": "11dd584bca2ccf0970321db3c094685276c70ce5ee6a8cb15345409da790cc07"
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/MODULE.md",
+      "sha256": "b0f2209a625d965a6f52fe3d2157656ba29cd88703f121d633e2aa307c00364f"
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/package.json",
+      "sha256": "99e76a20ede95021718b4a9a8c19f7699235992e104dbde0767c3921b1b91a4d"
+    }
+  ],
+  "notRunLocally": [
+    "Full PostgreSQL backend suite",
+    "Docker image builds",
+    "Real HTTP restart recovery"
+  ],
+  "historicalFailure": "csv-excel-regressions lacked synthetic environment variables; confirmed rerun passes 11 tests; original failed output retained."
+}

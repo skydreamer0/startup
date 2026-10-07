@@ -28,6 +28,9 @@ jobs:
     - name: Validate agent context files
       run: ./scripts/validate-agent-context.sh
 
+    - name: Validate dependency lock boundaries
+      run: node scripts/validate-dependency-locks.mjs
+
   backend:
     name: Backend CI
     runs-on: ubuntu-latest
@@ -57,15 +60,21 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    - name: Setup Node.js 18
+    - name: Setup Node.js 22
       uses: actions/setup-node@v7
       with:
-        node-version: 18
+        node-version: 22
         cache: 'npm'
         cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
 
+    - name: Setup locked npm
+      run: npm install --global npm@11.21.0
+
     - name: Install Dependencies
       run: npm ci
+
+    - name: Dependency security audit
+      run: npm audit --audit-level=low
 
     - name: Cache Prisma engines
       uses: actions/cache@v6
@@ -83,6 +92,12 @@ jobs:
 
     - name: Build
       run: npm run build
+
+    - name: Build backend Docker image
+      run: docker build --tag pharmasaas-backend:ci .
+
+    - name: Smoke locked Docker migration CLI
+      run: docker run --rm --entrypoint /app/node_modules/.bin/prisma pharmasaas-backend:ci --version
 
     - name: Setup Test DB
       run: npx prisma migrate deploy
@@ -111,17 +126,20 @@ jobs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v6
       with:
-        version: 10
+        version: 10.34.6
 
-    - name: Setup Node.js 20
+    - name: Setup Node.js 22
       uses: actions/setup-node@v7
       with:
-        node-version: 20
+        node-version: 22
         cache: 'pnpm'
         cache-dependency-path: './systems/enterprise-admin/pnpm-lock.yaml'
 
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
+
+    - name: Dependency security audit
+      run: pnpm audit --audit-level=low
 
     - name: Lint
       run: pnpm --filter admin-ui run lint
@@ -131,6 +149,9 @@ jobs:
 
     - name: Build and Type Check
       run: pnpm --filter admin-ui run build
+
+    - name: Build admin Docker image
+      run: docker build --tag pharmasaas-admin:ci --file admin-ui/Dockerfile .
 
   pos-ui:
     name: POS UI CI
@@ -159,12 +180,12 @@ jobs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v6
       with:
-        version: 10
+        version: 10.34.6
 
-    - name: Setup Node.js 20
+    - name: Setup Node.js 22
       uses: actions/setup-node@v7
       with:
-        node-version: 20
+        node-version: 22
         cache: 'pnpm'
         cache-dependency-path: './systems/enterprise-admin/pnpm-lock.yaml'
 
@@ -177,8 +198,12 @@ jobs:
     - name: Build and Type Check
       run: pnpm --filter pos-ui run build
 
+    - name: Build POS Docker image
+      run: docker build --tag pharmasaas-pos:ci --file pos-ui/Dockerfile .
+
     - name: Prepare real HTTP API for synthetic recovery
       run: |
+        npm install --global npm@11.21.0
         npm --prefix backend ci
         npm --prefix backend run db:generate
         npm --prefix backend run build

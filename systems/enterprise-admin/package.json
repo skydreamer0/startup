@@ -2,12 +2,15 @@
   "name": "enterprise-admin-workspace",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.34.6",
+  "engines": { "node": ">=22.12.0 <23" },
   "description": "Enterprise Admin System - Monorepo",
   "scripts": {
     "dev": "pnpm -r run dev",
-    "build": "pnpm -r run build",
-    "test": "pnpm -r run test",
-    "lint": "pnpm -r run lint",
+    "dev:backend": "npm --prefix backend run dev",
+    "build": "npm --prefix backend run build && pnpm -r run build",
+    "test": "npm --prefix backend test && pnpm -r run test",
+    "lint": "npm --prefix backend run lint && pnpm -r run lint",
     "agent:context": "cd ../.. && ./scripts/validate-agent-context.sh"
   },
   "devDependencies": {}

@@ -1,11 +1,7 @@
 version: 2
 
-# Version updates only for GitHub Actions used by the workflows.
-# npm version updates are intentionally left out until the lockfiles are unified
-# (backend and admin-ui still carry package-lock.json next to the pnpm workspace
-# lockfile, so automated npm bumps would likely produce PRs that fail `npm ci`).
-# Docker base images use major-only tags (node:18-alpine, nginx:alpine), so the only
-# updates Dependabot could offer are runtime major bumps; those stay a manual decision.
+# Application updates follow the two canonical installation boundaries.
+# Docker runtime major upgrades remain a manual decision.
 # npm vulnerabilities are still handled by Dependabot security updates (repo setting).
 updates:
   - package-ecosystem: "github-actions"
@@ -18,3 +14,33 @@ updates:
         patterns: ["*"]
     commit-message:
       prefix: "ci(deps)"
+
+  - package-ecosystem: "npm"
+    directory: "/systems/enterprise-admin"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      frontend-patch-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: "npm"
+    directory: "/systems/enterprise-admin/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      backend-patch-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "chore(deps)"

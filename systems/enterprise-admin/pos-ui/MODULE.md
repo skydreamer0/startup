@@ -76,6 +76,10 @@
 
 Run from `systems/enterprise-admin/pos-ui/`:
 
+Install through the system-root pnpm workspace (10.34.6), using only its root
+pnpm-lock.yaml; do not create a package-lock or nested pnpm lock here.
+See `../infrastructure/standards/dependency_management.md`.
+
 ```bash
 npm run test
 npm run test:e2e

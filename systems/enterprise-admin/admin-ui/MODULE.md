@@ -80,6 +80,11 @@
 
 Run from `systems/enterprise-admin/admin-ui/`:
 
+Install through the system-root pnpm workspace (10.34.6), using only its root
+pnpm-lock.yaml; do not create a package-lock or nested pnpm lock here.
+See `../infrastructure/standards/dependency_management.md`. Vendored shadcn CSS
+and its license/provenance are in `src/styles/vendor/`; no CLI dependency is needed.
+
 ```bash
 npm run test
 npm run lint

@@ -58,6 +58,8 @@ Only record passed/failed/not-run evidence for the implemented slice. A passing 
 
 ### Maintenance
 
+- [x] **MAINT-DEPS**: Give the standalone backend one npm lock and frontend/shared workspace one pnpm lock; remove redundant UI locks and backend importer. Pin Node 22/npm 11.21.0/pnpm 10.34.6 in CI/Docker. Update Axios/Vitest/Router and vulnerable transitives, retain original licensed shadcn CSS without its CLI, keep the installed Prisma CLI in the runtime image. Both install boundaries audit with zero advisories; existing Admin 67/POS 193 tests and type/build checks verify the bounded maintenance. Policy and CI lock/audit guards: `infrastructure/standards/dependency_management.md`. Database tests, all Docker images and exact-head four-job CI are verified in the maintenance PR; no business gate is changed.
+
 - [x] **MAINT-01**: Triage backend ESLint warning-level type debt by module.
   - Source: `ARCHITECTURE_HEALTH.md` P2-1.
   - Completion evidence: 2026-06-14 backend lint warning inventory was reduced from 17 to 12 by removing unused warning debt; remaining explicit-`any` warnings were converted into scoped cleanup items below.
