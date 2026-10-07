@@ -1,0 +1,485 @@
+{
+  "base": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+  "tracked_head_during_added_runs": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+  "source_relationship": "Production service and mocked test are byte-identical to b5e69a56. Added integration test SHA-256 is recorded; it was untracked during the runs and will be committed unchanged with documents/evidence. Do not call these later-commit reruns.",
+  "working_tree_source_sha256": {
+    "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+    "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+    "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+  },
+  "results": {
+    "mocked": 6,
+    "real_prisma_postgresql": 8,
+    "focused_total": 14,
+    "full_backend_files": 31,
+    "full_backend_tests": 253,
+    "skipped": 0,
+    "test_types": 0,
+    "build": 0,
+    "lint": 0,
+    "context": 0,
+    "diff_check": 0
+  },
+  "raw_capture": "spawnSync phase raw concatenates original stdout bytes then original stderr bytes; this preserves stream content but not inter-stream chronology. bootstrap combined raw is tee of runner output. No log rewriting or dropping negative-case errors. Raw type/diff outputs may be empty, with recorded successful exits.",
+  "credential_policy": "Generated ephemeral JWT values are never serialized. Runner records env key names only; explicit URL is passwordless synthetic loopback test user. Optional external integration envs are empty.",
+  "database": {
+    "adminUrl": "postgresql://test@127.0.0.1:55434/checkout_http_recovery_base",
+    "name": "checkout_http_recovery_inventory_pagination_6cdc1ba618af41e7b27147426c16fe95",
+    "databaseUrl": "postgresql://test@127.0.0.1:55434/checkout_http_recovery_inventory_pagination_6cdc1ba618af41e7b27147426c16fe95",
+    "owned": true,
+    "metadata": [
+      {
+        "database": "checkout_http_recovery_base",
+        "version": "PostgreSQL 15.18 (Debian 15.18-0+deb12u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit"
+      }
+    ],
+    "prisma_version": {
+      "client": "6.19.2",
+      "engine": "c2990dca591cba766e3b7ef5d9e8a84796e47ab7"
+    },
+    "created": "2026-10-07T02:43:08.649Z",
+    "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f"
+  },
+  "cleanup": {
+    "dropped_owned_database": "checkout_http_recovery_inventory_pagination_6cdc1ba618af41e7b27147426c16fe95",
+    "exit_code": 0,
+    "timestamp": "2026-10-07T02:45:03.878Z"
+  },
+  "archive": {
+    "file": "native-raw.zip",
+    "bytes": 17323,
+    "sha256": "b420d0342fd7bb7d4b1a95b97627fa18420a0c1090b9d5b2428caf33665d6341"
+  },
+  "entries": [
+    {
+      "file": "run-verification.mjs",
+      "bytes": 5610,
+      "sha256": "7b58508d115c16599e2ab13d0d389216e382deb12fcfc4aa5ee5dc99bb7701d4"
+    },
+    {
+      "file": "isolated-database.json",
+      "bytes": 756,
+      "sha256": "57fd04da7199d050e991e38e3f3e8e72ffb18c904495ef318a9ce6ae18973f38"
+    },
+    {
+      "file": "10-bootstrap-combined.txt",
+      "bytes": 2987,
+      "sha256": "7ea46ddf8e814127fc3ef613abc89befe4a0b45231fcd4dd0cabeff7450c9621"
+    },
+    {
+      "file": "10-migrate-existing-schema.txt",
+      "bytes": 1907,
+      "sha256": "b13fc56b2c2c4bb633fad393e5aed71fd2b0dd5740e868967c20a8efdd6e7969"
+    },
+    {
+      "file": "10-migrate-existing-schema.txt.execution.json",
+      "bytes": 1727,
+      "sha256": "8a0a905a405d845d19beb05611d1a788b13735ec56ffbdbcb79242f1de5d8884"
+    },
+    {
+      "file": "11-existing-synthetic-seed.txt",
+      "bytes": 507,
+      "sha256": "299fbc32bd0b0ff535ef5b1332a961ffc5b5fcc4454d59436cae307be161d753"
+    },
+    {
+      "file": "11-existing-synthetic-seed.txt.execution.json",
+      "bytes": 1705,
+      "sha256": "24f9780e7cae5138f98b3af6638ede8d8ef87c30c2b168d889f50b7c883d635e"
+    },
+    {
+      "file": "12-real-prisma-focused.txt",
+      "bytes": 566,
+      "sha256": "ec2dfa41f342f6616191467225d82a1e03f102725ef6a01193e85e271762590f"
+    },
+    {
+      "file": "12-real-prisma-focused.txt.execution.json",
+      "bytes": 1741,
+      "sha256": "2fa9f42414180956be952cbbbf924d935cd77d287fc6aed45c0b8b2807d925f6"
+    },
+    {
+      "file": "13-full-backend.txt",
+      "bytes": 15107,
+      "sha256": "d9e029d34d2d8333cbf6bd427979e2a0435d71f521a0c4312497429049935654"
+    },
+    {
+      "file": "13-full-backend.txt.execution.json",
+      "bytes": 1603,
+      "sha256": "9c97acd70cefab3062e368adac813f746e06d91792fe8aa028bf2fb8a39b732e"
+    },
+    {
+      "file": "14-test-types.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "15-final-build.txt",
+      "bytes": 246,
+      "sha256": "05febab46c66ee769a3f5b38eecf3713a95a4d9e023a0e8606244ef0fa37b380"
+    },
+    {
+      "file": "16-final-lint.txt",
+      "bytes": 253,
+      "sha256": "15c0f8b4154d6fd6785b0dbe7a0a783507b8ea826732b5891f8dec0f9e92297a"
+    },
+    {
+      "file": "17-preservation-check.json",
+      "bytes": 683,
+      "sha256": "c29767cd012b118b8662b740a639e142f073968a5da8c3cf57feea7772c61854"
+    },
+    {
+      "file": "18-final-context.txt",
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "file": "19-final-diff-check.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "20-owned-database-cleanup.json",
+      "bytes": 172,
+      "sha256": "356faf9e9b9a21cec3f92fb42648d72e3768f937b714540814b1ee4c8eb395fc"
+    },
+    {
+      "file": "21-early-remote-readback.json",
+      "bytes": 2476,
+      "sha256": "5eb17c7b84143ed53378e62329ab1a4569453953e848cae4057f0aa0b8bee44f"
+    },
+    {
+      "file": "22-manual-command-exits.json",
+      "bytes": 5983,
+      "sha256": "3468eadb7d160ef38d4728e37553d32e45f1f1a25df3b0bf63cb1d353b296e78"
+    }
+  ],
+  "executions": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "node_modules/prisma/build/index.js",
+        "migrate",
+        "deploy"
+      ],
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "started": "2026-10-07T02:43:08.652Z",
+      "ended": "2026-10-07T02:43:09.598Z",
+      "exit_code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "synthetic_database": {
+        "host": "127.0.0.1",
+        "port": "55434",
+        "database": "checkout_http_recovery_inventory_pagination_6cdc1ba618af41e7b27147426c16fe95",
+        "user": "test"
+      },
+      "environment_keys": [
+        "CORS_ORIGIN",
+        "DATABASE_URL",
+        "DOTENV_CONFIG_QUIET",
+        "HOME",
+        "JWT_ACCESS_EXPIRES_IN",
+        "JWT_ACCESS_SECRET",
+        "JWT_REFRESH_EXPIRES_IN",
+        "JWT_REFRESH_SECRET",
+        "LANG",
+        "LC_ALL",
+        "LINE_CHANNEL_ACCESS_TOKEN",
+        "LINE_CHANNEL_SECRET",
+        "NODE_ENV",
+        "PATH",
+        "PORT",
+        "PRODUCT_PAGINATION_DATABASE_URL",
+        "QUICKBOOKS_CLIENT_ID",
+        "QUICKBOOKS_CLIENT_SECRET",
+        "TZ",
+        "XERO_CLIENT_ID",
+        "XERO_CLIENT_SECRET"
+      ],
+      "credential_policy": "JWT secrets generated in memory per invocation, never recorded. Optional external integrations set empty. DATABASE_URL explicit guarded synthetic database."
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "--import",
+        "tsx",
+        "prisma/seed.ts"
+      ],
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "started": "2026-10-07T02:43:09.599Z",
+      "ended": "2026-10-07T02:43:10.065Z",
+      "exit_code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "synthetic_database": {
+        "host": "127.0.0.1",
+        "port": "55434",
+        "database": "checkout_http_recovery_inventory_pagination_6cdc1ba618af41e7b27147426c16fe95",
+        "user": "test"
+      },
+      "environment_keys": [
+        "CORS_ORIGIN",
+        "DATABASE_URL",
+        "DOTENV_CONFIG_QUIET",
+        "HOME",
+        "JWT_ACCESS_EXPIRES_IN",
+        "JWT_ACCESS_SECRET",
+        "JWT_REFRESH_EXPIRES_IN",
+        "JWT_REFRESH_SECRET",
+        "LANG",
+        "LC_ALL",
+        "LINE_CHANNEL_ACCESS_TOKEN",
+        "LINE_CHANNEL_SECRET",
+        "NODE_ENV",
+        "PATH",
+        "PORT",
+        "PRODUCT_PAGINATION_DATABASE_URL",
+        "QUICKBOOKS_CLIENT_ID",
+        "QUICKBOOKS_CLIENT_SECRET",
+        "TZ",
+        "XERO_CLIENT_ID",
+        "XERO_CLIENT_SECRET"
+      ],
+      "credential_policy": "JWT secrets generated in memory per invocation, never recorded. Optional external integrations set empty. DATABASE_URL explicit guarded synthetic database."
+    },
+    {
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/modules/inventory/__tests__/products-pagination.test.ts",
+        "src/__tests__/products-pagination.integration.test.ts"
+      ],
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "started": "2026-10-07T02:43:20.056Z",
+      "ended": "2026-10-07T02:43:25.268Z",
+      "exit_code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "synthetic_database": {
+        "host": "127.0.0.1",
+        "port": "55434",
+        "database": "checkout_http_recovery_inventory_pagination_6cdc1ba618af41e7b27147426c16fe95",
+        "user": "test"
+      },
+      "environment_keys": [
+        "CORS_ORIGIN",
+        "DATABASE_URL",
+        "DOTENV_CONFIG_QUIET",
+        "HOME",
+        "JWT_ACCESS_EXPIRES_IN",
+        "JWT_ACCESS_SECRET",
+        "JWT_REFRESH_EXPIRES_IN",
+        "JWT_REFRESH_SECRET",
+        "LANG",
+        "LC_ALL",
+        "LINE_CHANNEL_ACCESS_TOKEN",
+        "LINE_CHANNEL_SECRET",
+        "NODE_ENV",
+        "PATH",
+        "PORT",
+        "PRODUCT_PAGINATION_DATABASE_URL",
+        "QUICKBOOKS_CLIENT_ID",
+        "QUICKBOOKS_CLIENT_SECRET",
+        "TZ",
+        "XERO_CLIENT_ID",
+        "XERO_CLIENT_SECRET"
+      ],
+      "credential_policy": "JWT secrets generated in memory per invocation, never recorded. Optional external integrations set empty. DATABASE_URL explicit guarded synthetic database."
+    },
+    {
+      "command": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "started": "2026-10-07T02:43:37.696Z",
+      "ended": "2026-10-07T02:43:48.358Z",
+      "exit_code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "synthetic_database": {
+        "host": "127.0.0.1",
+        "port": "55434",
+        "database": "checkout_http_recovery_inventory_pagination_6cdc1ba618af41e7b27147426c16fe95",
+        "user": "test"
+      },
+      "environment_keys": [
+        "CORS_ORIGIN",
+        "DATABASE_URL",
+        "DOTENV_CONFIG_QUIET",
+        "HOME",
+        "JWT_ACCESS_EXPIRES_IN",
+        "JWT_ACCESS_SECRET",
+        "JWT_REFRESH_EXPIRES_IN",
+        "JWT_REFRESH_SECRET",
+        "LANG",
+        "LC_ALL",
+        "LINE_CHANNEL_ACCESS_TOKEN",
+        "LINE_CHANNEL_SECRET",
+        "NODE_ENV",
+        "PATH",
+        "PORT",
+        "PRODUCT_PAGINATION_DATABASE_URL",
+        "QUICKBOOKS_CLIENT_ID",
+        "QUICKBOOKS_CLIENT_SECRET",
+        "TZ",
+        "XERO_CLIENT_ID",
+        "XERO_CLIENT_SECRET"
+      ],
+      "credential_policy": "JWT secrets generated in memory per invocation, never recorded. Optional external integrations set empty. DATABASE_URL explicit guarded synthetic database."
+    }
+  ],
+  "manual_command_records": [
+    {
+      "file": "10-bootstrap-combined.txt",
+      "command": [
+        "node",
+        "/workspace/test-artifacts/products-low-stock-pagination/run-verification.mjs",
+        "bootstrap"
+      ],
+      "exit_code": 0,
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "stage": "integration test untracked; production service/mocked test unchanged from tracked head; documentation/evidence additions in progress"
+    },
+    {
+      "file": "14-test-types.txt",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--target",
+        "ES2020",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "bundler",
+        "--esModuleInterop",
+        "--strict",
+        "--skipLibCheck",
+        "src/modules/inventory/__tests__/products-pagination.test.ts",
+        "src/__tests__/products-pagination.integration.test.ts"
+      ],
+      "exit_code": 0,
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "stage": "integration test untracked; production service/mocked test unchanged from tracked head; documentation/evidence additions in progress"
+    },
+    {
+      "file": "15-final-build.txt",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "stage": "integration test untracked; production service/mocked test unchanged from tracked head; documentation/evidence additions in progress"
+    },
+    {
+      "file": "16-final-lint.txt",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exit_code": 0,
+      "cwd": "/workspace/startup/systems/enterprise-admin/backend",
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "stage": "integration test untracked; production service/mocked test unchanged from tracked head; documentation/evidence additions in progress"
+    },
+    {
+      "file": "18-final-context.txt",
+      "command": [
+        "./scripts/validate-agent-context.sh"
+      ],
+      "exit_code": 0,
+      "cwd": "/workspace/startup",
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "stage": "integration test untracked; production service/mocked test unchanged from tracked head; documentation/evidence additions in progress"
+    },
+    {
+      "file": "19-final-diff-check.txt",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "cwd": "/workspace/startup",
+      "tracked_head": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "working_tree_source_sha256": {
+        "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts": "71610a2590082c6bc9a1790862c1f154a3bfac955432767544f0f22abd32a0c0",
+        "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts": "987e3ff39618ebb915d9b72903a64a07a29e88fa5c8880e4fe846cdc53654cef",
+        "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1"
+      },
+      "stage": "integration test untracked; production service/mocked test unchanged from tracked head; documentation/evidence additions in progress"
+    }
+  ],
+  "early_evidence_unchanged": {
+    "archive_sha256": "20b8556a9013bd550a7caa7ab5e9c81478bbccf3e903bc0492b16ccdfcbf29f6",
+    "raw_count": 9
+  },
+  "preservation": {
+    "refs": {
+      "HEAD": "b5e69a56d48238a506eadfad14467de3060e3c0f",
+      "refs/heads/fix/admin-supplier-list-state": "283eec62a0499b0aeeee240ba0ec06064363ee77",
+      "refs/heads/fix/pos-scanner-intent-safety": "48f1e914d569055640e9e52aafa9c751a0b9ac31"
+    },
+    "unchanged_early_zip_sha256": "20b8556a9013bd550a7caa7ab5e9c81478bbccf3e903bc0492b16ccdfcbf29f6",
+    "production_service_unchanged_from_early_candidate": true,
+    "restored_integration_file_sha256": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1",
+    "current_integration_file_sha256": "697e155c93d58ff369ae5d6e2c8265473593c706e3bde8a952b951bdf96d55e1",
+    "roadmap_checkbox_lines_unchanged_from_base": 14
+  }
+}
