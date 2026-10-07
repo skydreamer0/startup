@@ -1,12 +1,12 @@
 import api from './client';
-import type { Product, Supplier } from '@pharmasaas/types';
+import type { ApiSuccess, Product, Supplier } from '@pharmasaas/types';
 
 export type { Product, Supplier };
 
 export const inventoryApi = {
     // Suppliers
-    getSuppliers: async () => {
-        const { data } = await api.get('/inventory/suppliers');
+    getSuppliers: async (): Promise<Supplier[]> => {
+        const { data } = await api.get<ApiSuccess<Supplier[]>>('/inventory/suppliers');
         return data.data;
     },
     getSupplierById: async (id: string) => {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isAxiosError } from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi, Product, Supplier } from '../../api/inventory';
 import { excelApi } from '../../api/excel';
@@ -59,13 +60,27 @@ export default function ProductListPage() {
         queryFn: () => inventoryApi.getProducts(filter),
     });
 
-    const { data: suppliersData } = useQuery({
+    const {
+        data: suppliersData, isPending: suppliersLoading, isFetching: suppliersFetching,
+        isError: suppliersFailed, isSuccess: suppliersLoaded, error: suppliersError, refetch: retrySuppliers,
+    } = useQuery({
         queryKey: ['inventory', 'suppliers'],
         queryFn: () => inventoryApi.getSuppliers(),
+        retry: false,
     });
 
     const products: Product[] = productsData?.data || [];
-    const suppliers: Supplier[] = suppliersData?.data || [];
+    const suppliers: Supplier[] = suppliersData ?? [];
+    const supplierStatus = isAxiosError(suppliersError) ? suppliersError.response?.status : undefined;
+    const supplierErrorMessage = supplierStatus === 403
+        ? 'You do not have permission to view suppliers (403).'
+        : supplierStatus
+            ? `Unable to load suppliers (HTTP ${supplierStatus}).`
+            : 'Unable to load suppliers. Check your connection and retry.';
+    const selectedSupplierMissing = productForm.supplierId
+        && !suppliers.some((supplier) => supplier.id === productForm.supplierId);
+    const retainedSupplierName = editProduct?.supplier?.id === productForm.supplierId
+        ? `${editProduct.supplier.name} (current selection)` : 'Current supplier (name unavailable)';
 
     function openCreate() {
         setEditProduct(null);
@@ -260,14 +275,27 @@ export default function ProductListPage() {
                                         onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} />
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">Supplier</label>
-                                    <select className="input-field" value={productForm.supplierId}
+                                    <label className="input-label" htmlFor="product-supplier">Supplier</label>
+                                    <select id="product-supplier" className="input-field" value={productForm.supplierId}
+                                        disabled={suppliersLoading || suppliersFailed}
                                         onChange={(e) => setProductForm({ ...productForm, supplierId: e.target.value })}>
                                         <option value="">No supplier</option>
+                                        {selectedSupplierMissing && (
+                                            <option value={productForm.supplierId}>{retainedSupplierName}</option>
+                                        )}
                                         {suppliers.map((supplier) => (
                                             <option key={supplier.id} value={supplier.id}>{supplier.name}</option>
                                         ))}
                                     </select>
+                                    {suppliersFetching && <p role="status">Loading suppliers...</p>}
+                                    {suppliersFailed && (
+                                        <div role="alert">
+                                            <p>{supplierErrorMessage}</p>
+                                            <button type="button" className="btn btn-ghost" disabled={suppliersFetching}
+                                                onClick={() => { void retrySuppliers(); }}>Retry suppliers</button>
+                                        </div>
+                                    )}
+                                    {suppliersLoaded && suppliers.length === 0 && <p role="status">No suppliers found</p>}
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label">Cost Price</label>
