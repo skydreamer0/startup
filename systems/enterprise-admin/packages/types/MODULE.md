@@ -34,6 +34,11 @@
 3. Open nearest consumers in `admin-ui` and/or `pos-ui`.
 4. Update context if type meaning changes source-of-truth assumptions.
 
+Inventory products use `InventoryProductPage` (total/page/limit/data inside ApiSuccess),
+matching API spec §3.6. It is distinct from PaginatedData (data/meta) and PaginatedList
+(items/total/page/pageSize); those meanings are unchanged. Product nullable metadata,
+supplier/category relations and isLowStock reflect the existing inventory wire.
+
 ### Debug typecheck failure
 
 1. Run or inspect `npm run typecheck` output.

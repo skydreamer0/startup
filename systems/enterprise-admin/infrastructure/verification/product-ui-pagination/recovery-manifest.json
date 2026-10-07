@@ -1,0 +1,121 @@
+{
+  "originalTask": "01a110fb-f253-733a-b171-7e474113400a",
+  "originalCommit": "339fe52dceedb3e5d77c8153defa9b2f46f023ff",
+  "originalTree": "b03f934d4ca2c713bfacf63ab8c40648a6ebaed5",
+  "parent": "44d4e2322cec7b04ff162d126b2a80c45e505239",
+  "bundleBytes": 35805,
+  "bundleSha256": "6e02d6aca824ede41d022401a56bb71dbd950f29f3e21f87ede1ce0452399c01",
+  "download": "https://chatgpt.com/api/library/files/libfile_8852b2605a248191bc4f2b9f07c3d8f4/download",
+  "downloadZipBytes": 145401,
+  "downloadZipSha256": "a2644f48f0a581def83fb7809170e9808769020ea9253c30fbf554406d48dffe",
+  "integrationBase": "f7087289cb752be872cab87cbb35867a36b8cf5a",
+  "earlyMasterUnion": "25d1941",
+  "changedFiles": [
+    {
+      "path": "systems/enterprise-admin/ROADMAP.md",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "38d81c2307c1a5eca416868f487caa7306e23ede",
+      "newBlob": "6fb57b4acd2fe54d27120551eadf5777faddae62",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "9a6194f3f50cfe789f2e54f965a2f140e92b36a5",
+      "newBlob": "12f5c59494339666bc417dfacaa0c9ccca260229",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "41730cc59bb615b41de16e3f23f587b649393270",
+      "newBlob": "99548ab8280f3d2f67a5b8421f8ea06c3a49b9da",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "fde4b0e8386c1ef9a061b8ad903fa169196136d9",
+      "newBlob": "d2c9613cdb0d90ac45b6b96f91ba29abf4d7f8e4",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/api/inventory.ts",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "c7fcff26110a0b37d5a941c1cbda68c41ef082c1",
+      "newBlob": "9e02990fed79e006a78a7ac918aa5ee4fc96401a",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "2d1c09bcbc832864fb9d58c34a6f35cdd02c1ad8",
+      "newBlob": "600880220f1b949904b268ea950ae31624c89f8a",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "5854f7456d29a3584e23034bfa61a957b213daac",
+      "newBlob": "43f2a315892f53054fbe962465b0c58b778589b6",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/product-ui-pagination/README.md",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "df5fba1196f297d41056ebc6a2941bf454094127",
+      "newBlob": "d54c9db2b6bbc16640a5dd674d301b89ddcbb278",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/product-ui-pagination/raw-manifest.json",
+      "oldMode": "000000",
+      "newMode": "100644",
+      "oldBlob": "0000000000000000000000000000000000000000",
+      "newBlob": "a005ab91b8d8d2385c41f2fb4f86f8dff8ad0dfd",
+      "status": "A"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/product-ui-pagination/raw.zip",
+      "oldMode": "000000",
+      "newMode": "100644",
+      "oldBlob": "0000000000000000000000000000000000000000",
+      "newBlob": "ab9d36abc53f5594863804084ed5abe9a96ef00c",
+      "status": "A"
+    },
+    {
+      "path": "systems/enterprise-admin/packages/types/MODULE.md",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "af8d1dbd08b47a3f5e72801062d04f7f7ae1a52e",
+      "newBlob": "bb80f21ad4b3386193ceae3d80a9536ac557c36d",
+      "status": "M"
+    },
+    {
+      "path": "systems/enterprise-admin/packages/types/src/index.ts",
+      "oldMode": "100644",
+      "newMode": "100644",
+      "oldBlob": "4e3889458fe0b860d56cd9ff8bd1d9eea5711acf",
+      "newBlob": "6d46a121717f2fecfe1e34df68d1e352f300aaa9",
+      "status": "M"
+    }
+  ],
+  "verification": {
+    "commitTreeAndParent": true,
+    "originalChangedBlobs": 12,
+    "appliedNonRoadmapBlobsMatchOriginal": 11,
+    "rawEntriesVerified": 25,
+    "originalRawAndEarlyEvidenceUnchanged": true,
+    "stage": "immediately after applying recovered delta, before adding integration provenance documentation",
+    "applicationAndTestBlobsMatchOriginal": 6
+  },
+  "scope": "Original objects recovered from verified delta bundle; original source/tests and raw evidence retained. ROADMAP is a union with current master. New provenance docs and current validation are separate from historical evidence."
+}

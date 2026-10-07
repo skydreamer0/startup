@@ -52,7 +52,7 @@ beforeEach(() => {
     suppliersRequest.mockResolvedValue({ data: supplierResponse });
     httpGet.mockImplementation(async (path) => {
         if (path === '/inventory/suppliers') return suppliersRequest();
-        if (path === '/inventory/products') return { data: { success: true, data: { data: [product], total: 1 } } };
+        if (path === '/inventory/products') return { data: { success: true, data: { data: [product], total: 1, page: 1, limit: 50 } } };
         if (path === '/tenants/me/plan') return { data: { success: true, data: { plan: 'free', features: [] } } };
         throw new Error(`Unexpected synthetic API request: ${path}`);
     });
