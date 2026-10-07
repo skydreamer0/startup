@@ -57,6 +57,11 @@
 1. Read the failing unit/integration/E2E test.
 2. Open only referenced POS files.
 3. Read backend docs/source only if the failure crosses the API boundary.
+4. For the pinned scanner/supplier browser acceptance suite, use
+   `e2e/ui-evidence.config.ts` and
+   `../infrastructure/verification/reviewed-ui-browser/README.md`. This suite
+   verifies immutable UI subjects with guarded synthetic HTTP; its report,
+   network/key-event evidence and screenshots share `test-results-ui-evidence/`.
 
 ### Change POS API calls
 

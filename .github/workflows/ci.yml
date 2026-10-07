@@ -241,6 +241,7 @@ jobs:
       with:
         name: reviewed-ui-browser-evidence
         path: systems/enterprise-admin/pos-ui/test-results-ui-evidence/
+        include-hidden-files: true
         if-no-files-found: error
 
     - name: Preserve synthetic recovery evidence

@@ -26,8 +26,12 @@ an error; no existing server is reused or stopped. Only owned child PIDs are sto
 - Suppliers: the real rendered apps and real API clients consume synthetic success
   envelopes; options and rows, successful empty, 403/500/offline versus error,
   edited draft/current supplier preservation and zero-submit Retry are checked.
-- All API responses are intercepted synthetic fixtures. Undeclared APIs, external
-  origins and every write request are aborted and fail the tests. No checkout,
+- All API responses are intercepted synthetic fixtures. Only the three exact
+  Google Fonts CSS URLs imported by the pinned subjects are fulfilled locally
+  as empty `text/css` for GET stylesheet requests; they never reach the network.
+  Their URLs are recorded separately in `stubbedStylesheets`. Undeclared APIs,
+  other external requests (including font binaries) and every write request are
+  aborted and fail the tests. No checkout,
   shift, refund, product save or real supplier write is requested.
 - Every screenshot is marked as synthetic, at a recorded 1440x900 viewport.
   Page errors, attempted writes and unexpected requests are asserted empty.
@@ -57,5 +61,28 @@ runner output, per-test network assertions, PNGs and failure traces. Its manifes
 records file lengths/SHA-256. Any subject change invalidates the evidence binding
 and requires a deliberate new pinned candidate/run. CI results and artifact IDs
 are reported after execution; this source document does not claim an unrun pass.
+
+The config resolves both the JSON report and test output from its own file into
+`pos-ui/test-results-ui-evidence/`. Upload includes hidden files such as
+`tests/.last-run.json`; the manifest covers them as well as logs, PNGs and JSON.
+
+## 123 timeout diagnosis
+
+Original CI run `37576560821` failed all 13 cases on blocked Google Fonts CSS.
+The `123` case also had a separate missing-toast failure. Its original trace shows
+product-search `q=1` at monotonic 6649.313ms and `q=12` at 7049.936ms: about
+401ms apart, consistent with expiration of the existing >300ms decoder window.
+Only one `q=123` request was observed, rather than search plus scanner lookup.
+The trace did not record keydown timestamps, so it does not establish what caused
+that scheduling gap.
+
+With empty CSS interception, a native-keyboard 400ms-delay control reproduced
+the same toast timeout, with recorded trusted keydown gaps 414/414/423ms and
+zero unexpected requests. Ordinary 10ms typing passed 10 local repeats. This
+isolates decoder expiry from the CSS guard failure without changing production.
+The scan driver now uses native keyboard typing without added delays and sends
+Enter directly; it checks the exact trusted key sequence and each <=300ms gap.
+Per-test network JSON retains keydown timestamps. A future slow driver fails
+explicitly at this precondition instead of misreporting a product toast defect.
 
 No merge, readiness approval, deployment or business-gate release is implied.

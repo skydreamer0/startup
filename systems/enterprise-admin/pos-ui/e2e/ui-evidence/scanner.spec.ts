@@ -1,5 +1,5 @@
 import type { Page, Route } from '@playwright/test';
-import { test, expect, intercept, success, screenshot, type Guard } from './fixtures';
+import { test, expect, intercept, success, screenshot, readKeys, type Guard } from './fixtures';
 
 const origin = 'http://127.0.0.1:4274';
 const product = (sku: string, id = sku) => ({ id, sku, name: `合成商品 ${sku}`, retailPrice: 100, stockQuantity: 10 });
@@ -60,9 +60,17 @@ async function setup(page: Page, guard: Guard, results: Record<string, Result> =
 async function scan(page: Page, code: string) {
   const input = page.getByTestId('product-search-input');
   await input.focus();
+  const start = (await readKeys(page)).length;
   // Real browser keydown/input/change sequences, not fill() or a document-only dispatch.
-  await input.pressSequentially(code, { delay: 10 });
-  await input.press('Enter');
+  await page.keyboard.type(code);
+  await page.keyboard.press('Enter');
+  const keys = (await readKeys(page)).slice(start);
+  expect(keys.map((event) => event.key)).toEqual([...code, 'Enter']);
+  expect(keys.every((event) => event.trusted), 'Scanner uses native trusted keyboard events').toBe(true);
+  for (let index = 1; index < keys.length; index++) {
+    expect(keys[index].at - keys[index - 1].at,
+      'Test driver must stay within the existing 300ms scanner decoder window').toBeLessThanOrEqual(300);
+  }
 }
 
 async function settleRender(page: Page) {
