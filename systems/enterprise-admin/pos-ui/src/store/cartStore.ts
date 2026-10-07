@@ -19,6 +19,8 @@ export interface HeldCart {
 }
 
 interface CartState {
+  // In-memory draft boundary, never persisted with checkout/authentication.
+  draftRevision: number;
   items: CartItem[];
   orderDiscountAmount: number;
   orderDiscountNote: string;
@@ -48,6 +50,7 @@ export const useCartStore = create<CartState>((set, get) => {
     if (!useCheckoutRecoveryStore.getState().pending) set(update);
   };
   return {
+  draftRevision: 0,
   items: [],
   orderDiscountAmount: 0,
   orderDiscountNote: '',
@@ -93,12 +96,13 @@ export const useCartStore = create<CartState>((set, get) => {
 
   setSalesStaff: (staffId) => mutate({ currentSalesStaffId: staffId }),
 
-  clearCart: () => mutate({
+  clearCart: () => mutate((state) => ({
+    draftRevision: state.draftRevision + 1,
     items: [],
     orderDiscountAmount: 0,
     orderDiscountNote: '',
     paymentMethod: 'CASH',
-  }),
+  })),
 
   holdCurrentCart: (label) => mutate((state) => {
     if (state.items.length === 0) return state;
@@ -113,6 +117,7 @@ export const useCartStore = create<CartState>((set, get) => {
     };
     return {
       heldCarts: [...state.heldCarts, held],
+      draftRevision: state.draftRevision + 1,
       items: [],
       orderDiscountAmount: 0,
       orderDiscountNote: '',
@@ -139,6 +144,7 @@ export const useCartStore = create<CartState>((set, get) => {
       : state.heldCarts.filter((c) => c.id !== id);
     return {
       heldCarts: newHeld,
+      draftRevision: state.draftRevision + 1,
       items: held.items,
       orderDiscountAmount: held.orderDiscountAmount,
       orderDiscountNote: held.orderDiscountNote,
