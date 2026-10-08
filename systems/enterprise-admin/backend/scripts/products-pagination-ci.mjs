@@ -200,7 +200,7 @@ async function main(mode) {
   const { PrismaClient } = requireBackend('@prisma/client');
   const db = new PrismaClient({ datasources: { db: { url: databaseUrl } } });
   try {
-    const rows = await db.$queryRaw`SELECT current_database() AS name, current_user AS username, inet_server_addr()::text AS host, inet_server_port() AS port, version() AS version`;
+    const rows = await db.$queryRaw`SELECT current_database() AS name, current_user AS username, host(inet_server_addr()) AS host, inet_server_port() AS port, version() AS version`;
     save('database-identity.json', rows);
     assert.equal(rows.length, 1);
     assert.equal(rows[0].name, databaseName);
