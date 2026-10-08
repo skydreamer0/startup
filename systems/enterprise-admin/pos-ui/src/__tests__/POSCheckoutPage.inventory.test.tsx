@@ -1,6 +1,8 @@
 import { webcrypto } from 'node:crypto';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AxiosHeaders, type AxiosResponse } from 'axios';
+import type { ApiSuccess } from '@pharmasaas/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import POSCheckoutPage from '../pages/POSCheckoutPage';
 import { posApi } from '../api/pos';
@@ -38,7 +40,15 @@ const order = { ...checkoutResult, status: 'completed', discountAmount: 0, creat
 const productKey = (keyScope = scope, search = '', category: string | null = null) => ['pos-products', keyScope, search, category];
 const clients: QueryClient[] = [];
 
-function response<T>(data: T) { return { data: { success: true, data } }; }
+function response<T>(data: T): AxiosResponse<ApiSuccess<T>> {
+  return {
+    data: { success: true, data },
+    status: 200,
+    statusText: 'OK',
+    headers: new AxiosHeaders(),
+    config: { headers: new AxiosHeaders() },
+  };
+}
 function renderPage(client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } })) {
   if (!clients.includes(client)) clients.push(client);
   const view = render(<QueryClientProvider client={client}><POSCheckoutPage /></QueryClientProvider>);
@@ -65,10 +75,10 @@ beforeEach(() => {
   useCheckoutRecoveryStore.setState({ scope: null, pending: null });
   useCartStore.setState({ items: [{ product, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1', heldCarts: [] });
   vi.mocked(posApi.getCheckoutContext).mockResolvedValue(response({ tenantId: 'tenant-1', userId: 'cashier-1' }) as Awaited<ReturnType<typeof posApi.getCheckoutContext>>);
-  vi.mocked(posApi.getStaff).mockResolvedValue(response([]) as Awaited<ReturnType<typeof posApi.getStaff>>);
+  vi.mocked(posApi.getStaff).mockResolvedValue(response([]));
   vi.mocked(posApi.getProducts).mockResolvedValue(response([product]) as Awaited<ReturnType<typeof posApi.getProducts>>);
-  vi.mocked(posApi.getHotRecommendations).mockResolvedValue(response([]) as Awaited<ReturnType<typeof posApi.getHotRecommendations>>);
-  vi.mocked(posApi.getReorderForecast).mockResolvedValue(response([]) as Awaited<ReturnType<typeof posApi.getReorderForecast>>);
+  vi.mocked(posApi.getHotRecommendations).mockResolvedValue(response([]));
+  vi.mocked(posApi.getReorderForecast).mockResolvedValue(response([]));
   vi.mocked(posApi.checkout).mockResolvedValue(response(checkoutResult) as Awaited<ReturnType<typeof posApi.checkout>>);
   vi.mocked(posApi.getTodayOrders).mockResolvedValue(response([order]) as Awaited<ReturnType<typeof posApi.getTodayOrders>>);
   vi.mocked(posApi.refundOrder).mockResolvedValue(response({ ...order, status: 'refunded' }) as Awaited<ReturnType<typeof posApi.refundOrder>>);
@@ -101,7 +111,7 @@ describe('POS inventory refresh after confirmed mutations (synthetic API, real q
 
   it('removes a sold-out product using the server response, without estimating stock locally', async () => {
     renderPage(); await screen.findByText('✓ 3 件');
-    vi.mocked(posApi.getProducts).mockResolvedValue(response([]) as Awaited<ReturnType<typeof posApi.getProducts>>);
+    vi.mocked(posApi.getProducts).mockResolvedValue(response([]));
     await checkout();
     expect(await screen.findByText('沒有符合條件的商品')).toBeInTheDocument();
     expect(screen.queryByTestId('product-card-product-1')).not.toBeInTheDocument();
