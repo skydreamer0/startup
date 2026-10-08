@@ -9,20 +9,67 @@ const root = resolve(here, '../../../../..');
 const output = resolve(here, '../../test-results-ui-evidence');
 const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
 const delay = (ms) => new Promise((done) => setTimeout(done, ms));
+const requireSha = (value, label) => {
+  if (!value || !/^[a-f0-9]{40}$/.test(value)) throw new Error(`Explicit ${label} SHA is required`);
+  return value;
+};
+function assertCleanSource(cwd, label, sourcePaths = ['.']) {
+  if (git(cwd, 'diff', '--name-only', 'HEAD', '--', '.')) {
+    throw new Error(`Dirty tracked ${label} source`);
+  }
+  if (git(cwd, 'ls-files', '--others', '--exclude-standard', '--', ...sourcePaths)) {
+    throw new Error(`Untracked ${label} source`);
+  }
+  // Ignored local Vite environment files also change the running application.
+  if (git(cwd, 'ls-files', '--others', '--ignored', '--exclude-standard', '--', 'systems/enterprise-admin/pos-ui/.env*', 'systems/enterprise-admin/admin-ui/.env*')) {
+    throw new Error(`Untracked ${label} environment file`);
+  }
+}
+
 
 export default async function setup() {
   await mkdir(output, { recursive: true });
   const subjects = JSON.parse(await readFile(resolve(here, 'subjects.json'), 'utf8'));
-  const qaHead = process.env.UI_QA_SOURCE_SHA;
-  if (!qaHead || !/^[a-f0-9]{40}$/.test(qaHead)) throw new Error('Explicit QA source SHA is required');
+  const qaHead = requireSha(process.env.UI_QA_SOURCE_SHA, 'QA source');
+  const executionHead = requireSha(process.env.UI_QA_EXECUTION_SHA, 'QA execution');
   const checkoutHead = git(root, 'rev-parse', 'HEAD');
   const checkoutTree = git(root, 'rev-parse', 'HEAD^{tree}');
   const qaTree = git(root, 'rev-parse', `${qaHead}^{tree}`);
-  if (checkoutTree !== qaTree) throw new Error('QA checkout tree differs from the submitted QA head');
+  if (checkoutHead !== executionHead) throw new Error('QA checkout is not the expected execution commit');
+  const executionMode = process.env.UI_QA_EXECUTION_MODE;
+  let baseHead = null;
+  let executionParents = [];
+  if (executionMode === 'pr-merge') {
+    baseHead = requireSha(process.env.UI_QA_BASE_SHA, 'QA base');
+    executionParents = git(root, 'show', '-s', '--format=%P', checkoutHead).split(' ');
+    if (executionParents.length !== 2 || executionParents[0] !== baseHead || executionParents[1] !== qaHead) {
+      throw new Error('QA execution commit is not the exact base + submitted-head merge');
+    }
+  } else if (executionMode === 'head') {
+    if (checkoutHead !== qaHead || checkoutTree !== qaTree) throw new Error('QA head checkout mismatch');
+    if (process.env.UI_QA_BASE_SHA) throw new Error('Unexpected QA base in head mode');
+  } else {
+    throw new Error('Explicit QA execution mode must be head or pr-merge');
+  }
+  // The merge may advance application/dependency files, never silently alter the submitted QA driver.
+  const qaInputs = [
+    'systems/enterprise-admin/pos-ui/e2e/ui-evidence',
+    'systems/enterprise-admin/pos-ui/e2e/ui-evidence.config.ts',
+    'systems/enterprise-admin/pos-ui/tsconfig.ui-evidence.json',
+  ];
+  if (git(root, 'diff', '--name-only', qaHead, checkoutHead, '--', ...qaInputs)) {
+    throw new Error('Submitted QA inputs differ in the execution commit');
+  }
+  assertCleanSource(root, 'QA', [
+    'systems/enterprise-admin/pos-ui/e2e',
+    'systems/enterprise-admin/pos-ui/tsconfig.ui-evidence.json',
+    '.github/workflows',
+  ]);
 
   const owned = [];
   const streams = [];
-  const record = { qaHead, qaTree, checkoutHead, checkoutTree, node: process.version,
+  const record = { qaHead, qaTree, checkoutHead, checkoutTree, executionHead, executionMode,
+    baseHead, executionParents, evidenceScope: 'historical-fixed-subject-ui', node: process.version,
     runId: process.env.GITHUB_RUN_ID ?? null, runAttempt: process.env.GITHUB_RUN_ATTEMPT ?? null,
     mode: 'real Chromium UI; synthetic intercepted API; no backend or database', subjects: {} };
   async function close() {
@@ -40,6 +87,7 @@ export default async function setup() {
       const actualHead = git(cwd, 'rev-parse', 'HEAD');
       const actualTree = git(cwd, 'rev-parse', 'HEAD^{tree}');
       if (actualHead !== expected.head || actualTree !== expected.tree) throw new Error(`Wrong ${name} subject`);
+      assertCleanSource(cwd, name);
       const app = resolve(cwd, 'systems/enterprise-admin', expected.app);
       const origin = `http://127.0.0.1:${expected.port}`;
       // Refuse to reuse any server already listening at the fixed loopback port.

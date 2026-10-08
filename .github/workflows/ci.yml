@@ -219,6 +219,9 @@ jobs:
       shell: bash
       env:
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
       run: |
         mkdir -p pos-ui/test-results-ui-evidence
         pnpm --filter pos-ui exec tsc --project tsconfig.ui-evidence.json
@@ -228,6 +231,9 @@ jobs:
       if: always()
       env:
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
       run: |
         mkdir -p pos-ui/test-results-ui-evidence
         if [ -f pos-ui/test-results-ui-evidence-run.txt ]; then

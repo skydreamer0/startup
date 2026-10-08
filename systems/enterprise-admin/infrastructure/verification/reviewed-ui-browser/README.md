@@ -1,7 +1,8 @@
 # Fixed-subject scanner and supplier browser evidence
 
-This test-only candidate is based on master `70fab32cbda0919aa1e85003318538a042a5f91b`.
-It does not add either unmerged feature to master and does not modify the subjects.
+The original test-only candidate was based on master `70fab32cbda0919aa1e85003318538a042a5f91b`.
+This provenance-only repair is stacked on #59 (`2031bfe3d422a754780ab91823ebc7ec42509b16`).
+It does not modify the subjects or establish latest-master integrated acceptance.
 The existing POS Playwright dependency and CI Chromium installation are reused.
 No package, lockfile, application, database, permission or secret setting is changed.
 
@@ -14,7 +15,7 @@ No package, lockfile, application, database, permission or secret setting is cha
 
 Both subjects include master 70fab via ordinary two-parent commits. Their only
 conflict was ROADMAP; all original bounded evidence and 14 checkboxes were preserved.
-The setup verifies these exact subject heads/trees and the QA checkout tree before
+The setup verifies these exact subject heads/trees and the execution provenance below before
 starting its two owned Vite processes on 127.0.0.1:4273/4274. An occupied port is
 an error; no existing server is reused or stopped. Only owned child PIDs are stopped.
 
@@ -47,7 +48,32 @@ their existing frozen lockfiles. No new dependency is introduced. The normal fou
 CI jobs remain required; the POS job additionally runs this bounded suite.
 
 From `systems/enterprise-admin/pos-ui`, with those checkouts/dependencies present
-and `UI_QA_SOURCE_SHA` set to the exact QA source commit:
+set the following explicit provenance values before running:
+
+- `UI_QA_SOURCE_SHA`: exact submitted QA commit (PR head in CI).
+- `UI_QA_EXECUTION_SHA`: exact commit checked out for execution (`github.sha` in CI).
+- `UI_QA_EXECUTION_MODE`: `head` for an exact source checkout, or `pr-merge` for the PR merge checkout.
+- `UI_QA_BASE_SHA`: unset/empty in `head` mode; exact event base commit in `pr-merge` mode.
+
+Head mode requires source and execution SHA/tree equality. PR-merge mode requires
+exactly two ordered execution parents: event base, then submitted QA head. A merge
+may change other files but cannot silently change the submitted UI evidence driver,
+its config or typecheck input. Both source and execution trees are recorded separately.
+For a local exact-source checkout:
+
+```sh
+export UI_QA_SOURCE_SHA="$(git rev-parse HEAD)"
+export UI_QA_EXECUTION_SHA="$UI_QA_SOURCE_SHA"
+export UI_QA_EXECUTION_MODE=head
+unset UI_QA_BASE_SHA
+```
+
+Tracked staged/unstaged changes are rejected. Untracked runnable QA inputs and
+subject files, including ignored local Vite `.env*` files, are rejected before
+starting the affected subject. Generated evidence and installed dependencies must
+remain ignored. These checks do not change CI triggers, permissions or pinned subjects.
+
+Run:
 
 ```sh
 pnpm exec tsc --project tsconfig.ui-evidence.json
@@ -56,7 +82,7 @@ node e2e/ui-evidence/manifest.mjs
 ```
 
 The `reviewed-ui-browser-evidence` CI artifact saves runtime-evidence.json (QA head,
-checkout head/tree, subjects/trees, run ID, owned PIDs), a JSON test report, original
+execution head/tree, mode, base, ordered parents, subjects/trees, run ID, owned PIDs), a JSON test report, original
 runner output, per-test network assertions, PNGs and failure traces. Its manifest
 records file lengths/SHA-256. Any subject change invalidates the evidence binding
 and requires a deliberate new pinned candidate/run. CI results and artifact IDs
@@ -86,3 +112,13 @@ Per-test network JSON retains keydown timestamps. A future slow driver fails
 explicitly at this precondition instead of misreporting a product toast defect.
 
 No merge, readiness approval, deployment or business-gate release is implied.
+
+## Evidence scope and remaining limits
+
+The receipt is marked `historical-fixed-subject-ui`: these immutable scanner and
+supplier subjects remain historical even when the QA driver executes in a clean
+advanced-base PR merge. This is not latest-master application E2E acceptance.
+Before reusing a local output directory, archive/remove its previous generated
+evidence; this minimal repair does not implement stale-artifact freshness checks.
+A failed setup must not be represented as a successful current run from older
+artifacts. The existing runner outcome and exact receipt identities remain required.
