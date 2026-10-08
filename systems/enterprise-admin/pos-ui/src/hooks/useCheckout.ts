@@ -12,7 +12,7 @@ const CONFLICT_RECOVERY_MESSAGE = '此意圖曾發生衝突。請保留紀錄，
 interface UseCheckoutOptions {
   shiftId: string | undefined;
   customerId?: string;
-  onSuccess: () => void;
+  onSuccess: (scope: string) => void;
   showToast: (msg: PosToastMessage) => void;
 }
 
@@ -21,6 +21,7 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
   const [contextReady, setContextReady] = useState(false);
+  const [checkoutScope, setCheckoutScope] = useState<string | null>(null);
   const pending = useCheckoutRecoveryStore((state) => state.pending);
   const busy = useRef(false);
 
@@ -34,6 +35,7 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
       const restored = useCheckoutRecoveryStore.getState().hydrate(scope);
       if (previousScope && previousScope !== scope) useCartStore.getState().clearCart();
       if (restored) useCartStore.setState(restored.draft);
+      setCheckoutScope(scope);
       setContextReady(true);
     }).catch(() => {
       if (active) setRecoveryError('無法確認結帳身分或讀取意圖紀錄，請重新登入後查回原意圖');
@@ -43,7 +45,7 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
 
   function confirmed(intent: PendingCheckout, scope: string | null, result: CheckoutResult) {
     const recovery = useCheckoutRecoveryStore.getState();
-    if (recovery.scope !== scope || recovery.pending?.payload.commandId !== intent.payload.commandId) return;
+    if (!scope || recovery.scope !== scope || recovery.pending?.payload.commandId !== intent.payload.commandId) return;
     // Clear only this confirmed intent, preserving any later cart that bypassed
     // the normal frozen-cart UI while the request was in flight.
     const cart = useCartStore.getState();
@@ -56,7 +58,7 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
     if (sameDraft) useCartStore.getState().clearCart();
     setCheckoutResult(result);
     setRecoveryError(null);
-    onSuccess();
+    onSuccess(scope);
     showToast({ type: 'success', message: '結帳完成' });
   }
 
@@ -131,5 +133,5 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
     finally { busy.current = false; setCheckoutLoading(false); }
   }
 
-  return { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout, queryCheckout, pending, recoveryError, contextReady };
+  return { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout, queryCheckout, pending, recoveryError, contextReady, checkoutScope };
 }
