@@ -16,7 +16,6 @@ jobs:
     timeout-minutes: 20
     env:
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
-      EVIDENCE: ${{ runner.temp }}/argon2-evidence-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -29,7 +28,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           test -z "$(git status --porcelain)"
+          EVIDENCE="$RUNNER_TEMP/argon2-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           mkdir "$EVIDENCE"
+          printf 'EVIDENCE=%s\n' "$EVIDENCE" >> "$GITHUB_ENV"
           printf '%s\n' "$EXPECTED_HEAD" > "$EVIDENCE/head.txt"
           git rev-parse 'HEAD^{tree}' > "$EVIDENCE/tree.txt"
           sha256sum systems/enterprise-admin/backend/scripts/argon2-compat/* > "$EVIDENCE/input-sha256.txt"
@@ -97,7 +98,7 @@ jobs:
           PY
 
       - name: Preserve isolated QA evidence
-        if: always()
+        if: ${{ always() && env.EVIDENCE != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: argon2-alpine-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
