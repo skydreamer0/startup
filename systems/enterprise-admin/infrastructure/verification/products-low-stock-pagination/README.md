@@ -1,5 +1,60 @@
 # #50B1：低庫存分頁後端切片
 
+## 2026-10-08：合併後 exact-head CI 驗收入口
+
+本節是新驗收配置的操作說明，不是執行通過紀錄。下方原生 8/8、全後端
+253 的歷史證據保留；#55／後續整合 CI 的 245 passed／8 skipped 不可改列
+為本次 8 個真 PostgreSQL 案例通過。候選在本機僅做純 Node harness controls
+與靜態檢查；本機缺 backend dependencies、PostgreSQL、Docker，且只有
+Node 24，原 6 mock／8 native、Node 22 CI、build／全 suite 均尚未重跑。
+
+`.github/workflows/ci.yml` 追加獨立 `Product pagination PostgreSQL acceptance`
+job；原 Agent Context Validation、Backend CI、Admin UI CI、POS UI CI 四 job、
+#66／#67 與既有產品閘門原樣保留。新 job 沿用普通 PR／push／既有手動 workflow
+觸發，沒有 privileged PR 事件、新 secret、付費 runner 或正式環境部署。
+PR 情況明確 checkout PR head；`source.json` 同時保存真正 checkout head/tree
+與 workflow event SHA，避免把 PR merge SHA 當成 head 執行證據。
+
+安全與生命周期由 backend 的 `scripts/products-pagination-ci.mjs` 驗證：
+
+- 只接受 GitHub-hosted runner、Node 22、該 job 提供的 container/network ID
+- PostgreSQL 15 Alpine 是本 job 新建的獨立 service。無密碼 `test` 的 trust
+  初始化只限此 disposable fixture；沒有改 host／既有 PostgreSQL／HBA／帳號權限
+- host port 明確為 `127.0.0.1:55434:5432`；每階段以 Docker inspect 拒絕
+  wildcard／IPv6／其他 port、host network、privileged container、bind mount、
+  額外 network／容器；不對外發布 port
+- 兩個 URL env 只能同為
+  `postgresql://test@127.0.0.1:55434/checkout_http_recovery_inventory_pagination_ci`；
+  原 integration test 的 guard 完全未改，另保存原 guard 的靜態正／反向檢查
+- preflight 要求 public schema 無 table，才登記自有空 DB；只套用既有 migrations，
+  不跑 general seed；所有業務表測前須零列，測試只建立原有合成 fixtures
+- 真 Prisma 連線再核 DB 名稱、使用者、PostgreSQL 版本與 service IP/port；
+  測試子程序使用最小環境，不繼承外部 integrations、JWT 或其他連線設定
+- 分別執行原 6 mock、8 native，保存 verbose／JSON 和命令 exit；逐項檢查
+  原 case 名稱、passed、無 skipped/todo、無遺漏／替換。純 harness controls
+  另列，不能計入上述 14 案
+- `always()` cleanup 只處理本 run 成功登記的 DB：先保存所有業務表計數，
+  再 DROP 自有 DB 並確認不存在；即使有殘留也移除 fixture，但驗收仍失敗。
+  job/container 最後由 Actions 銷毀。取消／逾時缺少完整 cleanup 證據不算 PASS
+
+整個 job 最多 15 分鐘；每個測試／migration 子命令最多 120 秒。
+原始輸出放在 7 天保留的 `products-pagination-<head>-<attempt>` artifact，
+包含 source/tree/hash、network、guard、database identity、migration log、
+`mock.json`／`native.json` 每案結果、before/cleanup counts 與 cleanup receipt。
+只有 6+8 真通過、業務表清零且 DB 確認移除後，才產生 `accepted.json`。
+審查／下載時核對 artifact 的 head/tree 與該 PR 最新 exact head，不能只看綠燈。
+node helper 的純靜態 controls 可在 backend 執行：
+
+```sh
+node --test scripts/products-pagination-ci.test.mjs
+```
+
+完整 acceptance harness 只允許上述 Actions fixture，不提供本機／正式 URL
+override。不改 API、庫存權威、退款、schema 或原測試，不代表 browser／真 HTTP、
+店內硬體、G0–G7、UI 商品分頁或整張 #50／#31 已驗收。
+
+## 原 #55 保存的歷史證據
+
 2026-10-07；base master `1f7eeb092af0fd66ca4f3533939c44662020c9d8`，獨立分支
 `fix/inventory-low-stock-pagination`。Refs #50 / #31。#53、#54 的分支保持原樣。
 [Draft PR #55](https://github.com/skydreamer0/startup/pull/55)；早期來源 head

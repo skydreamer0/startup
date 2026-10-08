@@ -267,3 +267,75 @@ jobs:
         path: |
           systems/enterprise-admin/pos-ui/test-results-http-recovery/
           systems/enterprise-admin/pos-ui/http-recovery-ci.txt
+
+  products-pagination:
+    name: Product pagination PostgreSQL acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_DB: checkout_http_recovery_inventory_pagination_ci
+          # Only this new, disposable, synthetic-only service uses passwordless auth.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - '127.0.0.1:55434:5432'
+        options: >-
+          --health-cmd "pg_isready -U test -d checkout_http_recovery_inventory_pagination_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin/backend
+    env:
+      DATABASE_URL: 'postgresql://test@127.0.0.1:55434/checkout_http_recovery_inventory_pagination_ci'
+      PRODUCT_PAGINATION_DATABASE_URL: 'postgresql://test@127.0.0.1:55434/checkout_http_recovery_inventory_pagination_ci'
+      PAGINATION_QA_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # This job proves the exact source head; the original four jobs stay unchanged.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
+      - name: Guard exact source, loopback service and empty owned DB
+        id: pagination_preflight
+        env:
+          PAGINATION_QA_CONTAINER: ${{ job.services.postgres.id }}
+          PAGINATION_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/products-pagination-ci.mjs preflight
+      - name: Install locked backend dependencies and generate Prisma
+        run: |
+          npm install --global npm@11.21.0
+          npm ci
+          npm run db:generate
+      - name: Validate harness safety and evidence controls
+        run: node --test scripts/products-pagination-ci.test.mjs
+      - name: Run original six mocked and eight real PostgreSQL cases
+        env:
+          PAGINATION_QA_CONTAINER: ${{ job.services.postgres.id }}
+          PAGINATION_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/products-pagination-ci.mjs run
+      - name: Verify zero remaining rows and remove only the owned DB
+        if: ${{ always() && steps.pagination_preflight.outcome == 'success' }}
+        env:
+          PAGINATION_QA_CONTAINER: ${{ job.services.postgres.id }}
+          PAGINATION_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/products-pagination-ci.mjs cleanup
+      - name: Preserve exact-head pagination evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: products-pagination-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pagination-qa-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
