@@ -21,6 +21,48 @@ describe('barcodeService', () => {
     vi.useRealTimers();
   });
 
+  it.each(['button', 'a', 'select', 'textarea', 'contenteditable', 'role-button'])('leaves Enter/Space activation to %s without starting a scanner sequence', (kind) => {
+    const target = document.createElement(kind === 'contenteditable' || kind === 'role-button' ? 'div' : kind);
+    if (kind === 'a') target.setAttribute('href', '#');
+    if (kind === 'contenteditable') target.setAttribute('contenteditable', 'true');
+    if (kind === 'role-button') target.setAttribute('role', 'button');
+    document.body.append(target);
+    const events = vi.fn(); const listener = vi.fn();
+    const unsequence = onBarcodeSequence(events); const unsubscribe = onBarcode(listener);
+    startBarcodeListener();
+    for (const key of [' ', 'Enter']) {
+      const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+      target.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(false);
+    }
+    expect(events).not.toHaveBeenCalled();
+    expect(listener).not.toHaveBeenCalled();
+    unsequence(); unsubscribe(); target.remove();
+  });
+
+  it('marks a completed scan Enter consumed before window shortcuts', () => {
+    const listener = vi.fn(); const unsubscribe = onBarcode(listener);
+    const shortcut = vi.fn((event: KeyboardEvent) => { expect(event.defaultPrevented).toBe(true); });
+    startBarcodeListener();
+    press('A'); press('B'); press('C');
+    window.addEventListener('keydown', shortcut);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    expect(listener).toHaveBeenCalledWith('ABC');
+    expect(shortcut).toHaveBeenCalledOnce();
+    window.removeEventListener('keydown', shortcut); unsubscribe();
+  });
+
+  it('cannot splice an unfinished scan through a native control activation', () => {
+    const target = document.createElement('button'); document.body.append(target);
+    const listener = vi.fn(); const unsubscribe = onBarcode(listener);
+    startBarcodeListener();
+    press('A'); press('B');
+    target.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    press('C'); press('Enter');
+    expect(listener).not.toHaveBeenCalled();
+    unsubscribe(); target.remove();
+  });
+
   it('emits a barcode when rapid characters are followed by Enter', () => {
     const listener = vi.fn();
     const unsubscribe = onBarcode(listener);

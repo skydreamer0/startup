@@ -56,9 +56,18 @@
 
 1. Start with `src/hooks/useBarcodeScanner.ts`, its nearest test, `POSCheckoutPage` and `cartStore`. Automatic additions require one exact string match on SKU or a barcode already present in supplied candidates. Do not treat a single fuzzy search result as exact.
 2. The hook keeps valid concurrent scan intents through product/callback rerenders. Search onChange passes its native event: matched insertText continues an unfinished keyboard source and pauses earlier effects; Enter completes it, while paste/delete/direct changes or a gap >300ms cancel older intents. Clear/hold/recall advance the in-memory draft revision. Pending/unknown/conflict or authenticated checkout scope changes permanently invalidate older requests and partial input, including ABA; unmount suppresses their results/errors. Scanner-driven search clearing does not cancel another valid scan.
-3. Keep `barcodeService` timing/hardware policy unchanged. Actual Product has no barcode field; current `/pos/products` is a name/SKU substring search limited to 100. Optional barcode fixtures verify conditional matching only, not complete manufacturer-barcode lookup support.
+3. Keep `barcodeService` timing/hardware policy unchanged. Actual Product has no barcode field; scanner fallback now uses literal tenant-scoped `/pos/products/lookup?code=...` via `api/productLookup.ts`. Ordinary `/pos/products` remains a name/SKU substring search limited to 100. `BarcodeCandidates` is ephemeral explicit selection UI; the scanner hook owns cancellation and revalidates the callback. See `../infrastructure/api/pos-product-lookup.md`. Optional barcode fixtures verify conditional matching only, not complete manufacturer-barcode lookup support.
 4. See `../infrastructure/verification/pos-scanner/README.md` for RED/GREEN unit evidence and untested browser/native-input/hardware boundaries. Stock freshness, responsive layout and broader #31/G0 remain separate.
 5. Historical focused-input RED at `8824dd4` is retained. Source/completion/cancellation correction passes 44 scanner cases, focused 91/91 and full POS 193/193 with type/build. Independent review is pending; these are synthetic JSDOM/unit results, not browser/hardware or full scanner acceptance. A capped quantity must not claim +1 success.
+
+### Scanner keyboard ownership
+
+Native controls own their activation keys: page shortcuts ignore interactive targets
+and already-prevented events; the decoder excludes non-input controls while retaining
+search-input scans. A completed scan consumes Enter before the page checkout shortcut.
+`POSCheckoutPage.scanner-keyboard.test.tsx` combines the real page, scanner hook,
+decoder and cart with synthetic API/shift adapters to exercise Tab, Enter and Space.
+It is not browser or physical scanner evidence.
 
 ### Debug POS test failure
 

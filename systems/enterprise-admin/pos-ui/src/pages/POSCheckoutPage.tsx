@@ -24,7 +24,9 @@ import OfflineStatus from '../components/OfflineStatus';
 import PrinterStatus from '../components/PrinterStatus';
 import { useShift } from '../hooks/useShift';
 import { useCheckout } from '../hooks/useCheckout';
-import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
+import { useBarcodeScanner, type BarcodeCandidateSelection, type BarcodeLookupStatus } from '../hooks/useBarcodeScanner';
+import { BarcodeCandidates } from '../components/BarcodeCandidates';
+import { BarcodeLookupFeedback } from '../components/BarcodeLookupFeedback';
 import { useCustomerDisplay, openCustomerDisplay } from '../hooks/useCustomerDisplay';
 import ShiftOpenScreen from './ShiftOpenScreen';
 import CloseShiftDialog from '../components/CloseShiftDialog';
@@ -44,6 +46,8 @@ export default function POSCheckoutPage() {
   const [staffList, setStaffList] = useState<PosStaff[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [barcodeCandidates, setBarcodeCandidates] = useState<BarcodeCandidateSelection | null>(null);
+  const [barcodeLookupStatus, setBarcodeLookupStatus] = useState<BarcodeLookupStatus>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSplitModal, setShowSplitModal] = useState(false);
@@ -143,7 +147,13 @@ export default function POSCheckoutPage() {
     }
   }
 
-  const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast);
+  const scannerBlocked = !contextReady || !shift.activeShift || showStaffModal || showPaymentModal
+    || showSplitModal || showOrderLookup || showShiftReport || !!checkoutResult
+    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget;
+  const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast, setBarcodeCandidates, {
+    blocked: scannerBlocked,
+    onStatus: setBarcodeLookupStatus,
+  });
 
   function handleAddRecommendation(productId: string) {
     const recommendation = recommendations.find((item) => item.productId === productId);
@@ -214,7 +224,14 @@ export default function POSCheckoutPage() {
 
   const handleKeydown = useCallback((event: KeyboardEvent) => {
     if (pending) return;
-    if (event.target instanceof HTMLInputElement) return;
+    if (event.defaultPrevented) return;
+    // Native controls own Enter/Space (including candidate selection and cancel).
+    // Do not turn their keyboard activation into a page-level checkout shortcut.
+    if (event.target instanceof HTMLElement) {
+      if (event.target.isContentEditable || event.target.closest('input, textarea, [contenteditable="true"]')) return;
+      const activationKey = event.key === 'Enter' || event.key === ' ';
+      if (activationKey && event.target.closest('select, button, a[href], [role="button"], [role="link"]')) return;
+    }
 
     switch (event.key) {
       case 'F2':
@@ -395,6 +412,8 @@ export default function POSCheckoutPage() {
           {categoriesLoaded && categories.length === 0 && (
             <div role="status" className="pos-category-status">尚無商品分類，可使用全部商品與搜尋。</div>
           )}
+          <BarcodeLookupFeedback status={barcodeLookupStatus} />
+          <BarcodeCandidates selection={barcodeCandidates} />
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
         <div className="pos-cart">
