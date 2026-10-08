@@ -90,9 +90,9 @@ describe('useBarcodeScanner', () => {
     lookupProduct.mockReturnValue(lookup.promise);
     render(<Harness products={[]} showFeedback />);
     scan('MISSING');
-    expect(screen.getByRole('status')).toHaveTextContent('正在查詢 SKU MISSING');
+    expect(screen.getByRole('status', { name: '' })).toHaveTextContent('正在查詢 SKU MISSING');
     await finish(lookup, []);
-    expect(screen.getByRole('status')).toHaveTextContent('找不到 SKU MISSING');
+    expect(screen.getByRole('status', { name: '' })).toHaveTextContent('找不到 SKU MISSING');
   });
 
   it.each([403, 500])('reports HTTP %s distinctly and preserves the draft', async (status) => {
@@ -119,7 +119,7 @@ describe('useBarcodeScanner', () => {
     h.rerender(<Harness products={[]} showFeedback />);
     await finish(lookup);
     expect(useCartStore.getState().items).toEqual([]);
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByRole('status', { name: '' })).not.toBeInTheDocument();
   });
 
   it('does not replace newer loading feedback with an older response', async () => {
@@ -128,9 +128,9 @@ describe('useBarcodeScanner', () => {
     render(<Harness products={[]} showFeedback />);
     scan('PAN'); scan('PAN2');
     await finish(old);
-    expect(screen.getByRole('status')).toHaveTextContent('正在查詢 SKU PAN2');
+    expect(screen.getByRole('status', { name: '' })).toHaveTextContent('正在查詢 SKU PAN2');
     await finish(newer, [second]);
-    expect(screen.getByRole('status')).toHaveTextContent('已找到');
+    expect(screen.getByRole('status', { name: '' })).toHaveTextContent('已找到');
     expect(useCartStore.getState().items).toHaveLength(2);
   });
 
@@ -213,7 +213,7 @@ describe('useBarcodeScanner', () => {
     scan('PAN'); scan('PAN2');
     await finish(newer, [second, { ...product, barcode: 'PAN2' }]);
     await finish(old, [product, { ...second, barcode: 'PAN' }]);
-    expect(screen.getByRole('status')).toHaveTextContent('PAN2');
+    expect(screen.getByRole('status', { name: '' })).toHaveTextContent('PAN2');
     expect(useCartStore.getState().items).toEqual([]);
   });
 
