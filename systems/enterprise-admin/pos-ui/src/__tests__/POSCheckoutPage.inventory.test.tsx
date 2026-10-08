@@ -323,9 +323,14 @@ describe('POS independent category navigation (synthetic API, real query cache)'
       categories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
       expect(categoryNav().getByRole('button', { name: category.name })).toHaveAttribute('aria-pressed', 'true');
     }
+    const productCallsBeforeAll = vi.mocked(posApi.getProducts).mock.calls.length;
     fireEvent.click(categoryNav().getByRole('button', { name: '全部' }));
-    await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith('no-match', undefined));
+    expect(categoryNav().getByRole('button', { name: '全部' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByTestId('product-search-input')).toHaveValue('no-match');
     expect(await screen.findByText('沒有符合條件的商品')).toBeInTheDocument();
+    categories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
+    // The All/search key is still fresh; returning to it should reuse its cache.
+    expect(posApi.getProducts).toHaveBeenCalledTimes(productCallsBeforeAll);
     expect(posApi.getCategories).toHaveBeenCalledTimes(1);
   });
 
