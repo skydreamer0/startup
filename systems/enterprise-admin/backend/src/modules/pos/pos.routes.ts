@@ -20,6 +20,7 @@ router.use(requirePermission('manage:pos'));
 router.post('/checkout', validate(checkoutSchema), PosController.checkout);
 router.get('/checkout-commands/:commandId', validate(checkoutCommandQuerySchema), PosController.getCheckoutCommand);
 router.get('/checkout-context', PosController.getCheckoutContext);
+router.get('/categories', PosController.getCategories);
 router.get('/products', validate(posProductsSchema), PosController.getProducts);
 router.get('/customer-lookup', validate(customerLookupSchema), PosController.lookupCustomer);
 router.post('/customers', validate(createPosCustomerSchema), PosController.createCustomer);

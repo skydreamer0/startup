@@ -72,6 +72,15 @@
    verifies immutable UI subjects with guarded synthetic HTTP; its report,
    network/key-event evidence and screenshots share `test-results-ui-evidence/`.
 
+### Change category navigation
+
+Use `GET /pos/categories` and the scope-keyed `pos-categories` query in `POSCheckoutPage`.
+Never derive navigation from filtered or capped `/pos/products` rows. `CategoryNav`
+keeps All plus tenant categories visible through search/selection; loading, empty
+and retryable error states stay separate. Synthetic coverage lives in
+`POSCheckoutPage.inventory.test.tsx` and `CategoryNav.test.tsx`; backend route/service
+coverage is `pos.categories.test.ts`. These do not replace real database or device acceptance.
+
 ### Change POS API calls
 
 1. Read `../infrastructure/api/api_spec.md`.

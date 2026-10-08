@@ -12,7 +12,7 @@ import { checkoutPayloadHash } from '../services/checkoutPayloadHash';
 
 vi.mock('../api/pos', () => ({ posApi: {
   getCheckoutContext: vi.fn(), checkout: vi.fn(), getCheckoutCommand: vi.fn(),
-  getStaff: vi.fn(), getProducts: vi.fn(), getHotRecommendations: vi.fn(),
+  getCategories: vi.fn(), getStaff: vi.fn(), getProducts: vi.fn(), getHotRecommendations: vi.fn(),
   getRecommendations: vi.fn(), getReorderForecast: vi.fn(),
   getTodayOrders: vi.fn(), refundOrder: vi.fn(),
 } }));
@@ -75,6 +75,7 @@ beforeEach(() => {
   useCheckoutRecoveryStore.setState({ scope: null, pending: null });
   useCartStore.setState({ items: [{ product, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1', heldCarts: [] });
   vi.mocked(posApi.getCheckoutContext).mockResolvedValue(response({ tenantId: 'tenant-1', userId: 'cashier-1' }) as Awaited<ReturnType<typeof posApi.getCheckoutContext>>);
+  vi.mocked(posApi.getCategories).mockResolvedValue(response([]));
   vi.mocked(posApi.getStaff).mockResolvedValue(response([]));
   vi.mocked(posApi.getProducts).mockResolvedValue(response([product]) as Awaited<ReturnType<typeof posApi.getProducts>>);
   vi.mocked(posApi.getHotRecommendations).mockResolvedValue(response([]));
@@ -302,5 +303,107 @@ describe('POS inventory refresh after confirmed mutations (synthetic API, real q
     fireEvent.click(screen.getByRole('button', { name: '重新整理庫存' }));
     await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
     expect(screen.getByText(action === 'checkout' ? '✓ 2 件' : '✓ 3 件')).toBeInTheDocument();
+  });
+});
+
+describe('POS independent category navigation (synthetic API, real query cache)', () => {
+  const categories = [{ id: 'pain', name: '止痛用品' }, { id: 'cold', name: '感冒用品' }, { id: 'empty', name: '空分類' }];
+  const categoryNav = () => within(screen.getByRole('navigation', { name: '商品分類' }));
+
+  it('keeps every category after search, empty results and repeated category selections', async () => {
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+    renderPage();
+    await screen.findByRole('button', { name: '止痛用品' });
+    vi.mocked(posApi.getProducts).mockResolvedValue(response([]));
+    fireEvent.change(screen.getByTestId('product-search-input'), { target: { value: 'no-match' } });
+    await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith('no-match', undefined));
+    for (const category of categories) {
+      fireEvent.click(categoryNav().getByRole('button', { name: category.name }));
+      await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith('no-match', category.id));
+      categories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
+      expect(categoryNav().getByRole('button', { name: category.name })).toHaveAttribute('aria-pressed', 'true');
+    }
+    fireEvent.click(categoryNav().getByRole('button', { name: '全部' }));
+    await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith('no-match', undefined));
+    expect(await screen.findByText('沒有符合條件的商品')).toBeInTheDocument();
+    expect(posApi.getCategories).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps All usable while categories load and distinguishes an empty category list', async () => {
+    const pendingCategories = deferred<Awaited<ReturnType<typeof posApi.getCategories>>>();
+    vi.mocked(posApi.getCategories).mockReturnValue(pendingCategories.promise);
+    renderPage();
+    expect(await screen.findByText('分類載入中...')).toBeInTheDocument();
+    expect(categoryNav().getByRole('button', { name: '全部' })).toBeEnabled();
+    expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
+    await act(async () => pendingCategories.resolve(response([])));
+    expect(await screen.findByText('尚無商品分類，可使用全部商品與搜尋。')).toBeInTheDocument();
+    expect(screen.queryByText('分類載入中...')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '重新載入分類' })).not.toBeInTheDocument();
+  });
+
+  it('shows failed initial load separately from empty and retries without clearing search', async () => {
+    vi.mocked(posApi.getCategories).mockRejectedValue(new Error('Synthetic failure'));
+    renderPage();
+    const retry = await screen.findByRole('button', { name: '重新載入分類' });
+    expect(screen.getByText(/分類載入失敗/)).toBeInTheDocument();
+    expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
+    expect(categoryNav().getByRole('button', { name: '全部' })).toBeEnabled();
+    fireEvent.change(screen.getByTestId('product-search-input'), { target: { value: 'vitamin' } });
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+    fireEvent.click(retry);
+    expect(await screen.findByRole('button', { name: '感冒用品' })).toBeInTheDocument();
+    expect(screen.getByTestId('product-search-input')).toHaveValue('vitamin');
+    expect(screen.queryByText(/分類載入失敗/)).not.toBeInTheDocument();
+  });
+
+  it('distinguishes forbidden access from an empty list or temporary failure', async () => {
+    vi.mocked(posApi.getCategories).mockRejectedValue({ isAxiosError: true, response: { status: 403 } });
+    renderPage();
+    expect(await screen.findByText('沒有讀取商品分類的權限，請聯絡管理員確認 POS 權限。')).toBeInTheDocument();
+    expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
+    expect(screen.queryByText(/分類載入失敗/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '重新載入分類' })).toBeEnabled();
+  });
+
+  it('ignores a slow old product response after a newer category selection without altering the cart', async () => {
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+    renderPage();
+    await screen.findByRole('button', { name: '止痛用品' });
+    const originalCart = useCartStore.getState().items;
+    const slow = deferred<Awaited<ReturnType<typeof posApi.getProducts>>>();
+    vi.mocked(posApi.getProducts).mockImplementation((_q, category) => category === 'pain'
+      ? slow.promise : Promise.resolve(response([])));
+    fireEvent.click(categoryNav().getByRole('button', { name: '止痛用品' }));
+    await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith(undefined, 'pain'));
+    fireEvent.click(categoryNav().getByRole('button', { name: '感冒用品' }));
+    await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith(undefined, 'cold'));
+    expect(await screen.findByText('沒有符合條件的商品')).toBeInTheDocument();
+    await act(async () => slow.resolve(response([{ ...product, name: '過時搜尋結果' }])));
+    expect(screen.queryByText('過時搜尋結果')).not.toBeInTheDocument();
+    categories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
+    expect(useCartStore.getState().items).toEqual(originalCart);
+    expect(posApi.checkout).not.toHaveBeenCalled();
+  });
+
+  it('retains cached category entrances with an explicit warning after refresh failure', async () => {
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+    const { client } = renderPage();
+    await screen.findByRole('button', { name: '止痛用品' });
+    vi.mocked(posApi.getCategories).mockRejectedValue(new Error('Synthetic failure'));
+    await act(async () => { await client.invalidateQueries({ queryKey: ['pos-categories', scope] }); });
+    expect(await screen.findByText(/分類載入失敗/)).toBeInTheDocument();
+    categories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
+    expect(categoryNav().getByRole('button', { name: '全部' })).toBeEnabled();
+  });
+
+  it('uses a scope-specific category cache and ignores another tenant category list', async () => {
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    client.setQueryData(['pos-categories', otherScope], [{ id: 'foreign', name: '另一門店分類' }]);
+    renderPage(client);
+    await screen.findByRole('button', { name: '止痛用品' });
+    expect(screen.queryByRole('button', { name: '另一門店分類' })).not.toBeInTheDocument();
+    expect(client.getQueryData(['pos-categories', scope])).toEqual(categories);
   });
 });

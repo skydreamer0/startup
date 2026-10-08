@@ -147,6 +147,15 @@ export class CheckoutService {
     });
   }
 
+  static async getCategories() {
+    const tenant = tenantPersistence();
+    return prisma.productCategory.findMany({
+      where: tenant.where(),
+      select: { id: true, name: true },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+    });
+  }
+
   static async getProducts(filters: { q?: string; categoryId?: string; inStockOnly?: string }) {
     const tenant = tenantPersistence();
     const where: Prisma.ProductWhereInput = tenant.where({

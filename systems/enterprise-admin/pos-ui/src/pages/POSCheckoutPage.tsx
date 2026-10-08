@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { posApi, PosStaff, PosOrderSummary, PosCustomerLookup } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
@@ -107,6 +108,13 @@ export default function POSCheckoutPage() {
       posApi.getProducts(searchQuery || undefined, selectedCategory ?? undefined)
         .then((r) => r.data.data),
     staleTime: 30_000,
+    enabled: !!checkoutScope,
+  });
+
+  const { data: categories = [], isLoading: loadingCategories, isSuccess: categoriesLoaded, isError: categoriesError, error: categoriesFailure, isFetching: fetchingCategories, refetch: refetchCategories } = useQuery({
+    queryKey: ['pos-categories', checkoutScope],
+    queryFn: () => posApi.getCategories().then((r) => r.data.data),
+    staleTime: 60_000,
     enabled: !!checkoutScope,
   });
 
@@ -283,10 +291,6 @@ export default function POSCheckoutPage() {
     });
   }
 
-  const categories = Array.from(
-    new Map(products.filter((product) => product.category).map((product) => [product.category!.id, product.category!])).values(),
-  );
-
   const recoveryPanel = <CheckoutRecovery pending={pending} error={recoveryError} loading={checkoutLoading}
     onQuery={queryCheckout} onRetry={() => handleCheckout()} />;
 
@@ -377,6 +381,20 @@ export default function POSCheckoutPage() {
             <div role="status" style={{ padding: 12, color: 'var(--text-muted)' }}>商品與庫存更新中...</div>
           )}
           <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
+          {loadingCategories && <div role="status" className="pos-category-status">分類載入中...</div>}
+          {categoriesError && (
+            <div role="alert" className="pos-category-status">
+              {isAxiosError(categoriesFailure) && categoriesFailure.response?.status === 403
+                ? '沒有讀取商品分類的權限，請聯絡管理員確認 POS 權限。'
+                : '分類載入失敗，分類資訊可能已過期。仍可使用全部商品與搜尋。'}
+              <button type="button" className="pos-category-btn" disabled={fetchingCategories} onClick={() => void refetchCategories()}>
+                重新載入分類
+              </button>
+            </div>
+          )}
+          {categoriesLoaded && categories.length === 0 && (
+            <div role="status" className="pos-category-status">尚無商品分類，可使用全部商品與搜尋。</div>
+          )}
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
         <div className="pos-cart">

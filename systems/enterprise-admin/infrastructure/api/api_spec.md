@@ -174,3 +174,9 @@ HTTP Status Code 需精確映射錯誤類別：
 1. **輸入過濾 (Input Sanitization)**: 所有外部輸入 `body`, `query`, `params` 皆須經 Schema Validator (如 Zod, Class-Validator) 的過濾，防止 SQL Injection 與 XSS。
 2. **分頁參數 (Pagination)**: `GET` 列表類型 API 強制支援 `?page=1&limit=20` 或 `cursor`，並限制 最大 `limit` (避免撈取整表拖垮 DB)。
 3. **軟刪除判斷**: `GET` List 時預設過濾掉 `deleted_at IS NOT NULL` 的資料。
+
+### 3.12 POS 分類列表
+
+- `GET /pos/categories` 沿用 POS 的 auth + `manage:pos`，只讀取當前 tenant 的 ProductCategory。回 `{ success: true, data: [{ id, name }] }`，按 `name asc, id asc` 排序；無分類回成功空陣列。資料庫失敗維持錯誤回應，不偽裝為空清單。
+- 分類列表不依商品搜尋、所選分類、商品數量或前 100 筆商品結果縮減，包含尚無商品的分類。不新增分類寫入、DB schema 或權限。
+- POS 分類 query 按 authenticated checkout scope 隔離；搜尋或切換分類不改分類入口。初載、空清單、失敗各有明示，失敗可重試且保留已載入分類；全部商品與搜尋仍可使用。
