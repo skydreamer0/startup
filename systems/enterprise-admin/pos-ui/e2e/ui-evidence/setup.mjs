@@ -14,7 +14,8 @@ const requireSha = (value, label) => {
   return value;
 };
 function assertCleanSource(cwd, label, sourcePaths = ['.']) {
-  if (git(cwd, 'diff', '--name-only', 'HEAD', '--', '.')) {
+  if (git(cwd, 'diff', '--name-only', 'HEAD', '--', '.') ||
+      git(cwd, 'diff', '--cached', '--name-only', 'HEAD', '--', '.')) {
     throw new Error(`Dirty tracked ${label} source`);
   }
   if (git(cwd, 'ls-files', '--others', '--exclude-standard', '--', ...sourcePaths)) {
@@ -24,6 +25,27 @@ function assertCleanSource(cwd, label, sourcePaths = ['.']) {
   if (git(cwd, 'ls-files', '--others', '--ignored', '--exclude-standard', '--', 'systems/enterprise-admin/pos-ui/.env*', 'systems/enterprise-admin/admin-ui/.env*')) {
     throw new Error(`Untracked ${label} environment file`);
   }
+  // Read flags only; never clear index bits or change ignore/security settings.
+  const trackedFlags = git(cwd, 'ls-files', '-v', '-z').split('\0').filter(Boolean);
+  if (trackedFlags.some((entry) => /^[a-zS]/.test(entry))) {
+    throw new Error(`Hidden tracked ${label} source: assume-unchanged or skip-worktree`);
+  }
+  // Ignore rules are not an authority to add runnable source. Only these known
+  // dependency/generated locations are exempt; arbitrary nested node_modules
+  // or dist directories inside source are not exempt.
+  const generatedPaths = ['node_modules', 'systems/enterprise-admin/node_modules'];
+  for (const app of ['pos-ui', 'admin-ui', 'backend', 'packages/types']) {
+    const prefix = `systems/enterprise-admin/${app}`;
+    for (const directory of ['node_modules', 'dist', 'coverage', 'test-results', 'test-results-ui-evidence', 'playwright-report']) {
+      generatedPaths.push(`${prefix}/${directory}`);
+    }
+    generatedPaths.push(`${prefix}/*.tsbuildinfo`);
+  }
+  // Exclude known generated locations at enumeration time, so installed package
+  // trees cannot overflow execFileSync's buffer or dominate this source check.
+  const ignored = git(cwd, 'ls-files', '--others', '--ignored', '--exclude-standard', '-z', '--', ...sourcePaths,
+    ...generatedPaths.map((file) => `:(exclude,glob)${file}`));
+  if (ignored) throw new Error(`Ignored untracked ${label} source`);
 }
 
 

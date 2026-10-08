@@ -68,10 +68,14 @@ export UI_QA_EXECUTION_MODE=head
 unset UI_QA_BASE_SHA
 ```
 
-Tracked staged/unstaged changes are rejected. Untracked runnable QA inputs and
-subject files, including ignored local Vite `.env*` files, are rejected before
-starting the affected subject. Generated evidence and installed dependencies must
-remain ignored. These checks do not change CI triggers, permissions or pinned subjects.
+Tracked staged/unstaged changes are checked separately. Tracked files with
+assume-unchanged or skip-worktree flags are rejected, without changing those flags.
+Untracked QA inputs and subject files are checked against ordinary and ignored
+file listings, including local Vite `.env*` files. Ignored files are only exempt
+in explicitly named dependency and generated-output locations; arbitrary ignored
+source/spec files are rejected before starting the affected subject. Installed
+dependency contents and generated outputs are outside this source check, and this
+is a pre-launch check rather than a continuous filesystem integrity guarantee. These checks do not change CI triggers, permissions or pinned subjects.
 
 Run:
 
