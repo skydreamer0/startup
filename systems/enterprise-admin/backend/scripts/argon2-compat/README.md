@@ -15,7 +15,7 @@ node scripts/argon2-compat/generate-legacy.cjs /absolute/path/to/argon2-0.44.0 n
 The generator checks the package version and verifies every generated hash with
 0.44.0 before writing. It refuses to overwrite an existing file.
 
-## Final container verification (not executed in this task)
+## Final container verification
 
 From the repository root, with the intended PR checkout and an already approved
 local Docker runtime:
@@ -42,6 +42,21 @@ attempt increment and no token issuance, original hash preservation, and new
 hash verification. This is service-level login compatibility, not HTTP, real DB,
 or real token-signature validation.
 
+## Dedicated Actions verification
+
+`.github/workflows/argon2-compat.yml` checks the exact PR head on this QA branch
+using the existing final Node 22 Alpine Dockerfile. Runtime containers have no
+network, a read-only root and fixture mount, and only a temporary `/tmp` write
+area. The migration/server command is replaced by `node`; no database, account,
+secrets or Docker socket are passed into the containers. Existing CI is unchanged.
+
+The job requires all 9 baseline checks and both rejected mutation controls. It
+preserves source head/tree, fixture hashes, image ID/metadata and runtime logs in
+a run-specific artifact, including failed-run logs. Both test stages run after a
+successful build even if the baseline fails; any failed or incomplete evidence
+keeps the job red. Cancellation is not successful acceptance. The workflow is a
+candidate until independently reviewed, pushed and observed to finish on Actions.
+
 ## Evidence boundaries
 
 Host partial run: 9 checks passed on Linux x64 Node 24.19.0 with argon2 0.45.1.
@@ -64,3 +79,4 @@ overwrite and refresh-token-before-401, and requires the verifier to reject both
 with assertion failures (not a missing module, timeout or signal). The untouched
 verifier must pass first. Host controls rejected both mutations; Alpine remains
 not run. These are QA blind spots corrected, not evidence of product bugs in #62.
+

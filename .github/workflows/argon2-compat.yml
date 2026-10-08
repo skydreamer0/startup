@@ -1,0 +1,106 @@
+name: Argon2 final Alpine compatibility
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/argon2-compat.yml'
+      - 'systems/enterprise-admin/backend/**'
+
+permissions:
+  contents: read
+
+jobs:
+  final-alpine:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'chore/62-argon2-compatibility-qa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EVIDENCE: ${{ runner.temp }}/argon2-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Record exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain)"
+          mkdir "$EVIDENCE"
+          printf '%s\n' "$EXPECTED_HEAD" > "$EVIDENCE/head.txt"
+          git rev-parse 'HEAD^{tree}' > "$EVIDENCE/tree.txt"
+          sha256sum systems/enterprise-admin/backend/scripts/argon2-compat/* > "$EVIDENCE/input-sha256.txt"
+
+      - name: Build existing final image
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --iidfile "$EVIDENCE/image-id.txt" systems/enterprise-admin/backend 2>&1 | tee "$EVIDENCE/build.log"
+          docker image inspect "$(cat "$EVIDENCE/image-id.txt")" --format '{{json .}}' > "$EVIDENCE/image.json"
+
+      - name: Nine baseline checks in final Alpine
+        id: baseline
+        if: success()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/systems/enterprise-admin/backend/scripts/argon2-compat,dst=/qa,readonly" \
+            --workdir /app --entrypoint node "$(cat "$EVIDENCE/image-id.txt")" \
+            /qa/verify-final.cjs /qa/legacy-0.44.0.synthetic.json --require-alpine \
+            2>&1 | tee "$EVIDENCE/baseline.log"
+
+      - name: Both mutation controls in final Alpine
+        id: mutations
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/systems/enterprise-admin/backend/scripts/argon2-compat,dst=/qa,readonly" \
+            --workdir /app --entrypoint node "$(cat "$EVIDENCE/image-id.txt")" \
+            /qa/mutation-controls.cjs /qa/legacy-0.44.0.synthetic.json --require-alpine \
+            2>&1 | tee "$EVIDENCE/mutations.log"
+
+      - name: Require complete evidence
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        env:
+          BASELINE_OUTCOME: ${{ steps.baseline.outcome }}
+          MUTATIONS_OUTCOME: ${{ steps.mutations.outcome }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ['EVIDENCE'])
+          outcomes = {k: os.environ[k] for k in ['BASELINE_OUTCOME', 'MUTATIONS_OUTCOME']}
+          (root / 'outcomes.json').write_text(json.dumps(outcomes, indent=2))
+          assert all(v == 'success' for v in outcomes.values()), outcomes
+          def rows(name):
+              return [json.loads(line) for line in (root / name).read_text().splitlines() if line.startswith('{')]
+          baseline = rows('baseline.log')
+          assert len(baseline) == 1, baseline
+          result = baseline[0]
+          assert result['status'] == 'PASS' and result['checks'] == 9, result
+          assert result['node'].startswith('v22.') and result['alpine'] is True and result['argon2'] == '0.45.1', result
+          mutations = rows('mutations.log')
+          assert len(mutations) == 2 and all(r['rejected'] is True for r in mutations), mutations
+          assert {r['mutation'] for r in mutations} == {'password hash overwrite', 'refresh token before rejection'}, mutations
+          (root / 'accepted.json').write_text(json.dumps({'head': os.environ['EXPECTED_HEAD'], 'image': (root / 'image-id.txt').read_text().strip(), 'baseline': result, 'mutations': mutations}, indent=2))
+          PY
+
+      - name: Preserve isolated QA evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: argon2-alpine-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE }}/
+          if-no-files-found: error
+          retention-days: 7
