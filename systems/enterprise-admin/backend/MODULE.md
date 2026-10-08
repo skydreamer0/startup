@@ -69,6 +69,7 @@
 1. Read API spec §3.6 and `src/modules/inventory/inventory.service.ts`.
 2. Low-stock filtering compares Product stockQuantity to its safetyStock through the tenant-scoped Prisma delegate before paging. Count and rows use the same predicate; order is name then unique ID.
 3. Mocked service coverage is `src/modules/inventory/__tests__/products-pagination.test.ts`; real PostgreSQL/tenant coverage is `src/__tests__/products-pagination.integration.test.ts` with explicit guarded PRODUCT_PAGINATION_DATABASE_URL opt-in. Bounded #50B1 evidence and reproduction are in `../infrastructure/verification/products-low-stock-pagination/README.md`. The wire payload stays total/page/limit/data; UI pagination, invalid-parameter policy and cross-update snapshots are separate work.
+4. The ordinary CI workflow's separate `Product pagination PostgreSQL acceptance` job runs the unchanged 6 mocked and 8 native cases on its exact source head. `scripts/products-pagination-ci.mjs` verifies the disposable Actions service's loopback-only binding and empty DB before migration, and requires per-case results plus owned-DB cleanup. Historical 8 skipped results are not native acceptance; this does not replace the original four jobs or release gates.
 
 ### Debug a backend test failure
 
