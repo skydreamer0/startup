@@ -77,12 +77,10 @@ source/spec files are rejected before starting the affected subject. Installed
 dependency contents and generated outputs are outside this source check, and this
 is a pre-launch check rather than a continuous filesystem integrity guarantee. These checks do not change CI triggers, permissions or pinned subjects.
 
-Run:
+Run on Linux (the Ubuntu CI runner or a Linux local workspace):
 
 ```sh
-pnpm exec tsc --project tsconfig.ui-evidence.json
-pnpm exec playwright test --config e2e/ui-evidence.config.ts
-node e2e/ui-evidence/manifest.mjs
+node e2e/ui-evidence/run.mjs
 ```
 
 The `reviewed-ui-browser-evidence` CI artifact saves runtime-evidence.json (QA head,
@@ -93,7 +91,7 @@ and requires a deliberate new pinned candidate/run. CI results and artifact IDs
 are reported after execution; this source document does not claim an unrun pass.
 
 The config resolves both the JSON report and test output from its own file into
-`pos-ui/test-results-ui-evidence/`. Upload includes hidden files such as
+`pos-ui/test-results-ui-evidence/run-*/` selected by a fresh runner invocation. Upload includes hidden files such as
 `tests/.last-run.json`; the manifest covers them as well as logs, PNGs and JSON.
 
 ## 123 timeout diagnosis
@@ -122,7 +120,31 @@ No merge, readiness approval, deployment or business-gate release is implied.
 The receipt is marked `historical-fixed-subject-ui`: these immutable scanner and
 supplier subjects remain historical even when the QA driver executes in a clean
 advanced-base PR merge. This is not latest-master application E2E acceptance.
-Before reusing a local output directory, archive/remove its previous generated
-evidence; this minimal repair does not implement stale-artifact freshness checks.
-A failed setup must not be represented as a successful current run from older
-artifacts. The existing runner outcome and exact receipt identities remain required.
+The wrapper currently requires Linux `/proc` and POSIX process-group supervision.
+This command is not yet supported on macOS or Windows. Every pnpm phase gets a
+new owned process group. SIGTERM/SIGINT forwards cancellation only to that group,
+escalates after a grace period, and waits until all members stop writing. It never
+signals an unrelated user process or the caller's existing group. A process that
+deliberately escapes its group is outside this bounded local-runner contract.
+
+The runner allocates a fresh, owned directory and random nonce before typecheck,
+including for repeated local invocations with no CI run ID. Previous output and
+unrelated user files are not deleted. Direct Playwright or manifest invocation
+without the runner context fails closed. CI receives an upload path only after all owned producers are quiescent and the
+manifest validates. It uploads only that invocation's path, never a parent glob;
+if finalization fails or the step never started, no evidence path is published.
+
+The runtime receipt, completion receipt and manifest are atomically published.
+The context, receipts and manifest bind the same source/execution/run identities
+and nonce. A failed phase exits nonzero and yields only a failed diagnostic bundle;
+a missing completion or mismatched runtime cannot yield a success manifest. A
+successful manifest also requires both successful subprocess phases and the
+complete expected 13-case report tree, with the exact pinned titles/spec files,
+unique test IDs and one successful result each. The passed `.last-run.json`,
+13 per-case network records bound to the current nonce/test IDs and all 19 named
+PNGs are required. Network guard arrays must pass; no missing, duplicate or extra
+per-test artifact is allowed. PNG structure/CRC/inflated scanlines are checked for
+the Chromium 8-bit RGB/RGBA format, not interpreted as proof of screenshot content.
+The consumer still checks the actual runner/job outcome, exact source/subject
+identities, nonce and complete file set/hashes. A nonce is freshness correlation,
+not cryptographic attestation against a malicious runner or post-run mutation.

@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import { resolve } from 'node:path';
+import { readRun } from './ui-evidence/run-artifacts.mjs';
 
-const output = resolve(__dirname, '../test-results-ui-evidence');
+const { output } = readRun();
 
 export default defineConfig({
   testDir: './ui-evidence',

@@ -1,6 +1,6 @@
 import { test as base, expect, type Page, type Route, type TestInfo } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { basename, dirname } from 'node:path';
 
 export type ApiHandler = (route: Route, url: URL) => Promise<boolean>;
 export type KeyEvent = { key: string; at: number; trusted: boolean };
@@ -28,7 +28,8 @@ export const test = base.extend<{ guard: Guard }>({
     await use(guard);
     const evidencePath = info.outputPath('network-evidence.json');
     await mkdir(dirname(evidencePath), { recursive: true });
-    await writeFile(evidencePath, JSON.stringify({ test: info.title, viewport: page.viewportSize(),
+    await writeFile(evidencePath, JSON.stringify({ nonce: process.env.UI_QA_RUN_NONCE, testId: info.testId, file: basename(info.file),
+      test: info.title, viewport: page.viewportSize(),
       keyboardEvents: await readKeys(page), ...guard }, null, 2) + '\n');
     expect(guard.writes, 'No write request may leave the synthetic UI').toEqual([]);
     expect(guard.unexpected, 'Only declared API fixtures and owned static assets are allowed').toEqual([]);

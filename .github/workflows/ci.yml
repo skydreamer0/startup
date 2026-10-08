@@ -216,37 +216,21 @@ jobs:
         pnpm --dir "$GITHUB_WORKSPACE/.ui-evidence-subjects/suppliers/systems/enterprise-admin" install --frozen-lockfile
 
     - name: Reviewed scanner and supplier browser evidence
+      id: reviewed_ui
       shell: bash
       env:
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         UI_QA_EXECUTION_SHA: ${{ github.sha }}
         UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
         UI_QA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-      run: |
-        mkdir -p pos-ui/test-results-ui-evidence
-        pnpm --filter pos-ui exec tsc --project tsconfig.ui-evidence.json
-        pnpm --filter pos-ui exec playwright test --config e2e/ui-evidence.config.ts 2>&1 | tee pos-ui/test-results-ui-evidence-run.txt
-
-    - name: Hash bounded UI evidence
-      if: always()
-      env:
-        UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        UI_QA_EXECUTION_SHA: ${{ github.sha }}
-        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
-        UI_QA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-      run: |
-        mkdir -p pos-ui/test-results-ui-evidence
-        if [ -f pos-ui/test-results-ui-evidence-run.txt ]; then
-          cp pos-ui/test-results-ui-evidence-run.txt pos-ui/test-results-ui-evidence/raw-run.txt
-        fi
-        node pos-ui/e2e/ui-evidence/manifest.mjs
+      run: node pos-ui/e2e/ui-evidence/run.mjs
 
     - name: Preserve reviewed UI browser evidence
-      if: always()
+      if: ${{ always() && steps.reviewed_ui.outputs.evidence_dir != '' }}
       uses: actions/upload-artifact@v7
       with:
         name: reviewed-ui-browser-evidence
-        path: systems/enterprise-admin/pos-ui/test-results-ui-evidence/
+        path: ${{ steps.reviewed_ui.outputs.evidence_dir }}
         include-hidden-files: true
         if-no-files-found: error
 

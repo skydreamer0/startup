@@ -1,12 +1,13 @@
 import { spawn, execFileSync } from 'node:child_process';
 import { createWriteStream } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
+import { readRun, atomicJson } from './run-artifacts.mjs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '../../../../..');
-const output = resolve(here, '../../test-results-ui-evidence');
+const { output, context: invocation } = readRun();
 const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
 const delay = (ms) => new Promise((done) => setTimeout(done, ms));
 const requireSha = (value, label) => {
@@ -90,7 +91,7 @@ export default async function setup() {
 
   const owned = [];
   const streams = [];
-  const record = { qaHead, qaTree, checkoutHead, checkoutTree, executionHead, executionMode,
+  const record = { nonce: invocation.nonce, qaHead, qaTree, checkoutHead, checkoutTree, executionHead, executionMode,
     baseHead, executionParents, evidenceScope: 'historical-fixed-subject-ui', node: process.version,
     runId: process.env.GITHUB_RUN_ID ?? null, runAttempt: process.env.GITHUB_RUN_ATTEMPT ?? null,
     mode: 'real Chromium UI; synthetic intercepted API; no backend or database', subjects: {} };
@@ -135,7 +136,7 @@ export default async function setup() {
       if (!ready) throw new Error(`Owned ${name} Vite did not become ready`);
       record.subjects[name] = { ...expected, actualHead, actualTree, origin, ownedPid: child.pid };
     }
-    await writeFile(resolve(output, 'runtime-evidence.json'), JSON.stringify(record, null, 2) + '\n');
+    await atomicJson(resolve(output, 'runtime-evidence.json'), record);
     return close;
   } catch (error) {
     await close();
