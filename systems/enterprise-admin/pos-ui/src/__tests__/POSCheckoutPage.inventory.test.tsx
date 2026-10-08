@@ -419,7 +419,7 @@ describe('POS scanner page wiring (hook mocked; hook safety tested separately)',
   it('blocks background scans while payment or order lookup is open and restores the flag after cancel', async () => {
     renderPage();
     await screen.findByText('✓ 3 件');
-    const scannerOptions = () => vi.mocked(useBarcodeScanner).mock.calls.at(-1)?.[6];
+    const scannerOptions = () => vi.mocked(useBarcodeScanner).mock.calls[vi.mocked(useBarcodeScanner).mock.calls.length - 1]?.[6];
     expect(scannerOptions()?.blocked).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: '開始結帳' }));
     expect(scannerOptions()?.blocked).toBe(true);
@@ -433,7 +433,7 @@ describe('POS scanner page wiring (hook mocked; hook safety tested separately)',
   it('renders hook-owned lookup feedback and explicit candidate selection without page-level cart mutation', async () => {
     renderPage();
     await screen.findByText('✓ 3 件');
-    const scan = vi.mocked(useBarcodeScanner).mock.calls.at(-1)!;
+    const scan = vi.mocked(useBarcodeScanner).mock.calls[vi.mocked(useBarcodeScanner).mock.calls.length - 1]!;
     const select = vi.fn();
     const dismiss = vi.fn();
     const originalCart = useCartStore.getState().items;
