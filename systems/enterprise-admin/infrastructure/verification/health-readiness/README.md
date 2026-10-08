@@ -49,3 +49,50 @@ rollback classification, and missing/blank configuration process exits. PostgreS
 compiled Alpine image and outage acceptance must be reported separately from mocked
 tests and skips. No production database, host, security setting or deployment is
 part of this verification.
+
+## Guarded CI acceptance
+
+The existing Backend CI appends `scripts/health-readiness/ci.mjs` after ordinary
+tests. It verifies GitHub-hosted Actions, exact execution commit/tree, the service
+container ID/network/image and existing test authentication. It never consumes an
+arbitrary database URL. The maintenance connection is a local socket within that
+verified PostgreSQL service; application traffic uses a newly created, uniquely
+named `health_readiness_ci_<run>_<attempt>` database. Existing `test_db`, the five
+CI jobs, pagination 6+8 cases and their original guards stay unchanged.
+
+The compiled final Alpine image runs `node /qa/verify.cjs` via an explicit
+entrypoint, bypassing the image's migration-starting default command. Only the
+empty owned database receives an explicit migration deploy. A temporary copy of
+unchanged `dist` and packaged Prisma migrations is used for the synthetic pending
+migration fixture; there is no production override for expected migrations.
+
+The ten native cases require zero skips:
+
+1. Final Alpine compiled server startup and HTTP readiness 200
+2. A fixture-only packaged pending migration produces HTTP 503
+3. A committed failed migration history row produces HTTP 503 across the independent HTTP connection
+4. A committed rollback-only history row does not count as applied
+5. Missing packaged migration files produce HTTP 503
+6. Stopping the owned TCP proxy listener and all sockets produces readiness 503 while liveness stays 200
+7. A fresh process during that outage exits 1 without listening
+8. Restoring that same proxy restores readiness 200
+9. Missing JWT configuration exits 1 without listening
+10. Canary-free process/HTTP output and no business fixtures left behind
+
+Proxy, API and process probes share the same disposable Alpine network namespace;
+no host networking or additional published ports are used. Faults are restored
+between cases. Acceptance and cleanup are separate CI stages: even an acceptance
+failure must stop the owned runner, drop only its recorded database and verify
+absence. Cleanup cannot turn a failed acceptance into a pass. Artifacts record
+source head separately from GitHub's PR merge execution head/tree and image ID;
+never label merge-tree evidence as exact source-head execution.
+
+The eight dependency-free service guard tests can run with:
+
+```sh
+node --test scripts/health-readiness/ci.test.mjs
+```
+
+Local static/guard checks do not constitute native acceptance. Native PG, Alpine,
+HTTP outage/recovery and the nineteen Vitest cases remain NOT RUN until the exact
+published CI execution supplies its acceptance and cleanup records.

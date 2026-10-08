@@ -113,6 +113,37 @@ jobs:
         JWT_REFRESH_SECRET: "test-refresh-secret-at-least-32-chars!"
         JWT_REFRESH_EXPIRES_IN: "7d"
 
+
+    - name: Validate readiness harness guards
+      run: node --test scripts/health-readiness/ci.test.mjs
+
+    - name: Isolated PostgreSQL and final Alpine readiness acceptance
+      id: health_readiness
+      timeout-minutes: 4
+      env:
+        HEALTH_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        HEALTH_POSTGRES_NETWORK: ${{ job.services.postgres.network }}
+        HEALTH_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: node scripts/health-readiness/ci.mjs run
+
+    - name: Remove only the owned readiness fixture database
+      if: ${{ always() && steps.health_readiness.outcome != 'skipped' }}
+      timeout-minutes: 2
+      env:
+        HEALTH_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        HEALTH_POSTGRES_NETWORK: ${{ job.services.postgres.network }}
+        HEALTH_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: node scripts/health-readiness/ci.mjs cleanup
+
+    - name: Preserve readiness acceptance and cleanup evidence
+      if: ${{ always() && steps.health_readiness.outcome != 'skipped' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: health-readiness-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/health-readiness-${{ github.run_id }}-${{ github.run_attempt }}/
+        if-no-files-found: error
+        retention-days: 7
+
   admin-ui:
     name: Admin UI CI
     runs-on: ubuntu-latest
