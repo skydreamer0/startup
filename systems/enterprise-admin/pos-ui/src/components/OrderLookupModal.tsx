@@ -4,6 +4,7 @@ import { posApi, PosOrderSummary } from '../api/pos';
 import { PAYMENT_LABELS, PaymentMethod } from '../constants';
 
 interface Props {
+  checkoutScope: string;
   shiftId?: string;
   onRefund: (order: PosOrderSummary) => void;
   onClose: () => void;
@@ -23,12 +24,12 @@ const STATUS_COLOR: Record<string, string> = {
   cancelled: 'var(--text-muted)',
 };
 
-export default function OrderLookupModal({ shiftId, onRefund, onClose }: Props) {
+export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data: orders = [], isLoading } = useQuery({
-    queryKey: ['pos-today-orders', shiftId],
+    queryKey: ['pos-today-orders', checkoutScope, shiftId],
     queryFn: () => posApi.getTodayOrders(shiftId).then((r) => r.data.data),
     staleTime: 10_000,
   });

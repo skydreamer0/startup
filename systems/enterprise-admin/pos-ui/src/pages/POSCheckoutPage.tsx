@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { posApi, PosStaff, PosOrderSummary, PosCustomerLookup } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
+import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import CategoryNav from '../components/CategoryNav';
 import ProductGrid from '../components/ProductGrid';
 import CartPanel from '../components/CartPanel';
@@ -71,10 +72,13 @@ export default function POSCheckoutPage() {
   const shift = useShift(showToast, setSalesStaff);
   const hasHighDiscount = checkoutNeedsManagerApproval(items, orderDiscountAmount);
 
-  const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout, queryCheckout, pending, recoveryError, contextReady } = useCheckout({
+  const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout, queryCheckout, pending, recoveryError, contextReady, checkoutScope } = useCheckout({
     shiftId: shift.activeShift?.id,
     customerId: selectedCustomer?.id,
-    onSuccess: () => { setShowPaymentModal(false); setShowSplitModal(false); },
+    onSuccess: (scope) => {
+      setShowPaymentModal(false); setShowSplitModal(false);
+      refreshInventory(scope);
+    },
     showToast,
   });
 
@@ -97,28 +101,39 @@ export default function POSCheckoutPage() {
     posApi.getStaff().then((response) => setStaffList(response.data.data));
   }, []);
 
-  const { data: products = [], isLoading: loadingProducts } = useQuery({
-    queryKey: ['pos-products', searchQuery, selectedCategory],
+  const { data: products = [], isLoading: loadingProducts, isError: productsError, isFetching: fetchingProducts } = useQuery({
+    queryKey: ['pos-products', checkoutScope, searchQuery, selectedCategory],
     queryFn: () =>
       posApi.getProducts(searchQuery || undefined, selectedCategory ?? undefined)
         .then((r) => r.data.data),
     staleTime: 30_000,
+    enabled: !!checkoutScope,
   });
 
-  const { data: recommendations = [] } = useQuery({
-    queryKey: ['pos-recommendations', selectedCustomer?.id],
+  const { data: recommendations = [], isError: recommendationsError, isFetching: fetchingRecommendations } = useQuery({
+    queryKey: ['pos-recommendations', checkoutScope, selectedCustomer?.id],
     queryFn: () => selectedCustomer
       ? posApi.getRecommendations(selectedCustomer.id).then((r) => r.data.data)
       : posApi.getHotRecommendations().then((r) => r.data.data),
     staleTime: 60_000,
+    enabled: !!checkoutScope,
   });
 
-  const { data: reorderForecast = [] } = useQuery({
-    queryKey: ['pos-reorder-forecast'],
+  const { data: reorderForecast = [], isError: forecastError, isFetching: fetchingForecast } = useQuery({
+    queryKey: ['pos-reorder-forecast', checkoutScope],
     queryFn: () => posApi.getReorderForecast(8).then((r) => r.data.data),
     staleTime: 60_000,
     retry: false,
+    enabled: !!checkoutScope,
   });
+
+  function refreshInventory(scope: string, refetchType: 'active' | 'none' = 'active') {
+    // The authenticated tenant/cashier scope covers every search/category variant.
+    // Refetch failures stay in query state; they cannot undo a confirmed payment.
+    for (const key of ['pos-products', 'pos-recommendations', 'pos-reorder-forecast', 'pos-today-orders']) {
+      void queryClient.invalidateQueries({ queryKey: [key, scope], refetchType });
+    }
+  }
 
   const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast);
 
@@ -168,14 +183,20 @@ export default function POSCheckoutPage() {
   }
 
   async function handleRefundConfirm(orderId: string, reason: string) {
+    const scope = checkoutScope;
+    if (!scope) return;
     setRefundLoading(true);
     try {
       await posApi.refundOrder(orderId, reason);
-      queryClient.invalidateQueries({ queryKey: ['pos-today-orders'] });
+      const sameScope = useCheckoutRecoveryStore.getState().scope === scope;
+      // A late refund must not fetch the previous tenant using a new login.
+      refreshInventory(scope, sameScope ? 'active' : 'none');
+      if (!sameScope) return;
       setRefundTarget(null);
       setShowOrderLookup(false);
       showToast({ type: 'success', message: '退款已登記，庫存不變' });
     } catch (err: unknown) {
+      if (useCheckoutRecoveryStore.getState().scope !== scope) return;
       const msg = (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message;
       showToast({ type: 'error', message: msg ?? '退款登記失敗，請稍後再試' });
     } finally {
@@ -344,6 +365,17 @@ export default function POSCheckoutPage() {
 
       <div className="pos-body">
         <div className="pos-product-area">
+          {(productsError || recommendationsError || forecastError) && (
+            <div role="alert" style={{ padding: 12, color: 'var(--danger)' }}>
+              商品或庫存資料更新失敗，顯示資訊可能已過期。請重新整理後確認。
+              <button type="button" onClick={() => checkoutScope && refreshInventory(checkoutScope)}>
+                重新整理庫存
+              </button>
+            </div>
+          )}
+          {(fetchingProducts || fetchingRecommendations || fetchingForecast) && (
+            <div role="status" style={{ padding: 12, color: 'var(--text-muted)' }}>商品與庫存更新中...</div>
+          )}
           <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
@@ -415,8 +447,9 @@ export default function POSCheckoutPage() {
           onClose={() => setAdminPinPending(null)}
         />
       )}
-      {showOrderLookup && (
+      {showOrderLookup && checkoutScope && (
         <OrderLookupModal
+          checkoutScope={checkoutScope}
           shiftId={shift.activeShift?.id}
           onRefund={(order) => { setRefundTarget(order); setShowOrderLookup(false); }}
           onClose={() => setShowOrderLookup(false)}
