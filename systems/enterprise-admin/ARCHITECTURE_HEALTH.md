@@ -1,8 +1,44 @@
 # Architecture Health Report — Enterprise Admin System
 
-> Last refreshed: 2026-10-06 (backend sales-stock slice; previous cross-app results remain dated below)
+> Last refreshed: 2026-10-08 (post-merge status/evidence reconciliation; historical audit results retained below)
 > Scope: `systems/enterprise-admin/` (`backend`, `admin-ui`, `pos-ui`, workspace CI/context)  
-> Method: Roadmap A fresh audit from the completed Phase 13 cloud-improvement work; command output and nearest source-of-truth inspection only.
+> Method: GitHub PR/commit/run metadata, saved job logs and nearest source-of-truth documents for the current refresh; earlier audit methods and execution results retain their dated scope. This documentation refresh did not rerun application tests.
+
+---
+
+## 2026-10-08 Post-Merge Status Refresh
+
+Current baseline: merged master [`dfe6b3bfaed6abd6e514eef9423b660bbaa898f3`](https://github.com/skydreamer0/startup/commit/dfe6b3bfaed6abd6e514eef9423b660bbaa898f3), tree `e1dfdd2228a94007cd3e9152eb386b6827aa6606`. All merge timestamps in this section are UTC. This is a status correction for [#52](https://github.com/skydreamer0/startup/issues/52), not a new product audit or release approval. [ROADMAP.md](ROADMAP.md) retains the active work and unchecked parent gates.
+
+### ADR-018 And Checkout Recovery
+
+[ADR-018 — Durable POS checkout command recovery](infrastructure/adr/adr_018_checkout_command_recovery.md) records tenant/kind/command identity, transactionally saved original results, payload-conflict handling and POS frozen-intent/hash-checked recovery. The bounded implementation merged via [#44](https://github.com/skydreamer0/startup/pull/44) on 2026-10-06 13:19:07 UTC as `12c415d5`; durable identity/result recovery is no longer wholly pending. The ADR's original Proposed/Draft status is retained as authoring-stage history, not the current PR state or a deployment approval.
+
+The post-commit lost-response/HTTP-host restart follow-up [#45](https://github.com/skydreamer0/startup/pull/45) merged on 2026-10-06 17:49:56 UTC as `1f7eeb09`. Its accepted head `72eb4713` passed four-job [CI 37506102015](https://github.com/skydreamer0/startup/actions/runs/37506102015) and independent bounded review. Real Chromium → owned HTTP API → isolated PostgreSQL exercised GET and identical-payload resend after SIGKILL/new PID, 2/2 passed; each fixture retained one order/payment/OUT/allocation/command and product/lot 5→3. [Original reproduction/evidence](infrastructure/verification/checkout-command/http-restart/README.md) remains unchanged.
+
+Unique order numbers, business date, exact money, historical costs/refund reconciliation, before-commit HTTP kill, multi-tab/full offline behavior and complete #30/G1 acceptance remain pending. Neither #44 nor #45 establishes in-store deployment or real-store inventory acceptance.
+
+### Other Merged Slices And Their Limits
+
+| Slice | Verified merged state | Evidence boundary |
+| --- | --- | --- |
+| Scanner safety / suppliers / product pagination | [#53](https://github.com/skydreamer0/startup/pull/53), [#54](https://github.com/skydreamer0/startup/pull/54), [#55](https://github.com/skydreamer0/startup/pull/55) and [#56](https://github.com/skydreamer0/startup/pull/56) merged on 2026-10-07; per-slice timestamps and runs are in ROADMAP. Their Draft/pending-review descriptions in original evidence are historical. | Supplier/scanner bounded browser evidence uses intercepted synthetic HTTP. #55's original 253-pass run includes 8 real PostgreSQL pagination cases; later ordinary CI reports those 8 as skipped. #56 product-pagination evidence is component/JSDOM and synthetic HTTP, not browser/real-HTTP business acceptance. |
+| Dependency/lock maintenance | [#61](https://github.com/skydreamer0/startup/pull/61) merged 2026-10-07 07:10:03 UTC as `a8de4233`; four-job [post-merge CI 37585682248](https://github.com/skydreamer0/startup/actions/runs/37585682248) passed. | Backend standalone npm; frontend/shared pnpm; three Docker images and locked Prisma CLI smoke passed. See [dependency standard](infrastructure/standards/dependency_management.md); historical pnpm backend commands below describe earlier environments. |
+| Fixed-subject browser evidence/provenance | [#66](https://github.com/skydreamer0/startup/pull/66) merged 2026-10-08 04:51:47 UTC as `772289d6`. [#59](https://github.com/skydreamer0/startup/pull/59) and [#65](https://github.com/skydreamer0/startup/pull/65) closed as covered, without separate merges. | Exact head `fa967309` / tree `d93c35ec30fac4fbf7ec3232711f006660dbcf3b`: Node22 [CI 37729148349](https://github.com/skydreamer0/startup/actions/runs/37729148349), four jobs passed. Independent bounded review checked the downloaded 41-file artifact, 40 entry hashes, 13 passed cases, 19 PNGs and 13 clean network records. Immutable historical scanner/supplier subjects remain pinned; this is not latest-master integrated app E2E. |
+| Argon2 compatibility integration | [#67](https://github.com/skydreamer0/startup/pull/67) merged 2026-10-08 13:46:45 UTC as `dfe6b3bf`, preserving #66. [#62](https://github.com/skydreamer0/startup/pull/62) is closed/merged; [#64](https://github.com/skydreamer0/startup/pull/64) closed as covered, not separately merged. | Current final-image evidence below supersedes only the earlier local-runtime not-run limitation. All accounts, stock and databases used by the harness are isolated synthetic fixtures. |
+
+### Current Integration Evidence
+
+- [Alpine run 37785360555](https://github.com/skydreamer0/startup/actions/runs/37785360555) checked out feature head `44f8863895ac7577853988b91cfe4609e387619f`, tree `e1dfdd2228a94007cd3e9152eb386b6827aa6606`. Nine baseline checks passed, both mutation controls were rejected, and all 14 named HTTP/PostgreSQL/JWT/stock/refund scenarios passed in the same final image `sha256:d0a9365de22f6c3c22cfba6f857d978685b2a4b26fce230f3eae225b20793912` (Node 22.23.3 / Alpine / argon2 0.45.1 / PostgreSQL 15.19). Stock remained 5→3→3 across sale/refund. The 9 baseline checks use synthetic persistence/JWT; the 14-scenario bridge uses real HTTP, PostgreSQL and signed JWT with synthetic users/data. [Harness scope and reproduction](backend/scripts/argon2-compat/README.md).
+- [Artifact 11553444214](https://github.com/skydreamer0/startup/actions/runs/37785360555/artifacts/11553444214): 10,824-byte ZIP, SHA256 `84df5b7dfa325d2fdaacc833ec06c0f1d76c77986caece9e195969fa79fa5903`, 15 files. #67 records independent final acceptance of the downloaded artifact, all 10 input hashes, runtime/image identities and 9+2+14 outcomes. This refresh reads that acceptance and job logs; it does not claim a new artifact download or runtime rerun.
+- [Ordinary CI 37785360881](https://github.com/skydreamer0/startup/actions/runs/37785360881) passed Agent Context Validation, Backend CI, Admin UI CI and POS UI CI. Its actual checkout was synthetic PR merge `9075a52b2ef7cc72a0d68f0e61cae3059247c31c`, whose GitHub tree equals the feature and merged-master tree above. Raw job logs report Backend **245 passed / 8 skipped**, Admin **67 passed**, POS **193 passed**, and real HTTP restart/lost-response **2 passed**. The 8 skips are existing opt-in `products-pagination.integration.test.ts` cases, not 8 new real-PostgreSQL passes or failures; the original #55 native evidence stays separate.
+- [Post-merge master CI 37787070678](https://github.com/skydreamer0/startup/actions/runs/37787070678) passed the same four jobs for `dfe6b3bf`; its Backend log again reports 245 passed / 8 opt-in skipped. This confirms CI on merged master, without expanding the Alpine or fixed-subject browser evidence scopes.
+
+### Still Open / Reading Historical Evidence
+
+Physical returns/quarantine/partial quantities, bins/reversal/rebuild and real-store reconciliation remain incomplete. [#48 exact lookup](https://github.com/skydreamer0/startup/issues/48), [#49 POS freshness](https://github.com/skydreamer0/startup/issues/49), broader #31 workflows and #37 delivery/deployment gates remain open. Production fail-fast/readiness, backup/restore and final-host acceptance are still required. Merged code, Docker builds and isolated synthetic checks are not evidence of in-store deployment, physical scanner validation, provider payments or complete G0–G7 acceptance.
+
+Everything below is retained historical evidence, including original failures, RED/GREEN counts and old environment limitations. Words such as “current”, “latest” or “pending” inside those dated sections refer to that checkpoint; use this refresh and ROADMAP for today's state. Original ADR/evidence files and raw logs are not rewritten by this status correction.
 
 ---
 
