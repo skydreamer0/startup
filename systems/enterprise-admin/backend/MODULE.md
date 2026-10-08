@@ -76,6 +76,7 @@
 2. Open only the module files referenced by the failing test.
 3. Use broader module inspection only after the local failure path is understood.
 4. Real HTTP restart/lost-response acceptance lives in `../pos-ui/e2e/checkout-http-recovery.spec.ts` with an owned-process harness and `src/__tests__/helpers/checkout-http-fixture.ts`. It requires explicit isolated loopback test databases; reproduction/evidence is in `../infrastructure/verification/checkout-command/http-restart/README.md`. The fixture is excluded from the API build.
+5. Argon2 upgrade acceptance uses `scripts/argon2-compat/README.md` and `.github/workflows/argon2-compat.yml` from repo root. Keep the 9 synthetic-service checks and 2 mutation controls separate from `verify-http.cjs`, which verifies the compiled final Node22/Alpine app over HTTP with real PostgreSQL/JWT, checkout and money-only refunds. The latter permits only its named empty disposable Actions service DB, explicit guarded migrations and synthetic fixtures; never supply a production URL or use the image's default migration-starting command. New-head evidence and the ordinary four-job CI are both required.
 
 ## Commands
 

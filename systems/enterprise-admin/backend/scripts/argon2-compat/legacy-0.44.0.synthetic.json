@@ -1,0 +1,25 @@
+{
+  "synthetic": true,
+  "generator": {
+    "package": "argon2",
+    "version": "0.44.0",
+    "node": "v24.19.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "password": "SYNTHETIC-ONLY-藥局-compat-62!",
+  "cases": [
+    {
+      "name": "default",
+      "hash": "$argon2id$v=19$m=65536,t=3,p=4$aEwaGMNpV0phzeqJpEIBpA$sXiw5dD9C27BWAXIvBZYTKxqkaunZjzHqcMCr9ZZ8Ps"
+    },
+    {
+      "name": "argon2i",
+      "hash": "$argon2i$v=19$m=65536,t=3,p=4$BgXfbJTjmgeD0fV5iC9jXw$3n0F3ws48LnOGiIV+4DQEF/WyJjmDcB6++pqBVTZeL8"
+    },
+    {
+      "name": "argon2d",
+      "hash": "$argon2d$v=19$m=65536,t=3,p=4$OQPz/Ya+fwwcsGKiUkmlgg$6CSGNa8zB1SW30+lMMpnpnGvjroODqQst6I7v8BKgMA"
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+name: Argon2 final Alpine compatibility
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/argon2-compat.yml'
+      - 'systems/enterprise-admin/backend/**'
+
+permissions:
+  contents: read
+
+jobs:
+  final-alpine:
+    if: github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'chore/62-argon2-compatibility-qa' || github.head_ref == 'chore/argon2-master-integration')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: argon2_integration_ci
+        # No published host port. Only the job's disposable service network is used.
+        options: >-
+          --health-cmd "pg_isready -U test -d argon2_integration_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Record exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain)"
+          EVIDENCE="$RUNNER_TEMP/argon2-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir "$EVIDENCE"
+          printf 'EVIDENCE=%s\n' "$EVIDENCE" >> "$GITHUB_ENV"
+          printf '%s\n' "$EXPECTED_HEAD" > "$EVIDENCE/head.txt"
+          git rev-parse 'HEAD^{tree}' > "$EVIDENCE/tree.txt"
+          git rev-list --parents -n 1 HEAD > "$EVIDENCE/parents.txt"
+          git ls-tree HEAD .github/workflows/ci.yml > "$EVIDENCE/preserved-ci.txt"
+          sha256sum .github/workflows/argon2-compat.yml systems/enterprise-admin/backend/Dockerfile systems/enterprise-admin/backend/package{,-lock}.json systems/enterprise-admin/backend/scripts/argon2-compat/* > "$EVIDENCE/input-sha256.txt"
+
+      - name: Build existing final image
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --iidfile "$EVIDENCE/image-id.txt" systems/enterprise-admin/backend 2>&1 | tee "$EVIDENCE/build.log"
+          docker image inspect "$(cat "$EVIDENCE/image-id.txt")" --format '{{json .}}' > "$EVIDENCE/image.json"
+
+      - name: Nine baseline checks in final Alpine
+        id: baseline
+        if: success()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/systems/enterprise-admin/backend/scripts/argon2-compat,dst=/qa,readonly" \
+            --workdir /app --entrypoint node "$(cat "$EVIDENCE/image-id.txt")" \
+            /qa/verify-final.cjs /qa/legacy-0.44.0.synthetic.json --require-alpine \
+            2>&1 | tee "$EVIDENCE/baseline.log"
+
+      - name: Both mutation controls in final Alpine
+        id: mutations
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/systems/enterprise-admin/backend/scripts/argon2-compat,dst=/qa,readonly" \
+            --workdir /app --entrypoint node "$(cat "$EVIDENCE/image-id.txt")" \
+            /qa/mutation-controls.cjs /qa/legacy-0.44.0.synthetic.json --require-alpine \
+            2>&1 | tee "$EVIDENCE/mutations.log"
+
+      - name: Real HTTP PostgreSQL JWT stock and refund in the same final image
+        id: http
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          POSTGRES_NETWORK: ${{ job.services.postgres.network }}
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$POSTGRES_NETWORK"
+          test -n "$POSTGRES_CONTAINER"
+          # These identities come from this job's service context, never a user URL.
+          docker inspect "$POSTGRES_CONTAINER" --format '{{json .NetworkSettings.Networks}}' > "$EVIDENCE/postgres-network.json"
+          docker inspect "$POSTGRES_CONTAINER" --format '{{.Image}}' > "$EVIDENCE/postgres-image.txt"
+          docker run --rm --network "$POSTGRES_NETWORK" --read-only --tmpfs /tmp:rw,noexec,nosuid,size=256m \
+            --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/systems/enterprise-admin/backend/scripts/argon2-compat,dst=/qa,readonly" \
+            --env ARGON2_QA_DATABASE_URL=postgresql://test:test@postgres:5432/argon2_integration_ci \
+            --env ARGON2_QA_SYNTHETIC=isolated-actions-service \
+            --env "EXPECTED_HEAD=$EXPECTED_HEAD" --env "EXPECTED_TREE=$(cat "$EVIDENCE/tree.txt")" \
+            --env "EXPECTED_IMAGE=$(cat "$EVIDENCE/image-id.txt")" \
+            --workdir /app --entrypoint node "$(cat "$EVIDENCE/image-id.txt")" \
+            /qa/verify-http.cjs /qa/legacy-0.44.0.synthetic.json --require-alpine \
+            2>&1 | tee "$EVIDENCE/http.log"
+
+      - name: Require complete evidence
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        env:
+          BASELINE_OUTCOME: ${{ steps.baseline.outcome }}
+          MUTATIONS_OUTCOME: ${{ steps.mutations.outcome }}
+          HTTP_OUTCOME: ${{ steps.http.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum --check "$EVIDENCE/input-sha256.txt"
+          python3 - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ['EVIDENCE'])
+          outcomes = {k: os.environ[k] for k in ['BASELINE_OUTCOME', 'MUTATIONS_OUTCOME', 'HTTP_OUTCOME']}
+          (root / 'outcomes.json').write_text(json.dumps(outcomes, indent=2))
+          assert all(v == 'success' for v in outcomes.values()), outcomes
+          def rows(name):
+              return [json.loads(line) for line in (root / name).read_text().splitlines() if line.startswith('{')]
+          baseline = rows('baseline.log')
+          assert len(baseline) == 1, baseline
+          result = baseline[0]
+          assert result['status'] == 'PASS' and result['checks'] == 9, result
+          assert result['node'].startswith('v22.') and result['alpine'] is True and result['argon2'] == '0.45.1', result
+          mutations = rows('mutations.log')
+          assert len(mutations) == 2 and all(r['rejected'] is True for r in mutations), mutations
+          assert {r['mutation'] for r in mutations} == {'password hash overwrite', 'refresh token before rejection'}, mutations
+          http_rows = rows('http.log')
+          assert len(http_rows) == 1, http_rows
+          http = http_rows[0]
+          expected_checks = [
+              'legacy-default-http-db-refresh-jwt', 'legacy-argon2i-http-db-refresh-jwt', 'legacy-argon2d-http-db-refresh-jwt',
+              'fresh-hash-http-login', 'jwt-signature-expiry-and-token-boundaries', 'protected-pos-context',
+              'rbac-rejects-unprivileged-user', 'checkout-deducts-product-batch-and-persists-allocation',
+              'checkout-replay-does-not-post-twice', 'checkout-conflict-has-no-writes', 'insufficient-stock-rolls-back-command',
+              'money-only-refund-preserves-stock-and-allocation', 'duplicate-refund-has-no-writes',
+              'checkout-replay-after-refund-preserves-original-result',
+          ]
+          assert http['status'] == 'PASS' and http['synthetic'] is True and http['checks'] == expected_checks, http
+          assert http['node'].startswith('v22.') and http['alpine'] is True and http['argon2'] == '0.45.1', http
+          assert http['head'] == os.environ['EXPECTED_HEAD'] == (root / 'head.txt').read_text().strip(), http
+          assert http['tree'] == (root / 'tree.txt').read_text().strip(), http
+          assert http['image'] == (root / 'image-id.txt').read_text().strip(), http
+          assert http['database']['name'] == 'argon2_integration_ci' and http['database']['username'] == 'test', http
+          assert http['database']['version'].startswith('PostgreSQL 15.'), http
+          assert http['stock'] == {'initial': 5, 'afterSale': 3, 'afterRefund': 3}, http
+          (root / 'accepted.json').write_text(json.dumps({'head': http['head'], 'tree': http['tree'], 'image': http['image'], 'baseline': result, 'mutations': mutations, 'http': http}, indent=2))
+          PY
+
+      - name: Preserve isolated QA evidence
+        if: ${{ always() && env.EVIDENCE != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: argon2-alpine-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE }}/
+          if-no-files-found: error
+          retention-days: 7
