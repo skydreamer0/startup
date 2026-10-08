@@ -176,6 +176,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v6
@@ -218,6 +220,44 @@ jobs:
       run: |
         pnpm --filter pos-ui run test:e2e:http-recovery:types
         pnpm --filter pos-ui run test:e2e:http-recovery 2>&1 | tee pos-ui/http-recovery-ci.txt
+
+    - name: Checkout reviewed scanner UI subject
+      uses: actions/checkout@v7
+      with:
+        ref: 6977e76fb764f83c46369d0eb78ca60c2ecaa5c9
+        path: .ui-evidence-subjects/scanner
+        persist-credentials: false
+
+    - name: Checkout reviewed supplier UI subject
+      uses: actions/checkout@v7
+      with:
+        ref: 2b2d02a4cd54ed393f32e08ee60bdb35183cdb3d
+        path: .ui-evidence-subjects/suppliers
+        persist-credentials: false
+
+    - name: Install locked UI subject dependencies
+      run: |
+        pnpm --dir "$GITHUB_WORKSPACE/.ui-evidence-subjects/scanner/systems/enterprise-admin" install --frozen-lockfile
+        pnpm --dir "$GITHUB_WORKSPACE/.ui-evidence-subjects/suppliers/systems/enterprise-admin" install --frozen-lockfile
+
+    - name: Reviewed scanner and supplier browser evidence
+      id: reviewed_ui
+      shell: bash
+      env:
+        UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      run: node pos-ui/e2e/ui-evidence/run.mjs
+
+    - name: Preserve reviewed UI browser evidence
+      if: ${{ always() && steps.reviewed_ui.outputs.evidence_dir != '' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: reviewed-ui-browser-evidence
+        path: ${{ steps.reviewed_ui.outputs.evidence_dir }}
+        include-hidden-files: true
+        if-no-files-found: error
 
     - name: Preserve synthetic recovery evidence
       if: always()
