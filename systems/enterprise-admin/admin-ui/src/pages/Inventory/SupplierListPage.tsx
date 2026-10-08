@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isAxiosError } from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi, Supplier } from '../../api/inventory';
 
@@ -39,12 +40,21 @@ export default function SupplierListPage() {
     const [saving, setSaving] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data: suppliersData, isLoading: loading } = useQuery({
+    const {
+        data: suppliersData, isPending: loading, isFetching, isError: failed, error, refetch,
+    } = useQuery({
         queryKey: ['inventory', 'suppliers'],
         queryFn: () => inventoryApi.getSuppliers(),
+        retry: false,
     });
 
-    const suppliers: Supplier[] = suppliersData?.data || [];
+    const suppliers: Supplier[] = suppliersData ?? [];
+    const supplierStatus = isAxiosError(error) ? error.response?.status : undefined;
+    const supplierErrorMessage = supplierStatus === 403
+        ? 'You do not have permission to view suppliers (403).'
+        : supplierStatus
+            ? `Unable to load suppliers (HTTP ${supplierStatus}).`
+            : 'Unable to load suppliers. Check your connection and retry.';
 
     function openCreate() {
         setEditSupplier(null);
@@ -108,15 +118,27 @@ export default function SupplierListPage() {
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Suppliers Management</h1>
-                    <p className="page-subtitle">{suppliers.length} active suppliers</p>
+                    <p className="page-subtitle">
+                        {suppliersData
+                            ? failed ? `Last loaded: ${suppliers.length} suppliers` : `${suppliers.length} active suppliers`
+                            : loading ? 'Loading suppliers...' : 'Supplier list unavailable'}
+                    </p>
                 </div>
                 <button className="btn btn-primary" onClick={openCreate}>Add Supplier</button>
             </header>
 
+            {failed && (
+                <div role="alert">
+                    <p>{supplierErrorMessage}</p>
+                    <button type="button" className="btn btn-ghost" disabled={isFetching}
+                        onClick={() => { void refetch(); }}>Retry suppliers</button>
+                </div>
+            )}
+
             <div className="table-container">
                 {loading ? (
-                    <div className="shimmer" style={{ height: '300px' }}></div>
-                ) : (
+                    <div role="status">Loading suppliers...</div>
+                ) : failed && suppliers.length === 0 ? null : (
                     <table className="table">
                         <thead>
                             <tr>

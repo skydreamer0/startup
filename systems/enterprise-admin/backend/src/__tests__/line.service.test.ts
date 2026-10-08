@@ -27,10 +27,12 @@ const mockMulticast = vi.fn().mockResolvedValue({});
 
 vi.mock('@line/bot-sdk', () => ({
     messagingApi: {
-        MessagingApiClient: vi.fn().mockImplementation(() => ({
-            pushMessage: mockPushMessage,
-            multicast: mockMulticast,
-        })),
+        MessagingApiClient: vi.fn().mockImplementation(function () {
+            return {
+                pushMessage: mockPushMessage,
+                multicast: mockMulticast,
+            };
+        }),
     },
     webhook: {},
     validateSignature: vi.fn(() => true),

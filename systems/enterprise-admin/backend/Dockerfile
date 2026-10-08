@@ -1,9 +1,10 @@
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
 # Install native dependencies for Prisma
 RUN apk add --no-cache openssl python3 make g++
+RUN npm install --global npm@11.21.0
 
 COPY package*.json ./
 COPY prisma ./prisma/
@@ -18,11 +19,12 @@ RUN npx prisma generate
 RUN npm run build
 
 # --- Production Stage ---
-FROM node:18-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
 RUN apk add --no-cache openssl
+RUN npm install --global npm@11.21.0
 
 COPY package*.json ./
 COPY prisma ./prisma/
@@ -39,4 +41,4 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 EXPOSE 3000
 
 # Run migrations and start server
-CMD npx prisma migrate deploy && npm start
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node dist/server.js"]

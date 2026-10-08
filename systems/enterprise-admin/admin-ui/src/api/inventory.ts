@@ -1,12 +1,12 @@
 import api from './client';
-import type { Product, Supplier } from '@pharmasaas/types';
+import type { ApiSuccess, InventoryProductPage, Product, Supplier } from '@pharmasaas/types';
 
 export type { Product, Supplier };
 
 export const inventoryApi = {
     // Suppliers
-    getSuppliers: async () => {
-        const { data } = await api.get('/inventory/suppliers');
+    getSuppliers: async (): Promise<Supplier[]> => {
+        const { data } = await api.get<ApiSuccess<Supplier[]>>('/inventory/suppliers');
         return data.data;
     },
     getSupplierById: async (id: string) => {
@@ -23,8 +23,8 @@ export const inventoryApi = {
     },
 
     // Products
-    getProducts: async (params?: { lowStock?: string; page?: string }) => {
-        const { data } = await api.get('/inventory/products', { params });
+    getProducts: async (params?: { lowStock?: string; page?: string }): Promise<InventoryProductPage> => {
+        const { data } = await api.get<ApiSuccess<InventoryProductPage>>('/inventory/products', { params });
         return data.data;
     },
     getProductById: async (id: string) => {

@@ -1,0 +1,162 @@
+{
+  "base": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+  "parents": [
+    "283eec62a0499b0aeeee240ba0ec06064363ee77",
+    "7b6e5276d74dc19a6c2adc28e659ce823912b945"
+  ],
+  "pr_base": "fix/admin-supplier-list-state",
+  "54_files": 10,
+  "55_files": 11,
+  "union_files": 20,
+  "overlap": [
+    "systems/enterprise-admin/ROADMAP.md"
+  ],
+  "files": [
+    {
+      "path": "systems/enterprise-admin/ROADMAP.md",
+      "from_54_blob": "4a8320cd28d28bbc8763ca67a90d7e9ceebc47a7",
+      "from_55_blob": "785fba77962009ba9f96d58eccfc204ac5b727fc",
+      "union_blob": "38d81c2307c1a5eca416868f487caa7306e23ede",
+      "resolution": "exact two evidence lines in original order; checkbox/base text preserved"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+      "from_54_blob": "9a6194f3f50cfe789f2e54f965a2f140e92b36a5",
+      "from_55_blob": null,
+      "union_blob": "9a6194f3f50cfe789f2e54f965a2f140e92b36a5",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+      "from_54_blob": "fde4b0e8386c1ef9a061b8ad903fa169196136d9",
+      "from_55_blob": null,
+      "union_blob": "fde4b0e8386c1ef9a061b8ad903fa169196136d9",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/api/inventory.ts",
+      "from_54_blob": "c7fcff26110a0b37d5a941c1cbda68c41ef082c1",
+      "from_55_blob": null,
+      "union_blob": "c7fcff26110a0b37d5a941c1cbda68c41ef082c1",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+      "from_54_blob": "b1cb609cbe8e20f3a90bde3836254cb34f69e14d",
+      "from_55_blob": null,
+      "union_blob": "b1cb609cbe8e20f3a90bde3836254cb34f69e14d",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/SupplierListPage.tsx",
+      "from_54_blob": "67fd182bb59aa4d4de5d2f50140630197fa6805d",
+      "from_55_blob": null,
+      "union_blob": "67fd182bb59aa4d4de5d2f50140630197fa6805d",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/MODULE.md",
+      "from_54_blob": null,
+      "from_55_blob": "28dd8721be79444cbcc622011699c049eb94ec8f",
+      "union_blob": "28dd8721be79444cbcc622011699c049eb94ec8f",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts",
+      "from_54_blob": null,
+      "from_55_blob": "8a4334fd8cd88219d09528c1f0dc270d838f9ad4",
+      "union_blob": "8a4334fd8cd88219d09528c1f0dc270d838f9ad4",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts",
+      "from_54_blob": null,
+      "from_55_blob": "c9f45ea67292b5111b97a9b18751e17d653a8b22",
+      "union_blob": "c9f45ea67292b5111b97a9b18751e17d653a8b22",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "from_54_blob": null,
+      "from_55_blob": "d7c92f1518e3b283ee599128114688126a37ce65",
+      "union_blob": "d7c92f1518e3b283ee599128114688126a37ce65",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/api/api_spec.md",
+      "from_54_blob": null,
+      "from_55_blob": "7f42368aed3f054b945be5a6bf5f4182e7404f0b",
+      "union_blob": "7f42368aed3f054b945be5a6bf5f4182e7404f0b",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/admin-suppliers/README.md",
+      "from_54_blob": "9e57b986dc4d61966f423b1cb842961d56003f01",
+      "from_55_blob": null,
+      "union_blob": "9e57b986dc4d61966f423b1cb842961d56003f01",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/admin-suppliers/checks.txt",
+      "from_54_blob": "1e97650ccbf2246f3604522149c6083ce69d28a0",
+      "from_55_blob": null,
+      "union_blob": "1e97650ccbf2246f3604522149c6083ce69d28a0",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/admin-suppliers/raw-manifest.json",
+      "from_54_blob": "8b3df4c1ada6b24c9d1a694b21c258edded5b338",
+      "from_55_blob": null,
+      "union_blob": "8b3df4c1ada6b24c9d1a694b21c258edded5b338",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/admin-suppliers/raw.zip",
+      "from_54_blob": "675bd432a25881ce8a6b25a7d9411c8b173f4ded",
+      "from_55_blob": null,
+      "union_blob": "675bd432a25881ce8a6b25a7d9411c8b173f4ded",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/README.md",
+      "from_54_blob": null,
+      "from_55_blob": "f61242d3b0d0e99bfdcec84ca0e9eb7a03d3c2fc",
+      "union_blob": "f61242d3b0d0e99bfdcec84ca0e9eb7a03d3c2fc",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/early-manifest.json",
+      "from_54_blob": null,
+      "from_55_blob": "5a98f550e0cd25211a98a8c24eabda95a2546ec3",
+      "union_blob": "5a98f550e0cd25211a98a8c24eabda95a2546ec3",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/early-raw.zip",
+      "from_54_blob": null,
+      "from_55_blob": "bae073a75d11f70d5fad3f2ea326a4edfad96b9e",
+      "union_blob": "bae073a75d11f70d5fad3f2ea326a4edfad96b9e",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/native-manifest.json",
+      "from_54_blob": null,
+      "from_55_blob": "405a18521b02eeec603a0e9f1918f1b7ed2e32b4",
+      "union_blob": "405a18521b02eeec603a0e9f1918f1b7ed2e32b4",
+      "resolution": "exact inherited blob"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/products-low-stock-pagination/native-raw.zip",
+      "from_54_blob": null,
+      "from_55_blob": "409ba6d43e897348dbc897a4f222e63dad1e4ac2",
+      "union_blob": "409ba6d43e897348dbc897a4f222e63dad1e4ac2",
+      "resolution": "exact inherited blob"
+    }
+  ],
+  "union_checkpoint": "8c1384e0373078dcda0f683a39bf0ca87a8e2c05",
+  "union_tree": "e532ff04c32b0fe4c5f4ff9247c3221c02fca729",
+  "actual_parents": [
+    "283eec62a0499b0aeeee240ba0ec06064363ee77",
+    "7b6e5276d74dc19a6c2adc28e659ce823912b945"
+  ]
+}

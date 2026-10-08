@@ -1,6 +1,11 @@
 packages:
   - '.'
   - 'packages/*'
-  - 'backend'
   - 'admin-ui'
   - 'pos-ui'
+
+# esbuild needs its native binary installation. MSW's install notice is optional.
+onlyBuiltDependencies:
+  - esbuild
+ignoredBuiltDependencies:
+  - msw

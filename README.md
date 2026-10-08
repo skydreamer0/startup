@@ -71,11 +71,11 @@
 管理後台   admin-ui ─┘   backend
 ```
 
-前端使用 **React 19／Vite 6**，後端使用 **Express 5／Prisma 6**。程式集中於 `systems/enterprise-admin`，以 pnpm workspace 管理；`packages/types` 提供兩個前端共用型別。[查看模組導覽](systems/enterprise-admin/CONTEXT.md)
+前端使用 **React 19／Vite 6**，後端使用 **Express 5／Prisma 6**。程式集中於 `systems/enterprise-admin`；前端及 `packages/types` 由 pnpm workspace 管理，Backend 保留獨立 npm 安裝邊界。[查看依賴管理規則](systems/enterprise-admin/infrastructure/standards/dependency_management.md)
 
 ## 🚀 快速開始
 
-需要 **Node.js 20+、pnpm 10、Docker Compose**，以及此儲存庫的存取權限。目前使用開發環境啟動流程，完整設定與指令如下。
+需要 **Node.js 22（至少 22.12）、npm 11.21.0、pnpm 10.34.6、Docker Compose**，以及此儲存庫的存取權限。目前使用開發環境啟動流程，完整設定與指令如下。
 
 <details>
 <summary><strong>展開本機設定與啟動步驟</strong></summary>
@@ -87,6 +87,8 @@
 ```bash
 git clone https://github.com/skydreamer0/startup.git
 cd startup/systems/enterprise-admin
+npm install --global npm@11.21.0 pnpm@10.34.6
+npm --prefix backend ci
 pnpm install --frozen-lockfile
 docker compose up -d postgres
 ```
@@ -117,9 +119,9 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 以下指令仍從 `systems/enterprise-admin` 執行。請使用可重建的本機開發資料庫，並先確認 PostgreSQL 已就緒。
 
 ```bash
-pnpm --filter startup-backend run db:generate
-pnpm --filter startup-backend run db:migrate
-pnpm --filter startup-backend run db:seed
+npm --prefix backend run db:generate
+npm --prefix backend run db:migrate
+npm --prefix backend run db:seed
 ```
 
 開發用帳號與 POS 員工代碼由 [`backend/prisma/seed.ts`](systems/enterprise-admin/backend/prisma/seed.ts) 建立。Seed 僅供開發及測試，請勿將範例帳號、密碼或資料直接用於正式環境；`.env` 不應提交至 Git。
@@ -129,7 +131,7 @@ pnpm --filter startup-backend run db:seed
 開啟三個終端機，皆切換至 `systems/enterprise-admin`，分別執行：
 
 ```bash
-pnpm --filter startup-backend run dev  # API       http://localhost:3000
+npm --prefix backend run dev          # API       http://localhost:3000
 pnpm --filter admin-ui run dev         # 管理後台  http://localhost:5173
 pnpm --filter pos-ui run dev           # 門市 POS  http://localhost:5174
 ```

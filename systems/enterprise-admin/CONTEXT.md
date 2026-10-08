@@ -32,6 +32,7 @@
 | What API contract should code follow? | `infrastructure/api/api_spec.md` |
 | What database models exist? | `backend/prisma/schema.prisma` |
 | Which workflow and review rules apply? | `infrastructure/standards/` |
+| Which package manager and lockfile apply? | `infrastructure/standards/dependency_management.md`: standalone backend npm, frontend/shared pnpm workspace |
 
 ## Reading rules
 

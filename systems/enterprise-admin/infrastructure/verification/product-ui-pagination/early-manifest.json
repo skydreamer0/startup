@@ -1,0 +1,31 @@
+{
+  "archive": {
+    "file": "early-raw.zip",
+    "bytes": 4457,
+    "sha256": "b4c35dd25da435bf8eb78b03955af0bfe2689590cb1fa71e3ac3259d4b20cb8e"
+  },
+  "entries": [
+    {
+      "file": "01-pagination-red.txt",
+      "bytes": 69259,
+      "sha256": "e51d43df941914d3c366c34541dbb4b30fcfa97a14e513330d114a2f510253a0",
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "exit_code": 1,
+      "tracked_head": "8c1384e0373078dcda0f683a39bf0ca87a8e2c05",
+      "working_tree_stage": "union production source; first tracer test"
+    },
+    {
+      "file": "02-pagination-green.txt",
+      "bytes": 600,
+      "sha256": "0741cac2764eab46e69d2bc9460f53536c95e1c07ba778df33ca45f3f5f0d220",
+      "command": "DEBUG_PRINT_LIMIT=1800 npm test -- src/__tests__/productPagination.test.tsx",
+      "exit_code": 0,
+      "tracked_head": "8c1384e0373078dcda0f683a39bf0ca87a8e2c05",
+      "working_tree_stage": "uncommitted minimal page controls/key/total; first tracer test"
+    }
+  ],
+  "source_sha256": {
+    "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx": "81c758b3a9044d9e9799da3583ae8be7ba73564e3298cefe946751082e8bbe61",
+    "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx": "d348849cede1c80f3797ca4894301f62f086d9c194dd154a173762e2777222a4"
+  }
+}

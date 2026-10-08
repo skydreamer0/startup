@@ -1,0 +1,135 @@
+{
+  "base": "1f7eeb092af0fd66ca4f3533939c44662020c9d8",
+  "entries": [
+    {
+      "path": "00-pnpm-startup-failure.txt",
+      "bytes": 2907,
+      "sha256": "843f05119ac445e2b6839de306c294c4f9bd6b1638c8e2f4fbb72decbec6af24"
+    },
+    {
+      "path": "01-exact-red.txt",
+      "bytes": 2262,
+      "sha256": "1d505332079e12d78aa8b81cf363f964c482723e0eed6c2a301b5fe3c98a9af4"
+    },
+    {
+      "path": "02-exact-green.txt",
+      "bytes": 597,
+      "sha256": "325c1f2980bdb319f66533e9bbdb4b892744297ed7908480f5a4319171801d00"
+    },
+    {
+      "path": "03-unmount-red.txt",
+      "bytes": 2235,
+      "sha256": "c5e467235eba8c471e35e55974154e1d5b09f7755b0678904951d110c88d3465"
+    },
+    {
+      "path": "04-unmount-green.txt",
+      "bytes": 597,
+      "sha256": "658dc741e35a46ab672f53a426bbe02c37d4685d9917decab86c5cb2e9cf38ab"
+    },
+    {
+      "path": "05-rejection-red.txt",
+      "bytes": 5814,
+      "sha256": "291b90b1fa953f4c7ba1f6beddf4b3ea307fbee898379a43d0bc9622a65beb91"
+    },
+    {
+      "path": "06-lifecycle-red.txt",
+      "bytes": 9991,
+      "sha256": "ac249df43635baee44fdeb7732a48e67bfabe91a3fbfbc6152999f9d13b1c03f"
+    },
+    {
+      "path": "07-lifecycle-green.txt",
+      "bytes": 781,
+      "sha256": "f2b261cffee83bb6db1d0e8318ab76d8d74f4659fb2604d736441887bff605fe"
+    },
+    {
+      "path": "08-focused-green.txt",
+      "bytes": 780,
+      "sha256": "82429448d74b88f48f996e2f99e363f4179f1893b89b34baebab6f63eaf25129"
+    },
+    {
+      "path": "09-baseline-full-red.txt",
+      "bytes": 31220,
+      "sha256": "ff204bfaec96eb18bb551bd46e27cbdb5da8c5431e50072136f52361213ff20c"
+    },
+    {
+      "path": "10-pos-full-green.txt",
+      "bytes": 1937,
+      "sha256": "9b055122cf3218d09322f395c515b6fbf1b42d61f68c68fcb1a1faf7c08c1c0d"
+    },
+    {
+      "path": "11-pos-type-build.txt",
+      "bytes": 583,
+      "sha256": "929fd9dff333e89a083a02c30b7e13eaa7d98b2a41eb4ff72ef3618270b3eb2c"
+    },
+    {
+      "path": "12-baseline-final-red.txt",
+      "bytes": 31215,
+      "sha256": "aef56d0f5ed091d38fa17a5e114b47f448f224b17c38011a523906937e4ad047"
+    },
+    {
+      "path": "13-context-diff.txt",
+      "bytes": 239,
+      "sha256": "0ed0e6979c01da4d52b5cdf07e78c18740b13bf4da4efd80e03f500b2f9422d5"
+    },
+    {
+      "path": "14-staged-raw-whitespace-failure.txt",
+      "bytes": 2766,
+      "sha256": "a6326bf530bbf5a25625d56718c90951c0c15f314cc9f0677a901343137a1875"
+    },
+    {
+      "path": "16-focused-input-wedge-red.txt",
+      "bytes": 4254,
+      "sha256": "b6ee0eb75629b5e387667b8103f8e92b0510e34461b18ec04f47d6d7f11b2c7a"
+    },
+    {
+      "path": "17-user-event-wedge-red.txt",
+      "bytes": 4257,
+      "sha256": "3a2f89bf5e597b7c7a37b9086ea02d17ce334713d894708c37537bee4735ee62"
+    },
+    {
+      "path": "18-focused-review-red.txt",
+      "bytes": 4347,
+      "sha256": "97d2296dbb2b3eae591e737e3220b72b29a7aa9bf1401c43acd78f77d7d1b392"
+    },
+    {
+      "path": "19-blocked-type-build.txt",
+      "bytes": 583,
+      "sha256": "6edcae6d34341cd4062fcc9db3fb3feb7c5d121d8ecd2b4f6c5b963f68e0b67b"
+    },
+    {
+      "path": "20-sequence-and-noop-red.txt",
+      "bytes": 6456,
+      "sha256": "6b4273dc0acf3061d9cf65cdc5246c80dab366277f0141caa18b40f1e10935e0"
+    },
+    {
+      "path": "21-sequence-first-green.txt",
+      "bytes": 703,
+      "sha256": "f6a70ca862f8f86e219b181cae64692e83198d1b953b4460e9eec8ed939a1295"
+    },
+    {
+      "path": "22-sequence-boundaries-focused.txt",
+      "bytes": 7390,
+      "sha256": "403c053a7d08f6aab26649de70daa2d9ee6e3c2aa5d1269b23d1092430c87f4c"
+    },
+    {
+      "path": "23-sequence-boundaries-green.txt",
+      "bytes": 880,
+      "sha256": "aa3a19fa38469cd6840a79d40a063409a46ebdec663b5b82d6474cc090794c5d"
+    },
+    {
+      "path": "24-pos-full-sequence-green.txt",
+      "bytes": 1935,
+      "sha256": "9166bd242d0bc32b9f7af3261b210b78e132fb18f389647bfeab442cc7090e28"
+    },
+    {
+      "path": "25-pos-sequence-type-build.txt",
+      "bytes": 583,
+      "sha256": "33aef66648208fef8d81815898acc31901c77609f3ccd28d935070182cfd5f87"
+    },
+    {
+      "path": "26-sequence-context.txt",
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    }
+  ]
+}

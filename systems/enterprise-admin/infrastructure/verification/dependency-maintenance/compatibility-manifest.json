@@ -1,0 +1,68 @@
+{
+  "failedCiRun": 37584372262,
+  "failedCiHead": "931a9a1a2c1d888595fa72a010d4f2cefa328096",
+  "jobConclusions": {
+    "Backend CI": "failure",
+    "POS UI CI": "failure"
+  },
+  "localLineBefore": {
+    "passed": 1,
+    "failed": 5
+  },
+  "localLineAfter": {
+    "passed": 6,
+    "failed": 0
+  },
+  "entries": [
+    {
+      "path": "initial-backend-ci.txt",
+      "sha256": "0a9f2235b5a70fa20fdffcb86daa69af343e448b266e2845c689f15916d3300a",
+      "bytes": 148588
+    },
+    {
+      "path": "initial-backend-ci.json",
+      "sha256": "5eb6c7363484a03d6d24d899b3ca348da2a6809b65543159e6d0af7bee8ca541",
+      "bytes": 416
+    },
+    {
+      "path": "initial-pos-ci.txt",
+      "sha256": "4f5bac251162a9804021416a30529ce0c98f6aeeb962f0628ddd3ee5171124af",
+      "bytes": 82493
+    },
+    {
+      "path": "initial-pos-ci.json",
+      "sha256": "1b68b549d955cd906276b8ed9b9f44bbe9daaf6c33a1cbf922a4fc77666c8a16",
+      "bytes": 412
+    },
+    {
+      "path": "line-constructor-before.txt",
+      "sha256": "27c163cd784c407a483e9112ae758d238744093639dffa03656c4c460fbe963d",
+      "bytes": 5732
+    },
+    {
+      "path": "line-constructor-before.json",
+      "sha256": "9cb0855f3cc7f8735f7c0feeab339571ae3e021e6937a67042f1d3b6fecb2487",
+      "bytes": 411
+    },
+    {
+      "path": "line-constructor-after.txt",
+      "sha256": "8cf9bc33897c187be8c21f9a5b6ebfff9df6c2c43f0d81b394b0784f7ede8dc0",
+      "bytes": 253
+    },
+    {
+      "path": "line-constructor-after.json",
+      "sha256": "8536f47a619d329abc693c15fdbfb8345c6826cdc16837fcb306722ae7628aa3",
+      "bytes": 411
+    }
+  ],
+  "correctedSourceFiles": [
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/line.service.test.ts",
+      "sha256LfUtf8": "50537f0b7f0dc6b305ec9c772bb76bea6504fb9d48a5a858977e7b96baa45a8e"
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/Dockerfile",
+      "sha256LfUtf8": "14171edcd03673fc76d9c6ca5d21ad71427eee17c7ed68e85497c0d9f1ae2801"
+    }
+  ]
+}
