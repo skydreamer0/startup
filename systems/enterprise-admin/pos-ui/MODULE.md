@@ -58,7 +58,7 @@
 2. Open only referenced POS files.
 3. Read backend docs/source only if the failure crosses the API boundary.
 4. For the pinned scanner/supplier browser acceptance suite, use
-   `e2e/ui-evidence.config.ts` and
+   `e2e/ui-evidence.config.mts` and
    `../infrastructure/verification/reviewed-ui-browser/README.md`. This suite
    verifies immutable UI subjects with guarded synthetic HTTP; its report,
    network/key-event evidence and screenshots share `test-results-ui-evidence/`.
@@ -90,3 +90,4 @@ See `../infrastructure/verification/checkout-command/http-restart/README.md`.
 - Do not read admin UI unless the task involves shared behavior or shared components.
 - Do not change backend assumptions without checking the API spec and relevant backend module.
 - Do not infer POS roadmap completion from UI files; read `../ROADMAP.md` first.
+

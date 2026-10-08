@@ -78,6 +78,7 @@ export default async function setup() {
   const qaInputs = [
     'systems/enterprise-admin/pos-ui/e2e/ui-evidence',
     'systems/enterprise-admin/pos-ui/e2e/ui-evidence.config.ts',
+    'systems/enterprise-admin/pos-ui/e2e/ui-evidence.config.mts',
     'systems/enterprise-admin/pos-ui/tsconfig.ui-evidence.json',
   ];
   if (git(root, 'diff', '--name-only', qaHead, checkoutHead, '--', ...qaInputs)) {

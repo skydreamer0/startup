@@ -15,7 +15,7 @@ try {
   try {
     for (const [phase, args] of [
       ['typecheck', ['exec', 'tsc', '--project', 'tsconfig.ui-evidence.json']],
-      ['playwright', ['exec', 'playwright', 'test', '--config', 'e2e/ui-evidence.config.ts']],
+      ['playwright', ['exec', 'playwright', 'test', '--config', 'e2e/ui-evidence.config.mts']],
     ]) {
       const result = await owner.run('pnpm', args, { cwd: resolve(here, '../..'), env: run.env, stdio: ['ignore', log, log] });
       phases[phase] = result;

@@ -148,3 +148,12 @@ the Chromium 8-bit RGB/RGBA format, not interpreted as proof of screenshot conte
 The consumer still checks the actual runner/job outcome, exact source/subject
 identities, nonce and complete file set/hashes. A nonce is freshness correlation,
 not cryptographic attestation against a malicious runner or post-run mutation.
+
+
+## Node20 / Playwright module boundary
+
+The dedicated config is `ui-evidence.config.mts`, explicitly ESM. Its native ESM
+run-artifacts helper must not be imported through the CommonJS-transformed `.ts`
+config loader. The runner and typecheck include point to the same `.mts` config;
+the submitted-input guard covers both old and new config paths. No application
+package module mode, dependencies, receipt algorithm or network guard is changed.

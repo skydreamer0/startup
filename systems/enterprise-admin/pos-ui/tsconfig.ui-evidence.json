@@ -4,5 +4,5 @@
     "strict": true, "noEmit": true, "esModuleInterop": true, "skipLibCheck": true,
     "types": ["node"], "lib": ["ES2022", "DOM"]
   },
-  "include": ["e2e/ui-evidence.config.ts", "e2e/ui-evidence/**/*.ts"]
+  "include": ["e2e/ui-evidence.config.mts", "e2e/ui-evidence/**/*.ts"]
 }
