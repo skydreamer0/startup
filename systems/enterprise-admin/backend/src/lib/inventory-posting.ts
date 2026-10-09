@@ -6,6 +6,7 @@ import { AppError } from './errors';
 import { requireTenantId } from './tenant.context';
 import { deductSaleStock } from './sale-stock';
 import { saleExpiryCutoff } from './batch-expiry';
+import { systemClock, type Clock } from './business-day';
 
 interface SaleLine {
   productId: string;
@@ -55,7 +56,7 @@ export class InventoryPostingService {
     return batch;
   }
 
-  static async debitSale(tx: Pick<typeof prisma, 'product' | 'productBatch'>, items: readonly SaleLine[]) {
+  static async debitSale(tx: Pick<typeof prisma, 'product' | 'productBatch'>, items: readonly SaleLine[], clock: Clock = systemClock) {
     const tenantId = requireTenantId();
     const products = await deductSaleStock(tx, items);
     const lines: DebitedLine[] = [];
@@ -64,7 +65,7 @@ export class InventoryPostingService {
       const batches = await tx.productBatch.findMany({
         where: {
           tenantId, productId: item.productId, quantity: { gt: 0 },
-          status: 'RELEASED', expiryDate: { gte: saleExpiryCutoff() },
+          status: 'RELEASED', expiryDate: { gte: saleExpiryCutoff(clock()) },
         },
         orderBy: [{ expiryDate: 'asc' }, { receivedAt: 'asc' }, { id: 'asc' }],
       });
@@ -79,7 +80,7 @@ export class InventoryPostingService {
           where: {
             id: batch.id, tenantId, productId: item.productId,
             quantity: { gte: quantity }, status: 'RELEASED',
-            expiryDate: { equals: batch.expiryDate, gte: saleExpiryCutoff() },
+            expiryDate: { equals: batch.expiryDate, gte: saleExpiryCutoff(clock()) },
           },
           data: { quantity: { decrement: quantity } },
         });

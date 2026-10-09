@@ -239,18 +239,30 @@ input { font-family: inherit; }
 .pos-category-nav::-webkit-scrollbar { display: none; }
 
 .pos-category-btn {
+  min-height: 44px;
+  min-width: 44px;
   padding: 8px 18px;
   border-radius: var(--radius-full);
   border: 1.5px solid var(--border);
   background: var(--bg-card);
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   white-space: nowrap;
   transition: all var(--transition-fast);
   flex-shrink: 0;
 }
+.pos-category-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.pos-category-status {
+  padding: 8px 20px;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+.pos-category-status[role="alert"] { color: var(--danger); }
 .pos-category-btn:hover {
   border-color: var(--accent-border);
   color: var(--accent);
@@ -302,4 +314,28 @@ input { font-family: inherit; }
     border-top: 2px solid var(--border);
   }
   .pos-product-area { padding-bottom: 50vh; }
+}
+
+/* A bounded chooser stays above the cart, including short/touch viewports.
+   Its list scrolls independently; the cancellation control remains visible. */
+.pos-barcode-candidates {
+  position: fixed;
+  top: 72px;
+  left: 16px;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 88px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+}
+
+/* Keep the existing topbar horizontally scrollable instead of widening the
+   mobile layout viewport and shrinking all fixed controls. */
+.pos-topbar, .pos-statusbar { min-width: 0; overflow-x: auto; }
+
+@media (max-width: 767px) {
+  /* A short cart must scroll its controls rather than clip its checkout footer. */
+  .pos-cart { width: 100vw; }
+  .pos-cart-panel { overflow-y: auto; }
 }

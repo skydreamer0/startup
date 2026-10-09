@@ -56,9 +56,18 @@
 
 1. Start with `src/hooks/useBarcodeScanner.ts`, its nearest test, `POSCheckoutPage` and `cartStore`. Automatic additions require one exact string match on SKU or a barcode already present in supplied candidates. Do not treat a single fuzzy search result as exact.
 2. The hook keeps valid concurrent scan intents through product/callback rerenders. Search onChange passes its native event: matched insertText continues an unfinished keyboard source and pauses earlier effects; Enter completes it, while paste/delete/direct changes or a gap >300ms cancel older intents. Clear/hold/recall advance the in-memory draft revision. Pending/unknown/conflict or authenticated checkout scope changes permanently invalidate older requests and partial input, including ABA; unmount suppresses their results/errors. Scanner-driven search clearing does not cancel another valid scan.
-3. Keep `barcodeService` timing/hardware policy unchanged. Actual Product has no barcode field; current `/pos/products` is a name/SKU substring search limited to 100. Optional barcode fixtures verify conditional matching only, not complete manufacturer-barcode lookup support.
+3. Keep `barcodeService` timing/hardware policy unchanged. Actual Product has no barcode field; scanner fallback now uses literal tenant-scoped `/pos/products/lookup?code=...` via `api/productLookup.ts`. Ordinary `/pos/products` remains a name/SKU substring search limited to 100. `BarcodeCandidates` is ephemeral explicit selection UI; the scanner hook owns cancellation and revalidates the callback. See `../infrastructure/api/pos-product-lookup.md`. Optional barcode fixtures verify conditional matching only, not complete manufacturer-barcode lookup support.
 4. See `../infrastructure/verification/pos-scanner/README.md` for RED/GREEN unit evidence and untested browser/native-input/hardware boundaries. Stock freshness, responsive layout and broader #31/G0 remain separate.
 5. Historical focused-input RED at `8824dd4` is retained. Source/completion/cancellation correction passes 44 scanner cases, focused 91/91 and full POS 193/193 with type/build. Independent review is pending; these are synthetic JSDOM/unit results, not browser/hardware or full scanner acceptance. A capped quantity must not claim +1 success.
+
+### Scanner keyboard ownership
+
+Native controls own their activation keys: page shortcuts ignore interactive targets
+and already-prevented events; the decoder excludes non-input controls while retaining
+search-input scans. A completed scan consumes Enter before the page checkout shortcut.
+`POSCheckoutPage.scanner-keyboard.test.tsx` combines the real page, scanner hook,
+decoder and cart with synthetic API/shift adapters to exercise Tab, Enter and Space.
+It is not browser or physical scanner evidence.
 
 ### Debug POS test failure
 
@@ -71,6 +80,29 @@
    `../infrastructure/verification/reviewed-ui-browser/README.md`. This suite
    verifies immutable UI subjects with guarded synthetic HTTP; its report,
    network/key-event evidence and screenshots share `test-results-ui-evidence/`.
+
+### Verify current SKU browser behavior
+
+Use `e2e/sku-acceptance/run.mjs` only through the exact-head ordinary CI job.
+It builds this submitted POS app and owns a loopback Vite preview with no API proxy;
+BrowserContext HTTP/WebSocket guards cover all pages/popups and reject unexpected
+traffic. Login uses the actual employee-code UI with a locally fulfilled synthetic POST;
+there is no tenant-switch UI, so tenant-switch browser acceptance remains NOT RUN.
+Candidate lists and short-mobile cart controls scroll normally; payment close restores
+the opener. See the ledger/geometry checks before changing fixed-position containers.
+This is separate from the historical pinned scanner/supplier suite and from the five
+native SKU PostgreSQL cases. The bounded 1366/1024/390px and doubled-text checks do not
+establish complete POS visual, real API-to-DB, iPad/Safari or physical-scanner acceptance.
+See `../infrastructure/verification/pos-product-lookup-ci/README.md`.
+
+### Change category navigation
+
+Use `GET /pos/categories` and the scope-keyed `pos-categories` query in `POSCheckoutPage`.
+Never derive navigation from filtered or capped `/pos/products` rows. `CategoryNav`
+keeps All plus tenant categories visible through search/selection; loading, empty
+and retryable error states stay separate. Synthetic coverage lives in
+`POSCheckoutPage.inventory.test.tsx` and `CategoryNav.test.tsx`; backend route/service
+coverage is `pos.categories.test.ts`. These do not replace real database or device acceptance.
 
 ### Change POS API calls
 

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { BatchAuditService } from './batch-audit.service';
 import { ProductBatchService } from './product-batches.service';
 
 export class ProductBatchController {
@@ -29,7 +30,7 @@ export class ProductBatchController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await ProductBatchService.create(req.body);
+      const data = await ProductBatchService.create(req.body, req.user);
       res.status(201).json({ success: true, data });
     } catch (err) {
       next(err);
@@ -43,6 +44,26 @@ export class ProductBatchController {
     } catch (err) {
       next(err);
     }
+  }
+
+  static async changeStatus(req: Request, res: Response, next: NextFunction) {
+    try { res.json({ success: true, data: await BatchAuditService.change(req.params.id as string, { ...req.body, operation: 'STATUS' }, req.user) }); }
+    catch (err) { next(err); }
+  }
+
+  static async correctExpiry(req: Request, res: Response, next: NextFunction) {
+    try { res.json({ success: true, data: await BatchAuditService.change(req.params.id as string, { ...req.body, operation: 'EXPIRY' }, req.user) }); }
+    catch (err) { next(err); }
+  }
+
+  static async correctCost(req: Request, res: Response, next: NextFunction) {
+    try { res.json({ success: true, data: await BatchAuditService.change(req.params.id as string, { ...req.body, operation: 'COST' }, req.user) }); }
+    catch (err) { next(err); }
+  }
+
+  static async history(req: Request, res: Response, next: NextFunction) {
+    try { res.json({ success: true, data: await BatchAuditService.history(req.params.id as string, req.validatedQuery?.cursor as string | undefined) }); }
+    catch (err) { next(err); }
   }
 
   static async delete(req: Request, res: Response, next: NextFunction) {

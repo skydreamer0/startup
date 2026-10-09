@@ -7,6 +7,7 @@ import type { ApiFailure, ApiSuccess, InventoryProductPage, Product } from '@pha
 import { inventoryApi } from '../api/inventory';
 import ProductListPage from '../pages/Inventory/ProductListPage';
 import BatchListPage from '../pages/Inventory/BatchListPage';
+import { AuthProvider } from '../hooks/useAuth';
 
 type Params = { page?: string; lowStock?: string };
 const { httpGet, httpPost, httpPut } = vi.hoisted(() => ({
@@ -66,11 +67,12 @@ beforeEach(() => {
         if (path === '/inventory/products') return productsRequest(options?.params ?? {});
         if (path === '/inventory/suppliers') return { data: { success: true, data: [] } };
         if (path === '/product-batches') return { data: { success: true, data: [] } };
+        if (path === '/auth/me') return { data: { success: true, data: { id: 'synthetic-reader', permissions: ['read:products', 'create:products'] } } };
         if (path === '/tenants/me/plan') return { data: { success: true, data: { plan: 'free', features: [] } } };
         throw new Error(`Unexpected synthetic request: ${path}`);
     });
 });
-afterEach(() => { cleanup(); clients.splice(0).forEach((client) => client.clear()); });
+afterEach(() => { cleanup(); clients.splice(0).forEach((client) => client.clear()); localStorage.clear(); });
 
 describe('product list pagination through the real inventory client', () => {
     it('has an exact typed page and unwraps the real envelope once, retaining nullable relations', async () => {
@@ -245,7 +247,9 @@ describe('product list pagination through the real inventory client', () => {
     });
 
     it('lets existing BatchList collect product options across real client envelopes without posting a receipt', async () => {
-        setup(<BatchListPage />);
+        localStorage.setItem('accessToken', 'synthetic-token');
+        setup(<AuthProvider><BatchListPage /></AuthProvider>);
+        await waitFor(() => expect(screen.getByRole('button', { name: '+ 登記批次進貨' })).toBeEnabled());
         fireEvent.click(screen.getByRole('button', { name: '+ 登記批次進貨' }));
         expect(await screen.findByRole('option', { name: 'SKU-51 - Synthetic product 51' })).toHaveValue('synthetic-51');
         expect(screen.getByRole('option', { name: 'SKU-1 - Synthetic product 1' })).toHaveValue('synthetic-1');

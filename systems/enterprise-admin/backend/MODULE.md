@@ -60,7 +60,20 @@
 5. POS `refundOrder` registers money-only refund status with a conditional transition; it must not receive stock or modify sale allocations. Read ADR-015 before changing refund/return semantics. Physical-return receipt remains separate pending work.
 6. Excel product import is metadata-only and cannot set physical stock. Read ADR-016, `src/lib/product-import-preview.ts` and `src/__tests__/excel-import.integration.test.ts` before changing preview/confirm identity or normalization. Confirm requires a signed tenant/file/normalized-revision preview; bump parser version when semantics change.
 7. Initial batch receipt uses `InventoryPostingService.receiveBatch` in the caller-owned transaction, product lock first, then lot + IN movement with receipt cost snapshot. Product/batch editors reject direct quantity writes; CSV creates at zero. Read ADR-017 and `inventory-receipt.integration.test.ts`. Batch RBAC uses the existing product permission catalogue. This does not implement physical returns, same-lot additional delivery, bins or reversal/rebuild.
-8. POS command orchestration uses `src/modules/pos/checkout-command.service.ts` (ADR-018). The tenant/kind/commandId claim and immutable result share the existing posting transaction. Replay precedes current business checks; result lookup requires manage:pos and missing results stay UNKNOWN. Read `checkout-command.integration.test.ts`; unique order numbers, exact money and full G1 remain pending.
+8. POS command orchestration uses `src/modules/pos/checkout-command.service.ts` (ADR-018). The tenant/kind/commandId claim and immutable result share the existing posting transaction. Replay precedes current business checks; result lookup requires manage:pos and missing results stay UNKNOWN. Read `checkout-command.integration.test.ts`; exact money and full G1 remain pending.
+9. POS numbering uses `src/lib/business-day.ts` (Taipei midnight) and `src/modules/pos/order-number.ts` (ADR-019). FEFO retains fresh per-debit clock checks; new POS orders persist businessDate and increment a tenant/day counter in the command transaction. Old order dates/numbers are not rewritten. Read `prisma/diagnostics/preflight-order-numbers.sql` before an approved migration; `order-sequence.integration.test.ts` plus `scripts/order-sequence-ci.mjs` provide guarded exact-head synthetic acceptance in the independent `Order sequence PostgreSQL acceptance` CI job. It requires all nine sequence, 21 command, 38 stock and five mocked cases, additive upgrade/duplicate probes, zero remaining fixture rows and owned-DB removal; skipped tests are not acceptance. The integrated workflow retains context/backend/admin/POS, pagination, SKU, batch audit and sequence jobs. The sequence runner also applies both new migrations in order to a populated owned synthetic schema, compares every old row, checks counter initialization and append-only audit, and verifies schema removal. See `../infrastructure/verification/pharmacy-integration/README.md` for integration provenance and rollout gates. Exact-head results must be reviewed before release. See `../infrastructure/verification/order-sequence/README.md`.
+
+### Change batch fields or initial release
+
+Read ADR-020 and `../infrastructure/api/batch_field_audit.md`, then
+`src/modules/product-batches/` and its nearest tests. RELEASED receipt requires
+independent release permission, trusted active tenant actor and reason; receipt/IN/
+initial audit share one transaction. Ordinary nonreleased receipts keep their policy.
+Expiry correction rechecks the current Taipei date after the product lock.
+The sole ProductBatchChange schema/migration/tenant registry and append-only
+protections are supplied by ADR-021. Do not invent a second model or treat
+#47 / PR #77 numbering as this dependency. Native evidence and remaining gates
+are tracked in `../infrastructure/verification/product-batch-change-integration.md`.
 
 ### Change persistence or model meaning
 
@@ -76,6 +89,15 @@
 2. Low-stock filtering compares Product stockQuantity to its safetyStock through the tenant-scoped Prisma delegate before paging. Count and rows use the same predicate; order is name then unique ID.
 3. Mocked service coverage is `src/modules/inventory/__tests__/products-pagination.test.ts`; real PostgreSQL/tenant coverage is `src/__tests__/products-pagination.integration.test.ts` with explicit guarded PRODUCT_PAGINATION_DATABASE_URL opt-in. Bounded #50B1 evidence and reproduction are in `../infrastructure/verification/products-low-stock-pagination/README.md`. The wire payload stays total/page/limit/data; UI pagination, invalid-parameter policy and cross-update snapshots are separate work.
 4. The ordinary CI workflow's separate `Product pagination PostgreSQL acceptance` job runs the unchanged 6 mocked and 8 native cases on its exact source head. `scripts/products-pagination-ci.mjs` verifies the disposable Actions service's loopback-only binding and empty DB before migration, and requires per-case results plus owned-DB cleanup. Historical 8 skipped results are not native acceptance; this does not replace the original four jobs or release gates.
+
+### Verify exact POS SKU lookup
+
+The ordinary CI job `Exact SKU PostgreSQL and current POS browser acceptance` uses
+`scripts/pos-product-lookup-ci.mjs` to run the unchanged five native cases in
+`src/__tests__/pos-product-lookup.integration.test.ts` against an owned disposable
+Actions PostgreSQL service. See `../infrastructure/verification/pos-product-lookup-ci/README.md`
+for exact-head provenance, safety controls, cleanup evidence and distinct browser scope.
+This is SKU-only; Product has no barcode field. It does not replace the original five jobs.
 
 ### Debug a backend test failure
 
@@ -105,3 +127,19 @@ npm run db:generate
 - Do not infer feature completion from source code; read `../ROADMAP.md` for progress.
 - Do not change tenant-sensitive behavior without checking auth / tenant constraints.
 - Do not change schema meaning without checking `prisma/schema.prisma`, affected services, and context freshness.
+
+## Batch audit shared persistence
+
+`prisma/schema.prisma` owns the sole `ProductBatchChange` model; additive migration
+`20261009120000_product_batch_changes` implements composite tenant/product/batch/actor
+keys, exact operation/snapshot checks and UPDATE/DELETE/TRUNCATE protection. Read
+ADR-020 and ADR-021 before changing audit semantics. This model is registered in
+`src/lib/tenant-scoped-models.ts`; it has no update/delete API. INITIAL_RELEASE uses
+`{exists:false}` before and a full released snapshot after in the receipt transaction.
+`BatchAuditService` continues product-lock-first correction and post-wait Taipei date
+checks. The dedicated ordinary-CI PG15 job runs the original 15 native cases and six
+`batch-change-schema.integration.test.ts` contract cases on the exact source head,
+requires zero skips, and drops only its preflight-proven empty owned synthetic DB.
+Append-only fixture rows remain until that DROP. Handoff and result provenance live
+in `../infrastructure/verification/product-batch-change-integration.md`. UI receipt
+reason/browser, store roles and independent review remain separate gates.

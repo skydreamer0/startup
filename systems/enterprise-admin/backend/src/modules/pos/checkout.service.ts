@@ -8,6 +8,8 @@ import { ProductAnalyticsService } from '../analytics/product-analytics.service'
 import { CrmService } from '../crm/crm.service';
 import { CheckoutDto } from './pos.schema';
 import { CheckoutCommandService } from './checkout-command.service';
+import { systemClock, taipeiBusinessDay, type Clock } from '../../lib/business-day';
+import { allocateOrderNumber } from './order-number';
 
 type PosRfmSegment = 'vip' | 'loyal' | 'new' | 'at_risk';
 type PosRecommendationReason = 'REPLENISHMENT_DUE' | 'HOT_SELLER';
@@ -25,7 +27,7 @@ function classifyCustomer(totalSpent: number, purchaseCount: number, daysSinceLa
 }
 
 export class CheckoutService {
-  static async checkout(dto: CheckoutDto) {
+  static async checkout(dto: CheckoutDto, clock: Clock = systemClock) {
     const tenant = tenantPersistence();
 
     return CheckoutCommandService.execute(dto, async (tx, dto) => {
@@ -52,7 +54,7 @@ export class CheckoutService {
       }
 
       // 4. Claim aggregate product demand before processing the original price lines.
-      const { products, lines } = await InventoryPostingService.debitSale(tx, dto.cartItems);
+      const { products, lines } = await InventoryPostingService.debitSale(tx, dto.cartItems, clock);
       let subtotal = 0;
       const itemsData: {
         id: string;
@@ -84,17 +86,10 @@ export class CheckoutService {
       const orderDiscountAmount = dto.orderDiscountAmount ?? 0;
       const totalAmount = Math.max(0, subtotal - orderDiscountAmount);
 
-      // 5. Generate orderNumber (POS-YYYYMMDD-NNNNN, tenant-scoped daily sequence)
-      const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      const prefix = `POS-${todayStr}-`;
-      const lastOrder = await tx.order.findFirst({
-        where: tenant.where({ orderNumber: { startsWith: prefix } }),
-        orderBy: { orderNumber: 'desc' },
-      });
-      const nextSeq = lastOrder?.orderNumber
-        ? parseInt(lastOrder.orderNumber.slice(-5), 10) + 1
-        : 1;
-      const orderNumber = `${prefix}${String(nextSeq).padStart(5, '0')}`;
+      // 5. Allocate after stock waits, using the same clock as fresh FEFO checks.
+      // This runs only for a new command and shares its entire transaction.
+      const businessDay = taipeiBusinessDay(clock());
+      const { orderNumber, businessDate } = await allocateOrderNumber(tx, businessDay.date);
 
       // 6. Validate split payments if provided
       if (dto.payments && dto.payments.length > 0) {
@@ -110,6 +105,7 @@ export class CheckoutService {
           tenantId: tenant.tenantId,
           customerId,
           orderNumber,
+          businessDate,
           orderType: 'WALK_IN',
           status: 'completed',
           paymentStatus: 'paid',
@@ -144,6 +140,15 @@ export class CheckoutService {
       await InventoryPostingService.recordSale(tx, order.id, lines, `POS sale — ${orderNumber}`);
 
       return order;
+    });
+  }
+
+  static async getCategories() {
+    const tenant = tenantPersistence();
+    return prisma.productCategory.findMany({
+      where: tenant.where(),
+      select: { id: true, name: true },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
     });
   }
 

@@ -31,6 +31,13 @@ export class PosController {
     } catch (err) { next(err); }
   }
 
+  static async getCategories(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await CheckoutService.getCategories();
+      res.json({ success: true, data });
+    } catch (err) { next(err); }
+  }
+
   static async getProducts(req: Request, res: Response, next: NextFunction) {
     try {
       const query = (req as unknown as Record<string, unknown>).validatedQuery as {

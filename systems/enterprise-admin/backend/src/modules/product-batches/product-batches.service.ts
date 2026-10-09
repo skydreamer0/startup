@@ -12,6 +12,7 @@ export interface CreateProductBatchDto {
   quantity: number;
   costPrice: number;
   status?: BatchStockStatus;
+  reason?: string;
 }
 
 export interface UpdateProductBatchDto {
@@ -67,10 +68,31 @@ export class ProductBatchService {
     return batch;
   }
 
-  static async create(data: CreateProductBatchDto) {
-    requireTenantId();
+  static async create(data: CreateProductBatchDto, actor?: { userId: string; permissions: string[] }) {
+    const tenantId = requireTenantId();
+    const released = data.status === 'RELEASED';
+    if (released && !actor?.userId) throw new AppError(401, 'Authentication required for initial release');
+    if (released && !actor?.permissions.includes('release:product_batches')) {
+      throw new AppError(403, '初次放行需要獨立的 release:product_batches 權限');
+    }
+    const reason = released ? data.reason?.trim() : undefined;
+    if (released && (!reason || reason.length > 1000)) throw new AppError(400, '初次放行必須填寫原因（最多 1000 字）');
     try {
-      return await prisma.$transaction((tx) => InventoryPostingService.receiveBatch(tx, data));
+      return await prisma.$transaction(async (tx) => {
+        if (released) {
+          const user = await tx.user.findFirst({ where: { id: actor!.userId, tenantId, status: 'active', deletedAt: null }, select: { id: true } });
+          if (!user) throw new AppError(403, '操作者不屬於此租戶或已停用');
+        }
+        // receiveBatch obtains the product lock and rechecks today's expiry.
+        const batch = await InventoryPostingService.receiveBatch(tx, data);
+        if (released) await tx.productBatchChange.create({ data: {
+          tenantId, batchId: batch.id, productId: batch.productId, actorId: actor!.userId,
+          operation: 'INITIAL_RELEASE', before: { exists: false },
+          after: { status: batch.status, expiryDate: batch.expiryDate.toISOString(), costPrice: batch.costPrice.toString() },
+          reason: reason!,
+        } });
+        return batch;
+      });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') throw new AppError(409, '批號已存在，請核對原進貨紀錄');
       throw error;
@@ -78,22 +100,12 @@ export class ProductBatchService {
   }
 
   static async update(id: string, data: UpdateProductBatchDto) {
-    const tenantId = requireTenantId();
-    if (data.quantity !== undefined) throw new AppError(400, '批次数量不能直接修改，請使用庫存過帳作業');
-    const batch = await prisma.productBatch.findFirst({ where: { id, tenantId } });
-    if (!batch) throw new AppError(404, 'Product batch not found');
-
-    return prisma.productBatch.update({
-      where: { id },
-      data: {
-        ...(data.costPrice !== undefined ? { costPrice: data.costPrice } : {}),
-        ...(data.expiryDate !== undefined ? { expiryDate: new Date(data.expiryDate) } : {}),
-        ...(data.status !== undefined ? { status: data.status } : {}),
-      },
-      include: {
-        product: { select: { id: true, name: true, sku: true } },
-      },
-    });
+    requireTenantId();
+    // No mutable fields remain on the ordinary PATCH channel. Keep this guard
+    // at the service boundary as well as in HTTP validation/import callers.
+    void id;
+    void data;
+    throw new AppError(400, '批次数量不可直接修改；效期、狀態與成本請使用附原因的專用更正作業');
   }
 
   static async delete(id: string) {
