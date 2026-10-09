@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { env } from './config/env';
+import { checkReadiness } from './lib/readiness';
 import { errorMiddleware } from './middleware/error.middleware';
 
 // Route imports
@@ -38,6 +39,11 @@ app.use(express.urlencoded({ extended: true }));
 // ─── Health Check ────────────────────────────────────────
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/ready', async (_req, res) => {
+    const result = await checkReadiness();
+    res.set('Cache-Control', 'no-store').status(result.status === 'ready' ? 200 : 503).json(result);
 });
 
 // ─── API Routes (Base: /api/v1/admin) ────────────────────

@@ -113,6 +113,37 @@ jobs:
         JWT_REFRESH_SECRET: "test-refresh-secret-at-least-32-chars!"
         JWT_REFRESH_EXPIRES_IN: "7d"
 
+
+    - name: Validate readiness harness guards
+      run: node --test scripts/health-readiness/ci.test.mjs
+
+    - name: Isolated PostgreSQL and final Alpine readiness acceptance
+      id: health_readiness
+      timeout-minutes: 4
+      env:
+        HEALTH_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        HEALTH_POSTGRES_NETWORK: ${{ job.services.postgres.network }}
+        HEALTH_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: node scripts/health-readiness/ci.mjs run
+
+    - name: Remove only the owned readiness fixture database
+      if: ${{ always() && steps.health_readiness.outcome != 'skipped' }}
+      timeout-minutes: 2
+      env:
+        HEALTH_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        HEALTH_POSTGRES_NETWORK: ${{ job.services.postgres.network }}
+        HEALTH_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: node scripts/health-readiness/ci.mjs cleanup
+
+    - name: Preserve readiness acceptance and cleanup evidence
+      if: ${{ always() && steps.health_readiness.outcome != 'skipped' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: health-readiness-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/health-readiness-${{ github.run_id }}-${{ github.run_attempt }}/
+        if-no-files-found: error
+        retention-days: 7
+
   admin-ui:
     name: Admin UI CI
     runs-on: ubuntu-latest
@@ -194,6 +225,9 @@ jobs:
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
 
+    - name: Validate fixed execution UI evidence provenance
+      run: node --test pos-ui/e2e/ui-evidence/provenance.test.mjs
+
     - name: Unit and Component Tests
       run: pnpm --filter pos-ui run test
 
@@ -247,7 +281,7 @@ jobs:
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         UI_QA_EXECUTION_SHA: ${{ github.sha }}
         UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
-        UI_QA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+        UI_QA_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
       run: node pos-ui/e2e/ui-evidence/run.mjs
 
     - name: Preserve reviewed UI browser evidence
@@ -340,6 +374,86 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  pos-sku-acceptance:
+    name: Exact SKU PostgreSQL and current POS browser acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_DB: checkout_http_recovery_pos_lookup_ci
+          # A new disposable synthetic-only service; never an existing/store DB.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - '127.0.0.1:55435:5432'
+        options: >-
+          --health-cmd "pg_isready -U test -d checkout_http_recovery_pos_lookup_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin
+    env:
+      DATABASE_URL: 'postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci'
+      POS_PRODUCT_LOOKUP_DATABASE_URL: 'postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci'
+      SKU_QA_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.34.6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
+      - name: Verify exact head and exclusive empty SKU service ownership
+        id: sku_preflight
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node backend/scripts/pos-product-lookup-ci.mjs preflight
+      - name: Install canonical locked dependencies
+        run: |
+          npm exec --yes --package=npm@11.21.0 -- npm --prefix backend ci
+          npm --prefix backend run db:generate
+          pnpm install --frozen-lockfile
+      - name: Validate SKU safety and evidence negative controls
+        run: |
+          node --test backend/scripts/pos-product-lookup-ci.test.mjs
+          node --test pos-ui/e2e/sku-acceptance/run.test.mjs
+      - name: Run unchanged five real PostgreSQL SKU cases
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node backend/scripts/pos-product-lookup-ci.mjs run
+      - name: Install Chromium in this disposable runner
+        run: pnpm --filter pos-ui exec playwright install --with-deps chromium
+      - name: Build and verify current exact-head POS with synthetic HTTP
+        run: node pos-ui/e2e/sku-acceptance/run.mjs
+      - name: Verify zero rows and drop only the owned SKU database
+        if: ${{ always() && steps.sku_preflight.outcome == 'success' }}
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node backend/scripts/pos-product-lookup-ci.mjs cleanup
+      - name: Preserve separate PostgreSQL and current POS evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pos-sku-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sku-qa-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
+
   batch-audit:
     name: Batch audit PostgreSQL acceptance
     runs-on: ubuntu-latest
@@ -409,5 +523,77 @@ jobs:
         with:
           name: batch-audit-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/batch-audit-qa-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
+
+  order-sequence:
+    name: Order sequence PostgreSQL acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_DB: checkout_order_sequence_ci
+          # Only this new, disposable, synthetic-only service uses passwordless auth.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - '127.0.0.1:55436:5432'
+        options: >-
+          --health-cmd "pg_isready -U test -d checkout_order_sequence_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin/backend
+    env:
+      DATABASE_URL: 'postgresql://test@127.0.0.1:55436/checkout_order_sequence_ci'
+      ORDER_SEQUENCE_DATABASE_URL: 'postgresql://test@127.0.0.1:55436/checkout_order_sequence_ci'
+      ORDER_SEQUENCE_QA_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # This job proves the exact source head; all existing jobs stay unchanged.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
+      - name: Guard exact source, loopback service and empty owned DB
+        id: sequence_preflight
+        env:
+          ORDER_SEQUENCE_QA_CONTAINER: ${{ job.services.postgres.id }}
+          ORDER_SEQUENCE_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/order-sequence-ci.mjs preflight
+      - name: Install locked backend dependencies and generate Prisma
+        run: |
+          npm install --global npm@11.21.0
+          npm ci
+          npm run db:generate
+      - name: Validate harness safety and evidence controls
+        run: node --experimental-strip-types --test scripts/business-day.test.mjs scripts/order-sequence-ci.test.mjs
+      - name: Run numbering, legacy upgrade and original checkout regressions
+        env:
+          ORDER_SEQUENCE_QA_CONTAINER: ${{ job.services.postgres.id }}
+          ORDER_SEQUENCE_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/order-sequence-ci.mjs run
+      - name: Verify zero remaining rows and remove only the owned DB
+        if: ${{ always() && steps.sequence_preflight.outcome == 'success' }}
+        env:
+          ORDER_SEQUENCE_QA_CONTAINER: ${{ job.services.postgres.id }}
+          ORDER_SEQUENCE_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/order-sequence-ci.mjs cleanup
+      - name: Preserve exact-head order sequence evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: order-sequence-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/order-sequence-qa-${{ github.run_id }}-${{ github.run_attempt }}/
           if-no-files-found: error
           retention-days: 7

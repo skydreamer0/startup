@@ -45,6 +45,12 @@
 4. Open the nearest tests for that module.
 5. Update API spec and context if the contract meaning changes.
 
+### Change process health or startup
+
+1. `/health` is process-only liveness; `/ready` checks database connectivity and all packaged Prisma migration history. See `../infrastructure/verification/health-readiness/README.md` for the contract and deployment usage.
+2. `src/lib/readiness.ts` performs read-only, bounded single-flight checks with a silent dedicated Prisma client. `src/server.ts` gates listening on readiness; `src/config/env.ts` retains required configuration validation. Errors expose fixed codes, never connection strings.
+3. Do not treat nginx edge `/health` as backend readiness. Probes never apply migrations or change tenant data.
+
 ### Change sale stock deduction
 
 1. Read ADR-013, `../infrastructure/adr/adr_014_sale_batch_posting.md` and active issues linked from `../ROADMAP.md`.
@@ -54,7 +60,8 @@
 5. POS `refundOrder` registers money-only refund status with a conditional transition; it must not receive stock or modify sale allocations. Read ADR-015 before changing refund/return semantics. Physical-return receipt remains separate pending work.
 6. Excel product import is metadata-only and cannot set physical stock. Read ADR-016, `src/lib/product-import-preview.ts` and `src/__tests__/excel-import.integration.test.ts` before changing preview/confirm identity or normalization. Confirm requires a signed tenant/file/normalized-revision preview; bump parser version when semantics change.
 7. Initial batch receipt uses `InventoryPostingService.receiveBatch` in the caller-owned transaction, product lock first, then lot + IN movement with receipt cost snapshot. Product/batch editors reject direct quantity writes; CSV creates at zero. Read ADR-017 and `inventory-receipt.integration.test.ts`. Batch RBAC uses the existing product permission catalogue. This does not implement physical returns, same-lot additional delivery, bins or reversal/rebuild.
-8. POS command orchestration uses `src/modules/pos/checkout-command.service.ts` (ADR-018). The tenant/kind/commandId claim and immutable result share the existing posting transaction. Replay precedes current business checks; result lookup requires manage:pos and missing results stay UNKNOWN. Read `checkout-command.integration.test.ts`; unique order numbers, exact money and full G1 remain pending.
+8. POS command orchestration uses `src/modules/pos/checkout-command.service.ts` (ADR-018). The tenant/kind/commandId claim and immutable result share the existing posting transaction. Replay precedes current business checks; result lookup requires manage:pos and missing results stay UNKNOWN. Read `checkout-command.integration.test.ts`; exact money and full G1 remain pending.
+9. POS numbering uses `src/lib/business-day.ts` (Taipei midnight) and `src/modules/pos/order-number.ts` (ADR-019). FEFO retains fresh per-debit clock checks; new POS orders persist businessDate and increment a tenant/day counter in the command transaction. Old order dates/numbers are not rewritten. Read `prisma/diagnostics/preflight-order-numbers.sql` before an approved migration; `order-sequence.integration.test.ts` plus `scripts/order-sequence-ci.mjs` provide guarded exact-head synthetic acceptance in the independent `Order sequence PostgreSQL acceptance` CI job. It requires all nine sequence, 21 command, 38 stock and five mocked cases, additive upgrade/duplicate probes, zero remaining fixture rows and owned-DB removal; skipped tests are not acceptance. The integrated workflow retains context/backend/admin/POS, pagination, SKU, batch audit and sequence jobs. The sequence runner also applies both new migrations in order to a populated owned synthetic schema, compares every old row, checks counter initialization and append-only audit, and verifies schema removal. See `../infrastructure/verification/pharmacy-integration/README.md` for integration provenance and rollout gates. Exact-head results must be reviewed before release. See `../infrastructure/verification/order-sequence/README.md`.
 
 ### Change batch fields or initial release
 
@@ -82,6 +89,15 @@ are tracked in `../infrastructure/verification/product-batch-change-integration.
 2. Low-stock filtering compares Product stockQuantity to its safetyStock through the tenant-scoped Prisma delegate before paging. Count and rows use the same predicate; order is name then unique ID.
 3. Mocked service coverage is `src/modules/inventory/__tests__/products-pagination.test.ts`; real PostgreSQL/tenant coverage is `src/__tests__/products-pagination.integration.test.ts` with explicit guarded PRODUCT_PAGINATION_DATABASE_URL opt-in. Bounded #50B1 evidence and reproduction are in `../infrastructure/verification/products-low-stock-pagination/README.md`. The wire payload stays total/page/limit/data; UI pagination, invalid-parameter policy and cross-update snapshots are separate work.
 4. The ordinary CI workflow's separate `Product pagination PostgreSQL acceptance` job runs the unchanged 6 mocked and 8 native cases on its exact source head. `scripts/products-pagination-ci.mjs` verifies the disposable Actions service's loopback-only binding and empty DB before migration, and requires per-case results plus owned-DB cleanup. Historical 8 skipped results are not native acceptance; this does not replace the original four jobs or release gates.
+
+### Verify exact POS SKU lookup
+
+The ordinary CI job `Exact SKU PostgreSQL and current POS browser acceptance` uses
+`scripts/pos-product-lookup-ci.mjs` to run the unchanged five native cases in
+`src/__tests__/pos-product-lookup.integration.test.ts` against an owned disposable
+Actions PostgreSQL service. See `../infrastructure/verification/pos-product-lookup-ci/README.md`
+for exact-head provenance, safety controls, cleanup evidence and distinct browser scope.
+This is SKU-only; Product has no barcode field. It does not replace the original five jobs.
 
 ### Debug a backend test failure
 

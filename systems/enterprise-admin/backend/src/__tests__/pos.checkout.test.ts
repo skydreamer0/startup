@@ -22,6 +22,7 @@ import { CheckoutService } from '../modules/pos/checkout.service';
 import { CheckoutDto } from '../modules/pos/pos.schema';
 
 const mockTx = {
+  orderNumberCounter: { createMany: vi.fn(), updateMany: vi.fn(), findFirstOrThrow: vi.fn() },
   checkoutCommand: { createMany: vi.fn(), updateMany: vi.fn() },
   shift: { findFirst: vi.fn() },
   product: { findFirst: vi.fn(), updateMany: vi.fn() },
@@ -34,6 +35,9 @@ const mockTx = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockTx.orderNumberCounter.createMany.mockResolvedValue({ count: 1 });
+  mockTx.orderNumberCounter.updateMany.mockResolvedValue({ count: 1 });
+  mockTx.orderNumberCounter.findFirstOrThrow.mockResolvedValue({ lastSequence: 1 });
   mockTx.checkoutCommand.createMany.mockResolvedValue({ count: 1 });
   mockTx.checkoutCommand.updateMany.mockResolvedValue({ count: 1 });
   mockTx.product.updateMany.mockResolvedValue({ count: 1 });

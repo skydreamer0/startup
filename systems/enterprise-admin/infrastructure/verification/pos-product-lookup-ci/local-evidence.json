@@ -1,0 +1,22 @@
+{
+  "scope": "Local synthetic Chromium only; not owned Actions PostgreSQL acceptance",
+  "baseline": "f9fc5c96e7af9f81b66da17e7a33580d8b2b669f",
+  "report": "C:\\Users\\User\\AppData\\Local\\Temp\\startup-sku-local-review-20261009-final\\report.json",
+  "reportSha256": "fff84aa6e9ed5c771400a75e3e7a3e6a95076d1d113e708091a41de327baf31a",
+  "stats": {
+    "startTime": "2026-10-09T03:53:06.453Z",
+    "duration": 13910.634,
+    "expected": 14,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "sourceSha256": {
+    "pos-ui/e2e/sku-acceptance/sku.spec.ts": "fd43fb80b3a3d0fab152ec374d0e6569ab494e12ce0e6336b7e775a3b43fd82f",
+    "pos-ui/e2e/sku-acceptance/fixtures.ts": "de3c9903205899c51dc7aa27b6e781b1e06ba29b2d899ed32d2aed9887932240",
+    "pos-ui/src/components/BarcodeCandidates.tsx": "161cb10b3d4d62bf5c000c0f23bacf52e7a1c017147ae6d0059e54609c394d63",
+    "pos-ui/src/components/PaymentModal.tsx": "b916a481ab144ffce7337c8b44b7fb6fe5b4863646fa8617ed6400c17982788e",
+    "pos-ui/src/pages/POSCheckoutPage.tsx": "1b4bb381acb84c16ddd62ec783f7063ec4b0f4629b35bc80bcaafb2a231f30c6",
+    "pos-ui/src/index.css": "d245667e3c1c402eee9345b00c0698243f16ffa4509c2b01354fe627c212f8dc"
+  }
+}
