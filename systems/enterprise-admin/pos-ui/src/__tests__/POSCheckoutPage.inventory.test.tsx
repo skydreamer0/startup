@@ -350,11 +350,12 @@ describe('POS independent category navigation (synthetic API, real query cache)'
     expect(screen.queryByRole('button', { name: '重新載入分類' })).not.toBeInTheDocument();
   });
 
-  it('shows failed initial load separately from empty and retries without clearing search', async () => {
-    vi.mocked(posApi.getCategories).mockRejectedValue(new Error('Synthetic failure'));
+  it('shows failed initial load separately from empty or stale data and retries without clearing search', async () => {
+    vi.mocked(posApi.getCategories).mockRejectedValue({ isAxiosError: true, response: { status: 500 } });
     renderPage();
     const retry = await screen.findByRole('button', { name: '重新載入分類' });
     expect(screen.getByText(/分類載入失敗/)).toBeInTheDocument();
+    expect(screen.queryByText(/分類資訊可能已過期/)).not.toBeInTheDocument();
     expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
     expect(categoryNav().getByRole('button', { name: '全部' })).toBeEnabled();
     fireEvent.change(screen.getByTestId('product-search-input'), { target: { value: 'vitamin' } });
@@ -369,6 +370,7 @@ describe('POS independent category navigation (synthetic API, real query cache)'
     vi.mocked(posApi.getCategories).mockRejectedValue({ isAxiosError: true, response: { status: 403 } });
     renderPage();
     expect(await screen.findByText('沒有讀取商品分類的權限，請聯絡管理員確認 POS 權限。')).toBeInTheDocument();
+    expect(screen.queryByText(/分類資訊可能已過期/)).not.toBeInTheDocument();
     expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
     expect(screen.queryByText(/分類載入失敗/)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '重新載入分類' })).toBeEnabled();
@@ -394,15 +396,32 @@ describe('POS independent category navigation (synthetic API, real query cache)'
     expect(posApi.checkout).not.toHaveBeenCalled();
   });
 
-  it('retains cached category entrances with an explicit warning after refresh failure', async () => {
-    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+  it.each([
+    { status: 403, cachedCategories: categories },
+    { status: 500, cachedCategories: categories },
+    { status: 403, cachedCategories: [] },
+    { status: 500, cachedCategories: [] },
+  ])('marks cached category data as stale after $status, including an empty snapshot: $cachedCategories', async ({ status, cachedCategories }) => {
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(cachedCategories));
     const { client } = renderPage();
-    await screen.findByRole('button', { name: '止痛用品' });
-    vi.mocked(posApi.getCategories).mockRejectedValue(new Error('Synthetic failure'));
+    await waitFor(() => expect(client.getQueryState(['pos-categories', scope])?.status).toBe('success'));
+    vi.mocked(posApi.getCategories).mockRejectedValue({ isAxiosError: true, response: { status } });
     await act(async () => { await client.invalidateQueries({ queryKey: ['pos-categories', scope] }); });
-    expect(await screen.findByText(/分類載入失敗/)).toBeInTheDocument();
-    categories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(status === 403 ? '沒有讀取商品分類的權限' : '分類載入失敗');
+    expect(alert).toHaveTextContent('分類資訊可能已過期');
+    expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
+    cachedCategories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
     expect(categoryNav().getByRole('button', { name: '全部' })).toBeEnabled();
+    expect(client.getQueryData(['pos-categories', scope])).toEqual(cachedCategories);
+
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(cachedCategories));
+    fireEvent.click(within(alert).getByRole('button', { name: '重新載入分類' }));
+    await waitFor(() => expect(screen.queryByText(/分類資訊可能已過期/)).not.toBeInTheDocument());
+    expect(client.getQueryState(['pos-categories', scope])?.status).toBe('success');
+    expect(screen.queryByRole('button', { name: '重新載入分類' })).not.toBeInTheDocument();
+    expect(posApi.getCategories).toHaveBeenCalledTimes(3);
   });
 
   it('uses a scope-specific category cache and ignores another tenant category list', async () => {
