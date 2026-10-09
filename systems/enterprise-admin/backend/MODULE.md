@@ -45,6 +45,12 @@
 4. Open the nearest tests for that module.
 5. Update API spec and context if the contract meaning changes.
 
+### Change process health or startup
+
+1. `/health` is process-only liveness; `/ready` checks database connectivity and all packaged Prisma migration history. See `../infrastructure/verification/health-readiness/README.md` for the contract and deployment usage.
+2. `src/lib/readiness.ts` performs read-only, bounded single-flight checks with a silent dedicated Prisma client. `src/server.ts` gates listening on readiness; `src/config/env.ts` retains required configuration validation. Errors expose fixed codes, never connection strings.
+3. Do not treat nginx edge `/health` as backend readiness. Probes never apply migrations or change tenant data.
+
 ### Change sale stock deduction
 
 1. Read ADR-013, `../infrastructure/adr/adr_014_sale_batch_posting.md` and active issues linked from `../ROADMAP.md`.
