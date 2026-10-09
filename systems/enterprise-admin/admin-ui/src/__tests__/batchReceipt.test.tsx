@@ -124,6 +124,7 @@ describe('initial receipt release through real auth and API clients', () => {
         expect(screen.getByRole('button', { name: '取消' })).toBeDisabled();
         fireEvent.click(screen.getByRole('button', { name: '取消' }));
         fireEvent.click(form.closest('.modal-overlay')!);
+        fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }));
         expect(reason).toBeInTheDocument();
         fireEvent.submit(form);
         expect(http.post).toHaveBeenCalledTimes(1);
@@ -163,6 +164,57 @@ describe('initial receipt release through real auth and API clients', () => {
         await waitFor(() => expect(http.post).toHaveBeenCalledWith('/product-batches', {
             productId: product.id, batchNumber: 'SYNTHETIC-LOT', expiryDate: '2099-01-01T00:00:00.000Z', quantity: 4, costPrice: 20, status,
         }));
+    });
+    it('names the modal, focuses its title and returns focus to the entry on cancel', async () => {
+        setup(); await openReceipt();
+        const dialog = screen.getByRole('dialog', { name: '登記批次進貨' });
+        expect(dialog).toHaveAttribute('aria-modal', 'true');
+        expect(screen.getByRole('heading', { name: '登記批次進貨' })).toHaveFocus();
+        fireEvent(dialog, new Event('cancel', { cancelable: true }));
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: '+ 登記批次進貨' })).toHaveFocus();
+        expect(http.post).not.toHaveBeenCalled();
+    });
+    it('focuses submission errors and keeps field helper and validation associations', async () => {
+        http.post.mockRejectedValueOnce(new Error('Synthetic lost response'));
+        setup(); await openReceipt(); selectRelease(); fillReason();
+        expect(screen.getByLabelText('到期日')).toHaveAttribute('aria-describedby', 'receipt-expiry-help');
+        expect(screen.getByLabelText('初次放行原因（必填）')).toHaveAttribute('aria-invalid', 'false');
+        fireEvent.click(screen.getByRole('button', { name: '登記進貨' }));
+        const error = await screen.findByRole('alert');
+        expect(error).toHaveFocus();
+        expect(error).toHaveTextContent('請勿直接重送');
+        expect(screen.getByLabelText('批號')).toHaveValue('SYNTHETIC-LOT');
+        expect(http.post).toHaveBeenCalledTimes(1);
+    });
+    it('retries product reads without submitting or clearing the receipt draft', async () => {
+        const client = setup(); await openReceipt(); selectRelease(); fillReason();
+        const original = http.get.getMockImplementation()!;
+        http.get.mockImplementation((path: string) => path === '/inventory/products' ? Promise.reject({ response: { status: 403 } }) : original(path));
+        await act(async () => { await client.invalidateQueries({ queryKey: ['inventory', 'products', 'batches'] }); });
+        expect(await screen.findByRole('alert')).toHaveTextContent('權限不足');
+        expect(screen.getByRole('button', { name: '登記進貨' })).toBeDisabled();
+        http.get.mockImplementation(original);
+        fireEvent.click(screen.getByRole('button', { name: '重新載入商品' }));
+        await waitFor(() => expect(screen.getByRole('button', { name: '登記進貨' })).toBeEnabled());
+        expect(screen.getByLabelText('商品')).toHaveValue(product.id);
+        expect(screen.getByLabelText('批號')).toHaveValue('SYNTHETIC-LOT');
+        expect(screen.getByLabelText('初次放行原因（必填）')).toHaveValue('  Label and invoice inspected  ');
+        expect(http.post).not.toHaveBeenCalled();
+    });
+    it('distinguishes expired batch results after a failed refresh and recovers through an explicit read', async () => {
+        const original = http.get.getMockImplementation()!;
+        http.get.mockImplementation(async (path: string) => path === '/product-batches' ? { data: { success: true, data: [{ id: 'old-lot', batchNumber: 'OLD-RESULT', expiryDate: '2099-01-01', quantity: 2, costPrice: 20, status: 'QUARANTINE' }] } } : original(path));
+        const client = setup(); await screen.findByText('OLD-RESULT');
+        http.get.mockImplementation((path: string) => path === '/product-batches' ? Promise.reject(new Error('Synthetic refetch failure')) : original(path));
+        await act(async () => { await client.invalidateQueries({ queryKey: ['batches'] }); });
+        expect(await screen.findByRole('alert')).toHaveTextContent('先前結果已過期');
+        expect(screen.queryByText('OLD-RESULT')).not.toBeInTheDocument();
+        expect(screen.queryByText('目前沒有批號資料。')).not.toBeInTheDocument();
+        http.get.mockImplementation(original);
+        fireEvent.click(screen.getByRole('button', { name: '重新載入批次' }));
+        expect(await screen.findByText('目前沒有批號資料。')).toBeVisible();
+        expect(http.post).not.toHaveBeenCalled();
     });
     it('honors the existing wildcard permission without inferring authority from role names', async () => {
         profile.permissions = ['*']; setup(); await openReceipt();

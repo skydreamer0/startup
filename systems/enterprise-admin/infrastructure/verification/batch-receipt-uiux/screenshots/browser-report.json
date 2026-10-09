@@ -1,0 +1,261 @@
+{
+  "sha": "fbe9535ab449eb96b40d25dac6ffa08561a1e1e8",
+  "tree": "622afea7ac6ee12275ee50135453bc65611180cf",
+  "checks": [
+    {
+      "name": "all empty copy fully in initial viewport 390x844 at 100%",
+      "passed": true
+    },
+    {
+      "name": "filtered empty copy fully in initial viewport 390x844 at 100%",
+      "passed": true
+    },
+    {
+      "name": "all empty copy fully in initial viewport 390x768 at 100%",
+      "passed": true
+    },
+    {
+      "name": "filtered empty copy fully in initial viewport 390x768 at 100%",
+      "passed": true
+    },
+    {
+      "name": "geometry 1366x768 at 100% native page zoom",
+      "passed": true,
+      "width": 1366,
+      "height": 768,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 1366,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 1366 at 100%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 1366 at 100%",
+      "passed": true,
+      "width": 718,
+      "scrollWidth": 718,
+      "columns": 2
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 1366 at 100%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "geometry 1024x768 at 100% native page zoom",
+      "passed": true,
+      "width": 1024,
+      "height": 768,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 1024,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 1024 at 100%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 1024 at 100%",
+      "passed": true,
+      "width": 718,
+      "scrollWidth": 718,
+      "columns": 2
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 1024 at 100%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "geometry 390x844 at 100% native page zoom",
+      "passed": true,
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 390,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 390 at 100%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 390 at 100%",
+      "passed": true,
+      "width": 364,
+      "scrollWidth": 364,
+      "columns": 1
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 390 at 100%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "geometry 1366x768 at 200% native page zoom",
+      "passed": true,
+      "width": 683,
+      "height": 384,
+      "dpr": 2,
+      "scale": 1,
+      "docWidth": 683,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 1366 at 200%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 1366 at 200%",
+      "passed": true,
+      "width": 649,
+      "scrollWidth": 649,
+      "columns": 2
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 1366 at 200%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "reader entry permission retained",
+      "passed": true
+    },
+    {
+      "name": "batch read 403 and explicit retry",
+      "passed": true
+    },
+    {
+      "name": "slow reads and empty batches/products remain distinct and cannot submit",
+      "passed": true
+    },
+    {
+      "name": "real API receipt and duplicate retain product stock 4",
+      "passed": true,
+      "productId": "ba69fae1-948f-4ba0-b7c9-f72a10b33c34",
+      "sku": "UIUX-1791531014135",
+      "lot": "UIUX-1791531014135-LOT",
+      "stockQuantity": 4
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "list-empty-390-844-100-all.png",
+      "sha256": "8adcc33929f72672a2e3858e6f845c02e7ef8c507c3db71e3f2d8f1ab4b33a9f"
+    },
+    {
+      "file": "list-empty-390-844-100-filtered.png",
+      "sha256": "9177652d093e317356d43628da82ef0cfdc898bf67726ce83643bbf50c598abb"
+    },
+    {
+      "file": "list-empty-390-768-100-all.png",
+      "sha256": "b655cf634330acf0cd2961d898c5004708f443aa76c403a970945ee8496f45d8"
+    },
+    {
+      "file": "list-empty-390-768-100-filtered.png",
+      "sha256": "500cfe61ef1214e5155f28d124e0fda59003f0892ec2825376a3a08136651391"
+    },
+    {
+      "file": "list-1366-100.png",
+      "sha256": "dcba51e3129186988c44a9cf1bfa4e793ae766358fc409aee7808a40c479c1dd"
+    },
+    {
+      "file": "receipt-1366-100.png",
+      "sha256": "9046c00591e678a468694346ada48753dae2a70f2619ab1c16f7a458fa3aace3"
+    },
+    {
+      "file": "receipt-end-1366-100.png",
+      "sha256": "fe5015b2a3373fec3e2096e7acba9af5013da97bfb7cf664f115978a27c4c3d1"
+    },
+    {
+      "file": "error-1366-100.png",
+      "sha256": "d493ae3f9f8afb3466c80eb349d8fc4fb2f73615e7f32a6de10e2cd2759aba09"
+    },
+    {
+      "file": "list-1024-100.png",
+      "sha256": "1ca135fc47031b677c9fb987bc917b7bf0cff3912694da4f64f6fa72540a8e37"
+    },
+    {
+      "file": "receipt-1024-100.png",
+      "sha256": "b19c7bebdbc6b5b62f938b39f0f7976fa9e47be524811d8a6daf12efdb11bb6b"
+    },
+    {
+      "file": "receipt-end-1024-100.png",
+      "sha256": "1bde264c66357d314eb476ea2a5eb73c538abd8d70477c28e19380f9b46c6756"
+    },
+    {
+      "file": "error-1024-100.png",
+      "sha256": "67ea7474aaf995df9613f219ebdf132b7b86f146e669d5c7f94b243640f76a55"
+    },
+    {
+      "file": "list-390-100.png",
+      "sha256": "6ea341311f4ada66fee3f6c4dc9979ac9cf59254eb5082d5af535607c23f8dd4"
+    },
+    {
+      "file": "receipt-390-100.png",
+      "sha256": "e665e6bf16a8eeba14eb6866163d535dbf8ab9700121f80ddbede27af1c62597"
+    },
+    {
+      "file": "receipt-end-390-100.png",
+      "sha256": "15f9440192032b39ec16c565c1c494e03277cd31407d0107ecbfa499211b56c0"
+    },
+    {
+      "file": "error-390-100.png",
+      "sha256": "1f35de9570530e1104f820ebc9e8655738a48e46c299b3b07fe4967fc36bcddb"
+    },
+    {
+      "file": "list-1366-200.png",
+      "sha256": "a471a877208da01207921506afab25f2f31c338aa592d3a11921bdd08885521c"
+    },
+    {
+      "file": "receipt-1366-200.png",
+      "sha256": "4608106a1d4cd16894890499074b255e0c5e010a81ac579c9edf2d9b359398ae"
+    },
+    {
+      "file": "receipt-end-1366-200.png",
+      "sha256": "784ab0f82299757c9d425acacdc38b01440cce70db9618f85b7d966d8a9a89e0"
+    },
+    {
+      "file": "error-1366-200.png",
+      "sha256": "ced9e4aac381ac6522dee2200c4d9843467c299925a92e5e360db6ece52976e5"
+    },
+    {
+      "file": "list-403.png",
+      "sha256": "1839bc0093605e5d0d781cf17e31fcf9e75f9fb53aaf28159b923402b9b58ba5"
+    },
+    {
+      "file": "list-loading.png",
+      "sha256": "085ce7b5d2e0b3e5f61e140fead111c5f9c433083516a3c8dedb967b42fba7d9"
+    },
+    {
+      "file": "receipt-empty-products.png",
+      "sha256": "01fed2cadb960dc6670738ef2e4663a406a006894f56d52e66ade5a8cb212646"
+    },
+    {
+      "file": "list-empty.png",
+      "sha256": "ced9e2c745c68b877c042593056ba2fcab25e90378d3a463a07e6f336ec5a83b"
+    },
+    {
+      "file": "real-api-receipt.png",
+      "sha256": "98bfe09eb4e1b1e3627c7ae1c45dea6f71b1d09b1227b3e8568f5d4a5e8a1770"
+    },
+    {
+      "file": "real-api-duplicate.png",
+      "sha256": "b5c1184369b3cdf24c234018434a17f87cceb371f5707b9c47f044756e4a5116"
+    }
+  ],
+  "browserErrors": []
+}
