@@ -76,7 +76,7 @@ describe.skipIf(!databaseUrl)('ProductBatchChange database contract with real Po
     await basePrisma.$transaction(async tx => {
       await tx.$executeRaw`SET LOCAL TIME ZONE 'Asia/Taipei'`;
       const time = await tx.$queryRaw<{ now: Date }[]>`SELECT transaction_timestamp() AS now`;
-      await tx.$queryRaw`SELECT pg_sleep(0.05)`;
+      await tx.$queryRaw`SELECT 1 FROM pg_sleep(0.05)`;
       const audit = await tx.productBatchChange.create({ data: f.data });
       expect(Math.abs(audit.createdAt.getTime() - time[0].now.getTime())).toBeLessThanOrEqual(1);
     });

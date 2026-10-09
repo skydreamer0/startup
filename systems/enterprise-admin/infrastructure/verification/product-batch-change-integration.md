@@ -46,7 +46,8 @@ No production code or database protection was relaxed. The runner rejected aggre
 acceptance and still executed owned DB DROP before rejecting its failed test status.
 Final acceptance must be read from the corrected source's CI, not this failed run.
 
-On that same first source, a separate owned synthetic PG15 Docker service in the
+On final migration source `985cbba9252abc2976e053d04304e7f6a5f6bb82` / tree
+`4d8fbf110ee4e2899343612a8164be25239655bd`, a separate owned synthetic PG15 Docker service in the
 selected cloud workspace applied all existing migrations, inserted a synthetic
 tenant/user/product/lot/linked IN movement, then applied the additive migration.
 Full before/after row JSON for all five tables matched; no audit rows were fabricated;
