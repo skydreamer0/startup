@@ -1,0 +1,1215 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "commit": "1a2c459b35f26116fd165b0a0f30597f252749ff",
+    "root_tree": "86f816ee22a549e5f84882f30cda88766f88c879",
+    "subtree_path": ".claude/skills/ui-ux-pro-max",
+    "subtree_tree": "0b6619c11598d7ce32041044cb2e6fc6adea1efc",
+    "source_subtree_files": 73,
+    "selected_subtree_files": 47,
+    "selected_subtree_bytes": 3324634,
+    "additional_root_license_files": 1
+  },
+  "installation": {
+    "project": "skydreamer0/startup",
+    "base_master": "9ec05fbb62688d02dc96df2099e39745762a02be",
+    "files_including_manifest": 53,
+    "files_excluding_manifest": 52,
+    "bytes_excluding_manifest": 3348268,
+    "upstream_copy_files": 48,
+    "upstream_copy_bytes": 3325709,
+    "local_markdown_files": 4,
+    "manifest_path": ".agents/skills/ui-ux-pro-max/SOURCE.lock.json",
+    "manifest_self_hash": "excluded to avoid circular hashing; independently verified in remote handoff",
+    "static_only": true,
+    "upstream_scripts_executed": false,
+    "font_or_icon_assets_downloaded": false,
+    "global_configuration_changed": false,
+    "production_database_accessed": false,
+    "machine_activation_proven": false
+  },
+  "legacy_candidate": {
+    "files": 49,
+    "bytes": 3353322,
+    "skill_bytes": 18069,
+    "skill_sha256": "d94ab4f3725df28c360f8b9e411b660e926ba253f8b4a1043488faaf136a83e3",
+    "skill_local_adaptation_bytes": 2100,
+    "manifest_bytes": 25513,
+    "verification_basis": "parent independently verified; old workspace not accessed here",
+    "new_layout_expected_to_match_old_package": false
+  },
+  "files": [
+    {
+      "installed_path": ".agents/skills/AGENTS.md",
+      "origin": "local",
+      "bytes": 1086,
+      "sha256": "17e846d854876a359f34a54659ffec78cebb4415964118804adaea3b8d1727b4",
+      "installed_git_blob_sha1": "46286ac63059ac522c4aa8f07abac5bd33942af8",
+      "git_mode": "100644"
+    },
+    {
+      "installed_path": ".agents/skills/README.md",
+      "origin": "local",
+      "bytes": 1368,
+      "sha256": "6028d2db41bff52b4190a63c36b8e8e34a127d1f8a815d0feea01e6f482d76fc",
+      "installed_git_blob_sha1": "c0ab633247f61da8552803f51d1847ffa72e40bc",
+      "git_mode": "100644"
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/INSTALLATION.md",
+      "origin": "local",
+      "bytes": 14514,
+      "sha256": "ea0bb3ac80edf643cfb756ace6d7bb8c1a67a3ef89b2804ccfd1cb0d8a387e36",
+      "installed_git_blob_sha1": "52bf159b420bbb1b8fc7577c0687f4680c311f99",
+      "git_mode": "100644"
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/LICENSE",
+      "origin": "upstream",
+      "source_path": "LICENSE",
+      "source_git_blob_sha1": "1e71cbf26660f31903807d099fe902c098fc7e4c",
+      "installed_git_blob_sha1": "1e71cbf26660f31903807d099fe902c098fc7e4c",
+      "bytes": 1075,
+      "sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/PHARMACY-OVERRIDES.md",
+      "origin": "local",
+      "bytes": 5591,
+      "sha256": "d2059fe5d86a45b82c3ada1ec2267e7d8b85c3cb6c9f6451f1aa0405aeba5231",
+      "installed_git_blob_sha1": "2525a855a24d119ef9535620b3465b8f61662505",
+      "git_mode": "100644"
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/SKILL.md",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "source_git_blob_sha1": "41f8e2fd7f8c568228d0b55186ebe3f7b4007377",
+      "installed_git_blob_sha1": "41f8e2fd7f8c568228d0b55186ebe3f7b4007377",
+      "bytes": 15969,
+      "sha256": "ea087c341bfb5b23195c7302027268ede86da802554c18a5c4896a6017b439f9",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/app-interface.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/app-interface.csv",
+      "source_git_blob_sha1": "95e328c807a23be02c9c32c736d0fa19109c6076",
+      "installed_git_blob_sha1": "95e328c807a23be02c9c32c736d0fa19109c6076",
+      "bytes": 11046,
+      "sha256": "331e7cf2c0b222d80c566c5f255c63cb339f65bfd02e471a720f28e4864a9f08",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/catalog-summary.json",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/catalog-summary.json",
+      "source_git_blob_sha1": "f911c3ae48fac5863a5a5e210866ec5cabece164",
+      "installed_git_blob_sha1": "f911c3ae48fac5863a5a5e210866ec5cabece164",
+      "bytes": 2392,
+      "sha256": "6638da97231c07fb5cef3cd9d3ce483ca7b2f9748980f8c27490eb03968d8894",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/charts.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/charts.csv",
+      "source_git_blob_sha1": "c6f4f875fd5b34379f24dbb541539492366a1058",
+      "installed_git_blob_sha1": "c6f4f875fd5b34379f24dbb541539492366a1058",
+      "bytes": 23365,
+      "sha256": "4115cf1120680f2cedef0676cb648f30c7ef4699e2a947535d4113e71ed3b12a",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/colors.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/colors.csv",
+      "source_git_blob_sha1": "5d2bf7389105f8a824b504b57cc93c00dc1d7e0a",
+      "installed_git_blob_sha1": "5d2bf7389105f8a824b504b57cc93c00dc1d7e0a",
+      "bytes": 37940,
+      "sha256": "8162429222bce22df62b564085946a30d07cc9722c58d0a3a494bd0d1d00841c",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/data-provenance.json",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/data-provenance.json",
+      "source_git_blob_sha1": "e41d2e553bdc7e5a8e6d16f5daab565faf372188",
+      "installed_git_blob_sha1": "e41d2e553bdc7e5a8e6d16f5daab565faf372188",
+      "bytes": 36686,
+      "sha256": "e82fb33ed49375a300e93d9c11ccd1c1493c999e84ee7ee295e527634786e2e0",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/google-font-licenses.json",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/google-font-licenses.json",
+      "source_git_blob_sha1": "3ac2c34e80665bc902e265c52ab6c27b1654524c",
+      "installed_git_blob_sha1": "3ac2c34e80665bc902e265c52ab6c27b1654524c",
+      "bytes": 433127,
+      "sha256": "35688523f2955795caa1a47c53b83099e60c1708461476f9cc3a050cf3b0148a",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/google-fonts.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/google-fonts.csv",
+      "source_git_blob_sha1": "d7f87e3e0159b1caba083b9954793d9852256aa0",
+      "installed_git_blob_sha1": "d7f87e3e0159b1caba083b9954793d9852256aa0",
+      "bytes": 747241,
+      "sha256": "1c8c3b2ea1faf6a1012da463756def8b3889db33f2226f0343bb4daa80307d03",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/icons.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/icons.csv",
+      "source_git_blob_sha1": "cfc3f1eccd7e5aee15d8d70f86d8fa17ba737958",
+      "installed_git_blob_sha1": "cfc3f1eccd7e5aee15d8d70f86d8fa17ba737958",
+      "bytes": 57945,
+      "sha256": "50816c6012030178195a16ee481ebf58b47bd985d70e8ec58886cc83f6eddafc",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/landing.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/landing.csv",
+      "source_git_blob_sha1": "34858160aa2789c49dca274d48bb116d51dd3f0a",
+      "installed_git_blob_sha1": "34858160aa2789c49dca274d48bb116d51dd3f0a",
+      "bytes": 25449,
+      "sha256": "9a2edd3bb676c2a58f00ade7a062e285222d4297bfd847c8d5b056f0dbbf52d0",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/motion.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/motion.csv",
+      "source_git_blob_sha1": "8e0ca9ceb0e4cd4832aee60ac74713e1e1830de8",
+      "installed_git_blob_sha1": "8e0ca9ceb0e4cd4832aee60ac74713e1e1830de8",
+      "bytes": 14679,
+      "sha256": "381affe8df8ea1f66fbbda2598827f9f54299107bbe6a1b4e9b68f6b62091ceb",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/phosphor-icons-upstream.json",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/phosphor-icons-upstream.json",
+      "source_git_blob_sha1": "ec1d76b8117ccbfdce5df214bf0d993e41a75318",
+      "installed_git_blob_sha1": "ec1d76b8117ccbfdce5df214bf0d993e41a75318",
+      "bytes": 823933,
+      "sha256": "2399325233b277b5c97a80e6a5e8941154f5d057beee4e7613db87c87d700236",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/products.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/products.csv",
+      "source_git_blob_sha1": "9f40f1d1f9743c4a81603076dfbfd115bbb55246",
+      "installed_git_blob_sha1": "9f40f1d1f9743c4a81603076dfbfd115bbb55246",
+      "bytes": 75623,
+      "sha256": "42473f75e8dde5987bdf89ce55d8c168091b80a356cae691dd60247d80720b70",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/react-performance.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/react-performance.csv",
+      "source_git_blob_sha1": "425a8e76c6b3bae40e8c633ffbf7ad6222c9f73a",
+      "installed_git_blob_sha1": "425a8e76c6b3bae40e8c633ffbf7ad6222c9f73a",
+      "bytes": 15080,
+      "sha256": "3d925802539abac5afeb63ae8aa1960b7229ad271b3a47caed40ab2d97ad0734",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/angular.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/angular.csv",
+      "source_git_blob_sha1": "5a1878dbee2b3c55c6468cbb18699b84d1a8c4d2",
+      "installed_git_blob_sha1": "5a1878dbee2b3c55c6468cbb18699b84d1a8c4d2",
+      "bytes": 19863,
+      "sha256": "704be83f2bad30c7e6de01afb113ffa01e0c458762f48b7102f31ba2367b5553",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/astro.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/astro.csv",
+      "source_git_blob_sha1": "1fd2492420b20a0b311295ab883597fadb8245a6",
+      "installed_git_blob_sha1": "1fd2492420b20a0b311295ab883597fadb8245a6",
+      "bytes": 14591,
+      "sha256": "2c2f55fadaafc05e04cc321c8194a1a28b656e6757fe2ba316f41b16428299c6",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/avalonia.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/avalonia.csv",
+      "source_git_blob_sha1": "c67f4117105865587eda9020c57d8c209f3a929a",
+      "installed_git_blob_sha1": "c67f4117105865587eda9020c57d8c209f3a929a",
+      "bytes": 27327,
+      "sha256": "442fca14675a020683473e7e49f08abb27b9df0765c80efe54aef61f1a4ac258",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/flutter.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/flutter.csv",
+      "source_git_blob_sha1": "731805c4076bd9f2755ca4bd7def5be6f6df7e9c",
+      "installed_git_blob_sha1": "731805c4076bd9f2755ca4bd7def5be6f6df7e9c",
+      "bytes": 14192,
+      "sha256": "64dba0ac17349f28bce517a0f5f48c54d9ed2e487ec0c0258303463b382f41a0",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv",
+      "source_git_blob_sha1": "9089eb0fc821ff0c8d135f8ee503be345e8fcb84",
+      "installed_git_blob_sha1": "9089eb0fc821ff0c8d135f8ee503be345e8fcb84",
+      "bytes": 16551,
+      "sha256": "d05a581d20af57b8ca0104a6d31d90a07c437d500662a96c3029fc2f9a4678ee",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/javafx.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/javafx.csv",
+      "source_git_blob_sha1": "744bd80f437f12bfb5bb9c84630a58022604675a",
+      "installed_git_blob_sha1": "744bd80f437f12bfb5bb9c84630a58022604675a",
+      "bytes": 33577,
+      "sha256": "2e819b8d5abdd23ad4dae0991650fdb57af497aabd68b37463aa9c442944c869",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv",
+      "source_git_blob_sha1": "8daa0b8f9a2ca3f0f1711664d9d677cd1c38dd9e",
+      "installed_git_blob_sha1": "8daa0b8f9a2ca3f0f1711664d9d677cd1c38dd9e",
+      "bytes": 12295,
+      "sha256": "699de218b286948eaec7d15767b6e1350ee299167e49bf476d82e3ff58724e0a",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/laravel.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/laravel.csv",
+      "source_git_blob_sha1": "ed11b0fba457e02857f996d1542fb0b8e1271756",
+      "installed_git_blob_sha1": "ed11b0fba457e02857f996d1542fb0b8e1271756",
+      "bytes": 20163,
+      "sha256": "854ea4daa5fc61292d22235ad33b49ba3fe22423c3de8d3cb03758ffed3b59f9",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/nextjs.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/nextjs.csv",
+      "source_git_blob_sha1": "acdaf097dff26ba0d3b22ab4544bf6169c87afd4",
+      "installed_git_blob_sha1": "acdaf097dff26ba0d3b22ab4544bf6169c87afd4",
+      "bytes": 18687,
+      "sha256": "ecd2c27b2ea0127d203ae726060efcdd7335b5e83f96b99e4f3befbbfeebd5a4",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv",
+      "source_git_blob_sha1": "e2aaeca45faa8b987bf94010162b14d458811dde",
+      "installed_git_blob_sha1": "e2aaeca45faa8b987bf94010162b14d458811dde",
+      "bytes": 28700,
+      "sha256": "fce682a338cfcdbf35d318d20e5befbe7b5d81b05abc37f87677a6d9cde84dc6",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv",
+      "source_git_blob_sha1": "ceab9cf3358d2788af0bd7dc14cb3fab769740d0",
+      "installed_git_blob_sha1": "ceab9cf3358d2788af0bd7dc14cb3fab769740d0",
+      "bytes": 23014,
+      "sha256": "3d9b54ed2d151bd9c86e9e5609b8a6f88a00c4c52fa601a30af96c49b2c4d176",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/react-native.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/react-native.csv",
+      "source_git_blob_sha1": "a5aea45dc1d0341b11ee42076a86db842d4d2a19",
+      "installed_git_blob_sha1": "a5aea45dc1d0341b11ee42076a86db842d4d2a19",
+      "bytes": 14049,
+      "sha256": "ba31dd9c0c04da6bc02a74448bf121f9c0728ae5ba3b4d47b487778b0a1135b5",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/react.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/react.csv",
+      "source_git_blob_sha1": "fe8f001e695a978733449e04e99d7135af0f1bf3",
+      "installed_git_blob_sha1": "fe8f001e695a978733449e04e99d7135af0f1bf3",
+      "bytes": 21166,
+      "sha256": "4dd176a9787e5c6306b5df94158d75955adcdc6edab41ce5286641a5842303c1",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/shadcn.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/shadcn.csv",
+      "source_git_blob_sha1": "0e8bedf3084e7a40d6310bcd3011c437efcb1700",
+      "installed_git_blob_sha1": "0e8bedf3084e7a40d6310bcd3011c437efcb1700",
+      "bytes": 23184,
+      "sha256": "e56cfde5b74907836ac3582a4779d5b7f3d206a702ab81b8669a1b668c3eeb51",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/svelte.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/svelte.csv",
+      "source_git_blob_sha1": "51684fe70448e15333cd16207db7da8aea0508e6",
+      "installed_git_blob_sha1": "51684fe70448e15333cd16207db7da8aea0508e6",
+      "bytes": 15078,
+      "sha256": "f6e379ba802941ba26b01d4ffbe3cd39120f2587659a1d93851c707f66bc13db",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/swiftui.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/swiftui.csv",
+      "source_git_blob_sha1": "ea9b95e8922e663b2adf27a7346e2c2f44c7a215",
+      "installed_git_blob_sha1": "ea9b95e8922e663b2adf27a7346e2c2f44c7a215",
+      "bytes": 15323,
+      "sha256": "bdd9231ff3ad658f4e7c063e1eb49df2fd09ac8d90631a86df899b39833b9623",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/threejs.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/threejs.csv",
+      "source_git_blob_sha1": "f62286320038beabbdc5e11e07ca2818d8e959a4",
+      "installed_git_blob_sha1": "f62286320038beabbdc5e11e07ca2818d8e959a4",
+      "bytes": 46769,
+      "sha256": "155d583b9c64da0df4b6c6cb060c02eab222505e0734d6353da02c9e2b5d982b",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/uno.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/uno.csv",
+      "source_git_blob_sha1": "9cab32326b4ad3a3cf43451a3c24553a41126cc1",
+      "installed_git_blob_sha1": "9cab32326b4ad3a3cf43451a3c24553a41126cc1",
+      "bytes": 30091,
+      "sha256": "a0474363e4225b5367214d5675fd3e075f137026f9500f0d04357882ef4f6d48",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/uwp.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/uwp.csv",
+      "source_git_blob_sha1": "04a84ea092a7657fef11e5daa97982be52dc6f59",
+      "installed_git_blob_sha1": "04a84ea092a7657fef11e5daa97982be52dc6f59",
+      "bytes": 24692,
+      "sha256": "c409f08c1fbba1f1029f1acaa554e7b4471cc85517a5751c9f2e62465badcd5c",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/vue.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/vue.csv",
+      "source_git_blob_sha1": "83997c515775170f22b638635aae0a67a46dfc87",
+      "installed_git_blob_sha1": "83997c515775170f22b638635aae0a67a46dfc87",
+      "bytes": 12813,
+      "sha256": "b655f1ebb9dff2652d15981f31b1784c8a6d4759efd2815a14f3088257569f95",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/winui.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/winui.csv",
+      "source_git_blob_sha1": "107ecead11728a83ec0ea10d815a9d1f43a35792",
+      "installed_git_blob_sha1": "107ecead11728a83ec0ea10d815a9d1f43a35792",
+      "bytes": 27890,
+      "sha256": "e676dc1c13ee6c205c40b0746f1335150a346c7a49a0616d2545bc3d2c930c85",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/stacks/wpf.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/stacks/wpf.csv",
+      "source_git_blob_sha1": "4e88d6750833a74f85ba487cf2b8f4ff6ebd2f4a",
+      "installed_git_blob_sha1": "4e88d6750833a74f85ba487cf2b8f4ff6ebd2f4a",
+      "bytes": 24158,
+      "sha256": "9781a9950b20333637b30a02e498b7efca21b618a3eeb8665836f3ac6e974da7",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/styles.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/styles.csv",
+      "source_git_blob_sha1": "d1eb2c216e453005ffa8232ffb94491c183afe3c",
+      "installed_git_blob_sha1": "d1eb2c216e453005ffa8232ffb94491c183afe3c",
+      "bytes": 149478,
+      "sha256": "a93a4d9d7025856575d7b7583bda020be9043013432c5af7c58af9dbdfb206b7",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/typography.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/typography.csv",
+      "source_git_blob_sha1": "70d107d107de30150863c965767320ec33ef29ad",
+      "installed_git_blob_sha1": "70d107d107de30150863c965767320ec33ef29ad",
+      "bytes": 49997,
+      "sha256": "321fc446e89024488ebae96dda93efc4d2307bd8bddb240857ad51364f6782c8",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/ui-reasoning.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/ui-reasoning.csv",
+      "source_git_blob_sha1": "8931d4c809f8e22ddac00ce612ce0c35f34a59b6",
+      "installed_git_blob_sha1": "8931d4c809f8e22ddac00ce612ce0c35f34a59b6",
+      "bytes": 77360,
+      "sha256": "f0774dd741cecdad5eec842034bd6d5e9ea50e9f220a1910069748daa0bb8e9a",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/data/ux-guidelines.csv",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/data/ux-guidelines.csv",
+      "source_git_blob_sha1": "4e7d52b296537a03513b18b2c3f2b946cc802051",
+      "installed_git_blob_sha1": "4e7d52b296537a03513b18b2c3f2b946cc802051",
+      "bytes": 27516,
+      "sha256": "ff81ec613f70ba9fc3fcce52dbe4ae35d44b2079dbe6dc066d2d6e38c28facd5",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/references/pro-rules.md",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/references/pro-rules.md",
+      "source_git_blob_sha1": "b2ce233287e37ec9ca13476c4014b922e9d5a0e9",
+      "installed_git_blob_sha1": "b2ce233287e37ec9ca13476c4014b922e9d5a0e9",
+      "bytes": 10909,
+      "sha256": "d28442d61c310b49c054a4ea736f89fb3008beebdbbc38c4b3a540b8f7fadf23",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/references/quick-reference.md",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/references/quick-reference.md",
+      "source_git_blob_sha1": "7acc7e7540ca6981d878a90aae4455c1638e2385",
+      "installed_git_blob_sha1": "7acc7e7540ca6981d878a90aae4455c1638e2385",
+      "bytes": 24526,
+      "sha256": "0609bc7c89dacb40472465d8fc14257b56b2c43439660fc8d6fa3b8c022e1876",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/scripts/core.py",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/core.py",
+      "source_git_blob_sha1": "670fe33070cfe706401da4ff276831257dbf1e25",
+      "installed_git_blob_sha1": "670fe33070cfe706401da4ff276831257dbf1e25",
+      "bytes": 41236,
+      "sha256": "c3be4b23e7150e6b45095213158cfa3c8ad96502f01dde3f6ffff9de64a4f481",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/scripts/design_system.py",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/design_system.py",
+      "source_git_blob_sha1": "d5fe1575f00d839f919603bd09b44fe7e9def4fb",
+      "installed_git_blob_sha1": "d5fe1575f00d839f919603bd09b44fe7e9def4fb",
+      "bytes": 71537,
+      "sha256": "e7d1c94c4b2eada17c5551157668362659ccf9626d34dbd58e68142410f90103",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/scripts/reasoning_contract.py",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/reasoning_contract.py",
+      "source_git_blob_sha1": "63652a666b130c249ea1e2954316f1ac8a5a73d5",
+      "installed_git_blob_sha1": "63652a666b130c249ea1e2954316f1ac8a5a73d5",
+      "bytes": 5824,
+      "sha256": "b8bac1af82aa280d3e06f00aabaeac4337e632996b07fed874e2b6ee6e9c5913",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/scripts/search.py",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/search.py",
+      "source_git_blob_sha1": "5038aa875a0d39f24dea803a4c73b38f8f56915f",
+      "installed_git_blob_sha1": "5038aa875a0d39f24dea803a4c73b38f8f56915f",
+      "bytes": 9373,
+      "sha256": "d54e648fe0ec2932cac66684220cc17be4bd4b4eba1d23d3195d509d398db374",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    },
+    {
+      "installed_path": ".agents/skills/ui-ux-pro-max/scripts/validate_data.py",
+      "origin": "upstream",
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/validate_data.py",
+      "source_git_blob_sha1": "8b6c7941f6ad3e51cb9d412b11185133e7763001",
+      "installed_git_blob_sha1": "8b6c7941f6ad3e51cb9d412b11185133e7763001",
+      "bytes": 52230,
+      "sha256": "a599aa256049cf30954d1f164721b99e453eb7e4cb8241bcab2d5573e6cf58b8",
+      "git_mode": "100644",
+      "upstream_bytes_unchanged": true
+    }
+  ],
+  "excluded_upstream_files": [
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-api.json",
+      "git_blob_sha1": "eacf1bb4559875808247df711376e8cc47c4f7c4",
+      "bytes": 1079,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-catalog.json",
+      "git_blob_sha1": "4eb89d4d3312b670ef70d44563bf2ffd5cf814bb",
+      "bytes": 1772,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-existing.csv",
+      "git_blob_sha1": "83279e0f218e9725b8a14486a558fa10ff134949",
+      "bytes": 480,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-metadata.json",
+      "git_blob_sha1": "43edcbec14c4a5e68d373eda8466c235f2ee7e9b",
+      "bytes": 328,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-overrides.json",
+      "git_blob_sha1": "162fd1830b08dc1a7b8b891f92f16dbb8b7015f2",
+      "bytes": 97,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/icons-curated.csv",
+      "git_blob_sha1": "3171bfc7a0a6b3b36745b4f7f0c7743f0afad953",
+      "bytes": 495,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-core.json",
+      "git_blob_sha1": "be0edd337f2c731af41b8a745d37089172c5dc60",
+      "bytes": 571,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-package.json",
+      "git_blob_sha1": "ad9e6ef4b835e65a6c0bd0ad9d11f0517fd718c1",
+      "bytes": 370,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-exports.json",
+      "git_blob_sha1": "4a0b4587ce9876acac1904831ea774bbf8c69edf",
+      "bytes": 87,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-package.json",
+      "git_blob_sha1": "a0db183da61e63f3a8f9e3fbfba7405144f41c1e",
+      "bytes": 81,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-baseline.json",
+      "git_blob_sha1": "0894a44cc154a01d3b2d624a66c30e7ac3e1a3d5",
+      "bytes": 89426,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-cases.json",
+      "git_blob_sha1": "a1fbb87835bda252ba8ae7f15e7090cee580cb42",
+      "bytes": 36734,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-thresholds.json",
+      "git_blob_sha1": "1f90e9891fa96bcf9f27db54bcc4bc1eb41328a7",
+      "bytes": 5079,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_catalog_refresh.py",
+      "git_blob_sha1": "8379cc3a224bb9f3dca2a3ebd561cd92b7e05ae4",
+      "bytes": 19466,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_catalog_summary_line_endings.py",
+      "git_blob_sha1": "056c8e5e7d8ba69c87c31c8ad7bcd32ca3d7223c",
+      "bytes": 2947,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_core.py",
+      "git_blob_sha1": "b30c0ae54c25f38ec91b37a56cda04426b2510a9",
+      "bytes": 16680,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_core_data_quality.py",
+      "git_blob_sha1": "6d36c79b1f9f8c68c4b02f86a09c5e5f9ba410fe",
+      "bytes": 8954,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_data_contracts.py",
+      "git_blob_sha1": "312dc383b3f6548d7200e928c192673a907b5016",
+      "bytes": 19513,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py",
+      "git_blob_sha1": "44c80c1caa159058a7a5858284ea269bcb561449",
+      "bytes": 9815,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_design_system_stack.py",
+      "git_blob_sha1": "50f0080300b56f4891014d878edddb781b36d7de",
+      "bytes": 2261,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_native_desktop_stack_freshness.py",
+      "git_blob_sha1": "79e07f4f5f9c88025506cb3d7bb5aad01dbbd339",
+      "bytes": 8375,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_relevance_evaluator.py",
+      "git_blob_sha1": "ed158e2d4e39a342090b29435dee25bcf5c4444f",
+      "bytes": 8430,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_skill_script_paths.py",
+      "git_blob_sha1": "36514964d7ea6edcadc169e0d713c18b1cc0bb09",
+      "bytes": 4305,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_style_taxonomy.py",
+      "git_blob_sha1": "09ec131ea6d609e21aaf81327a2e3ffe1ea59d4c",
+      "bytes": 7425,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py",
+      "git_blob_sha1": "8db3b873f958b93906abb8f4e4d6ef75a344c76e",
+      "bytes": 5874,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    },
+    {
+      "source_path": ".claude/skills/ui-ux-pro-max/scripts/tests/test_web_stack_freshness.py",
+      "git_blob_sha1": "a54b0eaaa564fc4e0390537b268eaca46d36d5bd",
+      "bytes": 7701,
+      "reason": "upstream test/fixture excluded; not copied or executed"
+    }
+  ],
+  "legacy_candidate_comparison": [
+    {
+      "old_relative_path": "LICENSE",
+      "new_path": ".agents/skills/ui-ux-pro-max/LICENSE",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 1075,
+      "old_sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014",
+      "new_sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "SKILL.md",
+      "new_path": ".agents/skills/ui-ux-pro-max/SKILL.md",
+      "comparison": "restored_upstream_skill_local_adaptations_separated",
+      "old_bytes": 18069,
+      "old_sha256": "d94ab4f3725df28c360f8b9e411b660e926ba253f8b4a1043488faaf136a83e3",
+      "new_sha256": "ea087c341bfb5b23195c7302027268ede86da802554c18a5c4896a6017b439f9",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/app-interface.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/app-interface.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 11046,
+      "old_sha256": "331e7cf2c0b222d80c566c5f255c63cb339f65bfd02e471a720f28e4864a9f08",
+      "new_sha256": "331e7cf2c0b222d80c566c5f255c63cb339f65bfd02e471a720f28e4864a9f08",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/catalog-summary.json",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/catalog-summary.json",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 2392,
+      "old_sha256": "6638da97231c07fb5cef3cd9d3ce483ca7b2f9748980f8c27490eb03968d8894",
+      "new_sha256": "6638da97231c07fb5cef3cd9d3ce483ca7b2f9748980f8c27490eb03968d8894",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/charts.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/charts.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 23365,
+      "old_sha256": "4115cf1120680f2cedef0676cb648f30c7ef4699e2a947535d4113e71ed3b12a",
+      "new_sha256": "4115cf1120680f2cedef0676cb648f30c7ef4699e2a947535d4113e71ed3b12a",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/colors.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/colors.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 37940,
+      "old_sha256": "8162429222bce22df62b564085946a30d07cc9722c58d0a3a494bd0d1d00841c",
+      "new_sha256": "8162429222bce22df62b564085946a30d07cc9722c58d0a3a494bd0d1d00841c",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/data-provenance.json",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/data-provenance.json",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 36686,
+      "old_sha256": "e82fb33ed49375a300e93d9c11ccd1c1493c999e84ee7ee295e527634786e2e0",
+      "new_sha256": "e82fb33ed49375a300e93d9c11ccd1c1493c999e84ee7ee295e527634786e2e0",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/google-font-licenses.json",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/google-font-licenses.json",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 433127,
+      "old_sha256": "35688523f2955795caa1a47c53b83099e60c1708461476f9cc3a050cf3b0148a",
+      "new_sha256": "35688523f2955795caa1a47c53b83099e60c1708461476f9cc3a050cf3b0148a",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/google-fonts.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/google-fonts.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 747241,
+      "old_sha256": "1c8c3b2ea1faf6a1012da463756def8b3889db33f2226f0343bb4daa80307d03",
+      "new_sha256": "1c8c3b2ea1faf6a1012da463756def8b3889db33f2226f0343bb4daa80307d03",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/icons.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/icons.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 57945,
+      "old_sha256": "50816c6012030178195a16ee481ebf58b47bd985d70e8ec58886cc83f6eddafc",
+      "new_sha256": "50816c6012030178195a16ee481ebf58b47bd985d70e8ec58886cc83f6eddafc",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/landing.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/landing.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 25449,
+      "old_sha256": "9a2edd3bb676c2a58f00ade7a062e285222d4297bfd847c8d5b056f0dbbf52d0",
+      "new_sha256": "9a2edd3bb676c2a58f00ade7a062e285222d4297bfd847c8d5b056f0dbbf52d0",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/motion.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/motion.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 14679,
+      "old_sha256": "381affe8df8ea1f66fbbda2598827f9f54299107bbe6a1b4e9b68f6b62091ceb",
+      "new_sha256": "381affe8df8ea1f66fbbda2598827f9f54299107bbe6a1b4e9b68f6b62091ceb",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/phosphor-icons-upstream.json",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/phosphor-icons-upstream.json",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 823933,
+      "old_sha256": "2399325233b277b5c97a80e6a5e8941154f5d057beee4e7613db87c87d700236",
+      "new_sha256": "2399325233b277b5c97a80e6a5e8941154f5d057beee4e7613db87c87d700236",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/products.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/products.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 75623,
+      "old_sha256": "42473f75e8dde5987bdf89ce55d8c168091b80a356cae691dd60247d80720b70",
+      "new_sha256": "42473f75e8dde5987bdf89ce55d8c168091b80a356cae691dd60247d80720b70",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/react-performance.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/react-performance.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 15080,
+      "old_sha256": "3d925802539abac5afeb63ae8aa1960b7229ad271b3a47caed40ab2d97ad0734",
+      "new_sha256": "3d925802539abac5afeb63ae8aa1960b7229ad271b3a47caed40ab2d97ad0734",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/angular.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/angular.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 19863,
+      "old_sha256": "704be83f2bad30c7e6de01afb113ffa01e0c458762f48b7102f31ba2367b5553",
+      "new_sha256": "704be83f2bad30c7e6de01afb113ffa01e0c458762f48b7102f31ba2367b5553",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/astro.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/astro.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 14591,
+      "old_sha256": "2c2f55fadaafc05e04cc321c8194a1a28b656e6757fe2ba316f41b16428299c6",
+      "new_sha256": "2c2f55fadaafc05e04cc321c8194a1a28b656e6757fe2ba316f41b16428299c6",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/avalonia.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/avalonia.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 27327,
+      "old_sha256": "442fca14675a020683473e7e49f08abb27b9df0765c80efe54aef61f1a4ac258",
+      "new_sha256": "442fca14675a020683473e7e49f08abb27b9df0765c80efe54aef61f1a4ac258",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/flutter.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/flutter.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 14192,
+      "old_sha256": "64dba0ac17349f28bce517a0f5f48c54d9ed2e487ec0c0258303463b382f41a0",
+      "new_sha256": "64dba0ac17349f28bce517a0f5f48c54d9ed2e487ec0c0258303463b382f41a0",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/html-tailwind.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 16551,
+      "old_sha256": "d05a581d20af57b8ca0104a6d31d90a07c437d500662a96c3029fc2f9a4678ee",
+      "new_sha256": "d05a581d20af57b8ca0104a6d31d90a07c437d500662a96c3029fc2f9a4678ee",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/javafx.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/javafx.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 33577,
+      "old_sha256": "2e819b8d5abdd23ad4dae0991650fdb57af497aabd68b37463aa9c442944c869",
+      "new_sha256": "2e819b8d5abdd23ad4dae0991650fdb57af497aabd68b37463aa9c442944c869",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/jetpack-compose.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 12295,
+      "old_sha256": "699de218b286948eaec7d15767b6e1350ee299167e49bf476d82e3ff58724e0a",
+      "new_sha256": "699de218b286948eaec7d15767b6e1350ee299167e49bf476d82e3ff58724e0a",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/laravel.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/laravel.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 20163,
+      "old_sha256": "854ea4daa5fc61292d22235ad33b49ba3fe22423c3de8d3cb03758ffed3b59f9",
+      "new_sha256": "854ea4daa5fc61292d22235ad33b49ba3fe22423c3de8d3cb03758ffed3b59f9",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/nextjs.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/nextjs.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 18687,
+      "old_sha256": "ecd2c27b2ea0127d203ae726060efcdd7335b5e83f96b99e4f3befbbfeebd5a4",
+      "new_sha256": "ecd2c27b2ea0127d203ae726060efcdd7335b5e83f96b99e4f3befbbfeebd5a4",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/nuxt-ui.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 28700,
+      "old_sha256": "fce682a338cfcdbf35d318d20e5befbe7b5d81b05abc37f87677a6d9cde84dc6",
+      "new_sha256": "fce682a338cfcdbf35d318d20e5befbe7b5d81b05abc37f87677a6d9cde84dc6",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/nuxtjs.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 23014,
+      "old_sha256": "3d9b54ed2d151bd9c86e9e5609b8a6f88a00c4c52fa601a30af96c49b2c4d176",
+      "new_sha256": "3d9b54ed2d151bd9c86e9e5609b8a6f88a00c4c52fa601a30af96c49b2c4d176",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/react-native.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/react-native.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 14049,
+      "old_sha256": "ba31dd9c0c04da6bc02a74448bf121f9c0728ae5ba3b4d47b487778b0a1135b5",
+      "new_sha256": "ba31dd9c0c04da6bc02a74448bf121f9c0728ae5ba3b4d47b487778b0a1135b5",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/react.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/react.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 21166,
+      "old_sha256": "4dd176a9787e5c6306b5df94158d75955adcdc6edab41ce5286641a5842303c1",
+      "new_sha256": "4dd176a9787e5c6306b5df94158d75955adcdc6edab41ce5286641a5842303c1",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/shadcn.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/shadcn.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 23184,
+      "old_sha256": "e56cfde5b74907836ac3582a4779d5b7f3d206a702ab81b8669a1b668c3eeb51",
+      "new_sha256": "e56cfde5b74907836ac3582a4779d5b7f3d206a702ab81b8669a1b668c3eeb51",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/svelte.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/svelte.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 15078,
+      "old_sha256": "f6e379ba802941ba26b01d4ffbe3cd39120f2587659a1d93851c707f66bc13db",
+      "new_sha256": "f6e379ba802941ba26b01d4ffbe3cd39120f2587659a1d93851c707f66bc13db",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/swiftui.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/swiftui.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 15323,
+      "old_sha256": "bdd9231ff3ad658f4e7c063e1eb49df2fd09ac8d90631a86df899b39833b9623",
+      "new_sha256": "bdd9231ff3ad658f4e7c063e1eb49df2fd09ac8d90631a86df899b39833b9623",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/threejs.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/threejs.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 46769,
+      "old_sha256": "155d583b9c64da0df4b6c6cb060c02eab222505e0734d6353da02c9e2b5d982b",
+      "new_sha256": "155d583b9c64da0df4b6c6cb060c02eab222505e0734d6353da02c9e2b5d982b",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/uno.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/uno.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 30091,
+      "old_sha256": "a0474363e4225b5367214d5675fd3e075f137026f9500f0d04357882ef4f6d48",
+      "new_sha256": "a0474363e4225b5367214d5675fd3e075f137026f9500f0d04357882ef4f6d48",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/uwp.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/uwp.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 24692,
+      "old_sha256": "c409f08c1fbba1f1029f1acaa554e7b4471cc85517a5751c9f2e62465badcd5c",
+      "new_sha256": "c409f08c1fbba1f1029f1acaa554e7b4471cc85517a5751c9f2e62465badcd5c",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/vue.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/vue.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 12813,
+      "old_sha256": "b655f1ebb9dff2652d15981f31b1784c8a6d4759efd2815a14f3088257569f95",
+      "new_sha256": "b655f1ebb9dff2652d15981f31b1784c8a6d4759efd2815a14f3088257569f95",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/winui.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/winui.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 27890,
+      "old_sha256": "e676dc1c13ee6c205c40b0746f1335150a346c7a49a0616d2545bc3d2c930c85",
+      "new_sha256": "e676dc1c13ee6c205c40b0746f1335150a346c7a49a0616d2545bc3d2c930c85",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/stacks/wpf.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/stacks/wpf.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 24158,
+      "old_sha256": "9781a9950b20333637b30a02e498b7efca21b618a3eeb8665836f3ac6e974da7",
+      "new_sha256": "9781a9950b20333637b30a02e498b7efca21b618a3eeb8665836f3ac6e974da7",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/styles.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/styles.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 149478,
+      "old_sha256": "a93a4d9d7025856575d7b7583bda020be9043013432c5af7c58af9dbdfb206b7",
+      "new_sha256": "a93a4d9d7025856575d7b7583bda020be9043013432c5af7c58af9dbdfb206b7",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/typography.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/typography.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 49997,
+      "old_sha256": "321fc446e89024488ebae96dda93efc4d2307bd8bddb240857ad51364f6782c8",
+      "new_sha256": "321fc446e89024488ebae96dda93efc4d2307bd8bddb240857ad51364f6782c8",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/ui-reasoning.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/ui-reasoning.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 77360,
+      "old_sha256": "f0774dd741cecdad5eec842034bd6d5e9ea50e9f220a1910069748daa0bb8e9a",
+      "new_sha256": "f0774dd741cecdad5eec842034bd6d5e9ea50e9f220a1910069748daa0bb8e9a",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "data/ux-guidelines.csv",
+      "new_path": ".agents/skills/ui-ux-pro-max/data/ux-guidelines.csv",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 27516,
+      "old_sha256": "ff81ec613f70ba9fc3fcce52dbe4ae35d44b2079dbe6dc066d2d6e38c28facd5",
+      "new_sha256": "ff81ec613f70ba9fc3fcce52dbe4ae35d44b2079dbe6dc066d2d6e38c28facd5",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "references/pro-rules.md",
+      "new_path": ".agents/skills/ui-ux-pro-max/references/pro-rules.md",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 10909,
+      "old_sha256": "d28442d61c310b49c054a4ea736f89fb3008beebdbbc38c4b3a540b8f7fadf23",
+      "new_sha256": "d28442d61c310b49c054a4ea736f89fb3008beebdbbc38c4b3a540b8f7fadf23",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "references/quick-reference.md",
+      "new_path": ".agents/skills/ui-ux-pro-max/references/quick-reference.md",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 24526,
+      "old_sha256": "0609bc7c89dacb40472465d8fc14257b56b2c43439660fc8d6fa3b8c022e1876",
+      "new_sha256": "0609bc7c89dacb40472465d8fc14257b56b2c43439660fc8d6fa3b8c022e1876",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "scripts/core.py",
+      "new_path": ".agents/skills/ui-ux-pro-max/scripts/core.py",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 41236,
+      "old_sha256": "c3be4b23e7150e6b45095213158cfa3c8ad96502f01dde3f6ffff9de64a4f481",
+      "new_sha256": "c3be4b23e7150e6b45095213158cfa3c8ad96502f01dde3f6ffff9de64a4f481",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "scripts/design_system.py",
+      "new_path": ".agents/skills/ui-ux-pro-max/scripts/design_system.py",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 71537,
+      "old_sha256": "e7d1c94c4b2eada17c5551157668362659ccf9626d34dbd58e68142410f90103",
+      "new_sha256": "e7d1c94c4b2eada17c5551157668362659ccf9626d34dbd58e68142410f90103",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "scripts/reasoning_contract.py",
+      "new_path": ".agents/skills/ui-ux-pro-max/scripts/reasoning_contract.py",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 5824,
+      "old_sha256": "b8bac1af82aa280d3e06f00aabaeac4337e632996b07fed874e2b6ee6e9c5913",
+      "new_sha256": "b8bac1af82aa280d3e06f00aabaeac4337e632996b07fed874e2b6ee6e9c5913",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "scripts/search.py",
+      "new_path": ".agents/skills/ui-ux-pro-max/scripts/search.py",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 9373,
+      "old_sha256": "d54e648fe0ec2932cac66684220cc17be4bd4b4eba1d23d3195d509d398db374",
+      "new_sha256": "d54e648fe0ec2932cac66684220cc17be4bd4b4eba1d23d3195d509d398db374",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "scripts/validate_data.py",
+      "new_path": ".agents/skills/ui-ux-pro-max/scripts/validate_data.py",
+      "comparison": "unchanged_upstream_parent_attested_old_match",
+      "old_bytes": 52230,
+      "old_sha256": "a599aa256049cf30954d1f164721b99e453eb7e4cb8241bcab2d5573e6cf58b8",
+      "new_sha256": "a599aa256049cf30954d1f164721b99e453eb7e4cb8241bcab2d5573e6cf58b8",
+      "old_verification_basis": "parent independent verification; old workspace not accessed in this environment"
+    },
+    {
+      "old_relative_path": "SOURCE.lock.json",
+      "new_path": ".agents/skills/ui-ux-pro-max/SOURCE.lock.json",
+      "comparison": "replaced_manifest",
+      "old_bytes": 25513,
+      "old_sha256": null,
+      "old_hash_unavailable_reason": "old manifest not provided to this environment",
+      "new_hash_location": "remote verification handoff; manifest excludes its own hash"
+    }
+  ],
+  "static_review": {
+    "scripts_parsed_not_executed": 5,
+    "csv_files_parsed": 35,
+    "full_diff_whitespace_check": "exit 2; 46 inherited trailing-whitespace lines in unchanged upstream scripts/design_system.py",
+    "local_document_whitespace_check": "passed",
+    "network_request_or_process_launch_calls_identified": false,
+    "runtime_verification_performed": false,
+    "persist_requires_explicit_authorization": true,
+    "force_requires_confirmation": true
+  }
+}
