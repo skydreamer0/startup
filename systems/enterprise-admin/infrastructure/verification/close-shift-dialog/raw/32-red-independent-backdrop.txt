@@ -1,0 +1,297 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 test
+> vitest run --maxWorkers=2 src/__tests__/CloseShiftDialog.test.tsx src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx
+
+
+ RUN  v4.1.11 /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui
+
+ ❯ src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx (15 tests | 4 failed) 1820ms
+     × keeps active cart unchanged after a backdrop click then F4 79ms
+     × prevents opening a payment modal after a backdrop click then Enter 79ms
+     × retains Escape cancellation after a backdrop click 69ms
+     × does not mutate the cart after clicking backdrop during a pending close request 83ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx > independent backdrop keyboard-ownership regressions > keeps active cart unchanged after a backdrop click then F4
+AssertionError: expected [] to deeply equal [ { product: { …(5) }, …(2) } ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "discountRate": 0,
+-     "product": {
+-       "id": "synthetic-product",
+-       "name": "合成商品",
+-       "retailPrice": 100,
+-       "sku": "4711234",
+-       "stockQuantity": 5,
+-     },
+-     "quantity": 2,
+-   },
+- ]
++ []
+
+ ❯ src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx:211:43
+    209|     await user.keyboard('{F4}');
+    210|     expect(screen.getByRole('dialog', { name: '確認交班' })).toBeInTheDocu…
+    211|     expect(useCartStore.getState().items).toEqual(items);
+       |                                           ^
+    212|     expect(useCartStore.getState().heldCarts).toHaveLength(0);
+    213|     expectNoWrite();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx > independent backdrop keyboard-ownership regressions > prevents opening a payment modal after a backdrop click then Enter
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-labelledby="payment-title"
+  aria-modal="true"
+  role="dialog"
+  style="background: var(--bg-card); border-radius: var(--radius-md); padding: 24px; width: min(400px * , * calc(100vw - 32px)); max-height: calc(100dvh - 32px); display: flex; flex-direction: column; box-shadow: var(--shadow-lg);"
+>
+  <div
+    style="min-height: 0; overflow-y: auto;"
+  >
+    <h3
+      id="payment-title"
+      style="margin: 0px 0px 8px;"
+    >
+      確認結帳
+    </h3>
+    <div
+      style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin: 16px 0px 20px; background: var(--bg-app);"
+    >
+      <div
+        style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;"
+      >
+        品項數：
+        2
+         件
+      </div>
+      <div
+        style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;"
+      >
+        小計：$
+        200
+         元
+      </div>
+      <div
+        style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--border);"
+      >
+        <span
+          style="font-size: 15px; font-weight: 700;"
+        >
+          合計
+        </span>
+        <span
+          style="font-size: 32px; font-weight: 700; color: var(--accent);"
+        >
+          $
+          200
+           元
+        </span>
+      </div>
+      <div
+        style="font-size: 14px; color: var(--text-secondary); margin-top: 10px;"
+      >
+        人員：
+        合成收銀員
+      </div>
+    </div>
+    <div
+      style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;"
+    >
+      <button
+        style="padding: 8px 16px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--accent); color: rgb(255, 255, 255); cursor: pointer; font-size: 14px;"
+        type="button"
+      >
+        現金
+      </button>
+      <button
+        style="padding: 8px 16px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; font-size: 14px;"
+        type="button"
+      >
+        信用卡
+      </button>
+      <button
+        style="padding: 8px 16px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; font-size: 14px;"
+        type="button"
+      >
+        LINE Pay
+      </button>
+      <button
+        style="padding: 8px 16px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; font-size: 14px;"
+        type="button"
+      >
+        轉帳
+      </button>
+      <button
+        style="padding: 8px 16px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; font-size: 14px;"
+        type="button"
+      >
+        其他
+      </button>
+    </div>
+    <div
+      style="margin-bottom: 24px; padding: 16px; border-radius: var(--radius-sm); background: var(--bg-app); border: 1px solid var(--border);"
+    >
+      <label
+        for="payment-tendered"
+        style="display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px;"
+      >
+        收取金額
+      </label>
+      <input
+        data-testid="payment-tendered-input"
+        id="payment-tendered"
+        min="0"
+        style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 24px; font-weight: 700; text-align: right;"
+        type="number"
+        value="0"
+      />
+      <div
+        style="margin-top: 10px; font-size: 22px; font-weight: 700; color: var(--accent); text-align: right;"
+      >
+        找零：$
+        0
+         元
+      </div>
+    </div>
+  </div>
+  <div
+    style="display: flex; gap: 12px; flex-shrink: 0; padding-top: 12px;"
+  >
+    <button
+      style="flex: 1 1 0%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); cursor: pointer; font-size: 15px;"
+      type="button"
+    >
+      取消
+    </button>
+    <button
+      data-testid="payment-confirm-button"
+      disabled=""
+      style="flex: 2 1 0%; padding: 12px; background: var(--accent); color: rgb(255, 255, 255); border-radius: var(--radius-sm); cursor: not-allowed; font-size: 15px; font-weight: 700; opacity: 0.7;"
+      type="button"
+    >
+      確認付款
+    </button>
+  </div>
+</div> instead
+ ❯ src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx:221:64
+    219|     expect(document.activeElement).toBe(document.body);
+    220|     await user.keyboard('{Enter}');
+    221|     expect(screen.queryByRole('dialog', { name: '確認結帳' })).not.toBeInT…
+       |                                                                ^
+    222|     expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    223|     expectNoWrite();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx > independent backdrop keyboard-ownership regressions > retains Escape cancellation after a backdrop click
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <div
+  aria-busy="false"
+  aria-labelledby="_r_12_"
+  aria-modal="true"
+  role="dialog"
+  style="background: var(--bg-card); border-radius: var(--radius-md); padding: 32px; width: 360px; box-shadow: var(--shadow-lg);"
+  tabindex="-1"
+>
+  <h3
+    id="_r_12_"
+    style="margin: 0px 0px 16px;"
+  >
+    確認交班
+  </h3>
+  <div
+    style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;"
+  >
+    <label
+      for="_r_13_"
+      style="font-size: 13px; color: var(--text-secondary); white-space: nowrap;"
+    >
+      結帳金額
+    </label>
+    <input
+      id="_r_13_"
+      min="0"
+      style="flex: 1 1 0%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 14px;"
+      type="number"
+      value="1234"
+    />
+    <span
+      style="font-size: 13px;"
+    >
+      元
+    </span>
+  </div>
+  <div
+    style="display: flex; gap: 12px;"
+  >
+    <button
+      style="flex: 1 1 0%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); cursor: pointer; font-size: 14px;"
+      type="button"
+    >
+      取消
+    </button>
+    <button
+      style="flex: 1 1 0%; padding: 10px; background: var(--danger); color: rgb(255, 255, 255); border-radius: var(--radius-sm); cursor: pointer; font-size: 14px; font-weight: 700; opacity: 1;"
+      type="button"
+    >
+      確認交班
+    </button>
+  </div>
+</div> instead
+ ❯ src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx:230:64
+    228|     await user.click(dialog.parentElement!);
+    229|     await user.keyboard('{Escape}');
+    230|     expect(screen.queryByRole('dialog', { name: '確認交班' })).not.toBeInT…
+       |                                                                ^
+    231|     expect(opener).toHaveFocus();
+    232|     expectNoWrite();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx > independent pending backdrop regression > does not mutate the cart after clicking backdrop during a pending close request
+AssertionError: expected [] to deeply equal [ { product: { …(5) }, …(2) } ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "discountRate": 0,
+-     "product": {
+-       "id": "synthetic-product",
+-       "name": "合成商品",
+-       "retailPrice": 100,
+-       "sku": "4711234",
+-       "stockQuantity": 5,
+-     },
+-     "quantity": 2,
+-   },
+- ]
++ []
+
+ ❯ src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx:248:43
+    246|     expect(document.activeElement).toBe(document.body);
+    247|     await user.keyboard('{F4}');
+    248|     expect(useCartStore.getState().items).toEqual(items);
+       |                                           ^
+    249|     expect(useCartStore.getState().heldCarts).toHaveLength(0);
+    250|     await act(async () => { pending.reject(new Error('synthetic failur…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  4 failed | 27 passed (31)
+   Start at  02:06:02
+   Duration  2.91s (transform 446ms, setup 130ms, import 812ms, tests 2.25s, environment 594ms)
+

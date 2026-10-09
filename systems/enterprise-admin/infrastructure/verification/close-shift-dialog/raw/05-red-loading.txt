@@ -1,0 +1,40 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 test
+> vitest run src/__tests__/CloseShiftDialog.test.tsx
+
+
+ RUN  v4.1.11 /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui
+
+ ❯ src/__tests__/CloseShiftDialog.test.tsx (6 tests | 1 failed) 210ms
+     × locks all controls and Escape while busy, keeps focus, then allows retry after failure 105ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/CloseShiftDialog.test.tsx > CloseShiftDialog > locks all controls and Escape while busy, keeps focus, then allows retry after failure
+Error: expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <input
+  id="_r_1_"
+  min="0"
+  style="flex: 1 1 0%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 14px;"
+  type="number"
+  value="500"
+/>
+ ❯ src/__tests__/CloseShiftDialog.test.tsx:16:19
+     14|     const dialog = screen.getByRole('dialog', { name: '確認交班' });
+     15|     const input = screen.getByRole('spinbutton', { name: '結帳金額' });
+     16|     expect(input).toBeDisabled();
+       |                   ^
+     17|     expect(screen.getByRole('button', { name: '取消' })).toBeDisabled();
+     18|     expect(dialog).toHaveAttribute('aria-busy', 'true');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  01:30:57
+   Duration  909ms (transform 62ms, setup 69ms, import 158ms, tests 210ms, environment 304ms)
+

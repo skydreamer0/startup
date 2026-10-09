@@ -1,0 +1,58 @@
+✖ close-shift browser acceptance requires all eleven exact cases without skip, retry or swallowed failure (2.297366ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 115.856188
+
+✖ failing tests:
+
+test at systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/report.test.mjs:6:1
+✖ close-shift browser acceptance requires all eleven exact cases without skip, retry or swallowed failure (2.297366ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   '390px viewport keeps named dialog and controls inside the visible screen',
+  +   'backdrop click retains native Enter ownership',
+  +   'backdrop click retains native Escape ownership',
+  +   'backdrop click retains native F4 ownership',
+  +   'native Enter cancellation preserves cash/cart and restores opener',
+  +   'native Escape cancellation preserves cash/cart and restores opener',
+  +   'native Space cancellation preserves cash/cart and restores opener',
+  +   'native confirm locks pending input, prevents duplicate/cancel, and retries only after failure',
+  +   'native pointer cancellation preserves cash/cart and restores opener',
+  +   'native scan-like keys and F2/F8 stay inside the dialog without service side effects',
+  +   'pending backdrop click cannot hold the cart or cancel the native close request'
+  -   'candidate Tab Enter Space cancel and F2 F7 keep keyboard ownership',
+  -   'context guard blocks new-page popup writes external requests and WebSockets',
+  -   'double text size keeps SKU candidates readable and operable',
+  -   'exact leading-zero SKU bypasses the capped list and keeps categories stable',
+  -   'loading empty fuzzy zero-stock forbidden and error never guess a product',
+  -   'manual edit and cleared draft reject delayed results',
+  -   'mobile touch selects and cancels candidates without an implicit checkout',
+  -   'modal blocks background scanning and cancellation restores the checkout trigger',
+  -   'restored unknown intent blocks scans and preserves its draft',
+  -   'reverse replies preserve both scans and repeated SKU quantity',
+  -   'six candidates remain reachable at short tablet height with double text',
+  -   'small mobile viewport exposes candidate and payment controls without forced clicks',
+  -   'staff login uses the actual employee-code UI with a bounded synthetic response',
+  -   'tablet candidate controls retain touch size and visible keyboard focus'
+    ]
+  
+      at assertReport (file:///workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui/e2e/sku-acceptance/run.mjs:15:10)
+      at TestContext.<anonymous> (file:///workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/report.test.mjs:10:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ '390px viewport keeps named dialog and controls inside the visible screen', 'backdrop click retains native Enter ownership', 'backdrop click retains native Escape ownership', 'backdrop click retains native F4 ownership', 'native Enter cancellation preserves cash/cart and restores opener', 'native Escape cancellation preserves cash/cart and restores opener', 'native Space cancellation preserves cash/cart and restores opener', 'native confirm locks pending input, prevents duplicate/cancel, and retries only after failure', 'native pointer cancellation preserves cash/cart and restores opener', 'native scan-like keys and F2/F8 stay inside the dialog without service side effects', 'pending backdrop click cannot hold the cart or cancel the native close request' ],
+    expected: [ 'candidate Tab Enter Space cancel and F2 F7 keep keyboard ownership', 'context guard blocks new-page popup writes external requests and WebSockets', 'double text size keeps SKU candidates readable and operable', 'exact leading-zero SKU bypasses the capped list and keeps categories stable', 'loading empty fuzzy zero-stock forbidden and error never guess a product', 'manual edit and cleared draft reject delayed results', 'mobile touch selects and cancels candidates without an implicit checkout', 'modal blocks background scanning and cancellation restores the checkout trigger', 'restored unknown intent blocks scans and preserves its draft', 'reverse replies preserve both scans and repeated SKU quantity', 'six candidates remain reachable at short tablet height with double text', 'small mobile viewport exposes candidate and payment controls without forced clicks', 'staff login uses the actual employee-code UI with a bounded synthetic response', 'tablet candidate controls retain touch size and visible keyboard focus' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

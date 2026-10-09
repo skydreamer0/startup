@@ -1,0 +1,158 @@
+{
+  "01-red-semantics.txt": {
+    "bytes": 5867,
+    "sha256": "90d6e16d577cba2ce9eeeee876e4c327b2c61f4a1bcae2e395a379ae222c05eb"
+  },
+  "02-green-semantics.txt": {
+    "bytes": 450,
+    "sha256": "d12bc2ab00b1b384f228d457fd89381185b748873fd2843d92a8b7acfb655f4b"
+  },
+  "03-red-focus.txt": {
+    "bytes": 1704,
+    "sha256": "8d55c31b22cd008f7228fa8890dde97e7fb2e81a4c1ae194f0f283d6529faed9"
+  },
+  "04-green-focus.txt": {
+    "bytes": 450,
+    "sha256": "fec0abd9dfecf3eec19426d96125cda55281831ff8aa4bd558dcb5dfaf84554c"
+  },
+  "05-red-loading.txt": {
+    "bytes": 1637,
+    "sha256": "480d90603bfcdd2b8c460632fd8bdb4bb76aab19e4284d641994fdf7f759cb9b"
+  },
+  "06-green-loading.txt": {
+    "bytes": 452,
+    "sha256": "ec8dc30658bf5dd8a51c82fef04b16a4f55111847513542828a0bebf1d2418b8"
+  },
+  "07-red-background.txt": {
+    "bytes": 1421,
+    "sha256": "3c6116bca0693e7cf9835021f2f038ce3da611232cc0149d4a7625b8aea67540"
+  },
+  "08-green-background.txt": {
+    "bytes": 452,
+    "sha256": "a26024853f3f8ba47aefd7bf983938dfb54be403468e74fbd31bc1c83a6f85fb"
+  },
+  "09-red-keys.txt": {
+    "bytes": 1431,
+    "sha256": "f32d0e590c998852b9bac0bad55551c5929bc45f40385ccb6c8ee27ed01dadef"
+  },
+  "10-green-keys.txt": {
+    "bytes": 452,
+    "sha256": "f4c13e18d08ab0425d6540e0332feaad2b76888a1043a3bded786c9979ee7988"
+  },
+  "11-page-integration.txt": {
+    "bytes": 470,
+    "sha256": "9dce9f660d0a6c0d286730a93438e61b35d21616019707e30d53c5d77de30bb6"
+  },
+  "12-full-pos-tests.txt": {
+    "bytes": 4842,
+    "sha256": "35e975f3abdaf4f990fae9ca7ae317fac2b5629b013221063fdee9e48f8b6697"
+  },
+  "13-build.txt": {
+    "bytes": 1417,
+    "sha256": "54bdfde242296fe17d83c483f47886885941338cba16245989014eb0543cca8e"
+  },
+  "14-build-types-fixed.txt": {
+    "bytes": 474,
+    "sha256": "c13de5ba11ae049f2255347376511cc6d467a9aef80968dac55cf03fb17d4e91"
+  },
+  "15-browser-types.txt": {
+    "bytes": 380,
+    "sha256": "cae898b2ff077932ce8d4fc46bca09bf738a1474687c4103bee7e5755c2e1105"
+  },
+  "16-browser-build.txt": {
+    "bytes": 332,
+    "sha256": "2c2ae084b24fb005a08e425d7d01c424cfd24a539f5968bae0d9780712bbd1b4"
+  },
+  "17-browser-first.txt": {
+    "bytes": 48646,
+    "sha256": "6073ba118c06b6261e95709d53555cba9e13e1aecf57284b81a93e5f52ac40c7"
+  },
+  "18-browser-types-fixed.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "19-browser-second.txt": {
+    "bytes": 43905,
+    "sha256": "90e524219c4ca00311c683a14e2c1aa63ddfd1ec88640afd3caa60ecfa3ba284"
+  },
+  "20-red-late-focus-inert.txt": {
+    "bytes": 2782,
+    "sha256": "4152f7fcdd50c3436f264cb270ba4a9da13c7dc36895afde4c62d8c9a8da7b87"
+  },
+  "21-green-late-focus-inert.txt": {
+    "bytes": 4383,
+    "sha256": "b3dcad614a7a4447810a6ae4096c52a5f13833d241cde028e9f30d1e51575279"
+  },
+  "22-focused-navigation-modals.txt": {
+    "bytes": 4566,
+    "sha256": "7332e1a6757ad8c19e04e6219719eb57664bf04cbd0ee9ad344fa3d818698366"
+  },
+  "23-green-navigation-modals.txt": {
+    "bytes": 641,
+    "sha256": "124c2b6bced5871e01c668e8895aaeac2714fb0804311799b46f5ea1a90ebee2"
+  },
+  "24-final-full-pos.txt": {
+    "bytes": 24201,
+    "sha256": "14a8219e8711366022b72f1872ef3f6670bf5504dcb971139a191c47d2b863c7"
+  },
+  "28-final-full-pos.txt": {
+    "bytes": 4843,
+    "sha256": "2e1c53ea0b71297f43378f10b003e147e563c07cd25284438535c221130c0e38"
+  },
+  "29-final-build.txt": {
+    "bytes": 682,
+    "sha256": "30858f2711642b8fe64c9260fdc3a6293dfcc0cc4731e117f740292c6916eca1"
+  },
+  "30-context.txt": {
+    "bytes": 33,
+    "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+  },
+  "31-diff-check.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "32-red-independent-backdrop.txt": {
+    "bytes": 10705,
+    "sha256": "506d98fbe83c9990c5ca59dc271050e1b5104d2b74edb9e8dedafa3e777515a0"
+  },
+  "33-green-independent-backdrop.txt": {
+    "bytes": 527,
+    "sha256": "0ee32ad5fed2823ae2731798996ab7b95043c0adace9865e505619d8fde00d49"
+  },
+  "34-green-surfaces-new-modal.txt": {
+    "bytes": 527,
+    "sha256": "ed62bb381dfdd5079bcf70f568419b69e2b92b72a28b495f02ba7dbed881b4e9"
+  },
+  "35-browser-types-backdrop.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "36-red-report-contract.txt": {
+    "bytes": 5047,
+    "sha256": "758b685ccebdd42d571a74f058f63f091bbf02b1fa32f43dc6c070f186676a71"
+  },
+  "37-green-report-contract.txt": {
+    "bytes": 320,
+    "sha256": "ef748e34a189d227d7836d39a3c4443b48150d7922cd392e08754a640e404a85"
+  },
+  "38-final-full-pos-backdrop.txt": {
+    "bytes": 4842,
+    "sha256": "8d8988d8b90b8ac8f0196fe5d33e94e48030d4624fd70f00e8c4ebd050fa2678"
+  },
+  "39-final-build-backdrop.txt": {
+    "bytes": 682,
+    "sha256": "e2987f3c9436d991dd0bef7a4c1e270429d8950c1a8666a1e33e778c66ba389c"
+  },
+  "40-final-browser-types.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "41-final-context.txt": {
+    "bytes": 33,
+    "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+  },
+  "42-final-diff.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
