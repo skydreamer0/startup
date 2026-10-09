@@ -67,8 +67,9 @@ async function openRefund() {
 }
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((done) => { resolve = done; });
-  return { promise, resolve };
+  let reject!: (reason: unknown) => void;
+  const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; });
+  return { promise, resolve, reject };
 }
 
 beforeEach(() => {
@@ -412,6 +413,104 @@ describe('POS independent category navigation (synthetic API, real query cache)'
     await screen.findByRole('button', { name: '止痛用品' });
     expect(screen.queryByRole('button', { name: '另一門店分類' })).not.toBeInTheDocument();
     expect(client.getQueryData(['pos-categories', scope])).toEqual(categories);
+  });
+
+  it('does not fetch categories or show a cached tenant list before authenticated context is known', async () => {
+    const context = deferred<Awaited<ReturnType<typeof posApi.getCheckoutContext>>>();
+    vi.mocked(posApi.getCheckoutContext).mockReturnValue(context.promise);
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    client.setQueryData(['pos-categories', otherScope], [{ id: 'foreign', name: '另一門店分類' }]);
+    renderPage(client);
+
+    expect(posApi.getCategories).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: '另一門店分類' })).not.toBeInTheDocument();
+    expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
+    expect(categoryNav().getByRole('button', { name: '全部' })).toBeDisabled();
+
+    await act(async () => { context.resolve(response({ tenantId: 'tenant-1', userId: 'cashier-1' })); });
+    await screen.findByRole('button', { name: '止痛用品' });
+    expect(categoryNav().getByRole('button', { name: '全部' })).toBeEnabled();
+    expect(posApi.getCategories).toHaveBeenCalledTimes(1);
+    expect(client.getQueryData(['pos-categories', scope])).toEqual(categories);
+    expect(client.getQueryData(['pos-categories', otherScope])).toEqual([{ id: 'foreign', name: '另一門店分類' }]);
+  });
+
+  it.each(['success', 'failure'] as const)('ignores a slow old category %s after reauthentication on the same query client', async (outcome) => {
+    const oldCategories = deferred<Awaited<ReturnType<typeof posApi.getCategories>>>();
+    vi.mocked(posApi.getCategories).mockReturnValueOnce(oldCategories.promise);
+    const oldPage = renderPage();
+    await screen.findByText('分類載入中...');
+    expect(posApi.getCategories).toHaveBeenCalledTimes(1);
+    oldPage.unmount();
+
+    const newCategories = [{ id: 'pain', name: '新門店分類' }];
+    vi.mocked(posApi.getCheckoutContext).mockResolvedValue(response({ tenantId: 'tenant-2', userId: 'cashier-2' }));
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(newCategories));
+    renderPage(oldPage.client);
+    await screen.findByRole('button', { name: '新門店分類' });
+    expect(useCartStore.getState().items).toHaveLength(0);
+    act(() => { useCartStore.setState({ items: [{ product: { ...product, id: 'new-tenant-product' }, quantity: 2, discountRate: 0 }] }); });
+    fireEvent.click(categoryNav().getByRole('button', { name: '新門店分類' }));
+    fireEvent.change(screen.getByTestId('product-search-input'), { target: { value: 'new-tenant-search' } });
+    await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith('new-tenant-search', 'pain'));
+    const currentCart = useCartStore.getState().items;
+
+    await act(async () => {
+      if (outcome === 'success') oldCategories.resolve(response(categories));
+      else oldCategories.reject(new Error('Old tenant category failure'));
+    });
+    await waitFor(() => expect(oldPage.client.getQueryState(['pos-categories', scope])?.status)
+      .toBe(outcome === 'success' ? 'success' : 'error'));
+
+    expect(categoryNav().getByRole('button', { name: '新門店分類' })).toHaveAttribute('aria-pressed', 'true');
+    categories.forEach(({ name }) => expect(categoryNav().queryByRole('button', { name })).not.toBeInTheDocument());
+    expect(screen.queryByText(/分類載入失敗/)).not.toBeInTheDocument();
+    expect(screen.queryByText('分類載入中...')).not.toBeInTheDocument();
+    expect(screen.getByTestId('product-search-input')).toHaveValue('new-tenant-search');
+    expect(oldPage.client.getQueryData(['pos-categories', otherScope])).toEqual(newCategories);
+    expect(posApi.getCategories).toHaveBeenCalledTimes(2);
+    expect(useCartStore.getState().items).toEqual(currentCart);
+    expect(posApi.checkout).not.toHaveBeenCalled();
+    expect(posApi.refundOrder).not.toHaveBeenCalled();
+  });
+
+  it('recovers a failed category refresh with one pending retry while preserving search, selection and the cart', async () => {
+    vi.mocked(posApi.getCategories).mockResolvedValue(response(categories));
+    const { client } = renderPage();
+    await screen.findByRole('button', { name: '止痛用品' });
+    fireEvent.click(categoryNav().getByRole('button', { name: '止痛用品' }));
+    fireEvent.change(screen.getByTestId('product-search-input'), { target: { value: 'SYNTHETIC' } });
+    await waitFor(() => expect(posApi.getProducts).toHaveBeenLastCalledWith('SYNTHETIC', 'pain'));
+    const originalCart = useCartStore.getState().items;
+    const productCalls = vi.mocked(posApi.getProducts).mock.calls.length;
+    vi.mocked(posApi.getCategories).mockRejectedValueOnce({ isAxiosError: true, response: { status: 500 } });
+    await act(async () => { await client.invalidateQueries({ queryKey: ['pos-categories', scope] }); });
+    expect(await screen.findByText(/分類載入失敗/)).toBeInTheDocument();
+    expect(screen.queryByText('尚無商品分類，可使用全部商品與搜尋。')).not.toBeInTheDocument();
+
+    const retryResponse = deferred<Awaited<ReturnType<typeof posApi.getCategories>>>();
+    vi.mocked(posApi.getCategories).mockReturnValueOnce(retryResponse.promise);
+    const retry = screen.getByRole('button', { name: '重新載入分類' });
+    fireEvent.click(retry);
+    await waitFor(() => expect(retry).toBeDisabled());
+    fireEvent.click(retry);
+    expect(posApi.getCategories).toHaveBeenCalledTimes(3);
+    categories.forEach(({ name }) => expect(categoryNav().getByRole('button', { name })).toBeVisible());
+    expect(categoryNav().getByRole('button', { name: '止痛用品' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByTestId('product-search-input')).toHaveValue('SYNTHETIC');
+    expect(useCartStore.getState().items).toEqual(originalCart);
+
+    await act(async () => { retryResponse.resolve(response(categories)); });
+    await waitFor(() => expect(screen.queryByText(/分類載入失敗/)).not.toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: '重新載入分類' })).not.toBeInTheDocument();
+    expect(categoryNav().getByRole('button', { name: '止痛用品' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByTestId('product-search-input')).toHaveValue('SYNTHETIC');
+    expect(useCartStore.getState().items).toEqual(originalCart);
+    expect(posApi.getProducts).toHaveBeenCalledTimes(productCalls);
+    expect(posApi.checkout).not.toHaveBeenCalled();
+    expect(posApi.refundOrder).not.toHaveBeenCalled();
+    expect(useCheckoutRecoveryStore.getState().pending).toBeNull();
   });
 });
 
