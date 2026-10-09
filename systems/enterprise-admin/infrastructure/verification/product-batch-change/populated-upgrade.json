@@ -1,0 +1,184 @@
+{
+  "head": "985cbba9252abc2976e053d04304e7f6a5f6bb82",
+  "tree": "4d8fbf110ee4e2899343612a8164be25239655bd",
+  "scope": "owned synthetic PG15 in selected cloud workspace; populated additive migration smoke, separate from Actions native acceptance",
+  "service": {
+    "container": "0b547795dfcbff8cf0ee99c03e32b464c1bbfa4087b10068f726fcbac8e50361",
+    "image": "sha256:319d040b5d68e3e5b98a238f0b5d375b4b4d9c5b3a6a9afb0308a8bcf0de72a5",
+    "network": "batch_change_upgrade_45d6c55c91894bfbbed8f395249e3d80",
+    "binding": {
+      "5432/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "55439"
+        }
+      ]
+    }
+  },
+  "emptyInitialSchema": true,
+  "databaseIdentity": "checkout_http_recovery_batch_change_upgrade_ci|test|PostgreSQL 15.19 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "oldMigrations": [
+    "20260301164756_init",
+    "20260516000001_phase9_pos_schema",
+    "20260516140834_phase_8_sales_foundation",
+    "20260519000001_phase_6_accounting_sync",
+    "20260519000001_phase_6_line_integration",
+    "20260520000001_arch_fix_5_float_to_decimal",
+    "20260522140840_phase_9_7_split_payment",
+    "20261006090000_sale_batch_allocations",
+    "20261006100000_atomic_batch_receipts",
+    "20261006110000_checkout_commands"
+  ],
+  "before": {
+    "tenants": [
+      {
+        "id": "upgrade-tenant",
+        "name": "Synthetic upgrade",
+        "plan": "free",
+        "slug": "upgrade-tenant",
+        "settings": null,
+        "created_at": "2026-10-09T04:39:49.305"
+      }
+    ],
+    "users": [
+      {
+        "id": "upgrade-user",
+        "email": "upgrade@synthetic.test",
+        "status": "active",
+        "full_name": "Synthetic actor",
+        "tenant_id": "upgrade-tenant",
+        "created_at": "2026-10-09T04:39:49.306",
+        "deleted_at": null,
+        "updated_at": "2026-10-09T04:39:49.306",
+        "totp_secret": null,
+        "employee_code": null,
+        "last_login_at": null,
+        "password_hash": "not-a-login-hash",
+        "failed_login_attempts": 0
+      }
+    ],
+    "products": [
+      {
+        "id": "upgrade-product",
+        "sku": "UPGRADE",
+        "name": "Synthetic product",
+        "tenant_id": "upgrade-tenant",
+        "cost_price": 20.1234,
+        "created_at": "2026-10-09T04:39:49.307",
+        "updated_at": "2026-10-09T04:39:49.307",
+        "category_id": null,
+        "description": null,
+        "supplier_id": null,
+        "retail_price": 100.0,
+        "safety_stock": 10,
+        "stock_quantity": 4
+      }
+    ],
+    "product_batches": [
+      {
+        "id": "upgrade-batch",
+        "status": "QUARANTINE",
+        "quantity": 4,
+        "tenant_id": "upgrade-tenant",
+        "cost_price": 20.1234,
+        "product_id": "upgrade-product",
+        "expiry_date": "2099-01-01T00:00:00",
+        "received_at": "2026-10-09T04:39:49.308",
+        "batch_number": "UPGRADE"
+      }
+    ],
+    "inventory_transactions": [
+      {
+        "id": "upgrade-movement",
+        "type": "IN",
+        "notes": null,
+        "batch_id": "upgrade-batch",
+        "quantity": 4,
+        "tenant_id": "upgrade-tenant",
+        "created_at": "2026-10-09T04:39:49.309",
+        "product_id": "upgrade-product",
+        "reference_id": null,
+        "cost_price_at_receipt": 20.1234
+      }
+    ]
+  },
+  "migrationSha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4",
+  "migrationOutput": "CREATE TYPE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nCREATE FUNCTION\nALTER TABLE\nCREATE FUNCTION\nCREATE TRIGGER\nCREATE TRIGGER",
+  "after": {
+    "tenants": [
+      {
+        "id": "upgrade-tenant",
+        "name": "Synthetic upgrade",
+        "plan": "free",
+        "slug": "upgrade-tenant",
+        "settings": null,
+        "created_at": "2026-10-09T04:39:49.305"
+      }
+    ],
+    "users": [
+      {
+        "id": "upgrade-user",
+        "email": "upgrade@synthetic.test",
+        "status": "active",
+        "full_name": "Synthetic actor",
+        "tenant_id": "upgrade-tenant",
+        "created_at": "2026-10-09T04:39:49.306",
+        "deleted_at": null,
+        "updated_at": "2026-10-09T04:39:49.306",
+        "totp_secret": null,
+        "employee_code": null,
+        "last_login_at": null,
+        "password_hash": "not-a-login-hash",
+        "failed_login_attempts": 0
+      }
+    ],
+    "products": [
+      {
+        "id": "upgrade-product",
+        "sku": "UPGRADE",
+        "name": "Synthetic product",
+        "tenant_id": "upgrade-tenant",
+        "cost_price": 20.1234,
+        "created_at": "2026-10-09T04:39:49.307",
+        "updated_at": "2026-10-09T04:39:49.307",
+        "category_id": null,
+        "description": null,
+        "supplier_id": null,
+        "retail_price": 100.0,
+        "safety_stock": 10,
+        "stock_quantity": 4
+      }
+    ],
+    "product_batches": [
+      {
+        "id": "upgrade-batch",
+        "status": "QUARANTINE",
+        "quantity": 4,
+        "tenant_id": "upgrade-tenant",
+        "cost_price": 20.1234,
+        "product_id": "upgrade-product",
+        "expiry_date": "2099-01-01T00:00:00",
+        "received_at": "2026-10-09T04:39:49.308",
+        "batch_number": "UPGRADE"
+      }
+    ],
+    "inventory_transactions": [
+      {
+        "id": "upgrade-movement",
+        "type": "IN",
+        "notes": null,
+        "batch_id": "upgrade-batch",
+        "quantity": 4,
+        "tenant_id": "upgrade-tenant",
+        "created_at": "2026-10-09T04:39:49.309",
+        "product_id": "upgrade-product",
+        "reference_id": null,
+        "cost_price_at_receipt": 20.1234
+      }
+    ]
+  },
+  "existingRowsUnchanged": true,
+  "noHistoryBackfill": true,
+  "status": "passed",
+  "ownedDatabaseAbsent": true
+}

@@ -1,5 +1,11 @@
 # 32b_Database Schema Definition
 
+Current batch audit persistence is defined by Prisma `ProductBatchChange`, ADR-020/021
+and migration `20261009120000_product_batch_changes`. It is append-only, has no
+updated/deleted fields, and restricts tenant/product/batch/actor parent identity
+changes or deletion. Its JSONB snapshots and INITIAL_RELEASE nonexistence contract
+are documented in `../api/batch_field_audit.md`. No existing stock/history is backfilled.
+
 ## 1. 概覽與選型 (Overview & Tech Stack)
 - **Primary Database**: PostgreSQL 15+ (符合企業級關聯式查詢與事務 ACID 需求)
 - **Cache / Session Store**: Redis 7+ (用於 Token Whitelist/Blacklist、Session 緩存、熱點報表數據)

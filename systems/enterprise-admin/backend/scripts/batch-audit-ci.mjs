@@ -13,6 +13,15 @@ export const databaseUrl = `postgresql://test@127.0.0.1:55437/${databaseName}`;
 const backend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.resolve(backend, '../../..');
 const nativeFile = 'src/__tests__/batch-audit.integration.test.ts';
+const schemaFile = 'src/__tests__/batch-change-schema.integration.test.ts';
+export const schemaCases = [
+  'enforces tenant product batch and actor identity through composite foreign keys',
+  'fails closed without tenant context and scopes audit reads and writes',
+  'rejects malformed snapshots reasons and operation mismatches in PostgreSQL',
+  'preserves initial nonexistence decimal precision and database creation time',
+  'blocks truncate and parent deletion or identity rewrites while retaining history',
+  'rolls back corrections and initial receipt when PostgreSQL itself rejects the audit insert',
+];
 export const expectedCases = [
   'requires independent authority reason and a trusted tenant actor for initial release',
   'rolls back the whole initial receipt when audit persistence fails',
@@ -56,8 +65,7 @@ export function assertService(info, network, container) {
   return { container, image: info.Image, network, bindings, authentication: 'trust in disposable service only' };
 }
 
-export function assertReport(report) {
-  const names = expectedCases;
+export function assertReport(report, names = expectedCases, file = nativeFile) {
   assert.equal(report.success, true);
   assert.equal(report.numTotalTests, names.length);
   assert.equal(report.numPassedTests, names.length);
@@ -65,7 +73,7 @@ export function assertReport(report) {
   assert.equal(report.testResults.length, 1);
   const suite = report.testResults[0];
   assert.equal(suite.status, 'passed');
-  assert.ok(suite.name.endsWith(nativeFile));
+  assert.ok(suite.name.endsWith(file));
   assert.deepEqual(suite.assertionResults.map(test => test.title).sort(), [...names].sort());
   assert.ok(suite.assertionResults.every(test => test.status === 'passed'));
   return suite.assertionResults.map(({ title, status, duration }) => ({ title, status, duration }));
@@ -152,7 +160,7 @@ async function main(mode) {
     assert.equal(fs.existsSync(path.join(evidence, 'ownership.json')), false, 'Never reuse a prior fixture');
     save('source.json', { ...identity, parents: git('cat-file', '-p', 'HEAD').split('\n').filter(line => line.startsWith('parent ')).map(line => line.slice(7)) });
     save('network.json', { service, members: Object.keys(network.Containers), driver: network.Driver });
-    const files = ['.github/workflows/ci.yml', ...[nativeFile, 'src/modules/product-batches/batch-audit.service.ts', 'src/modules/product-batches/product-batches.routes.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/batch-audit-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
+    const files = ['.github/workflows/ci.yml', ...[nativeFile, schemaFile, 'src/modules/product-batches/batch-audit.service.ts', 'src/modules/product-batches/product-batches.service.ts', 'src/modules/product-batches/product-batches.routes.ts', 'src/lib/prisma.ts', 'src/lib/tenant-scoped-models.ts', 'prisma/schema.prisma', 'prisma/migrations/20261009120000_product_batch_changes/migration.sql', 'package.json', 'package-lock.json', 'scripts/batch-audit-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
     save('source-hashes.json', Object.fromEntries(files.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
     save('guard.json', { url: databaseUrl, equalEnvironmentUrls: true, probes: probeOriginalGuard(fs.readFileSync(path.join(backend, nativeFile), 'utf8')) });
     assert.deepEqual(tables(), [], 'Refuse a previously used service database; never reset it');
@@ -174,7 +182,15 @@ async function main(mode) {
     const tests = read('tests.json');
     assert.equal(tests.status, 'passed');
     assert.equal(tests.native.length, expectedCases.length);
+    assert.equal(tests.schema.length, schemaCases.length);
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
+    // The same compact raw acceptance record is readable through the GitHub log
+    // API when an execution environment cannot follow artifact storage redirects.
+    console.log(`BATCH_AUDIT_ACCEPTED ${JSON.stringify({ ...read('accepted.json'),
+      sourceHashes: read('source-hashes.json'), databaseIdentity: read('database-identity.json'),
+      beforeTestCounts: read('before-test-counts.json'), retainedFixtureCounts: read('cleanup-counts.json'),
+      guard: read('guard.json'),
+    })}`);
     console.log('Acceptance passed: all named real PostgreSQL cases; owned audit fixture DB removed');
     return;
   }
@@ -214,11 +230,11 @@ async function main(mode) {
     // No broad seed, API server, build, HTTP, or other suite is run here.
     const results = {};
     const errors = [];
-    for (const [kind, file] of [['native', nativeFile]]) {
+    for (const [kind, file, names] of [['native', nativeFile, expectedCases], ['schema', schemaFile, schemaCases]]) {
       const outcome = recorded(kind, [path.join(backend, 'node_modules/vitest/vitest.mjs'), 'run', file, '--maxWorkers=1', '--no-file-parallelism', '--reporter=verbose', '--reporter=json', `--outputFile.json=${path.join(evidence, `${kind}.json`)}`]);
       try {
         assert.equal(outcome.status, 0, `${kind} tests must exit successfully`);
-        results[kind] = assertReport(read(`${kind}.json`));
+        results[kind] = assertReport(read(`${kind}.json`), names, file);
       } catch (error) { errors.push(`${kind}: ${error.message}`); }
     }
     save('tests.json', { ...results, status: errors.length ? 'failed' : 'passed', errors });

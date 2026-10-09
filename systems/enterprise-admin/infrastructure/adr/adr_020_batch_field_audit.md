@@ -27,9 +27,9 @@
 - The batch update and a `ProductBatchChange` append share one transaction.
   Records preserve tenant/product/batch, actor ID, operation, full before/after
   status/ISO-expiry/decimal-cost snapshots, trimmed reason and database time.
-  Composite batch foreign keys and an append-only UPDATE/DELETE database trigger
-  are required integration work, **not present in this submitted schema/migration**.
-  Their absence blocks native acceptance. There is no history edit/delete API.
+  The unique shared model and additive migration are supplied by ADR-021. Composite
+  tenant/product/batch/actor foreign keys and append-only UPDATE/DELETE/TRUNCATE
+  triggers protect persistence. There is no history edit/delete API.
 - History uses a tenant-and-batch-validated cursor with deterministic descending
   time/ID order, 50 records per page. Correction does not remove earlier rows.
 - Costs accept at most four decimal places in the existing Decimal(12,4) range.
@@ -46,13 +46,14 @@ is `{exists:false}` (no invented previous lot); after contains the initial snaps
 QUARANTINE/BLOCKED/default receipts keep their existing policy and require no release
 reason or release audit. No new production role grants are part of this ADR.
 
-**BLOCKED:** ProductBatchChange is absent from schema.prisma and migrations; the
-backend cannot compile and native audit tests cannot run. The user confirmed #47 /
-PR #77 contains only numbering and does not supply this model. Do not fabricate a
-parallel model or treat #77 as satisfying this dependency. The model owner must
-supply a reviewed branch/SHA, tenant registry integration, composite foreign keys,
-append-only protections and the INITIAL_RELEASE operation/snapshot contract. Native
-rollback, real lock waits, migrations, cleanup and new-head CI remain gates.
+ProductBatchChange is now supplied by the sole schema integration branch stacked on
+PR #79 at `412474fd56ea497b76429d92f45ed3699f9dcf40`; PR #77 remains numbering-only.
+ADR-021 defines the model, tenant registry, composite foreign keys, indexes, database
+snapshot constraints and append-only protection. The separate synthetic PG15 CI job
+requires the original 15 native cases plus six database-contract cases, owned-DB
+cleanup and source provenance. Actual results and review status are recorded in
+`../verification/product-batch-change-integration.md`; source presence alone is not
+acceptance. No production roles, security configuration or database are changed.
 The existing admin receipt form also needs a reviewed initial-release reason flow;
 this follow-up updates history rendering/client typing only.
 

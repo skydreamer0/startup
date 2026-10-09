@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import fs from 'node:fs';
-import { assertConnection, assertReport, assertService, databaseName, databaseUrl, expectedCases, probeOriginalGuard } from './batch-audit-ci.mjs';
+import { assertConnection, assertReport, assertService, databaseName, databaseUrl, expectedCases, schemaCases, probeOriginalGuard } from './batch-audit-ci.mjs';
 
 test('audit harness accepts only its exact isolated URL in both variables', () => {
   assertConnection({ DATABASE_URL: databaseUrl, BATCH_AUDIT_DATABASE_URL: databaseUrl });
@@ -9,6 +9,17 @@ test('audit harness accepts only its exact isolated URL in both variables', () =
     assert.throws(() => assertConnection({ DATABASE_URL: url, BATCH_AUDIT_DATABASE_URL: url }));
   }
   assert.throws(() => assertConnection({ DATABASE_URL: databaseUrl, BATCH_AUDIT_DATABASE_URL: `${databaseUrl}_other` }));
+});
+
+test('schema acceptance requires all six database contract cases', () => {
+  const file = 'src/__tests__/batch-change-schema.integration.test.ts';
+  const report = { success: true, numTotalTests: schemaCases.length, numPassedTests: schemaCases.length, numFailedTests: 0, numPendingTests: 0, numTodoTests: 0,
+    testResults: [{ status: 'passed', name: `/synthetic/${file}`, assertionResults: schemaCases.map(title => ({ title, status: 'passed' })) }] };
+  assert.equal(assertReport(report, schemaCases, file).length, 6);
+  const missing = structuredClone(report); missing.testResults[0].assertionResults.pop();
+  assert.throws(() => assertReport(missing, schemaCases, file));
+  const skipped = structuredClone(report); skipped.numPendingTests = 1;
+  assert.throws(() => assertReport(skipped, schemaCases, file));
 });
 
 test('original native URL guard rejects alternate hosts credentials ports and parameters', () => {

@@ -1,5 +1,11 @@
 # Batch audit follow-up review (2026-10-09)
 
+The sections below preserve PR #79's historical blocked checkpoint. The subsequent
+sole shared-schema integration supplies the model in ADR-021; current source,
+native evidence and remaining review/UI/policy gates are tracked in
+`product-batch-change-integration.md`. Historical mock-only results do not substitute
+for the new source-head PG15 acceptance.
+
 ## Provenance and independent findings
 
 Received PR #76 backup/batch-audit-20261009-edb1bc3 at

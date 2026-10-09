@@ -63,9 +63,10 @@ Read ADR-020 and `../infrastructure/api/batch_field_audit.md`, then
 independent release permission, trusted active tenant actor and reason; receipt/IN/
 initial audit share one transaction. Ordinary nonreleased receipts keep their policy.
 Expiry correction rechecks the current Taipei date after the product lock.
-ProductBatchChange schema/migration/tenant registry and append-only protections are
-missing in this draft: backend build and native acceptance are blocked; do not invent
-a second model or treat #47 / PR #77 numbering as this dependency.
+The sole ProductBatchChange schema/migration/tenant registry and append-only
+protections are supplied by ADR-021. Do not invent a second model or treat
+#47 / PR #77 numbering as this dependency. Native evidence and remaining gates
+are tracked in `../infrastructure/verification/product-batch-change-integration.md`.
 
 ### Change persistence or model meaning
 
@@ -110,3 +111,19 @@ npm run db:generate
 - Do not infer feature completion from source code; read `../ROADMAP.md` for progress.
 - Do not change tenant-sensitive behavior without checking auth / tenant constraints.
 - Do not change schema meaning without checking `prisma/schema.prisma`, affected services, and context freshness.
+
+## Batch audit shared persistence
+
+`prisma/schema.prisma` owns the sole `ProductBatchChange` model; additive migration
+`20261009120000_product_batch_changes` implements composite tenant/product/batch/actor
+keys, exact operation/snapshot checks and UPDATE/DELETE/TRUNCATE protection. Read
+ADR-020 and ADR-021 before changing audit semantics. This model is registered in
+`src/lib/tenant-scoped-models.ts`; it has no update/delete API. INITIAL_RELEASE uses
+`{exists:false}` before and a full released snapshot after in the receipt transaction.
+`BatchAuditService` continues product-lock-first correction and post-wait Taipei date
+checks. The dedicated ordinary-CI PG15 job runs the original 15 native cases and six
+`batch-change-schema.integration.test.ts` contract cases on the exact source head,
+requires zero skips, and drops only its preflight-proven empty owned synthetic DB.
+Append-only fixture rows remain until that DROP. Handoff and result provenance live
+in `../infrastructure/verification/product-batch-change-integration.md`. UI receipt
+reason/browser, store roles and independent review remain separate gates.
