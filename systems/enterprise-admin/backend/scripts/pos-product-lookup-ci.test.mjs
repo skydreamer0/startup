@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { test } from 'node:test';
-import { assertConnection, assertReport, assertService, assertOwnership, assertZeroRows, databaseName, databaseUrl, expectedCases, probeOriginalGuard } from './pos-product-lookup-ci.mjs';
+import { assertConnection, assertReport, assertService, assertOwnership, assertZeroRows, databaseName, databaseUrl, expectedCases, probeOriginalGuard, probeCategoryGuard, testFiles } from './pos-product-lookup-ci.mjs';
 
 test('harness accepts only equal, exact synthetic URLs', () => {
   const env = { DATABASE_URL: databaseUrl, POS_PRODUCT_LOOKUP_DATABASE_URL: databaseUrl };
@@ -46,12 +46,12 @@ test('service guard rejects wildcard ports, other networks and external mounts',
   }
 });
 
-for (const kind of ['native']) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
+for (const kind of ['native', 'categories']) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
   const names = expectedCases[kind];
   const report = {
     success: true, numTotalTests: names.length, numPassedTests: names.length,
     numFailedTests: 0, numPendingTests: 0, numTodoTests: 0,
-    testResults: [{ status: 'passed', name: '/repo/src/__tests__/pos-product-lookup.integration.test.ts', assertionResults: names.map(title => ({ title, status: 'passed', duration: 1 })) }],
+    testResults: [{ status: 'passed', name: `/repo/${testFiles[kind]}`, assertionResults: names.map(title => ({ title, status: 'passed', duration: 1 })) }],
   };
   assert.equal(assertReport(report, kind).length, names.length);
   for (const mutate of [
@@ -84,4 +84,12 @@ test('ownership rejects another source, invocation, database or service', () => 
 test('cleanup cannot accept residual or invalid row counts', () => {
   assertZeroRows({ products: 0, tenants: 0 });
   for (const count of [1, -1, NaN, '0', null]) assert.throws(() => assertZeroRows({ products: count }));
+});
+
+// Category opt-in remains separate; an ambient DATABASE_URL cannot enable writes.
+test('category source guard rejects every non-owned connection and environment', () => {
+  const source = fs.readFileSync(new URL('../src/__tests__/pos-categories.integration.test.ts', import.meta.url), 'utf8');
+  const results = probeCategoryGuard(source);
+  assert.ok(results.length >= 12);
+  assert.equal(results.filter(result => result.accepted && result.optIn).length, 1);
 });
