@@ -11,7 +11,9 @@ PR #79 services without creating a parallel audit model. Its additive migration 
 `20261009120000_product_batch_changes`. PR #77 only supplies order numbering.
 
 - Required tenant/product/batch/actor identities, enum operation (`STATUS`, `EXPIRY`,
-  `COST`, `INITIAL_RELEASE`), JSONB before/after, reason and DB-default createdAt.
+  `COST`, `INITIAL_RELEASE`), JSONB before/after, reason and DB-generated
+  CURRENT_TIMESTAMP createdAt stored as TIMESTAMPTZ(3), independent of session
+  timezone and client clock.
 - Tenant registry injection applies to this model. Composite product/tenant,
   batch/product/tenant and actor/tenant FKs, plus tenant FK, use DELETE/UPDATE
   RESTRICT. Supporting composite unique indexes on products/users add no data

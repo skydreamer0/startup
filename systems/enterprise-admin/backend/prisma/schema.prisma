@@ -536,7 +536,7 @@ model ProductBatchChange {
   before    Json @db.JsonB
   after     Json @db.JsonB
   reason    String @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamptz(3)
 
   tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   product Product @relation(fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)

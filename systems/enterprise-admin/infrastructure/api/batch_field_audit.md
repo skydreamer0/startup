@@ -42,7 +42,8 @@ batch does not release it.
 
 ProductBatchChange is the sole Prisma model, mapped to `product_batch_changes`, with
 `ProductBatchChangeOperation` enum, JSONB before/after, required actor and reason,
-and database-default createdAt. Migration `20261009120000_product_batch_changes`
+and database-generated CURRENT_TIMESTAMP createdAt (TIMESTAMPTZ(3), preserving the
+instant in non-UTC sessions). Migration `20261009120000_product_batch_changes`
 adds this table and supporting composite unique keys without backfilling history
 or changing stock. Tenant registry injection covers the model. Database foreign
 keys restrict parent deletion/identity changes and prevent foreign-tenant product,

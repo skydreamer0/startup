@@ -71,9 +71,18 @@ describe.skipIf(!databaseUrl)('ProductBatchChange database contract with real Po
 
   it('preserves initial nonexistence decimal precision and database creation time', async () => {
     const f = await fixture();
+    // Use a non-UTC session and a real delay to distinguish DB transaction time
+    // from a client wall-clock default or a timezone-naive timestamp.
+    await basePrisma.$transaction(async tx => {
+      await tx.$executeRaw`SET LOCAL TIME ZONE 'Asia/Taipei'`;
+      const time = await tx.$queryRaw<{ now: Date }[]>`SELECT transaction_timestamp() AS now`;
+      await tx.$queryRaw`SELECT pg_sleep(0.05)`;
+      const audit = await tx.productBatchChange.create({ data: f.data });
+      expect(Math.abs(audit.createdAt.getTime() - time[0].now.getTime())).toBeLessThanOrEqual(1);
+    });
     const started = await basePrisma.$queryRaw<{ now: Date }[]>`SELECT clock_timestamp() AS now`;
     const batch = await run(f.tenantId, () => ProductBatchService.create({ productId: f.product.id, batchNumber: 'INITIAL', quantity: 2, costPrice: 22.1234, expiryDate: snapshot.expiryDate, status: 'RELEASED', reason: '  Inspected  ' }, f.actor));
-    const row = await basePrisma.productBatchChange.findFirstOrThrow({ where: { tenantId: f.tenantId } });
+    const row = await basePrisma.productBatchChange.findFirstOrThrow({ where: { tenantId: f.tenantId, operation: 'INITIAL_RELEASE' } });
     const ended = await basePrisma.$queryRaw<{ now: Date }[]>`SELECT clock_timestamp() AS now`;
     expect(row).toMatchObject({ batchId: batch.id, actorId: f.user.id, reason: 'Inspected', operation: 'INITIAL_RELEASE', before: { exists: false }, after: { status: 'RELEASED', expiryDate: snapshot.expiryDate, costPrice: '22.1234' } });
     expect(row.createdAt.getTime()).toBeGreaterThanOrEqual(started[0].now.getTime() - 1);

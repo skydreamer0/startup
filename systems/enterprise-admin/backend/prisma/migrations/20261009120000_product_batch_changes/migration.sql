@@ -12,7 +12,7 @@ CREATE TABLE "product_batch_changes" (
     "before" JSONB NOT NULL,
     "after" JSONB NOT NULL,
     "reason" VARCHAR(1000) NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "product_batch_changes_pkey" PRIMARY KEY ("id")
 );
