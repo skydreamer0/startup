@@ -98,6 +98,11 @@ The ordinary CI job `Exact SKU PostgreSQL and current POS browser acceptance` us
 Actions PostgreSQL service. See `../infrastructure/verification/pos-product-lookup-ci/README.md`
 for exact-head provenance, safety controls, cleanup evidence and distinct browser scope.
 This is SKU-only; Product has no barcode field. It does not replace the original five jobs.
+The same owned service separately validates category reads through real JWT, tenant,
+auth/RBAC and PostgreSQL using `src/__tests__/pos-categories.integration.test.ts`.
+The original SKU cases remain unchanged. See
+`../infrastructure/verification/pos-categories/README.md` for the bounded nine-case
+contract, separate opt-in and remaining browser/device gates.
 
 ### Debug a backend test failure
 

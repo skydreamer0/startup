@@ -1,4 +1,4 @@
-// Actions-only, synthetic-only acceptance for the unchanged five exact SKU lookup tests.
+// Actions-only, synthetic-only acceptance: unchanged five SKU cases plus separate category HTTP/PG cases.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
@@ -13,6 +13,8 @@ export const databaseUrl = `postgresql://test@127.0.0.1:55435/${databaseName}`;
 const backend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.resolve(backend, '../../..');
 const nativeFile = 'src/__tests__/pos-product-lookup.integration.test.ts';
+const categoryFile = 'src/__tests__/pos-categories.integration.test.ts';
+export const testFiles = { native: nativeFile, categories: categoryFile };
 export const expectedCases = {
   native: [
     'finds the exact zero-stock SKU beyond 100 fuzzy matches and isolates concurrent tenants',
@@ -20,6 +22,17 @@ export const expectedCases = {
     'does not normalize or fuzzy match 001',
     'does not normalize or fuzzy match a00123-1',
     'does not normalize or fuzzy match  00123',
+  ],
+  categories: [
+    'isolates concurrent category service reads for same-name categories in different tenants',
+    'returns ordered id-name-only categories through real JWT tenant and permission middleware',
+    'keeps empty and zero-stock categories independent of capped or filtered product results',
+    'returns a successful empty list only for the authenticated tenant without categories',
+    'rejects missing and invalid authentication without returning category data',
+    'rejects a real active user token without the existing manage-pos permission',
+    'rejects a suspended user and a token used against a different tenant header',
+    'does not leak a prior tenant when authenticated requests alternate A-B-A',
+    'fails closed when category service has no tenant context',
   ],
 };
 
@@ -58,6 +71,7 @@ export function assertService(info, network, container) {
 
 export function assertReport(report, kind) {
   const names = expectedCases[kind];
+  assert.ok(names && testFiles[kind], 'Unknown acceptance suite');
   assert.equal(report.success, true);
   assert.equal(report.numTotalTests, names.length);
   assert.equal(report.numPassedTests, names.length);
@@ -65,7 +79,7 @@ export function assertReport(report, kind) {
   assert.equal(report.testResults.length, 1);
   const suite = report.testResults[0];
   assert.equal(suite.status, 'passed');
-  assert.ok(suite.name.endsWith(nativeFile));
+  assert.ok(suite.name.endsWith(testFiles[kind]));
   assert.deepEqual(suite.assertionResults.map(test => test.title).sort(), [...names].sort());
   assert.ok(suite.assertionResults.every(test => test.status === 'passed'));
   return suite.assertionResults.map(({ title, status, duration }) => ({ title, status, duration }));
@@ -97,6 +111,40 @@ export function probeOriginalGuard(source) {
     } catch { accepted = false; }
     assert.equal(accepted, expected, name);
     return { name, accepted, status: 'passed', scope: 'static original guard; no database connection' };
+  });
+}
+
+export function probeCategoryGuard(source) {
+  const start = source.indexOf('// Never fall back to ambient');
+  const end = source.indexOf('describe.skipIf(!databaseUrl)');
+  assert.ok(start >= 0 && end > start, 'The category guard must remain identifiable');
+  const guard = source.slice(start, end);
+  const base = { NODE_ENV: 'test', POS_CATEGORIES_DATABASE_URL: databaseUrl,
+    DATABASE_URL: databaseUrl, POS_PRODUCT_LOOKUP_DATABASE_URL: databaseUrl };
+  const cases = [
+    ['valid owned URL', base, true],
+    ['absent opt-in never enables fixture', { ...base, POS_CATEGORIES_DATABASE_URL: undefined }, true],
+    ...[
+      ['localhost', databaseUrl.replace('127.0.0.1', 'localhost')],
+      ['password', databaseUrl.replace('test@', 'test:test@')],
+      ['missing port', databaseUrl.replace(':55435', '')],
+      ['wrong port', databaseUrl.replace(':55435', ':5432')],
+      ['wrong user', databaseUrl.replace('test@', 'postgres@')],
+      ['wrong DB', databaseUrl.replace(databaseName, 'store_db')],
+      ['schema query', `${databaseUrl}?schema=other`],
+      ['URL fragment', `${databaseUrl}#other`],
+      ['wrong protocol', databaseUrl.replace('postgresql:', 'postgres:')],
+    ].map(([name, url]) => [name, { ...base, POS_CATEGORIES_DATABASE_URL: url, DATABASE_URL: url, POS_PRODUCT_LOOKUP_DATABASE_URL: url }, false]),
+    ['different ambient URL', { ...base, DATABASE_URL: `${databaseUrl}_other` }, false],
+    ['missing SKU opt-in', { ...base, POS_PRODUCT_LOOKUP_DATABASE_URL: undefined }, false],
+    ['non-test environment', { ...base, NODE_ENV: 'production' }, false],
+  ];
+  return cases.map(([name, env, expected]) => {
+    let accepted = true;
+    try { vm.runInNewContext(guard, { process: { env } }, { timeout: 1000 }); }
+    catch { accepted = false; }
+    assert.equal(accepted, expected, name);
+    return { name, accepted, optIn: !!env.POS_CATEGORIES_DATABASE_URL, status: 'passed', scope: 'static category guard; no database connection' };
   });
 }
 
@@ -149,9 +197,10 @@ async function main(mode) {
     assert.equal(fs.existsSync(path.join(evidence, 'ownership.json')), false, 'Never reuse a prior fixture');
     save('source.json', { ...identity, parents: git('cat-file', '-p', 'HEAD').split('\n').filter(line => line.startsWith('parent ')).map(line => line.slice(7)) });
     save('network.json', { service, members: Object.keys(network.Containers), driver: network.Driver });
-    const files = ['.github/workflows/ci.yml', ...[nativeFile, 'src/modules/pos/product-lookup.service.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/pos-product-lookup-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
+    const files = ['.github/workflows/ci.yml', ...[nativeFile, categoryFile, 'src/modules/pos/checkout.service.ts', 'src/modules/pos/pos.routes.ts', 'src/modules/pos/pos.controller.ts', 'src/middleware/tenant.middleware.ts', 'src/middleware/rate-limit.middleware.ts', 'src/middleware/auth.middleware.ts', 'src/lib/jwt.ts', 'src/modules/pos/product-lookup.service.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/pos-product-lookup-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
     save('source-hashes.json', Object.fromEntries(files.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
     save('guard.json', { url: databaseUrl, equalEnvironmentUrls: true, probes: probeOriginalGuard(fs.readFileSync(path.join(backend, nativeFile), 'utf8')) });
+    save('category-guard.json', { probes: probeCategoryGuard(fs.readFileSync(path.join(backend, categoryFile), 'utf8')) });
     assert.deepEqual(tables(), [], 'Refuse a previously used service database; never reset it');
     save('ownership.json', { ...identity, initialPublicTables: [], syntheticOnly: true });
     console.log('Preflight passed: exact head/tree, loopback-only service, original guard, empty owned DB');
@@ -175,15 +224,20 @@ async function main(mode) {
     assert.ok(zero);
     const tests = read('tests.json');
     assert.equal(tests.status, 'passed');
-    assert.equal(tests.native.length, 5);
+    for (const kind of Object.keys(testFiles)) assert.equal(tests[kind].length, expectedCases[kind].length);
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: 5 real PostgreSQL SKU cases; fixture rows zero; owned DB removed');
+    console.log('Acceptance passed: 5 original SKU cases and 9 category HTTP/PostgreSQL cases; fixture rows zero; owned DB removed');
     return;
   }
 
   const requireBackend = createRequire(path.join(backend, 'package.json'));
   const childEnv = Object.fromEntries(['PATH', 'HOME', 'TMPDIR', 'RUNNER_TEMP', 'CI'].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
-  Object.assign(childEnv, { NODE_ENV: 'test', DATABASE_URL: databaseUrl, POS_PRODUCT_LOOKUP_DATABASE_URL: databaseUrl });
+  Object.assign(childEnv, { NODE_ENV: 'test', DATABASE_URL: databaseUrl, POS_PRODUCT_LOOKUP_DATABASE_URL: databaseUrl,
+    POS_CATEGORIES_DATABASE_URL: databaseUrl,
+    // Public synthetic-only signing values; never read, use or print account credentials.
+    JWT_ACCESS_SECRET: 'category-ci-synthetic-access-key-not-for-real-accounts',
+    JWT_REFRESH_SECRET: 'category-ci-synthetic-refresh-key-not-for-real-accounts',
+  });
   function recorded(name, args) {
     const result = spawnSync(process.execPath, args, { cwd: backend, env: childEnv, encoding: 'utf8', timeout: 120000, maxBuffer: 16 * 1024 * 1024 });
     fs.writeFileSync(path.join(evidence, `${name}.log`), (result.stdout || '') + (result.stderr || ''));
@@ -210,10 +264,10 @@ async function main(mode) {
     assert.ok(Object.keys(before).length > 0);
     save('before-test-counts.json', before);
     requireZero(before);
-    // No broad seed, API server, build, HTTP, or other suite is run here.
+    // No broad seed or external API server. Categories use in-process HTTP with real middleware and this DB.
     const results = {};
     const errors = [];
-    for (const [kind, file] of [['native', nativeFile]]) {
+    for (const [kind, file] of Object.entries(testFiles)) {
       const outcome = recorded(kind, [path.join(backend, 'node_modules/vitest/vitest.mjs'), 'run', file, '--maxWorkers=1', '--no-file-parallelism', '--reporter=verbose', '--reporter=json', `--outputFile.json=${path.join(evidence, `${kind}.json`)}`]);
       try {
         assert.equal(outcome.status, 0, `${kind} tests must exit successfully`);
@@ -221,7 +275,7 @@ async function main(mode) {
       } catch (error) { errors.push(`${kind}: ${error.message}`); }
     }
     save('tests.json', { ...results, status: errors.length ? 'failed' : 'passed', errors });
-    assert.deepEqual(errors, [], 'Require every original case to pass; skipped is not acceptance');
+    assert.deepEqual(errors, [], 'Require every original SKU and category case to pass; skipped is not acceptance');
   } finally { await db.$disconnect(); }
 }
 

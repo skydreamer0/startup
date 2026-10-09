@@ -9,6 +9,10 @@ browser suite remain unchanged.
 - PostgreSQL: execute the unchanged five cases in `pos-product-lookup.integration.test.ts`.
   This proves exact, case/whitespace/leading-zero-sensitive SKU lookup beyond 100 fuzzy
   rows, including zero-stock retrieval and concurrent tenant isolation.
+- Categories: the same owned service also runs nine separate real PostgreSQL/HTTP
+  cases for the existing category API. See [category acceptance](../pos-categories/README.md).
+  The original five SKU cases remain unchanged; both case inventories are required
+  before cleanup can produce acceptance.
 - Chromium: run the submitted source head's actual POS app against declared synthetic
   HTTP fixtures. This is browser UI evidence, not real API/database end-to-end evidence,
   physical scanner acceptance, or production/hardware validation.
@@ -29,7 +33,8 @@ service, not an existing database or security configuration.
 Preflight refuses a reused ownership record or nonempty public schema; it never resets
 an existing database. Before migrations the Prisma connection's actual server IP, port,
 user, database and server version must match the verified service. Only repository
-migrations are applied; there is no general seed. Every original test title must appear
+migrations are applied; there is no general seed. The separate category suite mounts
+the real tenant/auth/RBAC routes on a synthetic test HTTP application, with no external API. Every original test title must appear
 exactly once and pass. Skips, substitutions, omissions and failures cannot produce
 acceptance. Cleanup rechecks source/run/service ownership, records every business-table
 row count, drops only its registered database, and verifies its absence. Failure still
