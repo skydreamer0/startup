@@ -1,8 +1,9 @@
 # Issue #47 acceptance
 
-Status: source prepared. Local Node24 pure calendar/guard checks passed; Node22,
-Prisma generation/typecheck, PostgreSQL, upgrade probes and original Vitest suites
-have NOT RUN on this candidate. A skipped opt-in is never native acceptance.
+Status: wired into the independent `Order sequence PostgreSQL acceptance` job
+in `.github/workflows/ci.yml`. Exact-head CI is required; this document does not
+claim a run passed. Local Node24 pure calendar/guard checks are supplementary,
+not Node22 or native PostgreSQL evidence. A skipped opt-in is never acceptance.
 
 ## Scope
 
@@ -21,9 +22,9 @@ The original suites are run sequentially against this same owned synthetic DB.
 No broad seed, production URL, permission/role grant, or installed local runtime
 is part of this procedure.
 
-## CI wiring contract (workflow owner integrates separately)
+## Executable CI workflow
 
-Use an independent GitHub-hosted job; preserve existing workflow jobs. Checkout
+The independent GitHub-hosted job preserves all five existing workflow jobs. It checks out
 `${{ github.event.pull_request.head.sha || github.sha }}` with persisted
 credentials disabled. Node22 and backend-locked npm11.21.0/npm ci only.
 
@@ -59,5 +60,31 @@ Tests clean their own tenant rows; final cleanup independently requires every
 business table, including counters, to be empty, drops only the registered owned
 DB and verifies it is absent. Failed tests cannot produce accepted.json.
 
-No workflow wiring, remote push, production execution or store/hardware
-acceptance is implied by this source checkpoint.
+## Review the run
+
+Open the PR's CI/CD Pipeline run for the candidate head. The new job checks out
+that source SHA directly; the ordinary jobs retain their existing merge-checkout
+behavior. Confirm all six jobs pass, then inspect the uploaded
+`order-sequence-<head>-<attempt>` artifact:
+
+- `source.json`: exact head, tree, parent(s), workflow/run identity and Node22
+- `source-hashes.json`: workflow, source, schema, migration and test identities
+- `guard.json` and `network.json`: exact URL and isolated service provenance
+- `migration-duplicate.json`: read-only diagnostic, original IDs, rejected upgrade,
+  unchanged old rows and no partial DDL
+- `migration-upgrade.json`: additive upgrade, unchanged old fields/numbers, NULL
+  old business dates, counter maxima and database bounds/uniqueness
+- `native.json`, `command.json`, `stock.json`, `mock.json` and their logs: every
+  required case passed; missing, failed, pending, todo or substituted native cases fail
+- `cleanup-counts.json`, `migration-cleanup.json`, `cleanup.json`: no remaining
+  business rows, owned upgrade schema absent, owned database removed
+- `accepted.json`: written only after tests, migration checks and cleanup pass
+
+If the job fails, retain its logs/artifact and fix the cause; never lower expected
+counts, skip original cases, seed business data or point the harness at another
+DB to obtain green results. The next push reruns exact-head acceptance. A failed
+preflight does not authorize cleanup of an unowned database.
+
+Passing this synthetic CI does not authorize production execution, legacy-data
+repair, store/hardware acceptance, merge or deployment. Retire old numbering
+writers under a separately approved rollout, as required by ADR-019.
