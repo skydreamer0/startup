@@ -1,0 +1,475 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 test
+> vitest run --maxWorkers=2
+
+
+ RUN  v4.1.11 /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui
+
+ ❯ src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx (11 tests | 1 failed) 2157ms
+     × does not leave inert locks on the existing manager approval cancellation flow 352ms
+Error: Not implemented: navigation (except hash changes)
+    at module.exports (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at navigateFetch (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/navigation.js:77:3)
+    at exports.navigate (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/navigation.js:55:3)
+    at LocationImpl._locationObjectNavigate (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/Location-impl.js:30:5)
+    at LocationImpl._locationObjectSetterNavigate (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/Location-impl.js:24:17)
+    at LocationImpl.set href [as href] (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/Location-impl.js:46:10)
+    at Location.set href [as href] (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/generated/Location.js:125:37)
+    at onClick (/workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui/src/pages/ShiftOpenScreen.tsx:54:88)
+    at executeDispatch (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-client.development.js:20804:9)
+    at runWithFiberInDEV (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-client.development.js:1048:13) undefined
+Error: Not implemented: navigation (except hash changes)
+    at module.exports (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at navigateFetch (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/navigation.js:77:3)
+    at exports.navigate (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/navigation.js:55:3)
+    at LocationImpl._locationObjectNavigate (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/Location-impl.js:30:5)
+    at LocationImpl._locationObjectSetterNavigate (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/Location-impl.js:24:17)
+    at LocationImpl.set href [as href] (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/window/Location-impl.js:46:10)
+    at Location.set href [as href] (/workspace/scratch/a973af1f593f/pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/jsdom@26.1.0/node_modules/jsdom/lib/jsdom/living/generated/Location.js:125:37)
+    at clearPosAuthAndRedirect (/workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui/src/api/requestLifecycle.ts:12:19)
+    at /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui/src/api/requestLifecycle.ts:33:9
+    at /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui/src/__tests__/apiClient.test.ts:63:18 undefined
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx > real close-shift dialog lifecycle in POS > does not leave inert locks on the existing manager approval cancellation flow
+TestingLibraryElementError: Unable to find an accessible element with the role "heading" and name "管理員授權"
+
+Here are the accessible roles:
+
+  status:
+
+  Name "":
+  [36m<section[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mdata-testid[39m=[32m"checkout-recovery"[39m
+    [33mrole[39m=[32m"status"[39m
+    [33mstyle[39m=[32m"padding: 16px; background: rgb(255, 244, 214); color: rgb(87, 46, 0); font-size: 14px; line-height: 1.5;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"pos-category-status"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "查詢原訂單":
+  [36m<button[39m
+    [33mstyle[39m=[32m"border: 1px solid rgb(173, 110, 21); border-radius: 8px; background: white; padding: 8px 12px; font-weight: 600;"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "重送同一意圖":
+  [36m<button[39m
+    [33mstyle[39m=[32m"border: 1px solid rgb(173, 110, 21); border-radius: 8px; background: white; padding: 8px 12px; font-weight: 600; opacity: 1;"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "查詢客戶":
+  [36m<button[39m
+    [33maria-label[39m=[32m"查詢客戶"[39m
+    [33mstyle[39m=[32m"border: 1.5px solid var(--border); background: var(--surface); border-radius: var(--radius-full); padding: 7px 12px; cursor: pointer; font-size: 12px; color: var(--text-secondary); font-weight: 700;"[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  Name "📋 掛單":
+  [36m<button[39m
+    [33mstyle[39m=[32m"background: none; border: 1.5px solid var(--border); border-radius: var(--radius-full); padding: 6px 14px; cursor: pointer; font-size: 12px; color: var(--text-secondary); font-weight: 500;"[39m
+    [33mtitle[39m=[32m"掛單暫存 (F4)"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "📋 訂單 (F7)":
+  [36m<button[39m
+    [33mclass[39m=[32m"pos-topbar-action"[39m
+    [33mtitle[39m=[32m"訂單查詢 (F7)"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "📊 報表 (F8)":
+  [36m<button[39m
+    [33mclass[39m=[32m"pos-topbar-action"[39m
+    [33mtitle[39m=[32m"班報表 (F8)"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "🖥 顧客":
+  [36m<button[39m
+    [33mclass[39m=[32m"pos-topbar-action"[39m
+    [33mtitle[39m=[32m"開啟顧客顯示器"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "👤 合成收銀員":
+  [36m<button[39m
+    [33mclass[39m=[32m"pos-topbar-action pos-topbar-action--wide"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "交班":
+  [36m<button[39m
+    [33mclass[39m=[32m"pos-topbar-action pos-topbar-action--danger"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "全部":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"pos-category-btn pos-category-btn--active"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "📦 合成商品 4711234 $100 ✓ 5 件":
+  [36m<button[39m
+    [33mdata-testid[39m=[32m"product-card-synthetic-product"[39m
+    [33mstyle[39m=[32m"display: flex; flex-direction: column; padding: 14px 14px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-md); cursor: pointer; text-align: left; opacity: 1; transition: transform var(--transition-fast), box-shadow var(--transition-fast); box-shadow: var(--shadow-card);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "👤 合成收銀員 (F6)":
+  [36m<button[39m
+    [33mstyle[39m=[32m"background: none; padding: 0px; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--accent);"[39m
+  [36m/>[39m
+
+  Name "移除 合成商品":
+  [36m<button[39m
+    [33maria-label[39m=[32m"移除 合成商品"[39m
+    [33mstyle[39m=[32m"background: rgb(254, 226, 226); color: rgb(220, 38, 38); cursor: pointer; font-size: 13px; line-height: 1; border-radius: 8px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "減少數量":
+  [36m<button[39m
+    [33maria-label[39m=[32m"減少數量"[39m
+    [33mstyle[39m=[32m"width: 28px; height: 28px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; background: var(--bg-app); font-size: 15px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "增加數量":
+  [36m<button[39m
+    [33maria-label[39m=[32m"增加數量"[39m
+    [33mstyle[39m=[32m"width: 28px; height: 28px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; background: var(--bg-app); font-size: 15px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "現金":
+  [36m<button[39m
+    [33mstyle[39m=[32m"padding: 6px 14px; font-size: 12px; border-radius: var(--radius-full); border: 1.5px solid var(--accent); background: var(--accent-subtle); color: var(--accent); font-weight: 700; cursor: pointer; transition: all var(--transition-fast);"[39m
+  [36m/>[39m
+
+  Name "信用卡":
+  [36m<button[39m
+    [33mstyle[39m=[32m"padding: 6px 14px; font-size: 12px; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--bg-app); color: var(--text-muted); font-weight: 500; cursor: pointer; transition: all var(--transition-fast);"[39m
+  [36m/>[39m
+
+  Name "LINE Pay":
+  [36m<button[39m
+    [33mstyle[39m=[32m"padding: 6px 14px; font-size: 12px; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--bg-app); color: var(--text-muted); font-weight: 500; cursor: pointer; transition: all var(--transition-fast);"[39m
+  [36m/>[39m
+
+  Name "轉帳":
+  [36m<button[39m
+    [33mstyle[39m=[32m"padding: 6px 14px; font-size: 12px; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--bg-app); color: var(--text-muted); font-weight: 500; cursor: pointer; transition: all var(--transition-fast);"[39m
+  [36m/>[39m
+
+  Name "確認結帳 (Enter)":
+  [36m<button[39m
+    [33mdata-testid[39m=[32m"cart-checkout-button"[39m
+    [33mstyle[39m=[32m"flex: 3 1 0%; padding: 14px; border-radius: var(--radius-full); background: linear-gradient(135deg, #D97706, #F59E0B); color: rgb(255, 255, 255); font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(217,119,6,0.35); letter-spacing: 0.01em;"[39m
+  [36m/>[39m
+
+  Name "拆單":
+  [36m<button[39m
+    [33mstyle[39m=[32m"flex: 1 1 0%; padding: 14px; border: 1.5px solid var(--accent); border-radius: var(--radius-full); background: var(--bg-card); color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer;"[39m
+    [33mtitle[39m=[32m"拆單付款"[39m
+  [36m/>[39m
+
+  Name "清空購物車 (F5)":
+  [36m<button[39m
+    [33mstyle[39m=[32m"width: 100%; padding: 10px; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius-full); font-size: 13px; cursor: pointer; color: var(--text-muted); transition: all var(--transition-fast);"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<fieldset[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mstyle[39m=[32m"border: 0px; padding: 0px; margin: 0px; display: contents;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"pos-search-input"[39m
+    [33mdata-testid[39m=[32m"product-search-input"[39m
+    [33mplaceholder[39m=[32m"🔍 搜尋商品名稱或 SKU... (F2)"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "客戶查詢":
+  [36m<input[39m
+    [33mid[39m=[32m"customer-lookup-input"[39m
+    [33mplaceholder[39m=[32m"電話 / 會員碼"[39m
+    [33mstyle[39m=[32m"width: 150px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-full); font-size: 12px; background: var(--bg-app); outline: none; color: var(--text-primary);"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33minputmode[39m=[32m"numeric"[39m
+    [33mplaceholder[39m=[32m"0"[39m
+    [33mstyle[39m=[32m"width: 44px; padding: 3px 6px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 11px; text-align: center; background: var(--bg-app);"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "商品分類":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"商品分類"[39m
+    [33mclass[39m=[32m"pos-category-nav"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  spinbutton:
+
+  Name "商品數量":
+  [36m<input[39m
+    [33maria-label[39m=[32m"商品數量"[39m
+    [33mmax[39m=[32m"5"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mstyle[39m=[32m"width: 44px; text-align: center; font-size: 14px; font-weight: 700; border: 1.5px solid var(--border); border-radius: 10px; padding: 4px; background: var(--bg-app); color: var(--text-primary);"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mid[39m=[32m"order-discount"[39m
+    [33mmin[39m=[32m"0"[39m
+    [33mplaceholder[39m=[32m"0"[39m
+    [33mstyle[39m=[32m"flex: 1 1 0%; padding: 6px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-xs); font-size: 13px; background: var(--bg-app); color: var(--text-primary);"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"100"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"pos-shell"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mdata-testid[39m=[32m"checkout-recovery"[39m
+        [33mrole[39m=[32m"status"[39m
+        [33mstyle[39m=[32m"padding: 16px; background: rgb(255, 244, 214); color: rgb(87, 46, 0); font-size: 14px; line-height: 1.5;"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m尚未確認結帳結果[0m
+        [36m</strong>[39m
+        [36m<p>[39m
+          [0m尚未確認結帳結果，請查詢或重送同一意圖[0m
+        [36m</p>[39m
+        [36m<p>[39m
+          [0m原意圖 [0m
+          [0m25acf949-3b8e-4f8c-b8d0-b46aae9445bf[0m
+          [0m · [0m
+          [0m1[0m
+          [0m 項商品[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mstyle[39m=[32m"display: flex; gap: 8px; margin-top: 8px;"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mstyle[39m=[32m"border: 1px solid rgb(173, 110, 21); border-radius: 8px; background: white; padding: 8px 12px; font-weight: 600;"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m查詢原訂單[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mstyle[39m=[32m"border: 1px solid rgb(173, 110, 21); border-radius: 8px; background: white; padding: 8px 12px; font-weight: 600; opacity: 1;"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m重送同一意圖[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<fieldset[39m
+        [33mdisabled[39m=[32m""[39m
+        [33mstyle[39m=[32m"border: 0px; padding: 0px; margin: 0px; display: contents;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pos-topbar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pos-brand"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"pos-brand-mark"[39m
+            [36m>[39m
+              [0m🌿[0m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"pos-brand-title"[39m
+              [36m>[39m
+                [0mPharmaSaaS POS[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"pos-brand-subtitle"[39m
+              [36m>[39m
+                [0m健康生活藥局[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pos-shift-pill"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"pos-shift-dot"[39m
+            [36m/>[39m
+            [36m<span>[39m
+              [0m班別進行中[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pos-search-spacer"[39m
+          [36m/>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"pos-search-input"[39m
+            [33mdata-testid[39m=[32m"product-search-input"[39m
+            [33mplaceholder[39m=[32m"🔍 搜尋商品名稱或 SKU... (F2)"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 8px; min-width: 360px;"[39m
+          [36m>[39m
+            [36m<form[39m
+              [33mstyle[39m=[32m"display: flex; align-items: center; gap: 6px;"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mfor[39m=[32m"customer-lookup-input"[39m
+                [33mstyle[39m=[32m"position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);"[39m
+              [36m>[39m
+                [0m客戶查詢[0m
+              [36m</label>[39m
+              [36m<input[39m
+                [33mid[39m=[32m"customer-lookup-input"[39m
+                [33mplaceholder[39m=[32m"電話 / 會員碼"[39m
+                [33mstyle[39m=[32m"width: 150px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-full); font-size: 12px; background: var(--bg-app); outline: none; color: var(--text-primary);"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"查詢客戶"[39m
+                [33mstyle[39m=[32m"border: 1.5px solid var(--border); background: var(--surface); border-radius: var(--radius-full); padding: 7px 12px; cursor: pointer; font-size: 12px; color: var(--text-secondary); font-weight: 700;"[39m
+                [33mtype[39m=[32m"submit"[39m
+              [36m>[39m
+                [0m查詢[0m
+              [36m</button>[39m
+            [36m</form>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"position: relative;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mstyle[39m=[32m"display: flex; gap: 6px;"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mstyle[39m=[32m"background: none; border: 1.5px solid var(--border); border-radius: var(--radius-full); padding: 6px 14px; cursor: pointer; font-size: 12px; color: var(--text-secondary); font-weight: 500;"[39m
+                [33mtitle[39m=[32m"掛單暫存 (F4)"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m📋 掛單[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"pos-topbar-action"[39m
+            [33mtitle[39m=[32m"訂單查詢 (F7)"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m📋 訂單 (F7)[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"pos-topbar-action"[39m
+            [33mtitle[39m=[32m"班報表 (F8)"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m📊 報表 (F8)[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"pos-topbar-action"[39m
+            [33mtitle[39m=[32m"開啟顧客顯示器"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m🖥 顧客[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"pos-topbar-action pos-topbar-action--wide"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m👤 [0m
+            [0m合成收銀員[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"pos-topbar-action pos-topbar-action--danger"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m交班[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pos-body"[39m
+...
+ ❯ Object.getElementError ../../../../pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../../../pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../../../pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../../../pharmacy-classification-work/systems/enterprise-admin/node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx:180:28
+    178|     fireEvent.change(screen.getByRole('spinbutton', { name: '收取金額' }),…
+    179|     await user.click(screen.getByRole('button', { name: '確認付款' }));
+    180|     const heading = screen.getByRole('heading', { name: '管理員授權' });
+       |                            ^
+    181|     expect(heading.closest('[inert]')).toBeNull();
+    182|     await user.click(within(heading.parentElement!).getByRole('button'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 28 passed (29)
+      Tests  1 failed | 308 passed (309)
+   Start at  01:49:31
+   Duration  17.95s (transform 1.30s, setup 1.51s, import 4.84s, tests 13.58s, environment 10.14s)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,0 +1,38 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 test
+> vitest run src/__tests__/CloseShiftDialog.test.tsx
+
+
+ RUN  v4.1.11 /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui
+
+ ❯ src/__tests__/CloseShiftDialog.test.tsx (14 tests | 1 failed) 578ms
+     × consumes function keys and text Enter without invoking page or submit actions 141ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/CloseShiftDialog.test.tsx > CloseShiftDialog > consumes function keys and text Enter without invoking page or submit actions
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/__tests__/CloseShiftDialog.test.tsx:16:40
+     14|         const event = new KeyboardEvent('keydown', { key, bubbles: tru…
+     15|         screen.getByRole('spinbutton', { name: '結帳金額' }).dispatchEvent…
+     16|         expect(event.defaultPrevented).toBe(true);
+       |                                        ^
+     17|       }
+     18|       expect(pageKey).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  01:32:18
+   Duration  1.60s (transform 123ms, setup 113ms, import 212ms, tests 578ms, environment 495ms)
+
