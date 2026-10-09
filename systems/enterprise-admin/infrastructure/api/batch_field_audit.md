@@ -40,7 +40,24 @@ A RELEASED batch with old or proposed expiry already unusable must first be
 explicitly quarantined/blocked before correcting expiry. Correcting a quarantined
 batch does not release it.
 
-ProductBatchChange schema/migration/tenant registry/append-only protection are absent.
-This candidate cannot compile or provide native acceptance until the shared-model
-owner supplies a reviewed branch/SHA (PR #77 is not that dependency). See ADR-020. No production permission
-seeds or grants are made by this change.
+ProductBatchChange is the sole Prisma model, mapped to `product_batch_changes`, with
+`ProductBatchChangeOperation` enum, JSONB before/after, required actor and reason,
+and database-default createdAt. Migration `20261009120000_product_batch_changes`
+adds this table and supporting composite unique keys without backfilling history
+or changing stock. Tenant registry injection covers the model. Database foreign
+keys restrict parent deletion/identity changes and prevent foreign-tenant product,
+batch or actor references. Index `(tenant_id, batch_id, created_at DESC, id DESC)`
+supports history; tenant/product and tenant/actor indexes support parent checks.
+
+The database checks exact snapshot keys and string types, known status, UTC ISO
+millisecond date format and nonnegative Decimal(12,4) string range. Calendar date
+validity and post-lock expiry eligibility remain service responsibilities. Corrections
+change only their declared field; equal numeric costs reject. INITIAL_RELEASE before
+is exactly `{exists:false}` and after status is RELEASED. Reason is 1–1000 characters,
+space-trimmed and nonblank. UPDATE/DELETE (including no-op row rewrites) and TRUNCATE
+raise SQLSTATE 23514. Audited parents are retained even with zero lot quantity. This
+is application/database integrity protection, not a claim against an administrator
+who can alter triggers or schema. No production permission seeds or grants are made.
+
+See ADR-020/021 and `../verification/product-batch-change-integration.md` for the
+exact integration source and pending independent review/UI/policy gates.

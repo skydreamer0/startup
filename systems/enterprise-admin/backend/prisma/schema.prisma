@@ -42,6 +42,7 @@ model Tenant {
   orderPayments      OrderPayment[]
   saleBatchAllocations SaleBatchAllocation[]
   checkoutCommands    CheckoutCommand[]
+  productBatchChanges ProductBatchChange[]
 
   @@map("tenants")
 }
@@ -71,7 +72,9 @@ model User {
   auditLogs AuditLog[]
   shifts    Shift[]
   salesOrders  Order[] @relation("SalesOrders")
+  batchChanges ProductBatchChange[] @relation("BatchChangeActor")
 
+  @@unique([id, tenantId])
   @@index([tenantId])
   @@map("users")
 }
@@ -306,7 +309,9 @@ model Product {
   orderItems   OrderItem[]
   transactions InventoryTransaction[]
   batches      ProductBatch[]
+  batchChanges ProductBatchChange[]
 
+  @@unique([id, tenantId])
   @@unique([sku, tenantId])
   @@index([tenantId])
   @@index([categoryId])
@@ -496,6 +501,7 @@ model ProductBatch {
 
   saleAllocations SaleBatchAllocation[]
   receiptMovements InventoryTransaction[] @relation("BatchReceipts")
+  changes ProductBatchChange[]
 
   @@unique([productId, batchNumber, tenantId])
   @@unique([id, productId, tenantId])
@@ -509,6 +515,38 @@ enum BatchStockStatus {
   RELEASED
   QUARANTINE
   BLOCKED
+}
+
+enum ProductBatchChangeOperation {
+  STATUS
+  EXPIRY
+  COST
+  INITIAL_RELEASE
+}
+
+// Immutable field audit, never a stock movement. SQL migration enforces snapshot
+// shape, operation semantics and append-only protection (including TRUNCATE).
+model ProductBatchChange {
+  id        String @id @default(uuid())
+  tenantId  String @map("tenant_id")
+  productId String @map("product_id")
+  batchId   String @map("batch_id")
+  actorId   String @map("actor_id")
+  operation ProductBatchChangeOperation
+  before    Json @db.JsonB
+  after     Json @db.JsonB
+  reason    String @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  product Product @relation(fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)
+  batch   ProductBatch @relation(fields: [batchId, productId, tenantId], references: [id, productId, tenantId], onDelete: Restrict, onUpdate: Restrict)
+  actor   User @relation("BatchChangeActor", fields: [actorId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([tenantId, batchId, createdAt(sort: Desc), id(sort: Desc)], map: "product_batch_changes_history_idx")
+  @@index([tenantId, productId])
+  @@index([tenantId, actorId])
+  @@map("product_batch_changes")
 }
 
 // Actual sale deductions only. Historical orders are deliberately not backfilled.
