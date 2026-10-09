@@ -1,7 +1,23 @@
 {
-  "sha": "3808f92c4ec544bf27807c2d83a8d8955536f0a3",
-  "tree": "54bf5491bcf0cc43a429908727f24699e0be7338",
+  "sha": "fbe9535ab449eb96b40d25dac6ffa08561a1e1e8",
+  "tree": "622afea7ac6ee12275ee50135453bc65611180cf",
   "checks": [
+    {
+      "name": "all empty copy fully in initial viewport 390x844 at 100%",
+      "passed": true
+    },
+    {
+      "name": "filtered empty copy fully in initial viewport 390x844 at 100%",
+      "passed": true
+    },
+    {
+      "name": "all empty copy fully in initial viewport 390x768 at 100%",
+      "passed": true
+    },
+    {
+      "name": "filtered empty copy fully in initial viewport 390x768 at 100%",
+      "passed": true
+    },
     {
       "name": "geometry 1366x768 at 100% native page zoom",
       "passed": true,
@@ -129,52 +145,68 @@
     {
       "name": "real API receipt and duplicate retain product stock 4",
       "passed": true,
-      "productId": "72560220-ce86-4104-a9eb-f9c8e42e9067",
-      "sku": "UIUX-1791529825445",
-      "lot": "UIUX-1791529825445-LOT",
+      "productId": "ba69fae1-948f-4ba0-b7c9-f72a10b33c34",
+      "sku": "UIUX-1791531014135",
+      "lot": "UIUX-1791531014135-LOT",
       "stockQuantity": 4
     }
   ],
   "screenshots": [
     {
+      "file": "list-empty-390-844-100-all.png",
+      "sha256": "8adcc33929f72672a2e3858e6f845c02e7ef8c507c3db71e3f2d8f1ab4b33a9f"
+    },
+    {
+      "file": "list-empty-390-844-100-filtered.png",
+      "sha256": "9177652d093e317356d43628da82ef0cfdc898bf67726ce83643bbf50c598abb"
+    },
+    {
+      "file": "list-empty-390-768-100-all.png",
+      "sha256": "b655cf634330acf0cd2961d898c5004708f443aa76c403a970945ee8496f45d8"
+    },
+    {
+      "file": "list-empty-390-768-100-filtered.png",
+      "sha256": "500cfe61ef1214e5155f28d124e0fda59003f0892ec2825376a3a08136651391"
+    },
+    {
       "file": "list-1366-100.png",
-      "sha256": "f5d3d1acd5a5c21429aeb9ef0261ce6bb9cd1bd8c642b87e9a87a9cd5824e947"
+      "sha256": "dcba51e3129186988c44a9cf1bfa4e793ae766358fc409aee7808a40c479c1dd"
     },
     {
       "file": "receipt-1366-100.png",
-      "sha256": "3eb10288f689dcb83a80f84099da275eb165bc91d6e419c5799088c4fbeb5209"
+      "sha256": "9046c00591e678a468694346ada48753dae2a70f2619ab1c16f7a458fa3aace3"
     },
     {
       "file": "receipt-end-1366-100.png",
-      "sha256": "a0abb04e7958458b5299bc5ceb6bc5b39f41f3a9c0e4aa6b36ce430b12dea711"
+      "sha256": "fe5015b2a3373fec3e2096e7acba9af5013da97bfb7cf664f115978a27c4c3d1"
     },
     {
       "file": "error-1366-100.png",
-      "sha256": "d1ba5f9df55633295ddb605250bbae06b1a9b3ac198edf3dc1dd97a2b5724c4f"
+      "sha256": "d493ae3f9f8afb3466c80eb349d8fc4fb2f73615e7f32a6de10e2cd2759aba09"
     },
     {
       "file": "list-1024-100.png",
-      "sha256": "63a5a96ccf3b49c13731e2975d29aafbe691e3078218ee7c0f2d9c4ef4a725d1"
+      "sha256": "1ca135fc47031b677c9fb987bc917b7bf0cff3912694da4f64f6fa72540a8e37"
     },
     {
       "file": "receipt-1024-100.png",
-      "sha256": "cb6871da8be52743cdb4c718fcb08b2b7be77ed52fa1a1f969f43fa3b9917266"
+      "sha256": "b19c7bebdbc6b5b62f938b39f0f7976fa9e47be524811d8a6daf12efdb11bb6b"
     },
     {
       "file": "receipt-end-1024-100.png",
-      "sha256": "84041a1880d11516c0596f9ca45c5ee17bd0d07b95d0ac197d6b42addff9a4e5"
+      "sha256": "1bde264c66357d314eb476ea2a5eb73c538abd8d70477c28e19380f9b46c6756"
     },
     {
       "file": "error-1024-100.png",
-      "sha256": "0530399ae4aa96ba10700dbe99cb494975cdfe913d64b65e88d6353805391503"
+      "sha256": "67ea7474aaf995df9613f219ebdf132b7b86f146e669d5c7f94b243640f76a55"
     },
     {
       "file": "list-390-100.png",
-      "sha256": "e4fd2df4595f5507b04a80c9b9df946aec1becbd2e4ffc6e2778016db2f580d4"
+      "sha256": "6ea341311f4ada66fee3f6c4dc9979ac9cf59254eb5082d5af535607c23f8dd4"
     },
     {
       "file": "receipt-390-100.png",
-      "sha256": "870e11956de5c9fb973d41caf747ab6729176de9c310223ba6f9989fdc0a0847"
+      "sha256": "e665e6bf16a8eeba14eb6866163d535dbf8ab9700121f80ddbede27af1c62597"
     },
     {
       "file": "receipt-end-390-100.png",
@@ -182,11 +214,11 @@
     },
     {
       "file": "error-390-100.png",
-      "sha256": "7a465555d627e508c19ec4b4ba6d3f3ae97590c68cc37f2b854bfd2470927a7c"
+      "sha256": "1f35de9570530e1104f820ebc9e8655738a48e46c299b3b07fe4967fc36bcddb"
     },
     {
       "file": "list-1366-200.png",
-      "sha256": "54e4bf74b7a49bf5c3f186e01ee0da2dcf1cde4d8306a205d06016b8cebbfbee"
+      "sha256": "a471a877208da01207921506afab25f2f31c338aa592d3a11921bdd08885521c"
     },
     {
       "file": "receipt-1366-200.png",
@@ -194,7 +226,7 @@
     },
     {
       "file": "receipt-end-1366-200.png",
-      "sha256": "d9e6ad0ca99b692fa21aa2ea6eed35e3a9ccb765d490cf9e62a4e083db57d921"
+      "sha256": "784ab0f82299757c9d425acacdc38b01440cce70db9618f85b7d966d8a9a89e0"
     },
     {
       "file": "error-1366-200.png",
@@ -206,7 +238,7 @@
     },
     {
       "file": "list-loading.png",
-      "sha256": "5adaf7458ac3713e50e63026f762e6a17c16f77898a6b4307265be84107289d7"
+      "sha256": "085ce7b5d2e0b3e5f61e140fead111c5f9c433083516a3c8dedb967b42fba7d9"
     },
     {
       "file": "receipt-empty-products.png",
@@ -214,15 +246,15 @@
     },
     {
       "file": "list-empty.png",
-      "sha256": "0e5b11aa633e2844d2ffffa9902420f27641ab46d0b0c26168bc3174ded3ee1d"
+      "sha256": "ced9e2c745c68b877c042593056ba2fcab25e90378d3a463a07e6f336ec5a83b"
     },
     {
       "file": "real-api-receipt.png",
-      "sha256": "aa8ffc27194aecbdbb9b6a457a93910657783a5f1b82c79e078cededdf10d0e7"
+      "sha256": "98bfe09eb4e1b1e3627c7ae1c45dea6f71b1d09b1227b3e8568f5d4a5e8a1770"
     },
     {
       "file": "real-api-duplicate.png",
-      "sha256": "1a65ec011f84b5b8f4611dfb3487b69e7a9470e1951aa20e5dc397ae0fd09b8e"
+      "sha256": "b5c1184369b3cdf24c234018434a17f87cceb371f5707b9c47f044756e4a5116"
     }
   ],
   "browserErrors": []

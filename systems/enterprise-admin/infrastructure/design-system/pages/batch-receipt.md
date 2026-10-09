@@ -7,7 +7,7 @@
 | 來源 | 本頁改動 | 驗收方式 |
 | --- | --- | --- |
 | SAP Worklist | 標題與單一主要登記入口；篩選移至清單前、aria-pressed；清單標題與本次載入筆數；更正／歷史入口保留 | 桌機 1366×768、1024×768，390px 手機，主要入口可見，篩選／標題不互相覆蓋。 |
-| Carbon Table | 修正全域 overflow:hidden 的覆蓋；頁面限定 overflow:auto；14px 表頭，品名 SKU 分行，數字靠右，長批號可換行 | 長合成品名／SKU／批號；document 無水平溢出，表格可捲到右側操作；鍵盤聚焦後方向鍵可捲動。 |
+| Carbon Table | 修正全域 overflow:hidden 的覆蓋；頁面限定 overflow:auto；14px 表頭，品名 SKU 分行，數字靠右，長批號可換行 | 空態在寬表外：390×844及390×768全部／篩選空態須在未捲動的初始視窗完整可見（toBeInViewport ratio1）；長合成品名／SKU／批號；document 無水平溢出，表格可捲到右側操作；鍵盤聚焦後方向鍵可捲動。 |
 | Fluent Field | 表單桌機兩欄、手機一欄；持續可見標籤，helper IDs，放行原因 required、1000字、aria-invalid | 輸入與輔助訊息關聯可讀；錯誤仍有原商品／批號／效期／數量／成本／狀態／原因；欄位原生約束有效。 |
 | Fluent Message bar | 載入、空資料、403、讀取失敗、更新中與過期結果分開；讀取 retry 是 type=button；提交錯誤 focus 到訊息 | 慢回應、403、409、500、網路失敗、refetch 失敗；過期清單不冒充目前資料。未知提交先核對且不自動 POST。 |
 | W3C Dialog | native dialog modal，標題入焦，背景 inert、Tab 循環、返回入口，Esc 可取消；pending 鎖定 | 鍵盤與背景操作；慢 POST 時 Esc／連點／取消不關閉或重送，成功後返回入口，錯誤草稿保留。 |

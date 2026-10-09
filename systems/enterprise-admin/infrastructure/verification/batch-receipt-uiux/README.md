@@ -2,7 +2,17 @@
 
 [Draft PR #85](https://github.com/skydreamer0/startup/pull/85)，分支 `feat/batch-receipt-uiux-20261009`，base `backup/batch-audit-20261009-edb1bc3`（#76）。基底完整 SHA `ed13c5939026bde044bdcd68072d793d5d46de8f`，tree `92972743213c005b24784c48e6a5d387f24669f6`，建分支前已對遠端核對，未覆寫其他作者分支。
 
-畫面與 browser-report 的執行 SHA 為 `3808f92c4ec544bf27807c2d83a8d8955536f0a3`。本文件及畫面提交後會在最終精確 HEAD 再跑受影響測試、types/build 與 browser harness，結果、final SHA/tree、遠端逐檔 SHA256 讀回核對記於 PR，避免在 commit 內自指 SHA。頁面與測試的 Git blob 可由最終 tree 核對。
+本次 P2 修正後畫面與 browser-report 的執行 SHA 為 `fbe9535ab449eb96b40d25dac6ffa08561a1e1e8`。本文件及畫面提交後會在最終精確 HEAD 再跑受影響測試、types/build 與 browser harness，結果、final SHA/tree、遠端逐檔 SHA256 讀回核對記於 PR，避免在 commit 內自指 SHA。頁面與測試的 Git blob 可由最終 tree 核對。
+
+## 獨審 P2：手機空批次清單
+
+原 `min-width:960px` 表格的 `colSpan=7` 置中空態在390px被局部表格捲動裁到視窗外；舊 `list-empty.png` 確實沒有呈現文字，原 `toBeVisible` 未驗證實際視窗位置，先前20項檢查不能證明手機空態已通過。
+
+先加入 `toBeInViewport({ ratio:1 })`，在未修改的版本重現失敗（可見比例約0.2458），再把空態移到寬表格外的獨立訊息。只有非空清單渲染寬表格。新驗證在 **390×844及390×768** 對「全部」與「到期／30天內需處理」都要求空態完整位於初始視窗內，且 `scrollY=0`、容器 `scrollLeft=0`；不使用scrollIntoView讓測試假通過。
+
+修正後完整harness24項檢查／26張畫面，更新了 `list-empty.png`，並新增 [844全部](screenshots/list-empty-390-844-100-all.png)、[844篩選](screenshots/list-empty-390-844-100-filtered.png)、[768全部](screenshots/list-empty-390-768-100-all.png)、[768篩選](screenshots/list-empty-390-768-100-filtered.png)。待下一位獨審讀回最終SHA確認，未通過不merge。
+
+既有watch API在重驗中發生socket hang up，未算pass；改以自有build後API程序在另一個loopback port3051連同一個自有合成DB完成真API重驗，未更改API／權限。harness在傳輸失敗時只記錄method/path，不輸出認證標頭。
 
 ## 結果與證據
 
@@ -12,7 +22,7 @@
 | Admin types/build、lint、context | TypeScript 與 Vite build 通過，lint 無警告，agent context validation 通過。 |
 | Backend 既有收貨回歸 | inventory-receipt.integration + initial-release：2 files / 25 tests；前者為真 PostgreSQL、後者為 service 測試。Backend build 通過。 |
 | 既有 batch audit PG 回歸 | 初次執行 15 skipped，未算 pass；另建精確符合既有 guard 的自有隔離 DB 後 15/15 通過，含初次放行原因／獨立權限／可信 actor、audit/movement 失敗整筆 rollback 與 append-only。未修改 guard。 |
-| 雲端 Chromium | 20 項檢查、22 張 native viewport PNG；[完整 report](screenshots/browser-report.json) 記錄視窗、DPR、source SHA、畫面 SHA256。1366×768、1024×768、390×844，長品名／SKU／批號、數字靠右、局部表格方向鍵捲動、單欄手機表單、dialog 無水平溢出。 |
+| 雲端 Chromium | 24 項檢查、26 張 native viewport PNG；[完整 report](screenshots/browser-report.json) 記錄視窗、DPR、source SHA、畫面 SHA256。1366×768、1024×768、390×844，長品名／SKU／批號、數字靠右、局部表格方向鍵捲動、單欄手機表單、dialog 無水平溢出。 |
 | 真正 200% page zoom | 使用 Chromium default partition 的原生 page-zoom preference，1366×768 實際 CSS viewport 683×384、DPR 2、visualViewport.scale 1、body CSS zoom 1。不改 deviceScaleFactor、不用 CSS zoom 或縮 viewport 冒充。PNG 由 CDP Page.captureScreenshot 捕捉實際 1366×768 像素，避免 Playwright fullPage 在 native zoom 下裁半張圖。 |
 | 鍵盤與 pending | 標題入焦、背景 focus 被原生 modal 阻擋、Tab/Shift+Tab 循環、Esc 取消與返回入口。第一輪發現原生 Tab 從末端可掉到 body，已補 explicit Tab wrap；pending 將焦點移回 dialog 標題，所有欄位／取消／入口 disabled，Esc 不關閉。連續 submit 只有 1 POST。 |
 | 訊息與草稿 | browser fixture：慢 GET/POST、空批次／商品、讀取403與明確 retry、提交403草稿保留。unit：409、500、網路未知失敗不自動重送；商品重新讀取保留選擇及原因；refetch 失敗不把過期結果或失敗當空資料。未知提交先核對批次／庫存。 |
@@ -28,7 +38,7 @@
 
 ## 獨立重現
 
-前端使用 Node 22.23.3 / pnpm 10.34.6，backend npm 11.21.0，PostgreSQL15 官方既有 image。依 dependency_management.md frozen 安裝，Vite 在127.0.0.1:5179、隔離 API 在127.0.0.1:3049。API 的 DATABASE_URL 必須指向自己建立的合成資料庫；本次是 loopback55439，11 個既有 migrations 與既有 seed。沒有使用或修改正式 DB。
+前端使用 Node 22.23.3 / pnpm 10.34.6，backend npm 11.21.0，PostgreSQL15 官方既有 image。依 dependency_management.md frozen 安裝，Vite 在127.0.0.1:5179；本次隔離 API 以已 build 的自有程序在127.0.0.1:3051執行，設定 `API_URL=http://127.0.0.1:3051/api/v1/admin`。harness預設3049可依自己建立的loopback程序指定。API 的 DATABASE_URL 必須指向自己建立的合成資料庫；本次是 loopback55439，11 個既有 migrations 與既有 seed。沒有使用或修改正式 DB。
 
 browser harness 使用現有 pos-ui 的 @playwright/test 安裝，**未改 POS 程式或 dependencies**。執行時由操作者提供 `RECEIPT_TEST_LOGIN_EMAIL` 與 `RECEIPT_TEST_LOGIN_PASSWORD`，需與其自有隔離 DB 的 seed 輸入一致；程式不含登入預設值、不記錄密碼或 token，真 API 僅接受 loopback。不要提供正式憑證。可設定 `EVIDENCE_DIR` 將最終精確 HEAD 的證據寫到外部資料夾，保持工作樹乾淨。
 
@@ -42,7 +52,7 @@ Backend：既有 `inventory-receipt.integration.test.ts` 與 `modules/product-ba
 
 ## 安全掃描與未完成項
 
-GitGuardian incident **27497179** 指向早期 commit `6ef546eba146bced5bdbcf14c35cc0d61b4df6ab` 的 browser harness 固定測試登入輸入。經核實僅源自現有 seed 並用於自有隔離 synthetic DB；沒有正式憑證。已於 `3808f92c4ec544bf27807c2d83a8d8955536f0a3` 移除硬編碼，改為執行時輸入並重驗。**歷史仍保留該 commit**，未重寫 git 歷史、未改 GitGuardian 規則或停用掃描；掃描最新 head 及歷史警告是否阻擋以 PR 最新 checks 為準，不能把功能通過稱安全全綠。
+GitGuardian incident **27497179** 指向早期 commit `6ef546eba146bced5bdbcf14c35cc0d61b4df6ab` 的 browser harness 固定測試登入輸入。使用者已明確說明本專案目前全為模擬測試、不是正式版。本次值僅源自既有 seed 並用於自有隔離 synthetic DB；沒有使用正式憑證。已於 `3808f92c4ec544bf27807c2d83a8d8955536f0a3` 移除硬編碼，改為執行時輸入並重驗。**歷史仍保留該 commit**，未重寫 git 歷史、未改 GitGuardian 規則或停用掃描；掃描最新 head 及歷史警告是否阻擋以 PR 最新 checks 為準，不能把功能通過稱安全全綠。
 
 Safari、iPad 實機、手機原生鍵盤／日期選擇器、螢幕閱讀器、320 CSS px reflow、完整 WCAG 與下一位獨立人工評審尚未完成。沒有跑整個 repo 全套本地測試；本次只跑受影響回歸及 types/build，完整 CI 結果另看精確 final SHA。既有刪除／BatchAuditPanel 不在本次修改範圍。
 
