@@ -8,16 +8,16 @@ To maintain a high deployment velocity without sacrificing stability, we follow 
 ### 2.1 Unit Tests (The Base - 70% Volume)
 - **Scope**: Single functions, pure components, and isolated utilities.
 - **Characteristics**: Very fast, no external network or DB calls (mock everything).
-- **Target Coverage**: `> 80%` line coverage for business logic.
+- **Target Coverage**: `> 80%` line coverage for business logic. This is a design target, not a measured pass claimed by the current default CI; report coverage only when the coverage command and its results were actually checked.
 
 ### 2.2 Integration / Contract Tests (The Middle - 20% Volume)
 - **Scope**: Database interactions, API layer bounds, and BFF-to-Backend contracts.
 - **Characteristics**: Tests the "glue" between components. May use an in-memory DB or Dockerized DB (Testcontainers).
 - **Goal**: Ensure the data flows correctly between our internal boundaries.
 
-### 2.3 End-to-End (E2E) E2E Tests (The Top - 10% Volume)
+### 2.3 End-to-End (E2E) Tests (The Top - 10% Volume)
 - **Scope**: Critical user journeys (e.g., User Login, Admin creating a new User role).
-- **Characteristics**: Slowest, testing against a fully deployed Staging environment via browser automation (Playwright/Cypress).
+- **Characteristics**: Browser automation exercises critical journeys in a controlled environment. Identify whether it uses synthetic HTTP fixtures, a real isolated API/PostgreSQL service, or staging; those scopes are not interchangeable.
 - **Rule**: Only write E2E tests for the absolute most critical paths to avoid maintenance nightmares (flaky tests).
 
 ## 3. Pull Request Requirements
@@ -27,7 +27,53 @@ To maintain a high deployment velocity without sacrificing stability, we follow 
 
 ## 4. Current CI Test Gates
 
-- Backend CI runs Prisma client generation, lint, build, database setup/seed, and backend tests against PostgreSQL. Prisma engines are cached in CI to reduce dependency on repeated binary downloads.
-- Admin UI CI runs lint, focused unit/render tests, and production build/type-check.
-- POS UI unit/component tests run in CI with `pnpm --filter pos-ui run test`; Vitest is configured to include only `src/**/*.{test,spec}.{ts,tsx}` so Playwright E2E specs stay under the Playwright runner.
-- POS Playwright E2E requires browser installation (`pnpm --filter pos-ui run test:e2e:install`) and a running backend with seeded POS data before `pnpm --filter pos-ui run test:e2e`. Browser installation downloads from Playwright/CDN hosts, so cloud/CI runners need network allowlisting or a pre-populated browser cache. Do not make POS E2E a default PR gate until the browser and backend/seed dependencies are deterministic in CI.
+The execution source of truth is `.github/workflows/ci.yml` at repository root.
+It runs for every PR, including stacked PRs, plus pushes to `master` / `main`
+and manual dispatch. It currently has eight jobs:
+
+| Job | Coverage and important limits |
+| --- | --- |
+| Agent Context Validation | Context links/tracking and canonical dependency-lock boundaries. |
+| Backend CI | npm audit, Prisma generation, lint/build, final Docker image and migration CLI, PostgreSQL migrations/seed/tests, and isolated final-Alpine readiness acceptance with cleanup evidence. Individual tests may still mock dependencies; a PostgreSQL service alone does not prove every feature has native DB coverage. |
+| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, and Docker image. |
+| POS UI CI | Unit/component tests, build/type-check, Docker image, real HTTP restart/lost-response recovery with isolated PostgreSQL, and fixed-subject scanner/supplier Chromium evidence. The fixed subjects are historical versions, not the current UI. |
+| Product pagination PostgreSQL acceptance | Exact-head pagination regression and native PostgreSQL cases, ownership guards, and cleanup evidence. |
+| Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU lookup cases plus current POS Chromium with synthetic HTTP; these are separate scopes, not one browser-to-real-DB flow. |
+| Batch audit PostgreSQL acceptance | Exact-head append-only batch audit cases and schema contracts, with owned fixture evidence. |
+| Order sequence PostgreSQL acceptance | Exact-head numbering, legacy-upgrade, and checkout regression cases with owned DB cleanup. |
+
+The four core check names in `AGENTS.md` are the existing required-check baseline,
+not an exhaustive inventory of CI coverage. Review all current jobs and applicable
+security checks for the exact PR head. Inspect the actual GitHub ruleset separately
+when checking enforced merge requirements; a document does not change that ruleset.
+
+Additional workflows:
+- `.github/workflows/dependency-review.yml` runs Dependency Review on PRs and rejects
+  newly introduced high/critical vulnerable dependencies. Keep the existing audits
+  and security checks; their results are separate from the eight-job pipeline.
+- `.github/workflows/argon2-compat.yml` is intentionally restricted to the named
+  Argon2 compatibility branches. A skip on another branch is not fresh Argon2
+  compatibility evidence and is not a general backend regression pass.
+- Service-managed checks such as CodeQL can exist outside repository workflow YAML;
+  inspect the PR checks rather than inferring their absence from this file list.
+
+## 5. Browser and acceptance boundaries
+
+- POS Vitest includes only `src/**/*.{test,spec}.{ts,tsx}`. Playwright specs use their
+  own runner; JSDOM is not proof of native browser focus, geometry, or accessibility.
+- CI already installs Chromium and runs the bounded HTTP recovery, fixed-subject UI,
+  and current SKU browser harnesses above. Do not describe browser CI as wholly
+  absent, or generalize those harnesses to unrelated screens and new dialog changes.
+- The broad `pnpm --filter pos-ui run test:e2e` suite is not run by the default
+  pipeline. It still needs a browser and its configured backend/seed prerequisites;
+  do not report it as passed from the narrower CI jobs. Adding it as a gate requires
+  a separate change proving deterministic setup and bounded data ownership.
+- Browser downloads require access to the relevant Playwright/CDN hosts or a valid
+  pre-populated cache. A denied launch or unavailable prerequisite is BLOCKED / NOT
+  RUN. Do not bypass security restrictions or relabel it as successful verification.
+- Report source head, execution commit/tree, subject version, command, result, and
+  retained evidence. A failed, cancelled, missing, or unexpectedly skipped stage is
+  not a pass. Do not mix counts across historical, mocked, native DB, and browser runs.
+- Business acceptance, real payment-provider behavior, physical scanner/touch,
+  Safari/iPad, OS keyboard, native zoom, and screen-reader checks remain separate
+  when relevant. CI success does not close those gates or authorize deployment.

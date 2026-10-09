@@ -1,7 +1,7 @@
 # Git Workflow & Branching Strategy
 
 ## 1. Strategy: Trunk-Based Development (with Short-lived Branches)
-We prefer **Trunk-Based Development** to minimize integration hell. Developers should merge small, frequent changes to the main line.
+We prefer **Trunk-Based Development** to minimize integration hell. Developers should merge small, frequent changes to the main line. The default branch in this repository is `master`.
 
 ## 2. Branch Naming
 Branches must be prefixed with their intent:
@@ -17,10 +17,10 @@ Branches must be prefixed with their intent:
 **Rules**:
 1. **One feature point = one branch.** Don't pile unrelated work onto the same branch — each ROADMAP item, bug fix, or refactor gets its own short-lived branch.
 2. **Commit at least once per day, before EOD.** Even a WIP commit beats losing context overnight. Push to the remote daily — a branch that lives only on your laptop is invisible to teammates and to CI.
-3. **Branches >2 days without a push are technical debt.** Either get them reviewed, rebase onto current `main` and keep moving, or close them. Stale branches accumulate conflicts and block others.
+3. **Branches >2 days without a push are technical debt.** Either get them reviewed, rebase onto current `master` and keep moving, or close them. Stale branches accumulate conflicts and block others.
 4. **Analytics and CRM are conflict hotspots.** These modules see the most parallel churn (see Phase 7 history — three of the largest stashes were here). When working in these areas:
    - Open a draft PR early so others can see what's coming.
-   - Rebase onto `main` daily, not weekly.
+   - Rebase onto `master` daily, not weekly.
    - Prefer smaller PRs (≤300 LOC diff) over batched ones.
 
 ## 4. Commit Message Standards (Conventional Commits)
@@ -61,13 +61,13 @@ Examples (taken from real history):
 If a change cleanly spans two scopes, prefer `<typeA>+<typeB>(<scope>)` (as above) over inventing a compound scope.
 
 ## 5. Merging Policy
-- **Rebase over Merge**: Rebase feature branches against `main` periodically to maintain a clean, linear history.
-- **Squash and Merge**: Feature branches are squashed into a single commit when merging to `main` to keep history readable.
-- **Force-push only your own branch.** Never force-push `main`.
+- **Rebase over Merge**: Rebase feature branches against `master` periodically to maintain a clean, linear history.
+- **Squash and Merge**: Feature branches are squashed into a single commit when merging to `master` to keep history readable.
+- **Force-push only your own branch.** Never force-push `master`.
 
 ## 6. PR Requirements
 Every PR must satisfy `.github/pull_request_template.md`. In particular, per **C-03**:
-- ROADMAP items must be ticked off in the same PR that implements them.
+- ROADMAP items must be ticked off in the same PR that completes their stated acceptance scope. For partial implementations, record the completed scope and remaining gates instead of checking off the whole item.
 - Architectural changes require a new ADR under `systems/enterprise-admin/infrastructure/adr/`.
 
 ## 7. References

@@ -50,11 +50,12 @@ Path(file).write_text(text, encoding="utf-8")
 
 ## CI policy
 
-The repository is public, so GitHub Actions runs on GitHub-hosted runners at no cost. CI is expected on every PR.
+CI is expected on every PR using the configured GitHub-hosted runners. This policy does not authorize runner or billing changes.
 
 - Do not put CI skip markers (`[skip ci]`, `[ci skip]`, `[no ci]`, `[skip actions]`, `skip-checks: true`) anywhere in a commit message. GitHub checks the whole message, including the body, so do not even quote them.
 - `CI/CD Pipeline` runs on every PR whatever its base branch, so stacked PRs get CI as well. Use `workflow_dispatch` to re-run it on a branch instead of pushing empty commits.
-- A PR is not ready to merge until all four jobs pass: Agent Context Validation, Backend CI, Admin UI CI, POS UI CI. Passing CI does not replace business or hardware acceptance gates.
+- The four core checks remain required: Agent Context Validation, Backend CI, Admin UI CI, POS UI CI. Review all current jobs and applicable security checks for the exact PR head, not just those four check names. The current CI coverage and evidence limits are documented in `systems/enterprise-admin/infrastructure/standards/test_pyramid.md`; workflow YAML is the execution source of truth.
+- A failed, cancelled, missing, or unexpectedly skipped check is not a pass. Passing CI does not replace independent code review or the affected business, browser, database, and hardware acceptance gates. Historical pinned-subject browser evidence does not validate a new UI change.
 
 ## End-of-work context update loop
 
