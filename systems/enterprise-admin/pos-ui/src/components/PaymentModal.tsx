@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCartStore } from '../store/cartStore';
 import { PAYMENT_LABELS, PaymentMethod } from '../constants';
 
@@ -13,6 +13,11 @@ interface Props {
 
 export default function PaymentModal({ onConfirm, onClose, loading, salesStaffName, hasHighDiscount, pinAuthorized }: Props) {
   const [tendered, setTendered] = useState(0);
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    document.getElementById('payment-tendered')?.focus();
+    return () => { if (opener?.isConnected) opener.focus(); };
+  }, []);
   const { items, subtotal, total, orderDiscountAmount, paymentMethod, setPaymentMethod } = useCartStore();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const checkoutTotal = total();
@@ -21,8 +26,9 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-      <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 400, boxShadow: 'var(--shadow-lg)' }} onClick={(event) => event.stopPropagation()}>
-        <h3 style={{ margin: '0 0 8px' }}>確認結帳</h3>
+      <div role="dialog" aria-modal="true" aria-labelledby="payment-title" style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 24, width: 'min(400px, calc(100vw - 32px))', maxHeight: 'calc(100dvh - 32px)', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }} onClick={(event) => event.stopPropagation()}>
+        <div style={{ minHeight: 0, overflowY: 'auto' }}>
+        <h3 id="payment-title" style={{ margin: '0 0 8px' }}>確認結帳</h3>
 
         <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: 16, margin: '16px 0 20px', background: 'var(--bg-app)' }}>
           <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
@@ -91,7 +97,8 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: 12 }}>
+        </div>
+        <div style={{ display: 'flex', gap: 12, flexShrink: 0, paddingTop: 12 }}>
           <button
             type="button"
             onClick={onClose}
