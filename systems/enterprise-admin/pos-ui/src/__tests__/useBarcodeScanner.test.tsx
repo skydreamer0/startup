@@ -210,6 +210,76 @@ describe('useBarcodeScanner', () => {
     expect(useCartStore.getState().items).toEqual([]);
   });
 
+  it.each([
+    ['missing name', { ...product, name: undefined }],
+    ['empty name', { ...product, name: '' }],
+    ['missing SKU', { ...product, sku: undefined }],
+    ['empty SKU', { ...product, sku: '' }],
+    ['negative stock', { ...product, stockQuantity: -1 }],
+    ['fractional stock', { ...product, stockQuantity: 1.5 }],
+    ['blank price', { ...product, retailPrice: '  ' }],
+    ['negative price', { ...product, retailPrice: -1 }],
+    ['non-finite price', { ...product, retailPrice: Infinity }],
+    ['numeric barcode', { ...product, barcode: 4711 }],
+    ['non-object category', { ...product, category: 'medicine' }],
+    ['non-string category ID', { ...product, category: { id: 1, name: 'Medicine' } }],
+    ['missing category name', { ...product, category: { id: 'medicine' } }],
+  ])('rejects %s in lookup data while retaining an existing cart', async (_label, row) => {
+    useCartStore.getState().addItem(second);
+    const draft = checkoutDraft();
+    const showToast = vi.fn();
+    lookupProduct.mockResolvedValue({ data: { data: [row] } });
+    render(<Harness products={[]} showToast={showToast} showFeedback />);
+    scan('PAN');
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('查詢商品失敗'));
+    expect(showToast).toHaveBeenCalledTimes(1);
+    expect(showToast).toHaveBeenCalledWith(expect.objectContaining({ type: 'error' }));
+    expect(checkoutDraft()).toEqual(draft);
+    expect(screen.queryByRole('region', { name: '掃碼候選商品' })).not.toBeInTheDocument();
+  });
+
+  it.each(['manual search', 'modal ABA', 'unmount'])(
+    'silently discards malformed late data after %s invalidates its intent', async (boundary) => {
+      useCartStore.getState().addItem(second);
+      const draft = checkoutDraft();
+      const old = deferredLookup();
+      const newer = deferredLookup();
+      const showToast = vi.fn();
+      lookupProduct.mockReturnValueOnce(old.promise).mockReturnValueOnce(newer.promise);
+      const view = render(<Harness products={[]} showToast={showToast} showFeedback />);
+      scan('PAN');
+      expect(screen.getByRole('status', { name: '' })).toHaveTextContent('正在查詢 SKU PAN');
+      if (boundary === 'manual search') {
+        fireEvent.change(screen.getByRole('textbox', { name: 'search' }), { target: { value: 'manual' } });
+      } else if (boundary === 'modal ABA') {
+        view.rerender(<Harness products={[]} blocked showToast={showToast} showFeedback />);
+        view.rerender(<Harness products={[]} showToast={showToast} showFeedback />);
+      } else {
+        view.unmount();
+      }
+      if (boundary !== 'unmount') {
+        scan('PAN2');
+        screen.getByRole('button', { name: 'other' }).focus();
+      }
+      // A fulfilled response can still be malformed; it must not revive an invalid intent.
+      await finish(old, [{ ...product, stockQuantity: -1 }]);
+      expect(checkoutDraft()).toEqual(draft);
+      expect(showToast).not.toHaveBeenCalled();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.queryByRole('region', { name: '掃碼候選商品' })).not.toBeInTheDocument();
+      if (boundary !== 'unmount') {
+        expect(screen.getByRole('status', { name: '' })).toHaveTextContent('正在查詢 SKU PAN2');
+        expect(screen.getByRole('button', { name: 'other' })).toHaveFocus();
+        expect(screen.getByRole('textbox', { name: 'search' })).toHaveValue(boundary === 'manual search' ? 'manual' : '');
+        await finish(newer, [second]);
+        expect(useCartStore.getState().items).toHaveLength(1);
+        expect(useCartStore.getState().items[0]).toMatchObject({ product: { id: second.id }, quantity: 2 });
+        expect(showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
+      }
+    },
+  );
+
   it('does not replace a newer candidate choice with an older ambiguous response', async () => {
     const old = deferredLookup();
     const newer = deferredLookup();
