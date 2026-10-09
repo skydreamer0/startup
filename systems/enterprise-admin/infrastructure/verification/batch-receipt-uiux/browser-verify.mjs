@@ -110,7 +110,7 @@ try {
     const loadingPage = await launch(390, 844); let finishRead; let finishProducts;
     const readGate = new Promise(resolve => { finishRead = resolve; }); const productGate = new Promise(resolve => { finishProducts = resolve; });
     const loadingState = await fixture(loadingPage, undefined, { readGate, productGate, batches: [], products: [] });
-    await expect(loadingPage.getByRole('status')).toContainText('正在載入批次'); await screenshot(loadingPage, 'list-loading');
+    await expect(loadingPage.getByRole('status').filter({ hasText: '正在載入批次' })).toContainText('正在載入批次'); await screenshot(loadingPage, 'list-loading');
     await loadingPage.getByRole('button', { name: '+ 登記批次進貨' }).click(); await expect(loadingPage.getByLabel('商品', { exact: true })).toBeDisabled(); await expect(loadingPage.getByRole('button', { name: '登記進貨', exact: true })).toBeDisabled();
     finishRead(); finishProducts(); loadingState.readGate = null; loadingState.productGate = null;
     await expect(loadingPage.getByText('目前沒有可收貨商品，請先建立商品資料。')).toBeVisible(); await expect(loadingPage.getByRole('button', { name: '登記進貨', exact: true })).toBeDisabled(); await screenshot(loadingPage, 'receipt-empty-products');
