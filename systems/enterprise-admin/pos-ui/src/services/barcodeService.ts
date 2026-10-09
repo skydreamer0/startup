@@ -44,6 +44,16 @@ export function onBarcodeSequence(cb: (event: BarcodeSequenceEvent) => void): ()
 }
 
 function handleKeydown(e: KeyboardEvent) {
+  // Native control activation belongs to that control, never the scanner.
+  // In particular Space must not start a sequence and remove a choice before click.
+  const target = e.target;
+  if (e.defaultPrevented || (target instanceof Element && target.closest(
+    'button, [role="button"], a[href], [role="link"], select, textarea, [contenteditable]:not([contenteditable="false"])',
+  ))) {
+    endSequence('cancelled');
+    buffer = '';
+    return;
+  }
   const now = Date.now();
   if (now - lastKeyTime > 300) {
     endSequence('cancelled');
@@ -54,6 +64,8 @@ function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Enter') {
     const code = buffer.trim();
     buffer = '';
+    // Mark a completed scan as consumed before page-wide Enter shortcuts run.
+    if (code.length >= 3) e.preventDefault();
     endSequence(code.length >= 3 ? 'completed' : 'cancelled');
     if (code.length >= 3) {
       subscribers.forEach((cb) => cb(code));

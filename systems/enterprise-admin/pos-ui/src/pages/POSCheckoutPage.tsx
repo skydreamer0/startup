@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { posApi, PosStaff, PosOrderSummary, PosCustomerLookup } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
@@ -23,7 +24,9 @@ import OfflineStatus from '../components/OfflineStatus';
 import PrinterStatus from '../components/PrinterStatus';
 import { useShift } from '../hooks/useShift';
 import { useCheckout } from '../hooks/useCheckout';
-import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
+import { useBarcodeScanner, type BarcodeCandidateSelection, type BarcodeLookupStatus } from '../hooks/useBarcodeScanner';
+import { BarcodeCandidates } from '../components/BarcodeCandidates';
+import { BarcodeLookupFeedback } from '../components/BarcodeLookupFeedback';
 import { useCustomerDisplay, openCustomerDisplay } from '../hooks/useCustomerDisplay';
 import ShiftOpenScreen from './ShiftOpenScreen';
 import CloseShiftDialog from '../components/CloseShiftDialog';
@@ -43,6 +46,8 @@ export default function POSCheckoutPage() {
   const [staffList, setStaffList] = useState<PosStaff[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [barcodeCandidates, setBarcodeCandidates] = useState<BarcodeCandidateSelection | null>(null);
+  const [barcodeLookupStatus, setBarcodeLookupStatus] = useState<BarcodeLookupStatus>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSplitModal, setShowSplitModal] = useState(false);
@@ -110,6 +115,13 @@ export default function POSCheckoutPage() {
     enabled: !!checkoutScope,
   });
 
+  const { data: categories = [], isLoading: loadingCategories, isSuccess: categoriesLoaded, isError: categoriesError, error: categoriesFailure, isFetching: fetchingCategories, refetch: refetchCategories } = useQuery({
+    queryKey: ['pos-categories', checkoutScope],
+    queryFn: () => posApi.getCategories().then((r) => r.data.data),
+    staleTime: 60_000,
+    enabled: !!checkoutScope,
+  });
+
   const { data: recommendations = [], isError: recommendationsError, isFetching: fetchingRecommendations } = useQuery({
     queryKey: ['pos-recommendations', checkoutScope, selectedCustomer?.id],
     queryFn: () => selectedCustomer
@@ -135,7 +147,13 @@ export default function POSCheckoutPage() {
     }
   }
 
-  const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast);
+  const scannerBlocked = !contextReady || !shift.activeShift || showStaffModal || showPaymentModal
+    || showSplitModal || showOrderLookup || showShiftReport || !!checkoutResult
+    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget;
+  const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast, setBarcodeCandidates, {
+    blocked: scannerBlocked,
+    onStatus: setBarcodeLookupStatus,
+  });
 
   function handleAddRecommendation(productId: string) {
     const recommendation = recommendations.find((item) => item.productId === productId);
@@ -206,7 +224,22 @@ export default function POSCheckoutPage() {
 
   const handleKeydown = useCallback((event: KeyboardEvent) => {
     if (pending) return;
-    if (event.target instanceof HTMLInputElement) return;
+    if (event.defaultPrevented) return;
+    // Escape closes an open overlay even when its search/input owns text keys.
+    if (event.key === 'Escape') {
+      setShowStaffModal(false);
+      setShowPaymentModal(false);
+      setShowSplitModal(false);
+      setShowOrderLookup(false);
+      return;
+    }
+    // Native controls own Enter/Space (including candidate selection and cancel).
+    // Do not turn their keyboard activation into a page-level checkout shortcut.
+    if (event.target instanceof HTMLElement) {
+      if (event.target.isContentEditable || event.target.closest('input, textarea, [contenteditable="true"]')) return;
+      const activationKey = event.key === 'Enter' || event.key === ' ';
+      if (activationKey && event.target.closest('select, button, a[href], [role="button"], [role="link"]')) return;
+    }
 
     switch (event.key) {
       case 'F2':
@@ -244,12 +277,6 @@ export default function POSCheckoutPage() {
           setShowPaymentModal(true);
         }
         break;
-      case 'Escape':
-        setShowStaffModal(false);
-        setShowPaymentModal(false);
-        setShowSplitModal(false);
-        setShowOrderLookup(false);
-        break;
     }
   }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending]);
 
@@ -282,10 +309,6 @@ export default function POSCheckoutPage() {
         : `同步完成：${successCount} 成功，${failureCount} 失敗`,
     });
   }
-
-  const categories = Array.from(
-    new Map(products.filter((product) => product.category).map((product) => [product.category!.id, product.category!])).values(),
-  );
 
   const recoveryPanel = <CheckoutRecovery pending={pending} error={recoveryError} loading={checkoutLoading}
     onQuery={queryCheckout} onRetry={() => handleCheckout()} />;
@@ -377,6 +400,22 @@ export default function POSCheckoutPage() {
             <div role="status" style={{ padding: 12, color: 'var(--text-muted)' }}>商品與庫存更新中...</div>
           )}
           <CategoryNav categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
+          {loadingCategories && <div role="status" className="pos-category-status">分類載入中...</div>}
+          {categoriesError && (
+            <div role="alert" className="pos-category-status">
+              {isAxiosError(categoriesFailure) && categoriesFailure.response?.status === 403
+                ? '沒有讀取商品分類的權限，請聯絡管理員確認 POS 權限。'
+                : '分類載入失敗，分類資訊可能已過期。仍可使用全部商品與搜尋。'}
+              <button type="button" className="pos-category-btn" disabled={fetchingCategories} onClick={() => void refetchCategories()}>
+                重新載入分類
+              </button>
+            </div>
+          )}
+          {categoriesLoaded && categories.length === 0 && (
+            <div role="status" className="pos-category-status">尚無商品分類，可使用全部商品與搜尋。</div>
+          )}
+          <BarcodeLookupFeedback status={barcodeLookupStatus} />
+          <BarcodeCandidates selection={barcodeCandidates} />
           <ProductGrid products={products} loading={loadingProducts} />
         </div>
         <div className="pos-cart">

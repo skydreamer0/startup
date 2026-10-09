@@ -19,6 +19,9 @@ import type {
 export type { PosProduct, PosStaff, ActiveShift, CheckoutPayload, CheckoutResult, PosOrderSummary, ShiftReport, PosCustomerLookup, PosRecommendation, ReorderForecastItem, ReorderUrgency };
 
 export const posApi = {
+  getCategories: () =>
+    api.get<ApiSuccess<NonNullable<PosProduct['category']>[]>>('/pos/categories'),
+
   getProducts: (q?: string, categoryId?: string, inStockOnly = true) =>
     api.get<ApiSuccess<PosProduct[]>>('/pos/products', {
       params: { q, categoryId, inStockOnly: inStockOnly ? 'true' : 'false' },

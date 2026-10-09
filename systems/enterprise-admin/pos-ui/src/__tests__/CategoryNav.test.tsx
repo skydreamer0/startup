@@ -44,3 +44,17 @@ describe('CategoryNav', () => {
     expect(screen.getByRole('button', { name: 'Pain Relief' })).toHaveClass('pos-category-btn--active');
   });
 });
+
+it('supports touch selection and keyboard focus with a readable selected state', async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  render(<CategoryNav categories={categories} selectedId="pain" onSelect={onSelect} />);
+  const target = screen.getByRole('button', { name: 'Cold Care' });
+  await user.pointer([{ keys: '[TouchA>]', target }, { keys: '[/TouchA]', target }]);
+  expect(onSelect).toHaveBeenCalledWith('cold');
+  expect(screen.getByRole('button', { name: 'Pain Relief' })).toHaveAttribute('aria-pressed', 'true');
+  expect(target).toHaveAttribute('aria-pressed', 'false');
+  target.focus();
+  await user.keyboard('{Enter}');
+  expect(onSelect).toHaveBeenCalledTimes(2);
+});

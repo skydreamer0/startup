@@ -370,3 +370,83 @@ jobs:
           path: ${{ runner.temp }}/pagination-qa-${{ github.run_id }}-${{ github.run_attempt }}/
           if-no-files-found: error
           retention-days: 7
+
+  pos-sku-acceptance:
+    name: Exact SKU PostgreSQL and current POS browser acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_DB: checkout_http_recovery_pos_lookup_ci
+          # A new disposable synthetic-only service; never an existing/store DB.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - '127.0.0.1:55435:5432'
+        options: >-
+          --health-cmd "pg_isready -U test -d checkout_http_recovery_pos_lookup_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin
+    env:
+      DATABASE_URL: 'postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci'
+      POS_PRODUCT_LOOKUP_DATABASE_URL: 'postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci'
+      SKU_QA_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.34.6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
+      - name: Verify exact head and exclusive empty SKU service ownership
+        id: sku_preflight
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node backend/scripts/pos-product-lookup-ci.mjs preflight
+      - name: Install canonical locked dependencies
+        run: |
+          npm exec --yes --package=npm@11.21.0 -- npm --prefix backend ci
+          npm --prefix backend run db:generate
+          pnpm install --frozen-lockfile
+      - name: Validate SKU safety and evidence negative controls
+        run: |
+          node --test backend/scripts/pos-product-lookup-ci.test.mjs
+          node --test pos-ui/e2e/sku-acceptance/run.test.mjs
+      - name: Run unchanged five real PostgreSQL SKU cases
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node backend/scripts/pos-product-lookup-ci.mjs run
+      - name: Install Chromium in this disposable runner
+        run: pnpm --filter pos-ui exec playwright install --with-deps chromium
+      - name: Build and verify current exact-head POS with synthetic HTTP
+        run: node pos-ui/e2e/sku-acceptance/run.mjs
+      - name: Verify zero rows and drop only the owned SKU database
+        if: ${{ always() && steps.sku_preflight.outcome == 'success' }}
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node backend/scripts/pos-product-lookup-ci.mjs cleanup
+      - name: Preserve separate PostgreSQL and current POS evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pos-sku-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sku-qa-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
