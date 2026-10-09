@@ -22,8 +22,8 @@ export interface BatchChangeRecord {
     tenantId: string;
     batchId: string;
     actorId: string;
-    operation: 'STATUS' | 'EXPIRY' | 'COST';
-    before: { status: ProductBatch['status']; expiryDate: string; costPrice: string };
+    operation: 'STATUS' | 'EXPIRY' | 'COST' | 'INITIAL_RELEASE';
+    before: { status: ProductBatch['status']; expiryDate: string; costPrice: string } | { exists: false };
     after: { status: ProductBatch['status']; expiryDate: string; costPrice: string };
     reason: string;
     createdAt: string;
@@ -70,6 +70,7 @@ export const batchesApi = {
         quantity: number;
         costPrice: number;
         status?: ProductBatch['status'];
+        reason?: string;
     }) => {
         const { data } = await api.post('/product-batches', payload);
         return data;

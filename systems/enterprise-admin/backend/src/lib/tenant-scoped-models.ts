@@ -22,6 +22,7 @@ export const TENANT_SCOPED_MODELS = [
     'Expense',
     'Shift',
     'ProductBatch',
+    'ProductBatchChange',
     'SaleBatchAllocation',
     'DailySettlement',
     'AccountingSyncLog',

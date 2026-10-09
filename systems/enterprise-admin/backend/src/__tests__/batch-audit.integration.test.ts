@@ -3,7 +3,7 @@ import express from 'express';
 import request from 'supertest';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
-const probe = vi.hoisted(() => ({ failTenant: '', observedBatch: '', observed: () => {} }));
+const probe = vi.hoisted(() => ({ failTenant: '', failMovementTenant: '', observedBatch: '', observed: () => {} }));
 vi.mock('../lib/prisma', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../lib/prisma')>();
   return { ...actual, prisma: actual.prisma.$extends({ query: {
@@ -11,6 +11,10 @@ vi.mock('../lib/prisma', async (importOriginal) => {
       const row = await query(args);
       if (row?.id === probe.observedBatch) probe.observed();
       return row;
+    } },
+    inventoryTransaction: { async create({ args, query }) {
+      if (args.data.tenantId === probe.failMovementTenant) throw new Error('Synthetic movement write failure');
+      return query(args);
     } },
     productBatchChange: { async create({ args, query }) {
       if (args.data.tenantId === probe.failTenant) throw new Error('Synthetic audit write failure');
@@ -64,8 +68,20 @@ async function bounded(promise: Promise<void>) {
   finally { clearTimeout(timer); }
 }
 
+
+async function waitForBlockedProductLock() {
+  // Observe PostgreSQL's actual blocked query, not merely a pre-lock JS callback.
+  await expect.poll(async () => {
+    const rows = await basePrisma.$queryRaw<{ blocked: number }[]>`
+      SELECT count(*)::int AS blocked FROM pg_stat_activity
+      WHERE datname = current_database() AND wait_event_type = 'Lock'
+        AND query LIKE '%FROM products%' AND pid <> pg_backend_pid()`;
+    return rows[0].blocked;
+  }, { timeout: 3000, interval: 20 }).toBeGreaterThan(0);
+}
+
 describe.skipIf(!databaseUrl)('Batch field audit with real PostgreSQL and authenticated routes', () => {
-  afterEach(() => { probe.failTenant = ''; probe.observedBatch = ''; probe.observed = () => {}; vi.useRealTimers(); });
+  afterEach(() => { probe.failTenant = ''; probe.failMovementTenant = ''; probe.observedBatch = ''; probe.observed = () => {}; vi.useRealTimers(); });
   afterAll(() => basePrisma.$disconnect());
 
   it('rejects ordinary PATCH of expiry status cost and quantity without mutation', async () => {
@@ -135,7 +151,7 @@ describe.skipIf(!databaseUrl)('Batch field audit with real PostgreSQL and authen
     vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-05T15:59:59Z'));
     const release = run(f.tenantId, () => BatchAuditService.change(f.batch.id, { operation: 'STATUS', status: 'RELEASED', reason: 'Inspected' }, f.actor));
     const outcome = release.then(() => ({ statusCode: 200 }), error => error);
-    try { await bounded(observed.promise); vi.setSystemTime(new Date('2026-10-05T16:00:00Z')); }
+    try { await bounded(observed.promise); await waitForBlockedProductLock(); vi.setSystemTime(new Date('2026-10-05T16:00:00Z')); }
     finally { unlock.resolve(); await holder; }
     expect(await outcome).toMatchObject({ statusCode: 400 });
     expect(await basePrisma.productBatchChange.count({ where: { tenantId: f.tenantId } })).toBe(0);
@@ -167,6 +183,62 @@ describe.skipIf(!databaseUrl)('Batch field audit with real PostgreSQL and authen
     expect(await basePrisma.saleBatchAllocation.findMany({ where: { orderId: order.id } })).toEqual(allocations);
     expect(await basePrisma.inventoryTransaction.findMany({ where: { tenantId: f.tenantId } })).toEqual(movements);
     expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).costPrice.toString()).toBe('20');
+  });
+
+
+  it('requires independent authority reason and a trusted tenant actor for initial release', async () => {
+    const f = await fixture(); const foreign = await fixture();
+    const body = { productId: f.product.id, batchNumber: 'INITIAL', expiryDate: '2099-02-01T00:00:00Z', quantity: 3, costPrice: 20, status: 'RELEASED', reason: 'Inspected' };
+    expect((await request(app).post('/batches').set('Authorization', `Bearer ${f.token(['create:products'])}`).send(body)).status).toBe(403);
+    expect((await request(app).post('/batches').set('Authorization', `Bearer ${f.token()}`).send({ ...body, reason: '' })).status).toBe(400);
+    await expect(run(f.tenantId, () => ProductBatchService.create({ ...body, status: 'RELEASED' }, foreign.actor))).rejects.toMatchObject({ statusCode: 403 });
+    expect((await request(app).post('/batches').set('Authorization', `Bearer ${foreign.token()}`).send(body)).status).toBe(404);
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(4);
+    expect(await basePrisma.productBatch.count({ where: { tenantId: f.tenantId } })).toBe(1);
+    expect(await basePrisma.inventoryTransaction.count({ where: { tenantId: f.tenantId } })).toBe(0);
+    expect(await basePrisma.productBatchChange.count({ where: { tenantId: f.tenantId } })).toBe(0);
+    // Body actor fields cannot choose the recorded operator; the controller supplies req.user.
+    const response = await request(app).post('/batches').set('Authorization', `Bearer ${f.token()}`).send({ ...body, actorId: foreign.user.id });
+    expect(response.status).toBe(201);
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(7);
+    expect(await basePrisma.inventoryTransaction.findMany({ where: { tenantId: f.tenantId } })).toMatchObject([{ batchId: response.body.data.id, type: 'IN', quantity: 3 }]);
+    expect(await basePrisma.productBatchChange.findMany({ where: { tenantId: f.tenantId } })).toMatchObject([{ actorId: f.user.id, operation: 'INITIAL_RELEASE', before: { exists: false }, after: { status: 'RELEASED' }, reason: 'Inspected' }]);
+  });
+
+  it.each(['audit', 'movement'] as const)('rolls back the whole initial receipt when %s persistence fails', async stage => {
+    const f = await fixture();
+    if (stage === 'audit') probe.failTenant = f.tenantId; else probe.failMovementTenant = f.tenantId;
+    await expect(run(f.tenantId, () => ProductBatchService.create({ productId: f.product.id, batchNumber: 'INITIAL', expiryDate: '2099-02-01T00:00:00Z', quantity: 3, costPrice: 20, status: 'RELEASED', reason: 'Inspected' }, f.actor))).rejects.toThrow();
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(4);
+    expect(await basePrisma.productBatch.count({ where: { tenantId: f.tenantId } })).toBe(1);
+    expect(await basePrisma.inventoryTransaction.count({ where: { tenantId: f.tenantId } })).toBe(0);
+    expect(await basePrisma.productBatchChange.count({ where: { tenantId: f.tenantId } })).toBe(0);
+  });
+
+  it('does not release expiry-day stock across the Taipei midnight boundary', async () => {
+    const f = await fixture();
+    const body = { productId: f.product.id, batchNumber: 'EXPIRY', expiryDate: '2026-10-06T00:00:00Z', quantity: 1, costPrice: 20, status: 'RELEASED' as const, reason: 'Inspected' };
+    vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-05T15:59:59Z'));
+    await run(f.tenantId, () => ProductBatchService.create(body, f.actor));
+    vi.setSystemTime(new Date('2026-10-05T16:00:00Z'));
+    await expect(run(f.tenantId, () => ProductBatchService.create({ ...body, batchNumber: 'EXPIRED' }, f.actor))).rejects.toMatchObject({ statusCode: 400 });
+    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(5);
+    expect(await basePrisma.productBatchChange.count({ where: { tenantId: f.tenantId } })).toBe(1);
+  });
+
+  it('rejects an expiry extension after an actual lock wait crosses Taipei midnight', async () => {
+    const f = await fixture('RELEASED'); const held = signal(); const unlock = signal(); const observed = signal();
+    await basePrisma.productBatch.update({ where: { id: f.batch.id }, data: { expiryDate: new Date('2026-10-06T00:00:00Z') } });
+    const holder = basePrisma.$transaction(async tx => { await tx.$queryRaw`SELECT id FROM products WHERE id = ${f.product.id} FOR UPDATE`; held.resolve(); await bounded(unlock.promise); });
+    await bounded(held.promise); probe.observedBatch = f.batch.id; probe.observed = observed.resolve;
+    vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-05T15:59:59Z'));
+    const correction = run(f.tenantId, () => BatchAuditService.change(f.batch.id, { operation: 'EXPIRY', expiryDate: '2099-02-01T00:00:00Z', reason: 'Label correction' }, f.actor));
+    const outcome = correction.then(() => ({ statusCode: 200 }), error => error);
+    try { await bounded(observed.promise); await waitForBlockedProductLock(); vi.setSystemTime(new Date('2026-10-05T16:00:00Z')); }
+    finally { unlock.resolve(); await holder; }
+    expect(await outcome).toMatchObject({ statusCode: 400 });
+    expect((await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } })).expiryDate.toISOString()).toBe('2026-10-06T00:00:00.000Z');
+    expect(await basePrisma.productBatchChange.count({ where: { tenantId: f.tenantId } })).toBe(0);
   });
 
   it('paginates all history without permitting another tenant cursor', async () => {

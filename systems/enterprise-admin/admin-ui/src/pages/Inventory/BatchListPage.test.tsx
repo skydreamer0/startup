@@ -5,13 +5,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { inventoryApi } from '../../api/inventory';
 import { batchesApi } from '../../api/batches';
 import BatchListPage from './BatchListPage';
+import { AuthContext } from '../../hooks/authContext';
 
 vi.mock('../../api/inventory', () => ({ inventoryApi: { getProducts: vi.fn() } }));
 vi.mock('../../api/batches', () => ({ batchesApi: { getAll: vi.fn(), create: vi.fn() } }));
 function setup() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const invalidate = vi.spyOn(client, 'invalidateQueries');
-  render(<QueryClientProvider client={client}><BatchListPage /></QueryClientProvider>);
+  const permissions = ['read:products', 'create:products'];
+  render(<AuthContext.Provider value={{
+    user: { id: 'synthetic-reader', email: 'receipt@synthetic.test', fullName: 'Synthetic reader', roles: [], permissions },
+    loading: false, login: async () => {}, demoLogin: () => {}, logout: () => {}, hasPermission: permission => permissions.includes(permission),
+  }}><QueryClientProvider client={client}><BatchListPage /></QueryClientProvider></AuthContext.Provider>);
   return invalidate;
 }
 beforeEach(() => {

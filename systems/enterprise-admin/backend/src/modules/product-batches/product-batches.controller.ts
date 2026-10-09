@@ -30,7 +30,7 @@ export class ProductBatchController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await ProductBatchService.create(req.body);
+      const data = await ProductBatchService.create(req.body, req.user);
       res.status(201).json({ success: true, data });
     } catch (err) {
       next(err);

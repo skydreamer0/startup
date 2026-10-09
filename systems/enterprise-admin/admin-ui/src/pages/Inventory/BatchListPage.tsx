@@ -1,11 +1,13 @@
 import BatchAuditPanel from './BatchAuditPanel';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { batchesApi, ProductBatch } from '../../api/batches';
 import { inventoryApi, Product } from '../../api/inventory';
+import { useAuth } from '../../hooks/authContext';
 
 type ApiError = {
     response?: {
+        status?: number;
         data?: {
             error?: {
                 message?: string;
@@ -21,6 +23,7 @@ type BatchForm = {
     quantity: string;
     costPrice: string;
     status: ProductBatch['status'];
+    reason: string;
 };
 
 const emptyBatchForm: BatchForm = {
@@ -30,6 +33,7 @@ const emptyBatchForm: BatchForm = {
     quantity: '',
     costPrice: '',
     status: 'QUARANTINE',
+    reason: '',
 };
 
 function getExpiryStatus(expiryDate: string): { label: string; badgeClass: string } {
@@ -52,10 +56,17 @@ function getExpiryStatus(expiryDate: string): { label: string; badgeClass: strin
 }
 
 export default function BatchListPage() {
+    const { loading: authLoading, hasPermission } = useAuth();
+    const canReceive = !authLoading && hasPermission('create:products');
+    const canRelease = !authLoading && hasPermission('release:product_batches');
     const [expiringSoon, setExpiringSoon] = useState(false);
     const [showCreate, setShowCreate] = useState(false);
     const [batchForm, setBatchForm] = useState<BatchForm>(emptyBatchForm);
+    const releaseReason = batchForm.reason.trim();
+    const invalidRelease = batchForm.status === 'RELEASED' && (!canRelease || !releaseReason || releaseReason.length > 1000);
     const [saving, setSaving] = useState(false);
+    const submitting = useRef(false);
+    const [receiptError, setReceiptError] = useState('');
     const [auditBatchId, setAuditBatchId] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
@@ -82,18 +93,24 @@ export default function BatchListPage() {
     const productList: Product[] = products || [];
 
     function openCreate() {
+        if (!canReceive || submitting.current) return;
         setBatchForm(emptyBatchForm);
+        setReceiptError('');
         setShowCreate(true);
     }
 
     function closeCreate() {
         setShowCreate(false);
         setBatchForm(emptyBatchForm);
+        setReceiptError('');
     }
 
     async function handleCreate(e: React.FormEvent) {
         e.preventDefault();
+        if (submitting.current || !canReceive || productsPending || productError || invalidRelease) return;
+        submitting.current = true;
         setSaving(true);
+        setReceiptError('');
         try {
             await batchesApi.create({
                 productId: batchForm.productId,
@@ -102,14 +119,17 @@ export default function BatchListPage() {
                 quantity: Number(batchForm.quantity),
                 costPrice: Number(batchForm.costPrice),
                 status: batchForm.status,
+                ...(batchForm.status === 'RELEASED' ? { reason: releaseReason } : {}),
             });
             closeCreate();
             queryClient.invalidateQueries({ queryKey: ['batches'] });
             queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
         } catch (err) {
-            const message = (err as ApiError).response?.data?.error?.message || 'Failed to create batch';
-            alert(message);
+            const response = (err as ApiError).response;
+            setReceiptError(response?.status === 403 ? '權限不足，無法登記進貨或初次放行。請洽有權限的管理者。'
+                : response?.data?.error?.message || '未能確認收貨成功。請先核對批次與庫存，再決定是否重新登記。');
         } finally {
+            submitting.current = false;
             setSaving(false);
         }
     }
@@ -147,9 +167,10 @@ export default function BatchListPage() {
                             到期／30天內需處理
                         </button>
                     </div>
-                    <button className="btn btn-primary" onClick={openCreate}>+ 登記批次進貨</button>
+                    <button className="btn btn-primary" onClick={openCreate} disabled={!canReceive || saving}>+ 登記批次進貨</button>
                 </div>
             </header>
+            {!authLoading && !canReceive && <p>缺少登記進貨權限，請洽有權限的管理者。</p>}
 
             <div className="card table-container">
                 {batchError ? <p role="alert">無法載入批次資料，請重新整理後再試。</p> : loading ? (
@@ -223,6 +244,7 @@ export default function BatchListPage() {
                         <h2 className="modal-title">登記批次進貨</h2>
                         <p>登記後同步增加商品與批次帳量。未驗收的商品保持隔離，不可出庫；到期當日不可出庫。</p>
                         {productError && <p role="alert">無法載入商品，請重新整理後再試。</p>}
+                        {receiptError && <p role="alert">{receiptError}</p>}
                         <form onSubmit={handleCreate}>
                             <fieldset disabled={saving} style={{ border: 0, padding: 0 }}>
                             <div className="login-form">
@@ -299,15 +321,21 @@ export default function BatchListPage() {
                                         if (status === 'QUARANTINE' || status === 'RELEASED' || status === 'BLOCKED') setBatchForm({ ...batchForm, status });
                                     }}>
                                         <option value="QUARANTINE">待驗收隔離</option>
-                                        <option value="RELEASED">已驗收可售</option>
+                                        <option value="RELEASED" disabled={!canRelease}>已驗收可售</option>
                                         <option value="BLOCKED">封鎖</option>
                                     </select>
+                                    {!canRelease && <p>缺少初次放行權限，可先登記待驗收隔離或封鎖批次，再洽有權限者驗收放行。</p>}
                                 </div>
+                                {batchForm.status === 'RELEASED' && <div className="input-group">
+                                    <label className="input-label" htmlFor="receipt-reason">初次放行原因（必填）</label>
+                                    <textarea id="receipt-reason" className="input-field" required maxLength={1000} value={batchForm.reason} onChange={e => setBatchForm({ ...batchForm, reason: e.target.value })} />
+                                    <p>請記錄本次驗收與放行依據；原因會與收貨一併保存至稽核歷史。</p>
+                                </div>}
                             </div>
                             </fieldset>
                             <div className="modal-actions">
                                 <button type="button" className="btn btn-ghost" onClick={closeCreate} disabled={saving}>取消</button>
-                                <button type="submit" className="btn btn-primary" disabled={saving || productsPending || productError}>
+                                <button type="submit" className="btn btn-primary" disabled={saving || !canReceive || productsPending || productError || invalidRelease}>
                                     {saving ? '登記中...' : '登記進貨'}
                                 </button>
                             </div>
