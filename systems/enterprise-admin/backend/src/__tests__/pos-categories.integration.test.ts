@@ -52,9 +52,12 @@ describe.skipIf(!databaseUrl)('POS categories with real PostgreSQL and HTTP midd
     ({ tenantContext: context } = await import('../lib/tenant.context'));
     ({ signAccessToken: sign } = await import('../lib/jwt'));
     const { setTenantContext } = await import('../middleware/tenant.middleware');
+    const { defaultRateLimit } = await import('../middleware/rate-limit.middleware');
     const { default: posRoutes } = await import('../modules/pos/pos.routes');
     const { errorMiddleware } = await import('../middleware/error.middleware');
     app = express();
+    // Match the production app's existing outer rate limit before tenant/auth work.
+    app.use(defaultRateLimit);
     app.use(setTenantContext);
     app.use('/pos', posRoutes);
     app.use(errorMiddleware);
@@ -116,6 +119,7 @@ describe.skipIf(!databaseUrl)('POS categories with real PostgreSQL and HTTP midd
     const responses = await Promise.all([categories(0), categories(1)]);
     responses.forEach((response, index) => {
       expect(response.status).toBe(200);
+      expect(response.headers['ratelimit-limit']).toBe('300');
       expect(response.body).toEqual({ success: true, data: categoryRows[index] });
       expect(response.body.data.every((row: object) => Object.keys(row).sort().join(',') === 'id,name')).toBe(true);
     });

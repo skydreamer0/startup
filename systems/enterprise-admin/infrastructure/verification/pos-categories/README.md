@@ -28,7 +28,7 @@ migration, broad seed or workstation PostgreSQL installation.
 ## Nine native cases
 
 All use real Prisma/PostgreSQL without database, JWT, route or middleware mocks.
-The HTTP cases mount the existing tenant middleware, POS routes, auth/RBAC,
+The HTTP cases mount the existing default rate limiter, tenant middleware, POS routes, auth/RBAC,
 controller/service and error middleware on a test-only Express application.
 Authentication uses real signatures with public, test-only signing values supplied
 by the harness and synthetic database users. It does not log in to a real account.
