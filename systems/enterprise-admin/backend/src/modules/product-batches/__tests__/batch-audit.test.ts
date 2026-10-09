@@ -54,11 +54,12 @@ describe('batch audit service and input boundary (mock persistence)', () => {
     await expect(run(() => BatchAuditService.change('lot', { operation: 'COST', costPrice: 22, reason: 'Invoice' }, actor))).rejects.toMatchObject({ statusCode: 403 });
     expect(db.audit.create).not.toHaveBeenCalled();
   });
-  it('checks Taipei expiry after a lock wait crosses midnight', async () => {
+  it.each(['STATUS', 'EXPIRY'] as const)('checks Taipei expiry after a lock wait crosses midnight for %s', async operation => {
     vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-05T15:59:59Z'));
     current.expiryDate = new Date('2026-10-06T00:00:00Z');
+    if (operation === 'EXPIRY') current.status = 'RELEASED';
     db.lock.mockImplementation(async () => { vi.setSystemTime(new Date('2026-10-05T16:00:00Z')); return [{ id: 'product' }]; });
-    await expect(run(() => BatchAuditService.change('lot', { operation: 'STATUS', status: 'RELEASED', reason: 'Inspection' }, actor))).rejects.toMatchObject({ statusCode: 400 });
+    await expect(run(() => BatchAuditService.change('lot', operation === 'STATUS' ? { operation, status: 'RELEASED', reason: 'Inspection' } : { operation, expiryDate: '2099-02-01T00:00:00Z', reason: 'Label correction' }, actor))).rejects.toMatchObject({ statusCode: 400 });
     expect(db.batch.updateMany).not.toHaveBeenCalled();
   });
   it('cannot extend an expired RELEASED lot into saleability or shorten a released lot to today', async () => {

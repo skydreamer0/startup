@@ -102,6 +102,8 @@ npm run build
 1. Read `../infrastructure/api/batch_field_audit.md` and ADR-020. Ordinary batch
    PATCH no longer edits expiry, status or cost. `BatchAuditPanel.tsx` uses the
    three reason-required correction endpoints plus paginated immutable history.
+   INITIAL_RELEASE history starts at `{exists:false}`, not a fabricated prior lot.
+   Its receipt reason UI and shared audit model remain explicit integration gates.
 2. Keep permission denial, request uncertainty, history failure and empty history
    distinct. Preserve failed drafts and do not show success after a rejected write.
    Disable repeated submission and closing the panel while its write is pending.

@@ -68,6 +68,12 @@ describe('batch correction UI through real API clients', () => {
         fireEvent.click(screen.getByRole('button', { name: '重新載入歷史' }));
         expect(await screen.findByText('目前沒有更正紀錄')).toBeVisible();
     });
+    it('renders initial release as a receipt event without inventing a before state', async () => {
+        http.get.mockResolvedValueOnce({ data: { success: true, data: { items: [{ id: 'initial', actorId: 'trusted-staff', operation: 'INITIAL_RELEASE', before: { exists: false }, after: { status: 'RELEASED', expiryDate: '2099-01-01T00:00:00Z', costPrice: '20' }, reason: 'Label inspected', createdAt: '2026-10-08T16:00:00Z' }], nextCursor: null } } });
+        setup(); expect(await screen.findByText('尚未收貨 → 已驗收可售')).toBeVisible();
+        expect(screen.getByText(/初次放行/)).toBeVisible();
+        expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
+    });
     it('renders actor reason before after and retrieves older history with its cursor', async () => {
         http.get.mockResolvedValueOnce({ data: { success: true, data: { items: [{ id: 'change', actorId: 'synthetic-staff', operation: 'COST', before: { costPrice: '20' }, after: { costPrice: '22' }, reason: 'Verified invoice', createdAt: '2026-10-08T16:00:00Z' }], nextCursor: 'change' } } });
         setup(); expect(await screen.findByText('$20 → $22')).toBeVisible();

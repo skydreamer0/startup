@@ -56,6 +56,17 @@
 7. Initial batch receipt uses `InventoryPostingService.receiveBatch` in the caller-owned transaction, product lock first, then lot + IN movement with receipt cost snapshot. Product/batch editors reject direct quantity writes; CSV creates at zero. Read ADR-017 and `inventory-receipt.integration.test.ts`. Batch RBAC uses the existing product permission catalogue. This does not implement physical returns, same-lot additional delivery, bins or reversal/rebuild.
 8. POS command orchestration uses `src/modules/pos/checkout-command.service.ts` (ADR-018). The tenant/kind/commandId claim and immutable result share the existing posting transaction. Replay precedes current business checks; result lookup requires manage:pos and missing results stay UNKNOWN. Read `checkout-command.integration.test.ts`; unique order numbers, exact money and full G1 remain pending.
 
+### Change batch fields or initial release
+
+Read ADR-020 and `../infrastructure/api/batch_field_audit.md`, then
+`src/modules/product-batches/` and its nearest tests. RELEASED receipt requires
+independent release permission, trusted active tenant actor and reason; receipt/IN/
+initial audit share one transaction. Ordinary nonreleased receipts keep their policy.
+Expiry correction rechecks the current Taipei date after the product lock.
+ProductBatchChange schema/migration/tenant registry and append-only protections are
+missing in this draft: backend build and native acceptance are blocked; do not invent
+a second model or treat #47 / PR #77 numbering as this dependency.
+
 ### Change persistence or model meaning
 
 1. Read `prisma/schema.prisma`.

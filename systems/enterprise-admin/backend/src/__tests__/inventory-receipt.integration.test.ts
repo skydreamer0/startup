@@ -160,16 +160,6 @@ describe('Receipt authority and closed quantity bypasses (real PostgreSQL)', () 
     await expect(basePrisma.inventoryTransaction.create({ data: { ...movement, id: randomUUID(), tenantId: other.tenantId, productId: other.product.id } })).rejects.toMatchObject({ code: 'P2003' });
     await expect(basePrisma.inventoryTransaction.update({ where: { id: movement.id }, data: { quantity: 0 } })).rejects.toThrow();
   });
-  it('does not release expiry-day stock across the Taipei midnight boundary', async () => {
-    const f = await fixture();
-    const input = { productId: f.product.id, batchNumber: 'EXPIRY', expiryDate: '2026-10-06T00:00:00Z', quantity: 1, costPrice: 40, status: 'RELEASED' as const };
-    vi.useFakeTimers({ toFake: ['Date'] });
-    vi.setSystemTime(new Date('2026-10-05T15:59:59Z'));
-    await inTenant(f, () => ProductBatchService.create(input));
-    vi.setSystemTime(new Date('2026-10-05T16:00:00Z'));
-    await expect(inTenant(f, () => ProductBatchService.create({ ...input, batchNumber: 'EXPIRED' }))).rejects.toMatchObject({ statusCode: 400 });
-    expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } })).stockQuantity).toBe(1);
-  });
   it('supports flat product metadata/receipt requests and rejects quantity edits under real auth', async () => {
     const f = await fixture();
     const access = signAccessToken({ userId: f.staff.id, email: f.staff.email, tenantId: f.tenantId, plan: 'pro', permissions: ['read:products', 'create:products', 'update:products'] });

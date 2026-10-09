@@ -9,7 +9,12 @@ export const createProductBatchSchema = {
     quantity: z.number().int().positive('quantity must be a positive integer').max(2_147_483_647),
     costPrice: z.number().positive('costPrice must be a positive number'),
     status: z.nativeEnum(BatchStockStatus).optional(),
-  }),
+    reason: z.unknown().optional(),
+  }).superRefine((data, ctx) => {
+    if (data.status === 'RELEASED' && (typeof data.reason !== 'string' || !data.reason.trim() || data.reason.trim().length > 1000)) {
+      ctx.addIssue({ code: 'custom', path: ['reason'], message: '初次放行必須填寫原因' });
+    }
+  }).transform(data => ({ ...data, reason: data.status === 'RELEASED' ? (data.reason as string).trim() : undefined })),
 };
 
 export const updateProductBatchSchema = {

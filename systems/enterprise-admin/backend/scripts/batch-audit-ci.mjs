@@ -14,6 +14,11 @@ const backend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const root = path.resolve(backend, '../../..');
 const nativeFile = 'src/__tests__/batch-audit.integration.test.ts';
 export const expectedCases = [
+  'requires independent authority reason and a trusted tenant actor for initial release',
+  'rolls back the whole initial receipt when audit persistence fails',
+  'rolls back the whole initial receipt when movement persistence fails',
+  'does not release expiry-day stock across the Taipei midnight boundary',
+  'rejects an expiry extension after an actual lock wait crosses Taipei midnight',
   "rejects ordinary PATCH of expiry status cost and quantity without mutation",
   "requires independent release permission and persists actor before after reason and time",
   "rejects cross tenant operations history and actor spoofing",

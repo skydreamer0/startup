@@ -27,9 +27,9 @@
 - The batch update and a `ProductBatchChange` append share one transaction.
   Records preserve tenant/product/batch, actor ID, operation, full before/after
   status/ISO-expiry/decimal-cost snapshots, trimmed reason and database time.
-  Composite batch foreign keys prevent tenant/product mismatches and deleting
-  referenced lots. UPDATE/DELETE of audit rows is forbidden by the additive
-  migration's database trigger. There is no history edit/delete API.
+  Composite batch foreign keys and an append-only UPDATE/DELETE database trigger
+  are required integration work, **not present in this submitted schema/migration**.
+  Their absence blocks native acceptance. There is no history edit/delete API.
 - History uses a tenant-and-batch-validated cursor with deterministic descending
   time/ID order, 50 records per page. Correction does not remove earlier rows.
 - Costs accept at most four decimal places in the existing Decimal(12,4) range.
@@ -39,10 +39,22 @@
 
 ## Open integration gate
 
-Initial receipt's existing RELEASED option must pass the same independent release
-permission and audit boundary before this change is considered complete. Its final
-contract is pending review; do not claim the create-path bypass has been closed
-while this gate remains. No new production role grants are part of this ADR.
+Initial receipt's RELEASED option now checks independent `release:product_batches`,
+a trusted active tenant actor and a trimmed 1–1000 character reason. Receipt, aggregate
+stock, lot, IN movement and INITIAL_RELEASE append use the same transaction. Before
+is `{exists:false}` (no invented previous lot); after contains the initial snapshot.
+QUARANTINE/BLOCKED/default receipts keep their existing policy and require no release
+reason or release audit. No new production role grants are part of this ADR.
+
+**BLOCKED:** ProductBatchChange is absent from schema.prisma and migrations; the
+backend cannot compile and native audit tests cannot run. The user confirmed #47 /
+PR #77 contains only numbering and does not supply this model. Do not fabricate a
+parallel model or treat #77 as satisfying this dependency. The model owner must
+supply a reviewed branch/SHA, tenant registry integration, composite foreign keys,
+append-only protections and the INITIAL_RELEASE operation/snapshot contract. Native
+rollback, real lock waits, migrations, cleanup and new-head CI remain gates.
+The existing admin receipt form also needs a reviewed initial-release reason flow;
+this follow-up updates history rendering/client typing only.
 
 ## Verification and limits
 

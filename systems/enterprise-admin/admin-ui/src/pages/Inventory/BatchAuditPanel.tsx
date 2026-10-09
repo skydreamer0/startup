@@ -6,6 +6,8 @@ const labels = { RELEASED: '已驗收可售', QUARANTINE: '待驗收隔離', BLO
 const date = (value: string) => new Date(value).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
 function describe(record: BatchChangeRecord, side: 'before' | 'after') {
     const value = record[side];
+    if ('exists' in value) return '尚未收貨';
+    if (record.operation === 'INITIAL_RELEASE') return labels[value.status];
     return record.operation === 'STATUS' ? labels[value.status] : record.operation === 'EXPIRY' ? date(value.expiryDate) : `$${value.costPrice}`;
 }
 function errorMessage(error: unknown) {
@@ -80,7 +82,7 @@ export default function BatchAuditPanel({ batch, onClose }: { batch: ProductBatc
         {history.isPending ? <p role="status">載入歷史中…</p> : history.isError ? <div><p role="alert">無法載入更正歷史，不能視為沒有紀錄。</p><button type="button" className="btn btn-ghost" onClick={() => void history.refetch()}>重新載入歷史</button></div> : <>
             {!history.data.items.length && <p>目前沒有更正紀錄</p>}
             <ol>{history.data.items.map(record => <li key={record.id} style={{ marginBottom: 16 }}>
-                <p>{date(record.createdAt)}（台北時間）・操作者 {record.actorId}・{record.operation === 'STATUS' ? '狀態' : record.operation === 'EXPIRY' ? '效期' : '成本'}</p>
+                <p>{date(record.createdAt)}（台北時間）・操作者 {record.actorId}・{record.operation === 'INITIAL_RELEASE' ? '初次放行' : record.operation === 'STATUS' ? '狀態' : record.operation === 'EXPIRY' ? '效期' : '成本'}</p>
                 <p>{describe(record, 'before')} → {describe(record, 'after')}</p><p>原因：{record.reason}</p>
             </li>)}</ol>
             {cursor && <button type="button" className="btn btn-ghost" onClick={() => setCursor(undefined)}>回到最新紀錄</button>}
