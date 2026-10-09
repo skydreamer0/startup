@@ -26,6 +26,7 @@
 
 | Need | Read |
 | ---- | ---- |
+| UI design sources and receipt acceptance | `../infrastructure/design-system/MASTER.md` and `pages/batch-receipt.md`; execution evidence in `../infrastructure/verification/batch-receipt-uiux/` |
 | Backend API contract | `../infrastructure/api/api_spec.md` |
 | Shared types | `../packages/types/MODULE.md` and `../packages/types/src/` |
 | Architecture constraints | `../infrastructure/adr/` when UI architecture changes |

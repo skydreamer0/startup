@@ -1,9 +1,10 @@
 import BatchAuditPanel from './BatchAuditPanel';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { batchesApi, ProductBatch } from '../../api/batches';
 import { inventoryApi, Product } from '../../api/inventory';
 import { useAuth } from '../../hooks/authContext';
+import './BatchListPage.css';
 
 type ApiError = {
     response?: {
@@ -67,15 +68,32 @@ export default function BatchListPage() {
     const [saving, setSaving] = useState(false);
     const submitting = useRef(false);
     const [receiptError, setReceiptError] = useState('');
+    const [receiptSuccess, setReceiptSuccess] = useState('');
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
+    const receiptErrorRef = useRef<HTMLParagraphElement>(null);
+
+    useEffect(() => {
+        if (!showCreate) return;
+        const dialog = dialogRef.current;
+        if (dialog?.showModal) dialog.showModal();
+        else dialog?.setAttribute('open', '');
+        dialog?.querySelector<HTMLElement>('#receipt-title')?.focus();
+        return () => { dialog?.close?.(); triggerRef.current?.focus(); };
+    }, [showCreate]);
+
+    useEffect(() => {
+        if (receiptError) receiptErrorRef.current?.focus();
+    }, [receiptError]);
     const [auditBatchId, setAuditBatchId] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
-    const { data: batchesData, isLoading: loading, isError: batchError } = useQuery({
+    const { data: batchesData, isLoading: loading, isError: batchError, error: batchFailure, isFetching: batchesFetching, refetch: refetchBatches } = useQuery({
         queryKey: ['batches', expiringSoon],
         queryFn: () => batchesApi.getAll({ expiringSoon: expiringSoon || undefined }),
     });
 
-    const { data: products, isError: productError, isPending: productsPending } = useQuery({
+    const { data: products, isError: productError, isPending: productsPending, error: productFailure, isFetching: productsFetching, refetch: refetchProducts } = useQuery({
         queryKey: ['inventory', 'products', 'batches'],
         queryFn: async () => {
             const all: Product[] = [];
@@ -96,6 +114,7 @@ export default function BatchListPage() {
         if (!canReceive || submitting.current) return;
         setBatchForm(emptyBatchForm);
         setReceiptError('');
+        setReceiptSuccess('');
         setShowCreate(true);
     }
 
@@ -103,6 +122,10 @@ export default function BatchListPage() {
         setShowCreate(false);
         setBatchForm(emptyBatchForm);
         setReceiptError('');
+    }
+
+    function requestClose() {
+        if (!submitting.current) closeCreate();
     }
 
     async function handleCreate(e: React.FormEvent) {
@@ -122,6 +145,7 @@ export default function BatchListPage() {
                 ...(batchForm.status === 'RELEASED' ? { reason: releaseReason } : {}),
             });
             closeCreate();
+            setReceiptSuccess('批次進貨已登記，正在更新批次與商品帳量。');
             queryClient.invalidateQueries({ queryKey: ['batches'] });
             queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
         } catch (err) {
@@ -147,52 +171,50 @@ export default function BatchListPage() {
 
     return (
         <div className="batch-list-page">
-            <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+            <header className="page-header">
                 <div>
                     <h1 className="page-title">批號效期管理</h1>
-                    <p className="page-subtitle" style={{ color: 'var(--text-muted)' }}>管理商品批號與效期，追蹤庫存有效期限</p>
+                    <p className="page-subtitle">管理商品批號與效期，追蹤庫存有效期限</p>
                 </div>
-                <div className="flex gap-12">
-                    <div className="flex gap-8">
-                        <button
-                            className={`btn ${!expiringSoon ? 'btn-primary' : 'btn-ghost'}`}
-                            onClick={() => setExpiringSoon(false)}
-                        >
-                            全部
-                        </button>
-                        <button
-                            className={`btn ${expiringSoon ? 'btn-primary' : 'btn-ghost'}`}
-                            onClick={() => setExpiringSoon(true)}
-                        >
-                            到期／30天內需處理
-                        </button>
-                    </div>
-                    <button className="btn btn-primary" onClick={openCreate} disabled={!canReceive || saving}>+ 登記批次進貨</button>
-                </div>
+                <button ref={triggerRef} className="btn btn-primary" onClick={openCreate} disabled={!canReceive || saving}>+ 登記批次進貨</button>
             </header>
-            {!authLoading && !canReceive && <p>缺少登記進貨權限，請洽有權限的管理者。</p>}
+            <section className="batch-toolbar" aria-label="批次篩選">
+                <div className="batch-filters">
+                    <button className="btn btn-ghost" aria-pressed={!expiringSoon} onClick={() => setExpiringSoon(false)}>全部</button>
+                    <button className="btn btn-ghost" aria-pressed={expiringSoon} onClick={() => setExpiringSoon(true)}>到期／30天內需處理</button>
+                </div>
+                <p className="batch-help">效期與驗收分開判斷；隔離、封鎖或到期批次不可出庫。</p>
+            </section>
+            {receiptSuccess && <p className="batch-message" role="status">{receiptSuccess}</p>}
+            {!authLoading && !canReceive && <p className="batch-message">缺少登記進貨權限，請洽有權限的管理者。</p>}
 
-            <div className="card table-container">
-                {batchError ? <p role="alert">無法載入批次資料，請重新整理後再試。</p> : loading ? (
-                    <div className="card"><p>Loading...</p></div>
+            <div className="batch-list-heading">
+                <h2 id="batch-table-title">{expiringSoon ? '需處理批次' : '批次清單'}</h2>
+                <span>{!batchError && !loading && `${batches.length} 筆（本次載入）`}</span>
+            </div>
+            {batchesFetching && !loading && <p className="batch-message" role="status">正在更新批次資料，以下為上次載入結果；更新完成後可操作。</p>}
+            <p id="batch-scroll-hint" className="batch-help">欄位較多時，可在表格內左右捲動；鍵盤可聚焦表格後使用方向鍵。</p>
+            <div className="card table-container" role="region" aria-labelledby="batch-table-title" aria-describedby="batch-scroll-hint" tabIndex={0} aria-busy={batchesFetching}>
+                {batchError ? <div className="batch-empty"><p role="alert">{(batchFailure as ApiError)?.response?.status === 403 ? '權限不足，無法讀取批次資料。請洽有權限的管理者。' : '無法載入批次資料，請重新整理後再試。'}{batchesData && '先前結果已過期，暫停顯示。'}</p><button type="button" className="btn btn-ghost" onClick={() => void refetchBatches()} disabled={batchesFetching}>重新載入批次</button></div> : loading ? (
+                    <div className="batch-empty"><p role="status">正在載入批次資料…</p></div>
                 ) : (
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>批號</th>
-                                <th>商品名稱</th>
-                                <th>到期日</th>
-                                <th>狀態</th>
-                                <th>剩餘數量</th>
-                                <th>進貨成本</th>
-                                <th style={{ textAlign: 'right' }}>操作</th>
+                                <th scope="col">批號</th>
+                                <th scope="col">商品名稱</th>
+                                <th scope="col">到期日</th>
+                                <th scope="col">狀態</th>
+                                <th scope="col" className="batch-numeric">剩餘數量</th>
+                                <th scope="col" className="batch-numeric">進貨成本</th>
+                                <th scope="col" className="batch-numeric">操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {batches.length === 0 ? (
                                 <tr>
                                     <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                                        目前沒有批號資料。
+                                        {expiringSoon ? '目前沒有到期或 30 天內需處理的批次，可切換「全部」查看。' : '目前沒有批號資料。'}
                                     </td>
                                 </tr>
                             ) : (
@@ -201,27 +223,28 @@ export default function BatchListPage() {
                                     return (
                                         <tr key={batch.id}>
                                             <td>
-                                                <div style={{ fontFamily: 'JetBrains Mono', fontSize: '13px', fontWeight: 600 }}>
+                                                <div className="batch-number">
                                                     {batch.batchNumber}
                                                 </div>
                                             </td>
                                             <td>
-                                                <div style={{ fontWeight: 600 }}>{batch.product?.name || '-'}</div>
-                                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{batch.product?.sku}</div>
+                                                <div className="batch-product-name">{batch.product?.name || '-'}</div>
+                                                <div className="batch-sku">{batch.product?.sku}</div>
                                             </td>
                                             <td>
                                                 {new Date(batch.expiryDate).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' })}
                                             </td>
-                                            <td>
+                                            <td className="batch-status">
                                                 <span className={`badge ${badgeClass}`}>{label}</span>
                                                 <span className="badge">{batch.status === 'RELEASED' ? '已驗收' : batch.status === 'BLOCKED' ? '封鎖' : '待驗收隔離'}</span>
                                             </td>
-                                            <td>{batch.quantity.toLocaleString()}</td>
-                                            <td>${Number(batch.costPrice).toLocaleString()}</td>
-                                            <td style={{ textAlign: 'right' }}>
-                                                <button type="button" className="btn btn-ghost" style={{ minHeight: 44 }} onClick={() => setAuditBatchId(batch.id)}>更正／歷史</button>
+                                            <td className="batch-numeric">{batch.quantity.toLocaleString()}</td>
+                                            <td className="batch-numeric">${Number(batch.costPrice).toLocaleString()}</td>
+                                            <td className="batch-row-actions">
+                                                <button type="button" className="btn btn-ghost" disabled={batchesFetching} onClick={() => setAuditBatchId(batch.id)}>更正／歷史</button>
                                                 <button
                                                     className="btn btn-danger btn-sm"
+                                                    disabled={batchesFetching}
                                                     onClick={() => handleDelete(batch.id, batch.batchNumber)}
                                                 >
                                                     刪除
@@ -239,19 +262,28 @@ export default function BatchListPage() {
             {!batchError && auditBatchId && batches.find(batch => batch.id === auditBatchId) && <BatchAuditPanel key={auditBatchId} batch={batches.find(batch => batch.id === auditBatchId)!} onClose={() => setAuditBatchId(null)} />}
 
             {showCreate && (
-                <div className="modal-overlay" onClick={() => { if (!saving) closeCreate(); }}>
-                    <div className="modal-content card" onClick={(e) => e.stopPropagation()}>
-                        <h2 className="modal-title">登記批次進貨</h2>
-                        <p>登記後同步增加商品與批次帳量。未驗收的商品保持隔離，不可出庫；到期當日不可出庫。</p>
-                        {productError && <p role="alert">無法載入商品，請重新整理後再試。</p>}
-                        {receiptError && <p role="alert">{receiptError}</p>}
-                        <form onSubmit={handleCreate}>
-                            <fieldset disabled={saving} style={{ border: 0, padding: 0 }}>
-                            <div className="login-form">
+                <div className="modal-overlay" onClick={requestClose}>
+                    <dialog ref={dialogRef} className="modal-content card receipt-dialog" aria-labelledby="receipt-title" aria-describedby="receipt-description" aria-modal="true" tabIndex={-1} onCancel={e => { e.preventDefault(); requestClose(); }} onClick={e => {
+                        e.stopPropagation();
+                        if (e.target !== e.currentTarget) return;
+                        const bounds = e.currentTarget.getBoundingClientRect();
+                        if (e.clientX < bounds.left || e.clientX > bounds.right || e.clientY < bounds.top || e.clientY > bounds.bottom) requestClose();
+                    }}>
+                        <h2 id="receipt-title" className="modal-title" tabIndex={-1}>登記批次進貨</h2>
+                        <p id="receipt-description" className="batch-message">登記後同步增加商品與批次帳量。未驗收的商品保持隔離，不可出庫；到期當日不可出庫。</p>
+                        {productsPending && <p role="status" className="batch-message">正在載入可收貨商品…</p>}
+                        {productError && <div className="batch-message batch-message-error"><p role="alert">{(productFailure as ApiError)?.response?.status === 403 ? '權限不足，無法讀取商品。請洽有權限的管理者。' : '無法載入商品，請重新整理後再試。'} 草稿已保留。</p><button type="button" className="btn btn-ghost" disabled={productsFetching || saving} onClick={() => void refetchProducts()}>重新載入商品</button></div>}
+                        {!productsPending && !productError && productList.length === 0 && <p className="batch-message" role="status">目前沒有可收貨商品，請先建立商品資料。</p>}
+                        {receiptError && <p ref={receiptErrorRef} id="receipt-error" tabIndex={-1} className="batch-message batch-message-error" role="alert">{receiptError} 草稿已保留。</p>}
+                        <form onSubmit={handleCreate} aria-busy={saving} aria-describedby={receiptError ? 'receipt-error' : undefined}>
+                            <fieldset disabled={saving} className="receipt-fields">
+                            <legend>收貨資料（除驗收狀態外皆必填）</legend>
+                            <div className="receipt-form-grid">
                                 <div className="input-group">
                                     <label className="input-label" htmlFor="receipt-product">商品</label>
                                     <select
                                         id="receipt-product"
+                                        disabled={productsPending || productError || productList.length === 0}
                                         className="input-field"
                                         required
                                         value={batchForm.productId}
@@ -281,17 +313,20 @@ export default function BatchListPage() {
                                     <label className="input-label" htmlFor="receipt-expiry">到期日</label>
                                     <input
                                         id="receipt-expiry"
+                                        aria-describedby="receipt-expiry-help"
                                         className="input-field"
                                         type="date"
                                         required
                                         value={batchForm.expiryDate}
                                         onChange={(e) => setBatchForm({ ...batchForm, expiryDate: e.target.value })}
                                     />
+                                    <p id="receipt-expiry-help" className="batch-help">以台北日期判斷效期，到期當日不可出庫。</p>
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label" htmlFor="receipt-quantity">數量</label>
                                     <input
                                         id="receipt-quantity"
+                                        inputMode="numeric"
                                         className="input-field"
                                         type="number"
                                         min="1"
@@ -305,6 +340,7 @@ export default function BatchListPage() {
                                     <label className="input-label" htmlFor="receipt-cost">進貨成本</label>
                                     <input
                                         id="receipt-cost"
+                                        inputMode="decimal"
                                         className="input-field"
                                         type="number"
                                         min="0"
@@ -316,7 +352,7 @@ export default function BatchListPage() {
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label" htmlFor="receipt-status">驗收狀態</label>
-                                    <select id="receipt-status" className="input-field" value={batchForm.status} onChange={(e) => {
+                                    <select id="receipt-status" aria-describedby="receipt-status-help" className="input-field" value={batchForm.status} onChange={(e) => {
                                         const status = e.target.value;
                                         if (status === 'QUARANTINE' || status === 'RELEASED' || status === 'BLOCKED') setBatchForm({ ...batchForm, status });
                                     }}>
@@ -324,23 +360,25 @@ export default function BatchListPage() {
                                         <option value="RELEASED" disabled={!canRelease}>已驗收可售</option>
                                         <option value="BLOCKED">封鎖</option>
                                     </select>
-                                    {!canRelease && <p>缺少初次放行權限，可先登記待驗收隔離或封鎖批次，再洽有權限者驗收放行。</p>}
+                                    <p id="receipt-status-help" className="batch-help">{!canRelease ? '缺少初次放行權限，可先登記待驗收隔離或封鎖批次，再洽有權限者驗收放行。' : '預設隔離；已驗收可售需要獨立放行權限與原因。'}</p>
                                 </div>
-                                {batchForm.status === 'RELEASED' && <div className="input-group">
+                                {batchForm.status === 'RELEASED' && <div className="input-group receipt-wide">
                                     <label className="input-label" htmlFor="receipt-reason">初次放行原因（必填）</label>
-                                    <textarea id="receipt-reason" className="input-field" required maxLength={1000} value={batchForm.reason} onChange={e => setBatchForm({ ...batchForm, reason: e.target.value })} />
-                                    <p>請記錄本次驗收與放行依據；原因會與收貨一併保存至稽核歷史。</p>
+                                    <textarea id="receipt-reason" aria-describedby="receipt-reason-help receipt-reason-validation" aria-invalid={invalidRelease} rows={3} className="input-field" required maxLength={1000} value={batchForm.reason} onChange={e => setBatchForm({ ...batchForm, reason: e.target.value })} />
+                                    <p id="receipt-reason-help" className="batch-help">請記錄本次驗收與放行依據；原因會與收貨一併保存至稽核歷史。</p>
+                                    <p id="receipt-reason-validation" className="batch-help">{invalidRelease ? '請填寫 1–1000 字的放行原因，且需具備初次放行權限。' : `${releaseReason.length} / 1000 字`}</p>
                                 </div>}
                             </div>
                             </fieldset>
-                            <div className="modal-actions">
-                                <button type="button" className="btn btn-ghost" onClick={closeCreate} disabled={saving}>取消</button>
-                                <button type="submit" className="btn btn-primary" disabled={saving || !canReceive || productsPending || productError || invalidRelease}>
+                            <div className="modal-actions receipt-actions">
+                                {saving && <p role="status">正在登記，請稍候；完成前暫停編輯與取消。</p>}
+                                <button type="button" className="btn btn-ghost" onClick={requestClose} disabled={saving}>取消</button>
+                                <button type="submit" className="btn btn-primary" disabled={saving || !canReceive || productsPending || productError || productList.length === 0 || invalidRelease}>
                                     {saving ? '登記中...' : '登記進貨'}
                                 </button>
                             </div>
                         </form>
-                    </div>
+                    </dialog>
                 </div>
             )}
         </div>
