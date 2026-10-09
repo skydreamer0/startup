@@ -315,3 +315,27 @@ input { font-family: inherit; }
   }
   .pos-product-area { padding-bottom: 50vh; }
 }
+
+/* A bounded chooser stays above the cart, including short/touch viewports.
+   Its list scrolls independently; the cancellation control remains visible. */
+.pos-barcode-candidates {
+  position: fixed;
+  top: 72px;
+  left: 16px;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 88px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+}
+
+/* Keep the existing topbar horizontally scrollable instead of widening the
+   mobile layout viewport and shrinking all fixed controls. */
+.pos-topbar, .pos-statusbar { min-width: 0; overflow-x: auto; }
+
+@media (max-width: 767px) {
+  /* A short cart must scroll its controls rather than clip its checkout footer. */
+  .pos-cart { width: 100vw; }
+  .pos-cart-panel { overflow-y: auto; }
+}

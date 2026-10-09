@@ -71,6 +71,15 @@
 3. Mocked service coverage is `src/modules/inventory/__tests__/products-pagination.test.ts`; real PostgreSQL/tenant coverage is `src/__tests__/products-pagination.integration.test.ts` with explicit guarded PRODUCT_PAGINATION_DATABASE_URL opt-in. Bounded #50B1 evidence and reproduction are in `../infrastructure/verification/products-low-stock-pagination/README.md`. The wire payload stays total/page/limit/data; UI pagination, invalid-parameter policy and cross-update snapshots are separate work.
 4. The ordinary CI workflow's separate `Product pagination PostgreSQL acceptance` job runs the unchanged 6 mocked and 8 native cases on its exact source head. `scripts/products-pagination-ci.mjs` verifies the disposable Actions service's loopback-only binding and empty DB before migration, and requires per-case results plus owned-DB cleanup. Historical 8 skipped results are not native acceptance; this does not replace the original four jobs or release gates.
 
+### Verify exact POS SKU lookup
+
+The ordinary CI job `Exact SKU PostgreSQL and current POS browser acceptance` uses
+`scripts/pos-product-lookup-ci.mjs` to run the unchanged five native cases in
+`src/__tests__/pos-product-lookup.integration.test.ts` against an owned disposable
+Actions PostgreSQL service. See `../infrastructure/verification/pos-product-lookup-ci/README.md`
+for exact-head provenance, safety controls, cleanup evidence and distinct browser scope.
+This is SKU-only; Product has no barcode field. It does not replace the original five jobs.
+
 ### Debug a backend test failure
 
 1. Read the failing test file.

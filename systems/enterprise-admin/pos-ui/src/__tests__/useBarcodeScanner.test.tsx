@@ -138,6 +138,11 @@ describe('useBarcodeScanner', () => {
     const user = userEvent.setup();
     render(<Harness products={[product, { ...second, barcode: 'PAN', name: 'Alternative' }]} />);
     scan('PAN');
+    // The body portal follows this harness's input and other native button.
+    await user.tab();
+    expect(screen.getByRole('textbox', { name: 'search' })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole('button', { name: 'other' })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole('button', { name: /Panadol/ })).toHaveFocus();
     await user.keyboard(key);

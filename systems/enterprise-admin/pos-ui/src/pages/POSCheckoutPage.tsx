@@ -225,6 +225,14 @@ export default function POSCheckoutPage() {
   const handleKeydown = useCallback((event: KeyboardEvent) => {
     if (pending) return;
     if (event.defaultPrevented) return;
+    // Escape closes an open overlay even when its search/input owns text keys.
+    if (event.key === 'Escape') {
+      setShowStaffModal(false);
+      setShowPaymentModal(false);
+      setShowSplitModal(false);
+      setShowOrderLookup(false);
+      return;
+    }
     // Native controls own Enter/Space (including candidate selection and cancel).
     // Do not turn their keyboard activation into a page-level checkout shortcut.
     if (event.target instanceof HTMLElement) {
@@ -268,12 +276,6 @@ export default function POSCheckoutPage() {
         if (!showStaffModal && !showPaymentModal && !showSplitModal && !checkoutResult && useCartStore.getState().items.length > 0) {
           setShowPaymentModal(true);
         }
-        break;
-      case 'Escape':
-        setShowStaffModal(false);
-        setShowPaymentModal(false);
-        setShowSplitModal(false);
-        setShowOrderLookup(false);
         break;
     }
   }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending]);
