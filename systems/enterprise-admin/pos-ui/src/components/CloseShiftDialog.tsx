@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef, type KeyboardEvent } from 'react';
+import { useId, useLayoutEffect, useRef, type KeyboardEvent, type PointerEvent } from 'react';
 
 // Leases prevent an older instance's cleanup from undoing a newer instance's
 // background lock. Original attributes are restored only by the final owner.
@@ -58,6 +58,18 @@ export default function CloseShiftDialog({ closingCash, onClosingCashChange, onC
     else cashRef.current?.focus();
   }, [loading]);
 
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    // Clicking this modal's non-interactive surface must not blur focus to body,
+    // where the POS window shortcuts would otherwise receive the next key.
+    // Native enabled controls retain their normal pointer activation.
+    if (event.target instanceof Element && event.target.closest('input:not(:disabled), button:not(:disabled)')) return;
+    event.preventDefault();
+    const dialog = dialogRef.current;
+    if (!dialog || !(dialog.contains(document.activeElement) || document.activeElement === document.body)) return;
+    if (loading) dialog.focus();
+    else cashRef.current?.focus();
+  }
+
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     // Keep text/scanner input and POS shortcuts within this modal. Native button
     // Enter/Space still produce their own click; amount Enter never submits.
@@ -79,7 +91,7 @@ export default function CloseShiftDialog({ closingCash, onClosingCashChange, onC
   }
 
   return (
-    <div ref={overlayRef} data-pos-modal="close-shift" onKeyDown={handleKeyDown} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+    <div ref={overlayRef} data-pos-modal="close-shift" onPointerDown={handlePointerDown} onKeyDown={handleKeyDown} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
       <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-busy={loading} aria-labelledby={titleId} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 360, boxShadow: 'var(--shadow-lg)' }}>
         <h3 id={titleId} style={{ margin: '0 0 16px' }}>確認交班</h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>

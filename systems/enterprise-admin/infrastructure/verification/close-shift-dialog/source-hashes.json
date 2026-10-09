@@ -1,9 +1,12 @@
 {
-  "systems/enterprise-admin/pos-ui/src/components/CloseShiftDialog.tsx": "4cfa3f63b1769b9cfd9c791e207ccaa91c4d44c54c79fbf6f4e67ac616cad6af",
-  "systems/enterprise-admin/pos-ui/src/__tests__/CloseShiftDialog.test.tsx": "f7dfbf9f8f3d97d55c202ccededab904c27880d26790eee52227252d1697ddbc",
-  "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx": "95a1ab87cf116fbf3d53f85e3f86c83eece756387dd28fc436cfdb92582ae65f",
-  "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/close-shift.spec.ts": "c647feb32bcc70c7e8d6875e17281ff2a2d882b4ca6599e3de575f3fb3d6792d",
+  "systems/enterprise-admin/pos-ui/src/components/CloseShiftDialog.tsx": "e033ef51e41e9b96c561219afcc468dca20c184ab376b29cf482ccd3db7e5f4d",
+  "systems/enterprise-admin/pos-ui/src/__tests__/CloseShiftDialog.test.tsx": "9b4dc532281acbbe82947c402733e429ef2315d9c09add6c8652537a4242ba6d",
+  "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx": "c0b579c92e195d299eb4138062f7e8dc06c507f47582dbff0edfea70e7ade49d",
+  "systems/enterprise-admin/pos-ui/e2e/sku-acceptance/run.mjs": "20282fc2a7ac04b4109db27bcb50292345cd9807f0c0ba46b8aa7bb48791bc9d",
+  "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/cases.mjs": "7555d06cc12d3ba2ebcbcb75f67f624eb8dc6806f8151690c67029dee6fbe276",
+  "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/close-shift.spec.ts": "a3bd41c1ab6b845cd52042840d19648b6a3b0d17c0881d99e2048a1bb874b451",
   "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/playwright.config.mts": "c1c7792ebe4cf4693f3fd48c0adf5e4d62e4b3e24b8097c347a265bd4627c7b8",
+  "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/report.test.mjs": "ab355bc06d4350ff050f9391deb112b6c1fc1dbe1bfec78279723d8b32852c92",
   "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/tsconfig.json": "ff4e07a84acce93e4254ddb708b469f81cdcf9a0cda64059050847ad10e2bf02",
   "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/vite.config.mts": "73430d02544b0bc2018a347d922cc99ae31dcef95c6c8dff6624db9cc2e753d6"
 }

@@ -199,3 +199,66 @@ describe('real close-shift dialog lifecycle in POS', () => {
     expectNoWrite();
   });
 });
+
+
+describe('independent backdrop keyboard-ownership regressions', () => {
+  it.each(['title', 'card'])('keeps keyboard ownership after clicking the non-interactive %s surface', async (surface) => {
+    const { user, dialog, cash, opener } = await setup();
+    await user.click(surface === 'title' ? within(dialog).getByRole('heading', { name: '確認交班' }) : dialog);
+    expect(cash).toHaveFocus();
+    await user.keyboard('{F4}{Enter}');
+    expect(useCartStore.getState().items).toEqual(items);
+    expect(useCartStore.getState().heldCarts).toHaveLength(0);
+    expect(screen.getAllByRole('dialog')).toHaveLength(1); expectNoWrite();
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument(); expect(opener).toHaveFocus();
+  });
+
+  it('keeps active cart unchanged after a backdrop click then F4', async () => {
+    const { user, dialog } = await setup();
+    await user.click(dialog.parentElement!);
+    expect(within(dialog).getByRole('spinbutton', { name: '結帳金額' })).toHaveFocus();
+    await user.keyboard('{F4}');
+    expect(screen.getByRole('dialog', { name: '確認交班' })).toBeInTheDocument();
+    expect(useCartStore.getState().items).toEqual(items);
+    expect(useCartStore.getState().heldCarts).toHaveLength(0);
+    expectNoWrite();
+  });
+
+  it('prevents opening a payment modal after a backdrop click then Enter', async () => {
+    const { user, dialog } = await setup();
+    await user.click(dialog.parentElement!);
+    expect(within(dialog).getByRole('spinbutton', { name: '結帳金額' })).toHaveFocus();
+    await user.keyboard('{Enter}');
+    expect(screen.queryByRole('dialog', { name: '確認結帳' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expectNoWrite();
+  });
+
+  it('retains Escape cancellation after a backdrop click', async () => {
+    const { user, dialog, opener } = await setup();
+    await user.click(dialog.parentElement!);
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog', { name: '確認交班' })).not.toBeInTheDocument();
+    expect(opener).toHaveFocus();
+    expectNoWrite();
+  });
+});
+
+
+describe('independent pending backdrop regression', () => {
+  it('does not mutate the cart after clicking backdrop during a pending close request', async () => {
+    const pending = deferred<AxiosResponse<ApiSuccess<ActiveShift>>>();
+    vi.mocked(posApi.closeShift).mockReturnValue(pending.promise);
+    const { user, dialog } = await setup();
+    await user.click(within(dialog).getByRole('button', { name: '確認交班' }));
+    expect(dialog).toHaveFocus();
+    expect(posApi.closeShift).toHaveBeenCalledExactlyOnceWith(shift.id, 1234);
+    await user.click(dialog.parentElement!);
+    expect(dialog).toHaveFocus();
+    await user.keyboard('{F4}');
+    expect(useCartStore.getState().items).toEqual(items);
+    expect(useCartStore.getState().heldCarts).toHaveLength(0);
+    await act(async () => { pending.reject(new Error('synthetic failure')); });
+  });
+});

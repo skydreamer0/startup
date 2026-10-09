@@ -35,6 +35,18 @@ describe('CloseShiftDialog', () => {
     expect(onConfirm).toHaveBeenCalledOnce(); expect(onCancel).not.toHaveBeenCalled();
   });
 
+  it('leaves a newer real payment modal pointer and keyboard activation alone', async () => {
+    const user = userEvent.setup(); const onCancel = vi.fn(); const onClose = vi.fn();
+    const old = render(<CloseShiftDialog closingCash={500} onClosingCashChange={vi.fn()} onConfirm={vi.fn()} onCancel={onCancel} loading />);
+    const newer = render(<PaymentModal loading={false} onConfirm={vi.fn()} onClose={onClose} />);
+    const tendered = screen.getByRole('spinbutton', { name: '收取金額' });
+    await user.click(tendered); await user.clear(tendered); await user.type(tendered, '200');
+    expect(tendered).toHaveValue(200); expect(tendered).toHaveFocus();
+    await user.tab(); await user.keyboard('{Enter}');
+    expect(onClose).toHaveBeenCalledOnce(); expect(onCancel).not.toHaveBeenCalled();
+    old.unmount(); newer.unmount();
+  });
+
   it('does not reclaim focus when loading completes behind a newer real payment modal', () => {
     const props = { closingCash: 500, onClosingCashChange: vi.fn(), onConfirm: vi.fn(), onCancel: vi.fn() };
     const old = render(<CloseShiftDialog {...props} loading />);

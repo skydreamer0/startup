@@ -9,11 +9,11 @@ const shift = { id: 'synthetic-shift', status: 'OPEN', openedAt: '2026-10-09T00:
 const closePath = '/api/v1/admin/shifts/synthetic-shift/close';
 type Fixture = {
   reads: string[]; expectedWrites: { method: string; path: string; body: unknown }[];
-  unexpected: string[]; pageErrors: string[]; closeCalls: Route[]; allowClose: boolean;
+  unexpected: string[]; pageErrors: string[]; forwardedStatic: string[]; closeCalls: Route[]; allowClose: boolean;
 };
 const test = base.extend<{ fixture: Fixture }>({
   fixture: [async ({ page, context, browser }, use, info) => {
-    const fixture: Fixture = { reads: [], expectedWrites: [], unexpected: [], pageErrors: [], closeCalls: [], allowClose: false };
+    const fixture: Fixture = { reads: [], expectedWrites: [], unexpected: [], pageErrors: [], forwardedStatic: [], closeCalls: [], allowClose: false };
     const observe = (target: Page) => target.on('pageerror', error => fixture.pageErrors.push(error.message));
     context.pages().forEach(observe); context.on('page', observe);
     await context.addInitScript(() => {
@@ -52,7 +52,7 @@ const test = base.extend<{ fixture: Fixture }>({
         fixture.unexpected.push(label); await route.abort(); return;
       }
       if (['/', '/login', '/favicon.ico'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
-        await route.continue(); return;
+        fixture.forwardedStatic.push(label); await route.continue(); return;
       }
       fixture.unexpected.push(label); await route.abort();
     });
@@ -60,9 +60,14 @@ const test = base.extend<{ fixture: Fixture }>({
     await screenshot(page, info, 'synthetic-browser-state.png');
     const keyboardEvents = await readKeys(page);
     const viewport = page.viewportSize();
+    let contextClosed = false;
+    context.once('close', () => { contextClosed = true; });
     await context.close();
+    expect(contextClosed, 'Dispose the per-case synthetic login and storage').toBe(true);
     await writeFile(info.outputPath('network-evidence.json'), JSON.stringify({
       scope: 'Real built POS UI; local fulfilled synthetic HTTP only; no API/DB/hardware acceptance',
+      nonce: process.env.SKU_UI_NONCE ?? null, contextClosed, storageScope: 'ephemeral per-case browser context',
+      forwardedStatic: fixture.forwardedStatic,
       test: info.title, browserVersion: browser.version(), viewport, keyboardEvents,
       reads: fixture.reads, expectedWrites: fixture.expectedWrites, unexpected: fixture.unexpected, pageErrors: fixture.pageErrors,
     }, null, 2) + '\n');
@@ -144,4 +149,37 @@ test('390px viewport keeps named dialog and controls inside the visible screen',
     expect(box!.y).toBeGreaterThanOrEqual(0); expect(box!.y + box!.height).toBeLessThanOrEqual(844);
   }
   await page.keyboard.press('Escape');
+});
+
+for (const key of ['F4', 'Enter', 'Escape']) {
+  test(`backdrop click retains native ${key} ownership`, async ({ page, fixture }) => {
+    const { dialog, cash, opener } = await setup(page);
+    await page.locator('[data-pos-modal="close-shift"]').click({ position: { x: 8, y: 8 } });
+    await expect(cash).toBeFocused();
+    await page.keyboard.press(key);
+    if (key === 'Escape') { await expect(dialog).toHaveCount(0); await expect(opener).toBeFocused(); }
+    else {
+      await expect(dialog).toBeVisible(); await expect(page.getByRole('dialog')).toHaveCount(1);
+      await page.keyboard.press('Escape');
+    }
+    await expect(page.getByLabel('商品數量')).toHaveValue('1');
+    await expect(page.getByRole('button', { name: /掛單.*1/ })).toHaveCount(0);
+    expect(fixture.expectedWrites).toHaveLength(1); expect(fixture.closeCalls).toHaveLength(0);
+  });
+}
+test('pending backdrop click cannot hold the cart or cancel the native close request', async ({ page, fixture }) => {
+  fixture.allowClose = true;
+  const { dialog, cash, confirm } = await setup(page);
+  await confirm.click(); await expect.poll(() => fixture.closeCalls.length).toBe(1);
+  await page.locator('[data-pos-modal="close-shift"]').click({ position: { x: 8, y: 8 } });
+  await expect(dialog).toBeFocused();
+  for (const key of ['F4', 'Enter', 'Escape']) await page.keyboard.press(key);
+  await expect(dialog).toBeVisible(); await expect(cash).toHaveValue('1234');
+  expect(fixture.closeCalls).toHaveLength(1);
+  await fixture.closeCalls[0].fulfill({ status: 503, json: { success: false, error: { message: '合成遮罩測試失敗回應' } } });
+  await expect(cash).toBeEnabled(); await page.keyboard.press('Escape');
+  await expect(page.getByLabel('商品數量')).toHaveValue('1');
+  expect(fixture.expectedWrites.filter(write => write.path === closePath)).toEqual([
+    { method: 'PATCH', path: closePath, body: { closingCash: 1234 } },
+  ]);
 });

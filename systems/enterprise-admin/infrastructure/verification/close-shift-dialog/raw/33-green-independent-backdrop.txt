@@ -1,0 +1,14 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 test
+> vitest run --maxWorkers=2 src/__tests__/CloseShiftDialog.test.tsx src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx
+
+
+ RUN  v4.1.11 /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui
+
+
+ Test Files  2 passed (2)
+      Tests  31 passed (31)
+   Start at  02:06:26
+   Duration  3.05s (transform 468ms, setup 124ms, import 855ms, tests 2.36s, environment 597ms)
+

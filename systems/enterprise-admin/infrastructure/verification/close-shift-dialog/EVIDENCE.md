@@ -1,6 +1,6 @@
 # Close-shift dialog input and cancellation lifecycle
 
-Bounded slice of #31. Parent issue remains open. Draft; independent final review and exact-head CI are still pending. No ready, merge, deployment, credentials, security settings, real database, or user-computer action is included.
+Bounded slice of #31. Parent issue remains open. Draft; independent review identified a pointer-focus P1 on the first head. The correction and exact-head browser revalidation are described below; final independent re-review remains pending. No ready, merge, deployment, credentials, security settings, real database, or user-computer action is included.
 
 ## Scope
 
@@ -48,3 +48,22 @@ An existing Chromium binary can be selected via `CLOSE_SHIFT_CHROMIUM`. The harn
 ## Remaining limits
 
 Browser-native input and visual/mobile geometry, real iPad/Safari/touch, physical scanner/printer, actual HTTP-to-DB close-shift processing, broader payment/cancel workflows, all #31 requirements and production gates remain unverified here. POS has no configured lint script; its actual TypeScript/build result is recorded instead. This isolated bug fix changes no module boundary, workflow contract or source-of-truth route, so the existing README/MODULE and architecture docs are unchanged.
+
+
+## Follow-up: independent backdrop P1 correction
+
+The first published head `693fc0e3` passed 309 tests and all 14 CI checks, but independent review demonstrated a reachable defect: clicking the non-focusable backdrop blurred to body, bypassing the overlay key handler. F4 held/cleared the cart, Enter opened payment, Escape did not cancel; F4 also mutated the cart during an outstanding close request. The old green checks do not validate that path.
+
+All four independent cases were copied unchanged and reproduced RED in `raw/32-red-independent-backdrop.txt` (4 failed / 27 passed). The dialog now prevents its own non-interactive pointer surface from transferring focus to body, and focuses its amount field or busy dialog. Enabled input/button pointer defaults remain native. No permanent global focus or keyboard listener was installed, and the handler never observes a sibling/newer modal's events. The three old body-focus assertions (which asserted the defect's intermediate state) became stronger cash/dialog focus assertions; every original cart, held-cart, modal, cancel and service result assertion remains.
+
+`raw/33-green-independent-backdrop.txt` passes all 31 cases. Additional card/title surface and real newer PaymentModal pointer/keyboard coverage brings the component/page total to 34 (17 + 17), in `raw/34-green-surfaces-new-modal.txt`. Final full POS `raw/38-final-full-pos-backdrop.txt` passes **29 files / 316 tests**; build, dedicated browser TypeScript, context and diff checks pass in raw 39–42.
+
+### Same-runner browser wiring
+
+The existing `e2e/sku-acceptance/run.mjs` now runs the dedicated eleven-case close-shift suite after the unchanged original SKU browser suite, using the same exact-head build, installed Chromium, owned process lifecycle and current GitHub-hosted job. No workflow YAML, jobs, runner, permission, package/lock, database, or connection change is made. Latest master `572884ff744e3211e9b079c1dab08957344c713e` was verified to have identical runner source; the parallel category work changes backend harness/evidence only.
+
+The close-shift report must contain exactly all eleven expected cases, once each, without skip, expected failure, retry, duplicate/substitution or hidden error. New report negative controls first failed against the unchanged parser (`raw/36-red-report-contract.txt`) then pass alongside all original SKU controls (`raw/37-green-report-contract.txt`). Original SKU assertions remain mandatory and unmodified in strength.
+
+Four dedicated native pointer-to-keyboard scenarios now cover backdrop F4, Enter, Escape and a pending request. Each case uses a disposable browser context, context-wide HTTP/WebSocket interception, only owned loopback static-asset forwarding, and locally fulfilled synthetic login/close responses. Each ledger records allowed synthetic writes, rejected/unexpected requests, forwarded static requests, trusted keys, nonce and verified context closure. Synthetic login/storage dies with that context. These tests do not use a backend or database; native browser events with synthetic HTTP are not a native full transaction chain.
+
+The old local socket-blocked runs remain NOT RUN and were not retried. New-head GitHub CI/browser evidence is pending at this checkpoint and must be checked before recommending merge. Outputs live inside the existing exact-SKU artifact under `ui/close-shift/`, including report JSON, per-case ledger and screenshots. A separate non-author must inspect the final head, actual native case results and screenshots before final acceptance.

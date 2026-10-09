@@ -110,5 +110,49 @@
   "31-diff-check.txt": {
     "bytes": 0,
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "32-red-independent-backdrop.txt": {
+    "bytes": 10705,
+    "sha256": "506d98fbe83c9990c5ca59dc271050e1b5104d2b74edb9e8dedafa3e777515a0"
+  },
+  "33-green-independent-backdrop.txt": {
+    "bytes": 527,
+    "sha256": "0ee32ad5fed2823ae2731798996ab7b95043c0adace9865e505619d8fde00d49"
+  },
+  "34-green-surfaces-new-modal.txt": {
+    "bytes": 527,
+    "sha256": "ed62bb381dfdd5079bcf70f568419b69e2b92b72a28b495f02ba7dbed881b4e9"
+  },
+  "35-browser-types-backdrop.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "36-red-report-contract.txt": {
+    "bytes": 5047,
+    "sha256": "758b685ccebdd42d571a74f058f63f091bbf02b1fa32f43dc6c070f186676a71"
+  },
+  "37-green-report-contract.txt": {
+    "bytes": 320,
+    "sha256": "ef748e34a189d227d7836d39a3c4443b48150d7922cd392e08754a640e404a85"
+  },
+  "38-final-full-pos-backdrop.txt": {
+    "bytes": 4842,
+    "sha256": "8d8988d8b90b8ac8f0196fe5d33e94e48030d4624fd70f00e8c4ebd050fa2678"
+  },
+  "39-final-build-backdrop.txt": {
+    "bytes": 682,
+    "sha256": "e2987f3c9436d991dd0bef7a4c1e270429d8950c1a8666a1e33e778c66ba389c"
+  },
+  "40-final-browser-types.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "41-final-context.txt": {
+    "bytes": 33,
+    "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+  },
+  "42-final-diff.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }
