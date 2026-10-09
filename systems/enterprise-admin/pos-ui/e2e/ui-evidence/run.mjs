@@ -3,12 +3,17 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { atomicJson, beginRun } from './run-artifacts.mjs';
 import { processOwner } from './owned-process.mjs';
+import { resolveProvenance } from './provenance.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const owner = processOwner();
 let code = 1;
 try {
+  const provenance = await resolveProvenance({ cwd: resolve(here, '../../../../..') });
+  process.env.UI_QA_BASE_SHA = provenance.baseHead ?? '';
+  console.log(`UI evidence provenance: ${JSON.stringify(provenance)}`);
   const run = await beginRun();
+  await atomicJson(resolve(run.output, 'provenance.json'), { ...run.context, ...provenance });
   console.log(`UI evidence invocation ${run.context.nonce}: ${run.output}`);
   const log = openSync(resolve(run.output, 'raw-run.txt'), 'wx');
   const phases = {};

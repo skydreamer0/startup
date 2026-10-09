@@ -53,19 +53,31 @@ set the following explicit provenance values before running:
 - `UI_QA_SOURCE_SHA`: exact submitted QA commit (PR head in CI).
 - `UI_QA_EXECUTION_SHA`: exact commit checked out for execution (`github.sha` in CI).
 - `UI_QA_EXECUTION_MODE`: `head` for an exact source checkout, or `pr-merge` for the PR merge checkout.
-- `UI_QA_BASE_SHA`: unset/empty in `head` mode; exact event base commit in `pr-merge` mode.
+- `UI_QA_EVENT_BASE_SHA`: unset/empty in `head` mode; event base commit in `pr-merge` mode.
+- `GITHUB_REPOSITORY`: repository owner/name in `pr-merge` mode.
+- `UI_QA_BASE_SHA`: resolved by the runner from the fixed execution first parent;
+  unset/empty in `head` mode. Any supplied value must match that fixed parent.
 
 Head mode requires source and execution SHA/tree equality. PR-merge mode requires
-exactly two ordered execution parents: event base, then submitted QA head. A merge
-may change other files but cannot silently change the submitted UI evidence driver,
+exactly two ordered execution parents: fixed execution base, then submitted QA head.
+The runner locks `github.sha`, requires checkout HEAD equality, and cross-checks
+that exact SHA, tree and ordered parents with the public GitHub commit API
+(without a token or new permissions). API errors/mismatches fail closed. It never
+reads current master. An older event base is recorded as a difference, not used
+as the execution base. `provenance.json` records both bases and API verification
+and is included in the existing hashed manifest. The unchanged setup independently
+checks exact base/head parents, submitted QA inputs and clean sources.
+A merge may change other files but cannot silently change the submitted UI evidence driver,
 its config or typecheck input. Both source and execution trees are recorded separately.
+Run the synthetic Git/setup regressions with
+`node --test e2e/ui-evidence/provenance.test.mjs` from POS UI.
 For a local exact-source checkout:
 
 ```sh
 export UI_QA_SOURCE_SHA="$(git rev-parse HEAD)"
 export UI_QA_EXECUTION_SHA="$UI_QA_SOURCE_SHA"
 export UI_QA_EXECUTION_MODE=head
-unset UI_QA_BASE_SHA
+unset UI_QA_BASE_SHA UI_QA_EVENT_BASE_SHA
 ```
 
 Tracked staged/unstaged changes are checked separately. Tracked files with
