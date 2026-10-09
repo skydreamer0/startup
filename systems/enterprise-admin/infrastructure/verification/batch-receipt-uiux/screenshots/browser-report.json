@@ -1,0 +1,229 @@
+{
+  "sha": "3808f92c4ec544bf27807c2d83a8d8955536f0a3",
+  "tree": "54bf5491bcf0cc43a429908727f24699e0be7338",
+  "checks": [
+    {
+      "name": "geometry 1366x768 at 100% native page zoom",
+      "passed": true,
+      "width": 1366,
+      "height": 768,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 1366,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 1366 at 100%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 1366 at 100%",
+      "passed": true,
+      "width": 718,
+      "scrollWidth": 718,
+      "columns": 2
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 1366 at 100%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "geometry 1024x768 at 100% native page zoom",
+      "passed": true,
+      "width": 1024,
+      "height": 768,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 1024,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 1024 at 100%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 1024 at 100%",
+      "passed": true,
+      "width": 718,
+      "scrollWidth": 718,
+      "columns": 2
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 1024 at 100%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "geometry 390x844 at 100% native page zoom",
+      "passed": true,
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 390,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 390 at 100%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 390 at 100%",
+      "passed": true,
+      "width": 364,
+      "scrollWidth": 364,
+      "columns": 1
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 390 at 100%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "geometry 1366x768 at 200% native page zoom",
+      "passed": true,
+      "width": 683,
+      "height": 384,
+      "dpr": 2,
+      "scale": 1,
+      "docWidth": 683,
+      "bodyZoom": "1",
+      "tableOverflow": "auto",
+      "headSize": "14px"
+    },
+    {
+      "name": "native modal keyboard cycle/escape/return 1366 at 200%",
+      "passed": true
+    },
+    {
+      "name": "long receipt fields/submit reachable 1366 at 200%",
+      "passed": true,
+      "width": 649,
+      "scrollWidth": 649,
+      "columns": 2
+    },
+    {
+      "name": "slow repeated submission/403 retains draft 1366 at 200%",
+      "passed": true,
+      "posts": 1
+    },
+    {
+      "name": "reader entry permission retained",
+      "passed": true
+    },
+    {
+      "name": "batch read 403 and explicit retry",
+      "passed": true
+    },
+    {
+      "name": "slow reads and empty batches/products remain distinct and cannot submit",
+      "passed": true
+    },
+    {
+      "name": "real API receipt and duplicate retain product stock 4",
+      "passed": true,
+      "productId": "72560220-ce86-4104-a9eb-f9c8e42e9067",
+      "sku": "UIUX-1791529825445",
+      "lot": "UIUX-1791529825445-LOT",
+      "stockQuantity": 4
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "list-1366-100.png",
+      "sha256": "f5d3d1acd5a5c21429aeb9ef0261ce6bb9cd1bd8c642b87e9a87a9cd5824e947"
+    },
+    {
+      "file": "receipt-1366-100.png",
+      "sha256": "3eb10288f689dcb83a80f84099da275eb165bc91d6e419c5799088c4fbeb5209"
+    },
+    {
+      "file": "receipt-end-1366-100.png",
+      "sha256": "a0abb04e7958458b5299bc5ceb6bc5b39f41f3a9c0e4aa6b36ce430b12dea711"
+    },
+    {
+      "file": "error-1366-100.png",
+      "sha256": "d1ba5f9df55633295ddb605250bbae06b1a9b3ac198edf3dc1dd97a2b5724c4f"
+    },
+    {
+      "file": "list-1024-100.png",
+      "sha256": "63a5a96ccf3b49c13731e2975d29aafbe691e3078218ee7c0f2d9c4ef4a725d1"
+    },
+    {
+      "file": "receipt-1024-100.png",
+      "sha256": "cb6871da8be52743cdb4c718fcb08b2b7be77ed52fa1a1f969f43fa3b9917266"
+    },
+    {
+      "file": "receipt-end-1024-100.png",
+      "sha256": "84041a1880d11516c0596f9ca45c5ee17bd0d07b95d0ac197d6b42addff9a4e5"
+    },
+    {
+      "file": "error-1024-100.png",
+      "sha256": "0530399ae4aa96ba10700dbe99cb494975cdfe913d64b65e88d6353805391503"
+    },
+    {
+      "file": "list-390-100.png",
+      "sha256": "e4fd2df4595f5507b04a80c9b9df946aec1becbd2e4ffc6e2778016db2f580d4"
+    },
+    {
+      "file": "receipt-390-100.png",
+      "sha256": "870e11956de5c9fb973d41caf747ab6729176de9c310223ba6f9989fdc0a0847"
+    },
+    {
+      "file": "receipt-end-390-100.png",
+      "sha256": "15f9440192032b39ec16c565c1c494e03277cd31407d0107ecbfa499211b56c0"
+    },
+    {
+      "file": "error-390-100.png",
+      "sha256": "7a465555d627e508c19ec4b4ba6d3f3ae97590c68cc37f2b854bfd2470927a7c"
+    },
+    {
+      "file": "list-1366-200.png",
+      "sha256": "54e4bf74b7a49bf5c3f186e01ee0da2dcf1cde4d8306a205d06016b8cebbfbee"
+    },
+    {
+      "file": "receipt-1366-200.png",
+      "sha256": "4608106a1d4cd16894890499074b255e0c5e010a81ac579c9edf2d9b359398ae"
+    },
+    {
+      "file": "receipt-end-1366-200.png",
+      "sha256": "d9e6ad0ca99b692fa21aa2ea6eed35e3a9ccb765d490cf9e62a4e083db57d921"
+    },
+    {
+      "file": "error-1366-200.png",
+      "sha256": "ced9e4aac381ac6522dee2200c4d9843467c299925a92e5e360db6ece52976e5"
+    },
+    {
+      "file": "list-403.png",
+      "sha256": "1839bc0093605e5d0d781cf17e31fcf9e75f9fb53aaf28159b923402b9b58ba5"
+    },
+    {
+      "file": "list-loading.png",
+      "sha256": "5adaf7458ac3713e50e63026f762e6a17c16f77898a6b4307265be84107289d7"
+    },
+    {
+      "file": "receipt-empty-products.png",
+      "sha256": "01fed2cadb960dc6670738ef2e4663a406a006894f56d52e66ade5a8cb212646"
+    },
+    {
+      "file": "list-empty.png",
+      "sha256": "0e5b11aa633e2844d2ffffa9902420f27641ab46d0b0c26168bc3174ded3ee1d"
+    },
+    {
+      "file": "real-api-receipt.png",
+      "sha256": "aa8ffc27194aecbdbb9b6a457a93910657783a5f1b82c79e078cededdf10d0e7"
+    },
+    {
+      "file": "real-api-duplicate.png",
+      "sha256": "1a65ec011f84b5b8f4611dfb3487b69e7a9470e1951aa20e5dc397ae0fd09b8e"
+    }
+  ],
+  "browserErrors": []
+}

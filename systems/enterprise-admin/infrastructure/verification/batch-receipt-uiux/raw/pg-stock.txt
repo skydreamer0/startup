@@ -1,0 +1,8 @@
+        sku         | stock_quantity |      batch_number      | quantity |   status   | received_quantity | movements 
+--------------------+----------------+------------------------+----------+------------+-------------------+-----------
+ UIUX-1791529537050 |              4 | UIUX-1791529537050-LOT |        4 | QUARANTINE |                 4 |         1
+ UIUX-1791529825445 |              4 | UIUX-1791529825445-LOT |        4 | QUARANTINE |                 4 |         1
+ UIUX-1791529720418 |              4 | UIUX-1791529720418-LOT |        4 | QUARANTINE |                 4 |         1
+ UIUX-1791529606515 |              4 | UIUX-1791529606515-LOT |        4 | QUARANTINE |                 4 |         1
+(4 rows)
+
