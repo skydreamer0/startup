@@ -37,7 +37,22 @@ preinstalled workspace Vitest was 3.2.4 and Node24. A strict backend npm ci usin
 Node22.22.0/npm11.21.0 then passed build, lint and 30 cases (26 batch mocks plus
 four tenant context/registry cases) with locked Vitest4.1.11. The final GitHub
 Actions source-head evidence is tracked in the Draft PR.
-At this checkpoint CI/native results are pending, not PASS.
+First source `b069c96ac079861222939944d34ff394eb63bcf9` / tree
+`0e0f1b883a583dc275580c0ffd4e0830480d7886`, CI run 37884431350, passed
+15/15 original native cases and 5/6 schema cases. The tenant registry test helper
+returned a lazy PrismaPromise after AsyncLocalStorage exited; the expected tenant
+read consequently failed closed. The helper now consumes the query inside context.
+No production code or database protection was relaxed. The runner rejected aggregate
+acceptance and still executed owned DB DROP before rejecting its failed test status.
+Final acceptance must be read from the corrected source's CI, not this failed run.
+
+On that same first source, a separate owned synthetic PG15 Docker service in the
+selected cloud workspace applied all existing migrations, inserted a synthetic
+tenant/user/product/lot/linked IN movement, then applied the additive migration.
+Full before/after row JSON for all five tables matched; no audit rows were fabricated;
+the exact DB was dropped and absence verified. Raw smoke evidence is
+`product-batch-change/populated-upgrade.json`. This supports additive preservation,
+not the native 15-case acceptance or production migration readiness.
 
 ## Remaining gates
 

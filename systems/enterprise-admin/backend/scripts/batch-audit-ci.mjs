@@ -184,6 +184,13 @@ async function main(mode) {
     assert.equal(tests.native.length, expectedCases.length);
     assert.equal(tests.schema.length, schemaCases.length);
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
+    // The same compact raw acceptance record is readable through the GitHub log
+    // API when an execution environment cannot follow artifact storage redirects.
+    console.log(`BATCH_AUDIT_ACCEPTED ${JSON.stringify({ ...read('accepted.json'),
+      sourceHashes: read('source-hashes.json'), databaseIdentity: read('database-identity.json'),
+      beforeTestCounts: read('before-test-counts.json'), retainedFixtureCounts: read('cleanup-counts.json'),
+      guard: read('guard.json'),
+    })}`);
     console.log('Acceptance passed: all named real PostgreSQL cases; owned audit fixture DB removed');
     return;
   }
