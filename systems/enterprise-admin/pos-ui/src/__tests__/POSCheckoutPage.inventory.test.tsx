@@ -6,6 +6,7 @@ import type { ApiSuccess } from '@pharmasaas/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import POSCheckoutPage from '../pages/POSCheckoutPage';
 import { posApi } from '../api/pos';
+import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import { checkoutPayloadHash } from '../services/checkoutPayloadHash';
@@ -19,7 +20,7 @@ vi.mock('../api/pos', () => ({ posApi: {
 vi.mock('../hooks/useShift', () => ({ useShift: () => ({
   activeShift: { id: 'shift-1', staff: { fullName: 'Synthetic cashier' } },
 }) }));
-vi.mock('../hooks/useBarcodeScanner', () => ({ useBarcodeScanner: () => vi.fn() }));
+vi.mock('../hooks/useBarcodeScanner', () => ({ useBarcodeScanner: vi.fn() }));
 vi.mock('../hooks/useCustomerDisplay', () => ({ useCustomerDisplay: vi.fn(), openCustomerDisplay: vi.fn() }));
 vi.mock('../components/OfflineStatus', () => ({ default: () => null }));
 vi.mock('../components/PrinterStatus', () => ({ default: () => null }));
@@ -27,8 +28,8 @@ vi.mock('../components/CustomerLookupPanel', () => ({ default: () => null }));
 vi.mock('../components/CartPanel', () => ({ default: ({ onCheckout }: { onCheckout: () => void }) =>
   <button onClick={onCheckout}>開始結帳</button>,
 }));
-vi.mock('../components/PaymentModal', () => ({ default: ({ onConfirm }: { onConfirm: () => void }) =>
-  <button onClick={onConfirm}>確認結帳</button>,
+vi.mock('../components/PaymentModal', () => ({ default: ({ onConfirm, onClose }: { onConfirm: () => void; onClose: () => void }) =>
+  <><button onClick={onConfirm}>確認結帳</button><button onClick={onClose}>取消付款</button></>,
 }));
 vi.mock('../components/ReceiptModal', () => ({ default: () => <div>已確認的收據</div> }));
 
@@ -72,6 +73,7 @@ function deferred<T>() {
 
 beforeEach(() => {
   vi.resetAllMocks(); localStorage.clear(); vi.stubGlobal('crypto', webcrypto);
+  vi.mocked(useBarcodeScanner).mockReturnValue(vi.fn());
   useCheckoutRecoveryStore.setState({ scope: null, pending: null });
   useCartStore.setState({ items: [{ product, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1', heldCarts: [] });
   vi.mocked(posApi.getCheckoutContext).mockResolvedValue(response({ tenantId: 'tenant-1', userId: 'cashier-1' }) as Awaited<ReturnType<typeof posApi.getCheckoutContext>>);
@@ -410,5 +412,45 @@ describe('POS independent category navigation (synthetic API, real query cache)'
     await screen.findByRole('button', { name: '止痛用品' });
     expect(screen.queryByRole('button', { name: '另一門店分類' })).not.toBeInTheDocument();
     expect(client.getQueryData(['pos-categories', scope])).toEqual(categories);
+  });
+});
+
+describe('POS scanner page wiring (hook mocked; hook safety tested separately)', () => {
+  it('blocks background scans while payment or order lookup is open and restores the flag after cancel', async () => {
+    renderPage();
+    await screen.findByText('✓ 3 件');
+    const scannerOptions = () => vi.mocked(useBarcodeScanner).mock.calls[vi.mocked(useBarcodeScanner).mock.calls.length - 1]?.[6];
+    expect(scannerOptions()?.blocked).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: '開始結帳' }));
+    expect(scannerOptions()?.blocked).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: '取消付款' }));
+    expect(scannerOptions()?.blocked).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: '📋 訂單 (F7)' }));
+    expect(scannerOptions()?.blocked).toBe(true);
+    expect(posApi.checkout).not.toHaveBeenCalled();
+  });
+
+  it('renders hook-owned lookup feedback and explicit candidate selection without page-level cart mutation', async () => {
+    renderPage();
+    await screen.findByText('✓ 3 件');
+    const scan = vi.mocked(useBarcodeScanner).mock.calls[vi.mocked(useBarcodeScanner).mock.calls.length - 1]!;
+    const select = vi.fn();
+    const dismiss = vi.fn();
+    const originalCart = useCartStore.getState().items;
+    act(() => {
+      scan[6]?.onStatus?.({ kind: 'loading', message: '查詢 SKU 中' });
+      scan[5]?.({ code: product.sku, products: [product], select, dismiss });
+    });
+    expect(screen.getByText('查詢 SKU 中')).toBeInTheDocument();
+    const candidates = within(screen.getByRole('region', { name: '掃碼候選商品' }));
+    fireEvent.click(candidates.getByRole('button', { name: /Synthetic product/ }));
+    expect(select).toHaveBeenCalledWith(product.id);
+    expect(useCartStore.getState().items).toEqual(originalCart);
+    fireEvent.click(candidates.getByRole('button', { name: '取消選擇' }));
+    expect(dismiss).toHaveBeenCalledOnce();
+    act(() => { scan[5]?.(null); scan[6]?.onStatus?.(null); });
+    expect(screen.queryByRole('region', { name: '掃碼候選商品' })).not.toBeInTheDocument();
+    expect(screen.queryByText('查詢 SKU 中')).not.toBeInTheDocument();
+    expect(posApi.checkout).not.toHaveBeenCalled();
   });
 });

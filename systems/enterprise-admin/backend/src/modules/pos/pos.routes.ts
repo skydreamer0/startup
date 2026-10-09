@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { lookupProduct } from './product-lookup.controller';
+import { productLookupSchema } from './product-lookup.schema';
 import { PosController } from './pos.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
@@ -21,6 +23,7 @@ router.post('/checkout', validate(checkoutSchema), PosController.checkout);
 router.get('/checkout-commands/:commandId', validate(checkoutCommandQuerySchema), PosController.getCheckoutCommand);
 router.get('/checkout-context', PosController.getCheckoutContext);
 router.get('/categories', PosController.getCategories);
+router.get('/products/lookup', validate(productLookupSchema), lookupProduct);
 router.get('/products', validate(posProductsSchema), PosController.getProducts);
 router.get('/customer-lookup', validate(customerLookupSchema), PosController.lookupCustomer);
 router.post('/customers', validate(createPosCustomerSchema), PosController.createCustomer);
