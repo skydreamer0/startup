@@ -194,6 +194,9 @@ jobs:
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
 
+    - name: Validate fixed execution UI evidence provenance
+      run: node --test pos-ui/e2e/ui-evidence/provenance.test.mjs
+
     - name: Unit and Component Tests
       run: pnpm --filter pos-ui run test
 
@@ -247,7 +250,7 @@ jobs:
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         UI_QA_EXECUTION_SHA: ${{ github.sha }}
         UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
-        UI_QA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+        UI_QA_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
       run: node pos-ui/e2e/ui-evidence/run.mjs
 
     - name: Preserve reviewed UI browser evidence
