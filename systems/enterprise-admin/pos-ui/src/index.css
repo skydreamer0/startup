@@ -322,8 +322,7 @@ input { font-family: inherit; }
   position: fixed;
   top: 72px;
   left: 16px;
-  right: 16px;
-  max-width: 640px;
+  width: min(640px, calc(100vw - 32px));
   max-height: calc(100dvh - 88px);
   display: flex;
   flex-direction: column;

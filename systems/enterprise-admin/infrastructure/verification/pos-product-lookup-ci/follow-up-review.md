@@ -33,3 +33,14 @@ Tenant switching has no UI entry and is NOT RUN; synthetic tenant changes do not
 UI login uses a synthetic HTTP response, not real backend authentication. Native page
 zoom, OS soft keyboard, physical scanner, Safari/iPad and production policy acceptance
 remain unverified. No merge, deployment, role grant or production database action.
+
+## First remote CI findings
+
+Run 37881476008 at de29011125c1e92fb672818e4a0424b669c5883c passed the
+unchanged five PostgreSQL cases, ownership/migrations and owned-DB cleanup, but
+failed browser (13/14) and POS unit tests (260/262). Linux exposed horizontal
+chooser overflow: fixed left/right used the enlarged layout viewport, beyond the
+390px visual viewport. The follow-up uses an explicit bounded viewport width.
+The scanner unit harness also now traverses input/other button before the body
+portal using real Tab input; native Enter/Space ownership assertions remain.
+This failed run is retained; only a later exact-head run can prove the final gates.
