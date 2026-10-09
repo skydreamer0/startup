@@ -451,7 +451,7 @@ test(names[13], async ({ browser }, info) => {
     const popupEvent = context.waitForEvent('page');
     await second.evaluate(() => { window.open('https://blocked.invalid/popup'); });
     const popup = await popupEvent;
-    await expect.poll(() => denied.unexpected.includes('https://blocked.invalid/popup')).toBe(true);
+    await expect.poll(() => new Set(denied.unexpected).has('https://blocked.invalid/popup')).toBe(true);
     await popup.goto('data:text/html,<title>synthetic socket probe</title>');
     await popup.evaluate(async ({ origin }) => {
       await fetch(`${origin}/api/popup-write`, { method: 'DELETE' }).catch(() => {});

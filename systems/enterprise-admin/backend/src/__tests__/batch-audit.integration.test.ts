@@ -31,6 +31,7 @@ import { setTenantContext } from '../middleware/tenant.middleware';
 import { errorMiddleware } from '../middleware/error.middleware';
 import { signAccessToken } from '../lib/jwt';
 import { OrderService } from '../modules/orders/order.service';
+import { defaultRateLimit } from '../middleware/rate-limit.middleware';
 
 // Opt in explicitly: this suite preserves append-only rows until its owned DB is dropped.
 const databaseUrl = process.env.BATCH_AUDIT_DATABASE_URL;
@@ -45,7 +46,7 @@ if (databaseUrl) {
 // End isolated database guard.
 const run = <T>(tenantId: string, work: () => T) => tenantContext.run({ tenantId, plan: 'pro' }, work);
 const permissions = ['read:products', 'create:products', 'update:products', 'release:product_batches'];
-const app = express(); app.use(express.json()); app.use(setTenantContext); app.use('/batches', batchRoutes); app.use(errorMiddleware);
+const app = express(); app.use(express.json()); app.use(defaultRateLimit); app.use(setTenantContext); app.use('/batches', batchRoutes); app.use(errorMiddleware);
 async function fixture(status: 'QUARANTINE' | 'RELEASED' = 'QUARANTINE') {
   const tenantId = randomUUID();
   await basePrisma.tenant.create({ data: { id: tenantId, slug: tenantId, name: 'Synthetic batch audit' } });

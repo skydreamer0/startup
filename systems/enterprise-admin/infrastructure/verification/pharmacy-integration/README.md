@@ -31,6 +31,9 @@ retained in integration ancestry. Author branches and original PRs stay intact.
 - Backend context and checkout merge automatically: exact SKU paths coexist with
   the transactional counter. #82's receipt permission/reason, immutable audit,
   duplicate-submit protection and error drafts remain intact.
+- CodeQL test-harness follow-up: the synthetic batch HTTP app uses the existing
+  default rate limiter; the denied-popup assertion uses exact Set membership.
+  No production handler, assertion expectation or test count is relaxed.
 - No new product policy or permission grant is introduced. New policy/safety
   conflicts must be isolated for a separately reviewed decision.
 
