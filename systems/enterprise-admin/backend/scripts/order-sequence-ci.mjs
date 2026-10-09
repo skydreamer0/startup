@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import vm from 'node:vm';
 import { verifyMigration } from './order-sequence-migration.mjs';
+import { verifyIntegratedMigrations } from './integration-migrations.mjs';
 
 export const databaseName = 'checkout_order_sequence_ci';
 export const databaseUrl = `postgresql://test@127.0.0.1:55436/${databaseName}`;
@@ -141,7 +142,7 @@ async function main(mode) {
     assert.equal(fs.existsSync(path.join(evidence, 'ownership.json')), false, 'Never reuse a prior fixture');
     save('source.json', { ...identity, parents: git('cat-file', '-p', 'HEAD').split('\n').filter(line => line.startsWith('parent ')).map(line => line.slice(7)) });
     save('network.json', { service, members: Object.keys(network.Containers), driver: network.Driver });
-    const files = ['.github/workflows/ci.yml', ...[...Object.values(suites).map(suite => suite.file), 'src/modules/pos/checkout.service.ts', 'src/modules/pos/order-number.ts', 'src/lib/business-day.ts', 'src/lib/batch-expiry.ts', 'src/lib/inventory-posting.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'prisma/migrations/20261009010000_taipei_order_sequence/migration.sql', 'prisma/diagnostics/preflight-order-numbers.sql', 'package.json', 'package-lock.json', 'scripts/order-sequence-ci.mjs', 'scripts/order-sequence-migration.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
+    const files = ['.github/workflows/ci.yml', ...[...Object.values(suites).map(suite => suite.file), 'src/modules/pos/checkout.service.ts', 'src/modules/pos/order-number.ts', 'src/lib/business-day.ts', 'src/lib/batch-expiry.ts', 'src/lib/inventory-posting.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'prisma/migrations/20261009010000_taipei_order_sequence/migration.sql', 'prisma/diagnostics/preflight-order-numbers.sql', 'package.json', 'package-lock.json', 'scripts/order-sequence-ci.mjs', 'scripts/order-sequence-migration.mjs', 'scripts/integration-migrations.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
     save('source-hashes.json', Object.fromEntries(files.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
     save('guard.json', { url: databaseUrl, equalEnvironmentUrls: true, probes: probeOriginalGuard(fs.readFileSync(path.join(backend, nativeFile), 'utf8')) });
     assert.deepEqual(tables(), [], 'Refuse a previously used service database; never reset it');
@@ -168,7 +169,7 @@ async function main(mode) {
     const tests = read('tests.json');
     assert.equal(tests.status, 'passed');
     for (const [kind, suite] of Object.entries(suites)) assert.equal(tests[kind].length, suite.count);
-    for (const name of ['migration-duplicate.json', 'migration-upgrade.json', 'migration-cleanup.json']) assert.equal(read(name).status, 'passed');
+    for (const name of ['migration-duplicate.json', 'migration-upgrade.json', 'migration-cleanup.json', 'integration-migrations.json', 'integration-migrations-cleanup.json']) assert.equal(read(name).status, 'passed');
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
     console.log('Acceptance passed: 9 sequence + 21 command + 38 stock + 5 mock; upgrade checks; fixture rows zero; owned DB removed');
     return;
@@ -197,11 +198,13 @@ async function main(mode) {
     assert.equal(rows[0].port, 5432);
     assert.match(rows[0].version, /^PostgreSQL 15\./);
     assert.deepEqual(tables(), [], 'The fixture must still be empty before migration');
-    verifyMigration({ backend, save, sql: statement => sql(databaseName, statement), rejectedSql: statement => {
+    const migrationContext = { backend, save, sql: statement => sql(databaseName, statement), rejectedSql: statement => {
       const result = spawnSync('docker', ['exec', container, 'psql', '-X', '-w', '-v', 'ON_ERROR_STOP=1', '-qAt', '-U', 'test', '-d', databaseName, '-c', statement], { encoding: 'utf8', timeout: 30000 });
       assert.equal(result.error, undefined); assert.equal(result.signal, null); assert.notEqual(result.status, 0);
       return result.stderr;
-    } });
+    } };
+    verifyMigration(migrationContext);
+    verifyIntegratedMigrations(migrationContext);
     const migration = recorded('migrations', [requireBackend.resolve('prisma/build/index.js'), 'migrate', 'deploy']);
     assert.equal(migration.status, 0, 'Existing migrations must pass');
     const before = counts();
