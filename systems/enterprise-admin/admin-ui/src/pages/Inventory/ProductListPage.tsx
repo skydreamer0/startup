@@ -5,6 +5,7 @@ import { inventoryApi, Product, Supplier } from '../../api/inventory';
 import { excelApi } from '../../api/excel';
 import PlanGate from '../../components/PlanGate';
 import ImportProductsModal from '../../components/ImportProductsModal';
+import './ProductListPage.css';
 
 type ProductForm = {
     sku: string;
@@ -160,17 +161,16 @@ export default function ProductListPage() {
     const modalTitle = editProduct ? 'Edit Product' : 'Add Product';
 
     return (
-        <div>
-            <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
+        <div className="inventory-product-page">
+            <header className="page-header product-header">
+                <div className="product-heading">
                     <h1 className="page-title">Inventory (Products)</h1>
                     <p className="page-subtitle">{loading ? 'Loading catalog...' : productsFailed ? 'Catalog unavailable' : confirmedProducts ? `${confirmedProducts.total} SKUs in catalog` : 'Loading catalog...'}</p>
                 </div>
-                <div className="flex gap-12">
+                <div className="product-toolbar">
                     <select
                         aria-label="Inventory filter"
-                        className="input-field"
-                        style={{ width: '180px' }}
+                        className="input-field product-filter"
                         value={filter.lowStock}
                         onChange={(e) => { setFilter({ lowStock: e.target.value }); setPage(1); }}
                     >
@@ -208,7 +208,7 @@ export default function ProductListPage() {
                 />
             )}
 
-            <div className="table-container">
+            <div className="table-container product-table-scroll" role="region" aria-label="Products table" tabIndex={0}>
                 {loading ? (
                     <div role="status" className="shimmer" style={{ height: '300px' }}>Loading products...</div>
                 ) : productsFailed ? (
@@ -279,7 +279,7 @@ export default function ProductListPage() {
                 )}
             </div>
 
-            <nav aria-label="Product pagination" className="flex gap-12">
+            <nav aria-label="Product pagination" className="product-pagination">
                 <button type="button" className="btn btn-ghost" disabled={page === 1}
                     onClick={() => setPage((current) => current - 1)}>Previous page</button>
                 <span aria-live="polite">{loading ? `Page ${page} (loading)` : productsFailed ? `Page ${page} (unavailable)` : `Page ${page} of ${totalPages}`}</span>

@@ -1,0 +1,72 @@
+/* Local to this page: do not change shared table, batch or import-dialog styles. */
+.inventory-product-page {
+    min-width: 0;
+    width: 100%;
+}
+
+.inventory-product-page .product-header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.inventory-product-page .product-heading {
+    flex: 1 1 240px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.inventory-product-page .product-toolbar {
+    display: flex;
+    flex: 1 1 600px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    min-width: 0;
+}
+
+.inventory-product-page .product-filter {
+    width: 180px;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.inventory-product-page .product-toolbar .btn,
+.inventory-product-page .product-toolbar .input-field,
+.inventory-product-page .product-pagination .btn {
+    min-height: 44px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* Higher specificity than the late shared .table-container overflow:hidden. */
+.inventory-product-page .product-table-scroll {
+    max-width: 100%;
+    overflow: auto;
+}
+
+.inventory-product-page .product-table-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.inventory-product-page .product-table-scroll .table {
+    min-width: 760px;
+}
+
+.inventory-product-page .product-table-scroll th,
+.inventory-product-page .product-table-scroll td {
+    overflow-wrap: anywhere;
+}
+
+.inventory-product-page .product-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}

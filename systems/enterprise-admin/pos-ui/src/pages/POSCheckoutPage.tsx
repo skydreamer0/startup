@@ -335,7 +335,8 @@ export default function POSCheckoutPage() {
       <PosToast toast={toast} onDismiss={() => setToast(null)} />
       {recoveryPanel}
       <fieldset disabled={!!pending || !contextReady} style={{ border: 0, padding: 0, margin: 0, display: 'contents' }}>
-      <div className="pos-topbar">
+      <div className="pos-topbar-container">
+      <div className="pos-topbar" role="region" aria-label="收銀工具列" aria-describedby="pos-topbar-scroll-hint" tabIndex={0}>
         <div className="pos-brand">
           <div className="pos-brand-mark">🌿</div>
           <div>
@@ -384,6 +385,8 @@ export default function POSCheckoutPage() {
         <button type="button" onClick={() => shift.setShowCloseShift(true)} className="pos-topbar-action pos-topbar-action--danger">
           交班
         </button>
+      </div>
+      <p id="pos-topbar-scroll-hint" className="pos-topbar-scroll-hint">↔ 左右滑動工具列；Tab 切換，聚焦後用方向鍵捲動。</p>
       </div>
 
       <div className="pos-body">

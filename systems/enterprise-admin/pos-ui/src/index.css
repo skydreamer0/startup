@@ -85,17 +85,49 @@ input { font-family: inherit; }
   font-family: Inter, sans-serif;
 }
 
-/* Top bar */
+/* Top bar: preserve the bounded scrolling row without shrinking its controls. */
+.pos-topbar-container {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
 .pos-topbar {
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  height: 60px;
+  flex-wrap: nowrap;
+  padding: 8px 24px;
+  min-height: 60px;
+  min-width: 0;
   background: var(--bg-card);
   border-bottom: 1.5px solid var(--border);
   gap: 14px;
   flex-shrink: 0;
   box-shadow: var(--shadow-xs);
+}
+
+.pos-topbar > * { flex-shrink: 0; }
+.pos-topbar > button {
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.pos-topbar button { white-space: nowrap; }
+.pos-topbar > input { min-height: 44px; }
+.pos-topbar:focus-visible,
+.pos-topbar button:focus-visible,
+.pos-topbar input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.pos-topbar-scroll-hint {
+  margin: 0;
+  padding: 4px 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
 }
 
 .pos-brand {
@@ -128,6 +160,7 @@ input { font-family: inherit; }
 }
 
 .pos-shift-pill {
+  white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -330,9 +363,15 @@ input { font-family: inherit; }
   z-index: 200;
 }
 
-/* Keep the existing topbar horizontally scrollable instead of widening the
-   mobile layout viewport and shrinking all fixed controls. */
+/* Preserve the existing horizontal overflow model at every viewport. Desktop
+   wrapping remains separate until anchored menus have native geometry coverage. */
 .pos-topbar, .pos-statusbar { min-width: 0; overflow-x: auto; }
+.pos-topbar { scroll-padding-inline: 12px; }
+
+@media (max-width: 767px) {
+  .pos-topbar { padding-inline: 12px; gap: 12px; }
+  .pos-search-spacer { display: none; }
+}
 
 @media (max-width: 767px) {
   /* A short cart must scroll its controls rather than clip its checkout footer. */
