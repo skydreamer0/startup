@@ -100,7 +100,12 @@ for exact-head provenance, safety controls, cleanup evidence and distinct browse
 This is SKU-only; Product has no barcode field. It does not replace the original five jobs.
 The same owned service separately validates category reads through real JWT, tenant,
 auth/RBAC and PostgreSQL using `src/__tests__/pos-categories.integration.test.ts`.
-The original SKU cases remain unchanged. See
+The original SKU cases remain unchanged. The same runner then executes the separate
+20-case `inventory-provenance.integration.test.ts` against that owned service only,
+with explicit opt-in plus matching source/run/container/network ownership proof.
+The exact SQL/test hashes, per-suite zero-row checks, zero skips and final owned-DB
+removal are required; local embedded SQL results do not establish native acceptance.
+See `../infrastructure/verification/inventory-provenance/README.md`. See
 `../infrastructure/verification/pos-categories/README.md` for the bounded nine-case
 contract, separate opt-in and remaining browser/device gates.
 

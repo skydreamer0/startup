@@ -112,8 +112,46 @@ identity and cleanup output. The two native-only cases exercise:
    and `refundOrder` service writes, proving the refund creates no IN or stock change.
 
 The runner must then remove only its own disposable database and record removal.
-A similarly named existing DB or a skipped suite is not acceptance. No native CI
-job/workflow is added in this slice; the existing default suite skips without opt-in.
+A similarly named existing DB or a skipped suite is not acceptance. No new CI job/workflow is added. The ordinary broad backend suite still skips
+without opt-in; the existing owned SKU runner opts in separately as described below.
+
+### Existing owned SKU runner integration (native evidence pending)
+
+`backend/scripts/pos-product-lookup-ci.mjs` retains the existing PG15 service and
+workflow. It runs the unchanged 5 SKU cases and 9 category cases, then the 20
+provenance cases in a separate Vitest process. The exact diagnostic SQL is unchanged.
+The only additional accepted destination is the existing fixed URL
+`postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci`.
+
+That exception requires all of the following before the provenance suite connects:
+
+- Exact URL, `DATABASE_URL`, existing SKU opt-in and provenance opt-in agree; synthetic
+  flag is `1`, `NODE_ENV=test`, GitHub Actions and github-hosted runner are explicit.
+- The proof file is exactly the current run/attempt's `ownership.json` under
+  `RUNNER_TEMP`; it must describe the already-proven initially empty synthetic DB.
+- Proof head and tree match the actual checkout, not just environment claims; run,
+  attempt, runtime, container, network and loopback-only port binding also match.
+- The existing runner independently rechecks Docker service/network identity and
+  its complete saved ownership identity. The test requires all current migrations
+  and all business rows zero before fixtures. There is no ambient URL fallback.
+
+The runner saves SQL/test hashes, per-suite command/log/JSON, engine identity and
+before/after counts for every business table (28 at this schema). Native acceptance
+requires 20 passed with zero skipped, omitted, substituted, failed or extra cases;
+the original 5/9 suites must also pass. A failing suite prevents a later suite from
+running on potentially contaminated fixtures. Cleanup retains its existing exact
+owned-database DROP and absence check; leftover rows make acceptance fail even
+when the database was removed. No service, network, credential, workflow or package
+configuration changes are involved.
+
+Pure `pos-product-lookup-ci.test.mjs` controls exercise near-miss URL/host/port/user/
+database, missing flags/proof, incorrect source/run/service identity and invalid
+reports. They are guard checks, not substitutes for the 20 actual SQL/native cases.
+The new-head CI result must be read before claiming native acceptance. The initial
+Draft head `4f703885` had [successful ordinary CI](https://github.com/skydreamer0/startup/actions/runs/37984123961),
+but its broad backend log explicitly recorded all 20 provenance cases as skipped
+(309 passed / 72 total skips across the full suite). That historical run did not
+validate the native provenance path.
 
 ### Embedded PGlite (limited SQL evidence)
 

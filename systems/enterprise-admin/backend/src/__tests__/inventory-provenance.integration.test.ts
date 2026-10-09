@@ -1,10 +1,12 @@
 import { randomUUID } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { PrismaClient, type Prisma } from '@prisma/client';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
+// BEGIN inventory provenance opt-in guard.
 // Explicit opt-in only. No ambient DATABASE_URL, external server, schema override,
 // password, reused nonempty database, or automatic dependency installation.
 const databaseUrl = process.env.INVENTORY_PROVENANCE_DATABASE_URL;
@@ -12,15 +14,41 @@ const embeddedPath = process.env.INVENTORY_PROVENANCE_PGLITE_PATH;
 if (databaseUrl && embeddedPath) throw new Error('Select native PostgreSQL OR embedded PGlite');
 if (databaseUrl) {
   const url = new URL(databaseUrl);
+  const ownedSkuUrl = 'postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci';
+  const ownedSkuFixture = databaseUrl === ownedSkuUrl;
   if (url.protocol !== 'postgresql:' || url.hostname !== '127.0.0.1' || !url.port
     || url.username !== 'test' || url.password || url.search || url.hash
-    || !/^\/checkout_http_recovery_inventory_provenance_[a-z0-9_]+$/.test(url.pathname)
+    || (!ownedSkuFixture && !/^\/checkout_http_recovery_inventory_provenance_[a-z0-9_]+$/.test(url.pathname))
     || process.env.DATABASE_URL !== databaseUrl
     || process.env.INVENTORY_PROVENANCE_ALLOW_SYNTHETIC !== '1') {
     throw new Error('Inventory provenance requires an explicit empty owned synthetic loopback database');
   }
+  if (ownedSkuFixture) {
+    const env = process.env;
+    if (env.NODE_ENV !== 'test' || env.POS_PRODUCT_LOOKUP_DATABASE_URL !== ownedSkuUrl
+      || env.GITHUB_ACTIONS !== 'true' || env.RUNNER_ENVIRONMENT !== 'github-hosted'
+      || !path.isAbsolute(env.RUNNER_TEMP || '') || !/^\d+$/.test(env.GITHUB_RUN_ID || '')
+      || !/^\d+$/.test(env.GITHUB_RUN_ATTEMPT || '') || !/^[a-f0-9]{40}$/.test(env.SKU_QA_HEAD || '')
+      || !/^[a-f0-9]{64}$/.test(env.SKU_QA_CONTAINER || '')
+      || !/^github_network_[a-f0-9]+$/.test(env.SKU_QA_NETWORK || '')) {
+      throw new Error('Inventory provenance requires the existing owned SKU Actions fixture');
+    }
+    const proofFile = path.join(env.RUNNER_TEMP!, `sku-qa-${env.GITHUB_RUN_ID}-${env.GITHUB_RUN_ATTEMPT}`, 'ownership.json');
+    if (env.INVENTORY_PROVENANCE_OWNERSHIP_FILE !== proofFile) throw new Error('Inventory provenance ownership path mismatch');
+    const proof = JSON.parse(readFileSync(proofFile, 'utf8'));
+    const git = (ref: string) => execFileSync('git', ['rev-parse', ref], { cwd: path.resolve(__dirname, '../../../../..'), encoding: 'utf8' }).trim();
+    if (proof.head !== env.SKU_QA_HEAD || proof.head !== git('HEAD') || proof.tree !== git('HEAD^{tree}')
+      || proof.runId !== env.GITHUB_RUN_ID || proof.attempt !== env.GITHUB_RUN_ATTEMPT
+      || proof.database !== 'checkout_http_recovery_pos_lookup_ci' || proof.node !== process.version
+      || proof.syntheticOnly !== true || !Array.isArray(proof.initialPublicTables) || proof.initialPublicTables.length !== 0
+      || proof.service?.container !== env.SKU_QA_CONTAINER || proof.service?.network !== env.SKU_QA_NETWORK
+      || JSON.stringify(proof.service?.bindings) !== JSON.stringify({ '5432/tcp': [{ HostIp: '127.0.0.1', HostPort: '55435' }] })) {
+      throw new Error('Inventory provenance ownership identity mismatch');
+    }
+  }
 }
 if (embeddedPath && !path.isAbsolute(embeddedPath)) throw new Error('Existing PGlite module path must be absolute');
+// END inventory provenance opt-in guard.
 
 type Row = { section: string; tenant_id: string; product_id: string; record_id: string; details: Record<string, unknown> };
 type Embedded = {

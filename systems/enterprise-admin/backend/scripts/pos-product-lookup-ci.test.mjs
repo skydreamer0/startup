@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { test } from 'node:test';
-import { assertConnection, assertReport, assertService, assertOwnership, assertZeroRows, databaseName, databaseUrl, expectedCases, probeOriginalGuard, probeCategoryGuard, testFiles } from './pos-product-lookup-ci.mjs';
+import { assertConnection, assertReport, assertService, assertOwnership, assertZeroRows, databaseName, databaseUrl, expectedCases, probeOriginalGuard, probeCategoryGuard, probeProvenanceGuard, testFiles } from './pos-product-lookup-ci.mjs';
 
 test('harness accepts only equal, exact synthetic URLs', () => {
   const env = { DATABASE_URL: databaseUrl, POS_PRODUCT_LOOKUP_DATABASE_URL: databaseUrl };
@@ -46,7 +46,7 @@ test('service guard rejects wildcard ports, other networks and external mounts',
   }
 });
 
-for (const kind of ['native', 'categories']) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
+for (const kind of Object.keys(testFiles)) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
   const names = expectedCases[kind];
   const report = {
     success: true, numTotalTests: names.length, numPassedTests: names.length,
@@ -55,6 +55,10 @@ for (const kind of ['native', 'categories']) test(`${kind} report cannot accept 
   };
   assert.equal(assertReport(report, kind).length, names.length);
   for (const mutate of [
+    value => { value.success = false; },
+    value => { value.numPassedTests -= 1; },
+    value => { value.numFailedTests = 1; },
+    value => { value.testResults[0].status = 'skipped'; },
     value => { value.numPendingTests = 1; },
     value => { value.numTodoTests = 1; },
     value => { value.testResults[0].assertionResults.pop(); },
@@ -91,5 +95,13 @@ test('category source guard rejects every non-owned connection and environment',
   const source = fs.readFileSync(new URL('../src/__tests__/pos-categories.integration.test.ts', import.meta.url), 'utf8');
   const results = probeCategoryGuard(source);
   assert.ok(results.length >= 12);
+  assert.equal(results.filter(result => result.accepted && result.optIn).length, 1);
+});
+
+// Pure guard/evidence controls, separate from actual native SQL acceptance.
+test('provenance guard requires exact fixture, explicit flags and matching source ownership', () => {
+  const source = fs.readFileSync(new URL('../src/__tests__/inventory-provenance.integration.test.ts', import.meta.url), 'utf8');
+  const results = probeProvenanceGuard(source);
+  assert.ok(results.length >= 30);
   assert.equal(results.filter(result => result.accepted && result.optIn).length, 1);
 });
