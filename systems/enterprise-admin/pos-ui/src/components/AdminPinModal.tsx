@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
 
 interface Props {
   onConfirm: (pin: string) => void;
@@ -7,6 +7,30 @@ interface Props {
 }
 
 export default function AdminPinModal({ onConfirm, onClose, reason }: Props) {
+  const titleId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current!;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialog.querySelector<HTMLButtonElement>('button')?.focus();
+    return () => {
+      const ownsFocus = dialog.contains(document.activeElement) || document.activeElement === document.body;
+      if (ownsFocus && opener?.isConnected && !opener.closest('[inert]')) opener.focus();
+    };
+  }, []);
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    event.stopPropagation();
+    if (/^F[2-8]$/.test(event.key)) event.preventDefault();
+    if (event.key === 'Escape') { event.preventDefault(); onClose(); }
+    if (event.key !== 'Tab') return;
+    const controls = Array.from(dialogRef.current!.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+
   const [pin, setPin] = useState('');
   const [shake, setShake] = useState(false);
 
@@ -31,15 +55,18 @@ export default function AdminPinModal({ onConfirm, onClose, reason }: Props) {
 
   return (
     <div
+      data-pos-modal="admin-pin"
+      onKeyDown={handleKeyDown}
       style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
       onClick={onClose}
     >
       <div
-        style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 320, boxShadow: 'var(--shadow-lg)', textAlign: 'center' }}
+        ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId}
+        style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 32, width: 'min(320px, calc(100vw - 32px))', boxSizing: 'border-box', maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto', boxShadow: 'var(--shadow-lg)', textAlign: 'center' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ fontSize: 28, marginBottom: 8 }}>🔒</div>
-        <h3 style={{ margin: '0 0 6px', fontSize: 16 }}>管理員授權</h3>
+        <h3 id={titleId} style={{ margin: '0 0 6px', fontSize: 16 }}>管理員授權</h3>
         <p style={{ margin: '0 0 20px', fontSize: 13, color: 'var(--text-muted)' }}>{reason}</p>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: 14, marginBottom: 24 }}>

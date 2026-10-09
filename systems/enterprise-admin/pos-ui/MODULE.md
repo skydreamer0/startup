@@ -46,6 +46,23 @@
 5. Update context if workflow meaning, task routing, or API contract assumptions change.
 6. Checkout recovery uses `src/store/checkoutRecoveryStore.ts`, `src/hooks/useCheckout.ts` and `CheckoutRecovery`. Authenticated checkout context scopes the frozen pre-submit intent to tenant/user, independently of modal and token renewal. Pending/unknown/conflict blocks cart mutations. Query verifies the saved normalized payloadHash before clearing only the confirmed intent. Known conflict requires manual investigation and stays frozen through failed/successful lookup, reauthentication and refresh; it cannot be downgraded to unknown or automatically confirmed. See ADR-018 and `e2e/checkout-recovery.spec.ts`. Full offline synchronization remains separate.
 
+### Split payment and manager PIN keyboard ownership
+
+`SplitPaymentModal` owns its focus, cancellation and function keys while editable;
+loading disables editing and cancellation without changing the frozen checkout intent.
+`POSCheckoutPage` suspends that dialog while the existing `AdminPinModal` is open.
+The PIN dialog owns its Tab/Escape events and returns to split confirmation on cancel.
+Dynamic payment-row changes and backdrop clicks recover a valid dialog focus target;
+the page also blocks its checkout/function shortcuts while payment/PIN is open, even
+if focus unexpectedly reaches the document body. The guard preserves native Enter
+activation on controls inside the active dialog; ordinary PaymentModal stays real
+in the page integration regressions rather than being replaced with a static mock.
+Background inert/ARIA attributes are restored when the split overlay unmounts.
+See `src/__tests__/SplitPaymentModal.test.tsx`, `POSCheckoutPage.split-dialog.test.tsx`,
+`SplitPaymentModal.lifecycle.test.tsx` and
+`../infrastructure/verification/pos-split-dialog/README.md` for bounded synthetic
+verification and the blocked Chromium/native-device acceptance boundary.
+
 ### Change refund or physical-return behavior
 
 1. Read API spec §3.8 and ADR-015. `posApi.refundOrder` registers a monetary refund status; it does not restore physical inventory or execute a payment-provider transfer.
