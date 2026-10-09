@@ -56,7 +56,7 @@
 
 1. Read API spec §3.10 and ADR-017. Product metadata cannot edit physical stock; receipt is the batch creation operation and unreviewed stock defaults to quarantine.
 2. `pages/Inventory/BatchListPage.tsx` consumes paginated product data, sends a complete expiry date and refreshes both batch/product queries after receipt. Show API errors and keep expiry/inspection states distinct, using Asia/Taipei dates.
-3. Use its nearest screen tests and a real API/browser receipt flow. Physical-return receipt and approval remain separate pending work.
+3. `src/__tests__/batchReceipt.test.tsx` exercises the real AuthProvider and receipt client through synthetic HTTP-boundary fixtures. `create:products` gates receipt; `release:product_batches` additionally gates RELEASED with a trimmed 1–1000 character reason. QUARANTINE/BLOCKED omit the reason. Keep failed drafts and inline permission/error states, block duplicate submission and cancellation while pending, and reset cancelled drafts. These JSDOM cases do not replace a real API/browser receipt flow. Physical-return receipt and approval remain separate pending work.
 
 ### Change inventory product pagination
 
@@ -96,3 +96,18 @@ npm run build
 - Do not read backend source files unless API behavior, auth, or persistence is part of the task.
 - Do not hardcode fake operational data when real API data is expected.
 - Do not infer feature completion from UI presence; read `../ROADMAP.md` for progress.
+
+### Change batch field corrections and history
+
+1. Read `../infrastructure/api/batch_field_audit.md` and ADR-020. Ordinary batch
+   PATCH no longer edits expiry, status or cost. `BatchAuditPanel.tsx` uses the
+   three reason-required correction endpoints plus paginated immutable history.
+   INITIAL_RELEASE history starts at `{exists:false}`, not a fabricated prior lot.
+   Receipt reason UI lives in `BatchListPage.tsx`; ADR-021 supplies the unique shared
+   audit model. Current UI evidence and remaining gates are in
+   `../infrastructure/verification/initial-release-reason-ui.md`.
+2. Keep permission denial, request uncertainty, history failure and empty history
+   distinct. Preserve failed drafts and do not show success after a rejected write.
+   Disable repeated submission and closing the panel while its write is pending.
+3. `src/__tests__/batchAudit.test.tsx` exercises the real API client through mocked
+   HTTP methods; these tests do not replace actual browser or native DB acceptance.

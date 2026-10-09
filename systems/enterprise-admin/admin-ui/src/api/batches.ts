@@ -17,6 +17,18 @@ export interface ProductBatch {
     };
 }
 
+export interface BatchChangeRecord {
+    id: string;
+    tenantId: string;
+    batchId: string;
+    actorId: string;
+    operation: 'STATUS' | 'EXPIRY' | 'COST' | 'INITIAL_RELEASE';
+    before: { status: ProductBatch['status']; expiryDate: string; costPrice: string } | { exists: false };
+    after: { status: ProductBatch['status']; expiryDate: string; costPrice: string };
+    reason: string;
+    createdAt: string;
+}
+
 export interface DailySettlement {
     id: string;
     shiftId: string;
@@ -58,14 +70,27 @@ export const batchesApi = {
         quantity: number;
         costPrice: number;
         status?: ProductBatch['status'];
+        reason?: string;
     }) => {
         const { data } = await api.post('/product-batches', payload);
         return data;
     },
 
-    update: async (id: string, payload: { status?: ProductBatch['status']; expiryDate?: string; costPrice?: number }) => {
-        const { data } = await api.patch(`/product-batches/${id}`, payload);
+    changeStatus: async (id: string, payload: { status: ProductBatch['status']; reason: string }) => {
+        const { data } = await api.post(`/product-batches/${id}/status`, payload);
         return data;
+    },
+    correctExpiry: async (id: string, payload: { expiryDate: string; reason: string }) => {
+        const { data } = await api.post(`/product-batches/${id}/expiry-corrections`, payload);
+        return data;
+    },
+    correctCost: async (id: string, payload: { costPrice: number; reason: string }) => {
+        const { data } = await api.post(`/product-batches/${id}/cost-corrections`, payload);
+        return data;
+    },
+    history: async (id: string, cursor?: string): Promise<{ items: BatchChangeRecord[]; nextCursor: string | null }> => {
+        const { data } = await api.get(`/product-batches/${id}/history`, { params: cursor ? { cursor } : {} });
+        return data.data;
     },
 
     delete: async (id: string) => {

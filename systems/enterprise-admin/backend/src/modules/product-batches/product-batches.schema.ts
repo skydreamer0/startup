@@ -9,16 +9,21 @@ export const createProductBatchSchema = {
     quantity: z.number().int().positive('quantity must be a positive integer').max(2_147_483_647),
     costPrice: z.number().positive('costPrice must be a positive number'),
     status: z.nativeEnum(BatchStockStatus).optional(),
-  }),
+    reason: z.unknown().optional(),
+  }).superRefine((data, ctx) => {
+    if (data.status === 'RELEASED' && (typeof data.reason !== 'string' || !data.reason.trim() || data.reason.trim().length > 1000)) {
+      ctx.addIssue({ code: 'custom', path: ['reason'], message: '初次放行必須填寫原因' });
+    }
+  }).transform(data => ({ ...data, reason: data.status === 'RELEASED' ? (data.reason as string).trim() : undefined })),
 };
 
 export const updateProductBatchSchema = {
   body: z.object({
     quantity: z.never().optional(),
-    costPrice: z.number().positive().optional(),
-    expiryDate: z.string().datetime().optional(),
-    status: z.nativeEnum(BatchStockStatus).optional(),
-  }),
+    costPrice: z.never().optional(),
+    expiryDate: z.never().optional(),
+    status: z.never().optional(),
+  }).strict(),
 };
 
 export const getProductBatchesSchema = {
@@ -30,3 +35,15 @@ export const getProductBatchesSchema = {
       .transform((v) => v === 'true'),
   }),
 };
+
+const reason = z.string().trim().min(1, '請填寫更正原因').max(1000);
+export const changeBatchStatusSchema = { body: z.object({
+  status: z.nativeEnum(BatchStockStatus), reason,
+}).strict() };
+export const correctBatchExpirySchema = { body: z.object({
+  expiryDate: z.string().datetime(), reason,
+}).strict() };
+export const correctBatchCostSchema = { body: z.object({
+  costPrice: z.number().finite().positive().lt(100_000_000), reason,
+}).strict() };
+export const batchHistorySchema = { query: z.object({ cursor: z.string().min(1).optional() }).strict() };
