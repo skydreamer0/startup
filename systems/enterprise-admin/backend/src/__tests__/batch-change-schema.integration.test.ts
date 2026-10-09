@@ -11,7 +11,8 @@ const databaseUrl = process.env.BATCH_AUDIT_DATABASE_URL;
 if (databaseUrl && (databaseUrl !== 'postgresql://test@127.0.0.1:55437/checkout_http_recovery_batch_audit_ci'
   || process.env.DATABASE_URL !== databaseUrl)) throw new Error('Schema acceptance requires the exact isolated batch audit database');
 
-const run = <T>(tenantId: string, work: () => T) => tenantContext.run({ tenantId, plan: 'pro' }, work);
+// Consume lazy PrismaPromises inside AsyncLocalStorage, before the context exits.
+const run = <T>(tenantId: string, work: () => T) => tenantContext.run({ tenantId, plan: 'pro' }, async () => await work());
 const snapshot = { status: 'QUARANTINE', expiryDate: '2099-01-01T00:00:00.000Z', costPrice: '20' };
 async function fixture() {
   const tenantId = randomUUID();
