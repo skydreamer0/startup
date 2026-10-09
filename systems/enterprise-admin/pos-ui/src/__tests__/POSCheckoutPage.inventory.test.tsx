@@ -460,7 +460,7 @@ describe('POS independent category navigation (synthetic API, real query cache)'
     vi.mocked(posApi.getCategories).mockReturnValueOnce(oldCategories.promise);
     const oldPage = renderPage();
     await screen.findByText('分類載入中...');
-    expect(posApi.getCategories).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(posApi.getCategories).toHaveBeenCalledTimes(1));
     oldPage.unmount();
 
     const newCategories = [{ id: 'pain', name: '新門店分類' }];
