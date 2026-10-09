@@ -1,0 +1,37 @@
+{
+  "repository": "https://github.com/pbakaus/impeccable",
+  "commit": "d631a8827f99414d2b6daba4ef08b7f8701751d7",
+  "license": "Apache-2.0",
+  "retrieved_utc": "2026-10-09",
+  "installation": "Static references only; no upstream execution",
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 10766,
+      "git_blob_sha": "bb3f6d23b1f8025514a62a12b51b47d73e3c9aa9",
+      "sha256": "02bb8c3b4e70190e3986c0404ad2fd8d639b4f534252d82379cc1b502b6d1812",
+      "installed_path": "references/impeccable/LICENSE"
+    },
+    {
+      "path": "NOTICE.md",
+      "bytes": 503,
+      "git_blob_sha": "0468271c904ae334cfaf27da6f8df3d5f419a1f0",
+      "sha256": "c60a093c2845fd9fb82f9c6f742ece31f379f8190b535309d32d66c45ccffdcb",
+      "installed_path": "references/impeccable/NOTICE.md"
+    },
+    {
+      "path": "skill/reference/adapt.md",
+      "bytes": 11318,
+      "git_blob_sha": "25a95fcf6f15093d904da416d18a9f795b9e757a",
+      "sha256": "fe0f1e0a642575737711ad93f22482b8469c021ffd587f94910893683cb8f316",
+      "installed_path": "references/impeccable/adapt.md"
+    },
+    {
+      "path": "skill/reference/harden.md",
+      "bytes": 9467,
+      "git_blob_sha": "e8a0567c5964ab154a726a2e53ea2b6563b780d5",
+      "sha256": "6674a6fc1eb681f2ad266dc0a3a71cec29dc4dcd3a1ff91195d2302582fa7c58",
+      "installed_path": "references/impeccable/harden.md"
+    }
+  ]
+}
