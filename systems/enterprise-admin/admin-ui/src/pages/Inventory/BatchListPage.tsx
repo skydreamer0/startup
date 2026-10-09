@@ -76,11 +76,16 @@ export default function BatchListPage() {
     useEffect(() => {
         if (!showCreate) return;
         const dialog = dialogRef.current;
+        const trigger = triggerRef.current;
         if (dialog?.showModal) dialog.showModal();
         else dialog?.setAttribute('open', '');
         dialog?.querySelector<HTMLElement>('#receipt-title')?.focus();
-        return () => { dialog?.close?.(); triggerRef.current?.focus(); };
+        return () => { dialog?.close?.(); trigger?.focus(); };
     }, [showCreate]);
+
+    useEffect(() => {
+        if (saving) dialogRef.current?.querySelector<HTMLElement>('#receipt-title')?.focus();
+    }, [saving]);
 
     useEffect(() => {
         if (receiptError) receiptErrorRef.current?.focus();
@@ -130,7 +135,7 @@ export default function BatchListPage() {
 
     async function handleCreate(e: React.FormEvent) {
         e.preventDefault();
-        if (submitting.current || !canReceive || productsPending || productError || invalidRelease) return;
+        if (submitting.current || !canReceive || productsPending || productError || productList.length === 0 || invalidRelease) return;
         submitting.current = true;
         setSaving(true);
         setReceiptError('');
@@ -151,7 +156,7 @@ export default function BatchListPage() {
         } catch (err) {
             const response = (err as ApiError).response;
             setReceiptError(response?.status === 403 ? '權限不足，無法登記進貨或初次放行。請洽有權限的管理者。'
-                : response?.data?.error?.message || '未能確認收貨成功。請先核對批次與庫存，再決定是否重新登記。');
+                : `${response?.data?.error?.message || '未能確認收貨成功。請先核對批次與庫存，再決定是否重新登記。'}${!response?.status || response.status >= 500 ? ' 結果尚未確認，請勿直接重送；先核對批次與庫存。' : ''}`);
         } finally {
             submitting.current = false;
             setSaving(false);
@@ -263,7 +268,16 @@ export default function BatchListPage() {
 
             {showCreate && (
                 <div className="modal-overlay" onClick={requestClose}>
-                    <dialog ref={dialogRef} className="modal-content card receipt-dialog" aria-labelledby="receipt-title" aria-describedby="receipt-description" aria-modal="true" tabIndex={-1} onCancel={e => { e.preventDefault(); requestClose(); }} onClick={e => {
+                    <dialog ref={dialogRef} className="modal-content card receipt-dialog" aria-labelledby="receipt-title" aria-describedby="receipt-description" aria-modal="true" onKeyDown={e => {
+                        if (e.key !== 'Tab') return;
+                        const controls = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]'));
+                        const first = controls[0];
+                        const last = controls[controls.length - 1];
+                        if (!first) { e.preventDefault(); e.currentTarget.querySelector<HTMLElement>('#receipt-title')?.focus(); return; }
+                        const active = document.activeElement;
+                        if (e.shiftKey && (active === first || !controls.some(control => control === active))) { e.preventDefault(); last.focus(); }
+                        else if (!e.shiftKey && (active === last || !controls.some(control => control === active))) { e.preventDefault(); first.focus(); }
+                    }} onCancel={e => { e.preventDefault(); requestClose(); }} onClick={e => {
                         e.stopPropagation();
                         if (e.target !== e.currentTarget) return;
                         const bounds = e.currentTarget.getBoundingClientRect();
@@ -271,6 +285,7 @@ export default function BatchListPage() {
                     }}>
                         <h2 id="receipt-title" className="modal-title" tabIndex={-1}>登記批次進貨</h2>
                         <p id="receipt-description" className="batch-message">登記後同步增加商品與批次帳量。未驗收的商品保持隔離，不可出庫；到期當日不可出庫。</p>
+                        {saving && <p role="status" className="batch-message">正在登記，請稍候；完成前暫停編輯與取消。</p>}
                         {productsPending && <p role="status" className="batch-message">正在載入可收貨商品…</p>}
                         {productError && <div className="batch-message batch-message-error"><p role="alert">{(productFailure as ApiError)?.response?.status === 403 ? '權限不足，無法讀取商品。請洽有權限的管理者。' : '無法載入商品，請重新整理後再試。'} 草稿已保留。</p><button type="button" className="btn btn-ghost" disabled={productsFetching || saving} onClick={() => void refetchProducts()}>重新載入商品</button></div>}
                         {!productsPending && !productError && productList.length === 0 && <p className="batch-message" role="status">目前沒有可收貨商品，請先建立商品資料。</p>}
@@ -371,7 +386,6 @@ export default function BatchListPage() {
                             </div>
                             </fieldset>
                             <div className="modal-actions receipt-actions">
-                                {saving && <p role="status">正在登記，請稍候；完成前暫停編輯與取消。</p>}
                                 <button type="button" className="btn btn-ghost" onClick={requestClose} disabled={saving}>取消</button>
                                 <button type="submit" className="btn btn-primary" disabled={saving || !canReceive || productsPending || productError || productList.length === 0 || invalidRelease}>
                                     {saving ? '登記中...' : '登記進貨'}
