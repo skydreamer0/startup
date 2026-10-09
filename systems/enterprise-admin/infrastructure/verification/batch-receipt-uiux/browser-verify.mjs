@@ -73,6 +73,24 @@ async function geometry(page, width, height, zoom) {
     pass(`geometry ${width}x${height} at ${zoom * 100}% native page zoom`, metrics);
 }
 try {
+    // Empty-state copy must be fully inside the initial viewport, without table scrolling.
+    for (const [width, height, zoom] of [[390, 844, 1], [390, 768, 1]]) {
+        const page = await launch(width, height, zoom); await fixture(page, undefined, { batches: [] });
+        const allEmpty = page.getByText('目前沒有批號資料。', { exact: true });
+        await expect(allEmpty).toBeInViewport({ ratio: 1 });
+        assert.equal(await page.getByRole('region', { name: '批次清單' }).evaluate(el => el.scrollLeft), 0);
+        assert.equal(await page.evaluate(() => scrollY), 0);
+        await screenshot(page, `list-empty-${width}-${height}-${zoom * 100}-all`);
+        pass(`all empty copy fully in initial viewport ${width}x${height} at ${zoom * 100}%`);
+        await page.getByRole('button', { name: '到期／30天內需處理', exact: true }).click();
+        const filteredEmpty = page.getByText('目前沒有到期或 30 天內需處理的批次，可切換「全部」查看。', { exact: true });
+        await expect(filteredEmpty).toBeInViewport({ ratio: 1 });
+        assert.equal(await page.getByRole('region', { name: '需處理批次' }).evaluate(el => el.scrollLeft), 0);
+        assert.equal(await page.evaluate(() => scrollY), 0);
+        await screenshot(page, `list-empty-${width}-${height}-${zoom * 100}-filtered`);
+        pass(`filtered empty copy fully in initial viewport ${width}x${height} at ${zoom * 100}%`);
+        await page.context().close();
+    }
     for (const [width, height, zoom] of [[1366, 768, 1], [1024, 768, 1], [390, 844, 1], [1366, 768, 2]]) {
         const page = await launch(width, height, zoom); const state = await fixture(page);
         await expect(page.getByText(batches[0].batchNumber, { exact: true })).toBeVisible();
@@ -118,7 +136,7 @@ try {
     await loadingPage.getByRole('button', { name: '+ 登記批次進貨' }).click(); await expect(loadingPage.getByLabel('商品', { exact: true })).toBeDisabled(); await expect(loadingPage.getByRole('button', { name: '登記進貨', exact: true })).toBeDisabled();
     finishRead(); finishProducts(); loadingState.readGate = null; loadingState.productGate = null;
     await expect(loadingPage.getByText('目前沒有可收貨商品，請先建立商品資料。')).toBeVisible(); await expect(loadingPage.getByRole('button', { name: '登記進貨', exact: true })).toBeDisabled(); await screenshot(loadingPage, 'receipt-empty-products');
-    await loadingPage.getByRole('button', { name: '取消', exact: true }).click(); await expect(loadingPage.getByText('目前沒有批號資料。')).toBeVisible(); await screenshot(loadingPage, 'list-empty'); pass('slow reads and empty batches/products remain distinct and cannot submit'); await loadingPage.context().close();
+    await loadingPage.getByRole('button', { name: '取消', exact: true }).click(); await expect(loadingPage.getByText('目前沒有批號資料。')).toBeInViewport({ ratio: 1 }); await screenshot(loadingPage, 'list-empty'); pass('slow reads and empty batches/products remain distinct and cannot submit'); await loadingPage.context().close();
     // Real HTTP API against the owned PostgreSQL instance (no fixture responses).
     const login = await fetch(api + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: loginEmail, password: loginPassword }) }); assert.equal(login.status, 200);
     const token = (await login.json()).data.accessToken;
@@ -126,7 +144,16 @@ try {
     const sku = 'UIUX-' + Date.now(); const created = await fetch(api + '/inventory/products', { method: 'POST', headers, body: JSON.stringify({ sku, name: '合成 UIUX 真 API 收貨測試', costPrice: 20, retailPrice: 30, safetyStock: 1 }) }); assert.equal(created.status, 201);
     const actualProduct = (await created.json()).data;
     const page = await launch(1366, 768); await page.addInitScript(t => localStorage.setItem('accessToken', t), token);
-    await page.route('**/api/v1/admin/**', async route => { const response = await route.fetch({ url: route.request().url().replace(base + '/api/v1/admin', api) }); await route.fulfill({ response }); });
+    await page.route('**/api/v1/admin/**', async route => {
+        try {
+            const response = await route.fetch({ url: route.request().url().replace(base + '/api/v1/admin', api) });
+            await route.fulfill({ response });
+        } catch {
+            // Playwright transport errors can include authorization headers. Do not record them.
+            report.browserErrors.push(`Owned synthetic API transport failed: ${route.request().method()} ${new URL(route.request().url()).pathname}`);
+            await route.abort('connectionfailed');
+        }
+    });
     await page.goto(base + '/inventory/batches'); await fill(page, actualProduct.id, sku + '-LOT', false); await page.getByRole('button', { name: '登記進貨', exact: true }).click(); await expect(page.getByRole('dialog')).toHaveCount(0); await expect(page.getByText(sku + '-LOT', { exact: true })).toBeVisible();
     await screenshot(page, 'real-api-receipt');
     const detail = await fetch(api + '/inventory/products/' + actualProduct.id, { headers }); assert.equal(detail.status, 200); const received = (await detail.json()).data; assert.equal(received.stockQuantity, 4);

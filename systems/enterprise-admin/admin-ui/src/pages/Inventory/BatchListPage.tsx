@@ -202,6 +202,8 @@ export default function BatchListPage() {
             <div className="card table-container" role="region" aria-labelledby="batch-table-title" aria-describedby="batch-scroll-hint" tabIndex={0} aria-busy={batchesFetching}>
                 {batchError ? <div className="batch-empty"><p role="alert">{(batchFailure as ApiError)?.response?.status === 403 ? '權限不足，無法讀取批次資料。請洽有權限的管理者。' : '無法載入批次資料，請重新整理後再試。'}{batchesData && '先前結果已過期，暫停顯示。'}</p><button type="button" className="btn btn-ghost" onClick={() => void refetchBatches()} disabled={batchesFetching}>重新載入批次</button></div> : loading ? (
                     <div className="batch-empty"><p role="status">正在載入批次資料…</p></div>
+                ) : batches.length === 0 ? (
+                    <div className="batch-empty"><p role="status">{expiringSoon ? '目前沒有到期或 30 天內需處理的批次，可切換「全部」查看。' : '目前沒有批號資料。'}</p></div>
                 ) : (
                     <table className="table">
                         <thead>
@@ -216,14 +218,7 @@ export default function BatchListPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {batches.length === 0 ? (
-                                <tr>
-                                    <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                                        {expiringSoon ? '目前沒有到期或 30 天內需處理的批次，可切換「全部」查看。' : '目前沒有批號資料。'}
-                                    </td>
-                                </tr>
-                            ) : (
-                                batches.map((batch) => {
+                            {batches.map((batch) => {
                                     const { label, badgeClass } = getExpiryStatus(batch.expiryDate);
                                     return (
                                         <tr key={batch.id}>
@@ -257,8 +252,7 @@ export default function BatchListPage() {
                                             </td>
                                         </tr>
                                     );
-                                })
-                            )}
+                            })}
                         </tbody>
                     </table>
                 )}
