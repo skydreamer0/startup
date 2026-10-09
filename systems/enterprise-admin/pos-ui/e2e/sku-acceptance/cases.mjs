@@ -1,0 +1,15 @@
+export const expectedCases = [
+  'exact leading-zero SKU bypasses the capped list and keeps categories stable',
+  'reverse replies preserve both scans and repeated SKU quantity',
+  'manual edit and cleared draft reject delayed results',
+  'tenant remount rejects the previous scope response',
+  'restored unknown intent blocks scans and preserves its draft',
+  'candidate Tab Enter Space cancel and F2 F7 keep keyboard ownership',
+  'modal blocks background scanning and cancellation restores input',
+  'loading empty fuzzy zero-stock forbidden and error never guess a product',
+  'tablet candidate controls retain touch size and visible keyboard focus',
+  'double text size keeps SKU candidates readable and operable',
+  'six candidates remain reachable at short tablet height with double text',
+  'small mobile viewport exposes candidate and payment controls without forced clicks',
+  'mobile touch selects and cancels candidates without an implicit checkout',
+];

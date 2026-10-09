@@ -81,6 +81,16 @@ It is not browser or physical scanner evidence.
    verifies immutable UI subjects with guarded synthetic HTTP; its report,
    network/key-event evidence and screenshots share `test-results-ui-evidence/`.
 
+### Verify current SKU browser behavior
+
+Use `e2e/sku-acceptance/run.mjs` only through the exact-head ordinary CI job.
+It builds this submitted POS app and owns a loopback Vite preview with no API proxy;
+Chromium intercepts declared synthetic HTTP fixtures and rejects unexpected traffic.
+This is separate from the historical pinned scanner/supplier suite and from the five
+native SKU PostgreSQL cases. The bounded 1366/1024/390px and doubled-text checks do not
+establish complete POS visual, real API-to-DB, iPad/Safari or physical-scanner acceptance.
+See `../infrastructure/verification/pos-product-lookup-ci/README.md`.
+
 ### Change category navigation
 
 Use `GET /pos/categories` and the scope-keyed `pos-categories` query in `POSCheckoutPage`.
