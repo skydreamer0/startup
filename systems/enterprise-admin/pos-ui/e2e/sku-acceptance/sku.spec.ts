@@ -17,9 +17,9 @@ async function setup(page: Page, guard: Guard, options: { initial?: Product[]; u
   const held = new Map<string, Route[]>();
   const waiting = new Set<string>();
   const results: Record<string, Result> = {};
-  let tenant = 'tenant-a';
+  const tenant = 'tenant-a';
   const contexts: string[] = [];
-  await intercept(page, guard, origin, async (route, url) => {
+  await intercept(page.context(), guard, origin, async (route, url) => {
     const path = url.pathname;
     if (path === '/api/v1/admin/pos/products/lookup') {
       const code = url.searchParams.get('code') ?? '';
@@ -50,9 +50,8 @@ async function setup(page: Page, guard: Guard, options: { initial?: Product[]; u
       await success(route, []); return true;
     }
     return false;
-  });
+  }, { employeeCode: 'SYNTHETIC-CASHIER', accessToken: 'synthetic-ui-only-token' });
   await page.addInitScript(({ unknown, safe }) => {
-    localStorage.setItem('pos_accessToken', 'synthetic-ui-only-token');
     if (unknown) localStorage.setItem('pos-checkout-intent-v1:tenant-a:cashier', JSON.stringify({
       status: 'unknown', payload: { commandId: 'synthetic-unknown', cartItems: [{ productId: safe.id, quantity: 1, discountRate: 0 }], paymentMethod: 'CASH' },
       draft: { items: [{ product: safe, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0,
@@ -60,12 +59,14 @@ async function setup(page: Page, guard: Guard, options: { initial?: Product[]; u
     }));
   }, { unknown: !!options.unknown, safe: product('SAFE') });
   await page.goto(origin);
+  await expect(page.getByTestId('login-employee-code-input')).toBeVisible();
+  await page.getByTestId('login-employee-code-input').fill('SYNTHETIC-CASHIER');
+  await page.getByTestId('login-submit-button').click();
   await expect(cart(page)).toBeVisible();
   await expect(input(page)).toBeVisible();
   if (!options.unknown) await expect(input(page)).toBeEnabled();
   return {
     results, contexts,
-    setTenant(value: string) { tenant = value; },
     hold(code: string) { waiting.add(code); },
     count(code: string) { return held.get(code)?.length ?? 0; },
     async release(code: string, rows: Product[]) {
@@ -184,20 +185,15 @@ test(names[2], async ({ page, guard }) => {
 });
 
 test(names[3], async ({ page, guard }) => {
-  const api = await setup(page, guard, { initial: [product('SAFE')] });
-  await page.getByTestId('product-card-SAFE').click();
-  api.hold('OLD'); await scan(page, 'OLD'); await expect.poll(() => api.count('OLD')).toBe(1);
-  // Public router navigation unmounts the real page, with stores still in the app.
-  await page.evaluate(() => { history.pushState({}, '', '/customer-display'); dispatchEvent(new PopStateEvent('popstate')); });
-  await expect(input(page)).toHaveCount(0);
-  api.setTenant('tenant-b');
-  await page.goBack();
+  await setup(page, guard);
+  expect(guard.expectedWrites).toEqual(['POST /api/v1/admin/pos/staff-login']);
+  expect(guard.writes).toEqual([]);
+  await expect(page.getByTestId('login-employee-code-input')).toHaveCount(0);
   await expect(input(page)).toBeEnabled();
-  await expect.poll(() => api.contexts.includes('tenant-b')).toBe(true);
-  await api.release('OLD', [product('OLD')]);
-  await expect(cart(page).getByLabel('商品數量')).toHaveCount(0);
-  api.results['NEW'] = [product('NEW')]; await scan(page, 'NEW');
-  await expect(cart(page).getByText('合成商品 NEW', { exact: true })).toBeVisible();
+  await test.info().attach('tenant-switch-limitation', {
+    body: Buffer.from('NOT RUN: POS has no tenant-switch UI. No route/storage/fixture replacement counts as tenant-switch acceptance.'),
+    contentType: 'text/plain',
+  });
 });
 
 test(names[4], async ({ page, guard }) => {
@@ -313,7 +309,10 @@ test(names[9], async ({ page, guard }) => {
 async function reachability(control: Locator) {
   return control.evaluate(el => {
     const rect = el.getBoundingClientRect();
-    const viewport = { left: 0, top: 0, right: innerWidth, bottom: innerHeight };
+    const visual = window.visualViewport;
+    const viewport = { left: visual?.offsetLeft ?? 0, top: visual?.offsetTop ?? 0,
+      right: (visual?.offsetLeft ?? 0) + (visual?.width ?? innerWidth),
+      bottom: (visual?.offsetTop ?? 0) + (visual?.height ?? innerHeight) };
     const intersection = { ...viewport };
     const ancestors = [];
     for (let node = el.parentElement; node; node = node.parentElement) {
@@ -321,6 +320,18 @@ async function reachability(control: Locator) {
       const bounds = node.getBoundingClientRect();
       const clipX = /^(auto|scroll|hidden|clip)$/.test(style.overflowX);
       const clipY = /^(auto|scroll|hidden|clip)$/.test(style.overflowY);
+      // A viewport-fixed ancestor escapes normal-flow overflow clipping. A
+      // transform/filter/paint containing block keeps it subject to that block.
+      if (style.position === 'fixed') {
+        let containingBlock = false;
+        for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+          const css = getComputedStyle(parent);
+          if (css.transform !== 'none' || css.perspective !== 'none' || css.filter !== 'none'
+            || /paint|layout|strict|content/.test(css.contain)
+            || /transform|perspective|filter/.test(css.willChange)) containingBlock = true;
+        }
+        if (!containingBlock) break;
+      }
       if (!clipX && !clipY) continue;
       const box = { left: bounds.left + node.clientLeft, top: bounds.top + node.clientTop,
         right: bounds.left + node.clientLeft + node.clientWidth, bottom: bounds.top + node.clientTop + node.clientHeight };
@@ -329,9 +340,10 @@ async function reachability(control: Locator) {
       ancestors.push({ tag: node.tagName, className: node.className, overflowX: style.overflowX, overflowY: style.overflowY,
         box, scrollTop: node.scrollTop, scrollHeight: node.scrollHeight, clientHeight: node.clientHeight });
     }
-    const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-    const hit = document.elementFromPoint(center.x, center.y);
-    return { target: el.textContent, rect: rect.toJSON(), viewport, intersection, ancestors, center,
+    const layoutCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    const center = { x: layoutCenter.x - viewport.left, y: layoutCenter.y - viewport.top };
+    const hit = document.elementFromPoint(layoutCenter.x, layoutCenter.y);
+    return { target: el.textContent, rect: rect.toJSON(), viewport, intersection, ancestors, center, layoutCenter, scrollY,
       entirelyVisible: rect.left >= intersection.left - 1 && rect.right <= intersection.right + 1
         && rect.top >= intersection.top - 1 && rect.bottom <= intersection.bottom + 1,
       hitTarget: !!hit && (hit === el || el.contains(hit)), hit: hit?.outerHTML.slice(0, 500) ?? null };
@@ -397,6 +409,7 @@ test.describe('mobile', () => {
     await page.touchscreen.tap(cancelPoint.x, cancelPoint.y);
     await expect(selection(page)).toHaveCount(0);
     const checkout = page.getByTestId('cart-checkout-button');
+    await wheelTowards(page, checkout);
     const openPoint = await assertReachable(page, checkout, 'small-mobile-checkout');
     await page.touchscreen.tap(openPoint.x, openPoint.y);
     // Measure confirmation reachability without submitting any synthetic transaction.
@@ -421,4 +434,35 @@ test.describe('mobile', () => {
     await expect(cart(page).getByLabel('商品數量')).toHaveValue('1');
     await expect(page.getByTestId('payment-confirm-button')).not.toBeVisible();
   });
+});
+
+// A separate, owned context probes denials; the ordinary acceptance guard remains strict.
+test(names[13], async ({ browser }, info) => {
+  const context = await browser.newContext({ serviceWorkers: 'block' });
+  const denied: Guard = { expectedWrites: [], requests: [], writes: [], unexpected: [], pageErrors: [], stubbedStylesheets: [] };
+  await intercept(context, denied, origin, async () => false);
+  try {
+    const second = await context.newPage();
+    await second.goto('data:text/html,<title>synthetic guard probes</title>');
+    await second.evaluate(async ({ origin }) => {
+      await fetch(`${origin}/api/undeclared`, { method: 'POST', body: 'synthetic' }).catch(() => {});
+      await fetch('https://blocked.invalid/unknown').catch(() => {});
+    }, { origin });
+    const popupEvent = context.waitForEvent('page');
+    await second.evaluate(() => { window.open('https://blocked.invalid/popup'); });
+    const popup = await popupEvent;
+    await expect.poll(() => denied.unexpected.includes('https://blocked.invalid/popup')).toBe(true);
+    await popup.goto('data:text/html,<title>synthetic socket probe</title>');
+    await popup.evaluate(async ({ origin }) => {
+      await fetch(`${origin}/api/popup-write`, { method: 'DELETE' }).catch(() => {});
+    }, { origin });
+    await popup.evaluate(() => { const ws = new WebSocket('wss://blocked.invalid/socket'); ws.onerror = () => {}; });
+    await expect.poll(() => denied.unexpected.some(value => value.startsWith('WebSocket '))).toBe(true);
+    expect(denied.writes).toEqual(['POST /api/undeclared', 'DELETE /api/popup-write']);
+    expect(denied.unexpected).toEqual(expect.arrayContaining([
+      'https://blocked.invalid/unknown', 'https://blocked.invalid/popup', 'WebSocket wss://blocked.invalid/socket',
+    ]));
+    expect(denied.expectedWrites).toEqual([]);
+    await info.attach('context-denial-probes', { body: Buffer.from(JSON.stringify(denied)), contentType: 'application/json' });
+  } finally { await context.close(); }
 });

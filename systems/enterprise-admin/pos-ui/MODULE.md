@@ -85,7 +85,11 @@ It is not browser or physical scanner evidence.
 
 Use `e2e/sku-acceptance/run.mjs` only through the exact-head ordinary CI job.
 It builds this submitted POS app and owns a loopback Vite preview with no API proxy;
-Chromium intercepts declared synthetic HTTP fixtures and rejects unexpected traffic.
+BrowserContext HTTP/WebSocket guards cover all pages/popups and reject unexpected
+traffic. Login uses the actual employee-code UI with a locally fulfilled synthetic POST;
+there is no tenant-switch UI, so tenant-switch browser acceptance remains NOT RUN.
+Candidate lists and short-mobile cart controls scroll normally; payment close restores
+the opener. See the ledger/geometry checks before changing fixed-position containers.
 This is separate from the historical pinned scanner/supplier suite and from the five
 native SKU PostgreSQL cases. The bounded 1366/1024/390px and doubled-text checks do not
 establish complete POS visual, real API-to-DB, iPad/Safari or physical-scanner acceptance.

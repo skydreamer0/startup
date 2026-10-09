@@ -74,7 +74,7 @@ async function main() {
     assert.equal(owner.cancelled, null);
     write('accepted.json', { ...identity, status: 'passed', cases, phases,
       visualReview: 'Screenshots and measured controls require independent visual review; no whole-page visual acceptance claimed',
-      notRun: ['browser UI page zoom at 200% (this suite checks text-only 200%)', 'physical scanner', 'iPad/Safari', 'real API to database through UI', 'whole POS layout and release gates'] });
+      notRun: ['tenant switch through UI (no entry point in current POS)', 'browser UI page zoom at 200% (this suite checks text-only 200%)', 'physical scanner', 'iPad/Safari', 'real API to database through UI', 'whole POS layout and release gates'] });
   } catch (problem) { error = problem; }
   finally {
     fs.closeSync(log); owner.dispose();

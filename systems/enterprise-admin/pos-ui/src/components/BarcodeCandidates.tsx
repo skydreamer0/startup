@@ -1,11 +1,12 @@
+import { createPortal } from 'react-dom';
 import type { BarcodeCandidateSelection } from '../hooks/useBarcodeScanner';
 
 export function BarcodeCandidates({ selection }: { selection: BarcodeCandidateSelection | null }) {
   if (!selection) return null;
-  return <section aria-label="掃碼候選商品" className="rounded-xl border p-4 text-base"
+  return createPortal(<section aria-label="掃碼候選商品" className="pos-barcode-candidates rounded-xl border p-4 text-base"
     style={{ background: 'var(--bg-card)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}>
-    <p role="status">條碼／SKU {selection.code} 有多筆完全相符商品，請選擇一筆</p>
-    <ul className="my-3 grid gap-2">
+    <p role="status" style={{ flexShrink: 0 }}>條碼／SKU {selection.code} 有多筆完全相符商品，請選擇一筆</p>
+    <ul className="my-3 grid gap-2" style={{ minHeight: 0, overflowY: 'auto', padding: 4 }}>
       {selection.products.map((product) => <li key={product.id}>
         <button type="button" onClick={() => selection.select(product.id)}
           disabled={product.stockQuantity <= 0}
@@ -24,6 +25,6 @@ export function BarcodeCandidates({ selection }: { selection: BarcodeCandidateSe
     </ul>
     <button type="button" onClick={selection.dismiss}
       className="min-h-11 rounded-lg border px-4 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
-      style={{ borderColor: 'var(--border)', outlineColor: 'var(--accent)' }}>取消選擇</button>
-  </section>;
+      style={{ flexShrink: 0, alignSelf: 'flex-start', borderColor: 'var(--border)', outlineColor: 'var(--accent)' }}>取消選擇</button>
+  </section>, document.body);
 }

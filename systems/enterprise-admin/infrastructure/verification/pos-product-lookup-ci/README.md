@@ -50,15 +50,27 @@ Do not mark the work complete based on historical green jobs or static checks al
 run/attempt and a fresh invocation nonce before typechecking, building the actual POS
 source and starting its owned Vite preview. The old pinned UI subjects are not reused.
 The preview binds only 127.0.0.1:4276 with API proxy and HMR disabled. Playwright blocks
-service workers and closes/rejects WebSockets. The browser network fixture intercepts
-all requests: only enumerated read-only synthetic API routes, the owned built static
-assets and locally fulfilled known font stylesheets are allowed. All write methods,
-unknown API paths and external network requests abort and fail the case. Authentication
-is a synthetic localStorage fixture, not a login request or real credential. There is
-no real AI, transaction, login, production API or database behind this UI suite.
+service workers. The BrowserContext network fixture covers all pages, popups
+and WebSockets:
+HTTP interception is installed before navigation, service workers are blocked and every
+WebSocket is closed without connecting. Only enumerated read-only synthetic API
+routes, owned built static assets and locally fulfilled known font stylesheets are
+allowed. The sole expected write is the employee-code login form's POST, checked for
+exact origin/path/body and fulfilled locally once. All other write methods, unknown API
+paths and external requests abort and fail the case, including unload-time attempts
+before the context closes. Tokens are never injected into storage. Login uses the
+actual POSLoginPage controls and a synthetic response; this does not prove backend
+authentication. There is no real AI, transaction, production API or database behind this
+UI suite. A dedicated negative control probes new-page fetches, the first popup request
+and WebSockets.
 
-The thirteen cases cover exact leading-zero SKU absent from a 100-row list, reverse
-replies/repeated scans, manual edit/cleared draft cancellation, tenant remount, restored
+**Tenant switching: NOT RUN.** This POS has employee switching and a customer-display
+window, but no tenant-switch UI. Artificial route changes, remounts and changing a fixture
+tenant are excluded as tenant-switch acceptance. The native PostgreSQL tenant-isolation
+cases remain a separate boundary. `ui/accepted.json` carries this limitation explicitly.
+
+The fourteen cases cover exact leading-zero SKU absent from a 100-row list, reverse
+replies/repeated scans, manual edit/cleared draft cancellation, actual UI staff login, restored
 unknown intent, native Tab/Enter/Space and cancel/F2/F7 ownership, payment-modal blocking
 and cancellation, loading/empty/fuzzy/zero-stock/403/500 states, and candidate controls
 at 1366×768, 1024×768 and touch-enabled 390×844. Related category stability is checked
@@ -70,11 +82,11 @@ not devicePixelRatio, CSS transform or a claim that native browser page zoom was
 Native 200% page zoom remains not run. Candidate 44×44 CSS-pixel dimensions and visible
 keyboard outline are measured; touch uses native Playwright tap. Screenshots are the
 actual synthetic-data app at each relevant state, not mockups. Their existence alone
-is not visual PASS: independent review must inspect them, and full-page/mobile POS
+is not visual PASS: independent review must inspect them, and complete mobile POS
 layout, focus-trap design and all #31 visual requirements remain separate work.
 
 Each case preserves a screenshot, network/key-event ledger, browser viewport, failures
-and relevant metric attachments. The JSON report must contain all thirteen exact titles,
+and relevant metric attachments. The JSON report must contain all fourteen exact titles,
 with one successful attempt each, no skip/retry/expected failure or global error.
 The process owner supervises the typecheck/build/browser process groups and waits for
 quiescence; there is no adoption of an existing web server. `completion.json` is retained
@@ -99,9 +111,14 @@ A six-candidate 1024×600 / doubled-text case measures the last candidate and ca
 against the viewport and every overflow-clipping ancestor. It records ancestor geometry,
 scroll dimensions, hit-test results and screenshots. Tab navigation is real browser input;
 the pointer cancellation uses only bounded native wheel input and a verified visible
-coordinate. No force click, programmatic scroll or production style change creates access.
+coordinate. No force click or programmatic scroll creates access. Product fixes bound the chooser
+in a body portal, scroll the list/cart normally and keep the payment actions in a
+visible footer. Escape works from dialog inputs and payment unmount restores the opener.
 A touch-enabled 390×480 pressure case checks candidate, cancellation, checkout and payment
 confirmation/cancellation reachability. It never submits payment. This reduced viewport
 is **not** an OS soft-keyboard simulation or proof of real mobile keyboard behavior.
 Any actual inaccessible control or missing focus restoration is a failure, not a reason
-to omit the case or relax its assertions. Product fixes require their own approved scope.
+to omit the case or relax its assertions. The user-authorized corrections are included in this follow-up. Screenshots preserve
+the visual viewport (no full-page resizing); touch coordinates account for its offset
+after native scrolling. Geometry still checks every applicable clipping ancestor and
+the visible hit target.
