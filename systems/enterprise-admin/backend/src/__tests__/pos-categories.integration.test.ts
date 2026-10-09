@@ -119,7 +119,8 @@ describe.skipIf(!databaseUrl)('POS categories with real PostgreSQL and HTTP midd
     const responses = await Promise.all([categories(0), categories(1)]);
     responses.forEach((response, index) => {
       expect(response.status).toBe(200);
-      expect(response.headers['ratelimit-limit']).toBe('300');
+      // The existing inner POS limiter intentionally advertises its tighter limit.
+      expect(response.headers['ratelimit-limit']).toBe('120');
       expect(response.body).toEqual({ success: true, data: categoryRows[index] });
       expect(response.body.data.every((row: object) => Object.keys(row).sort().join(',') === 'id,name')).toBe(true);
     });
