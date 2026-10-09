@@ -12,6 +12,10 @@ const out = process.env.EVIDENCE_DIR || new URL('./screenshots/', import.meta.ur
 await mkdir(out, { recursive: true });
 const base = process.env.UI_URL || 'http://127.0.0.1:5179';
 const api = process.env.API_URL || 'http://127.0.0.1:3049/api/v1/admin';
+const loginEmail = process.env.RECEIPT_TEST_LOGIN_EMAIL;
+const loginPassword = process.env.RECEIPT_TEST_LOGIN_PASSWORD;
+if (!loginEmail || !loginPassword) throw new Error('Provide RECEIPT_TEST_LOGIN_EMAIL and RECEIPT_TEST_LOGIN_PASSWORD for the owned synthetic database at runtime; values are never recorded.');
+if (new URL(api).hostname !== '127.0.0.1') throw new Error('Real API verification requires an owned loopback synthetic API.');
 const report = { sha: execFileSync('git', ['rev-parse', 'HEAD']).toString().trim(), tree: execFileSync('git', ['rev-parse', 'HEAD^{tree}']).toString().trim(), checks: [], screenshots: [], browserErrors: [] };
 const contexts = [];
 function pass(name, detail = {}) { report.checks.push({ name, passed: true, ...detail }); }
@@ -116,7 +120,7 @@ try {
     await expect(loadingPage.getByText('目前沒有可收貨商品，請先建立商品資料。')).toBeVisible(); await expect(loadingPage.getByRole('button', { name: '登記進貨', exact: true })).toBeDisabled(); await screenshot(loadingPage, 'receipt-empty-products');
     await loadingPage.getByRole('button', { name: '取消', exact: true }).click(); await expect(loadingPage.getByText('目前沒有批號資料。')).toBeVisible(); await screenshot(loadingPage, 'list-empty'); pass('slow reads and empty batches/products remain distinct and cannot submit'); await loadingPage.context().close();
     // Real HTTP API against the owned PostgreSQL instance (no fixture responses).
-    const login = await fetch(api + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'admin@system.local', password: 'Admin@123!' }) }); assert.equal(login.status, 200);
+    const login = await fetch(api + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: loginEmail, password: loginPassword }) }); assert.equal(login.status, 200);
     const token = (await login.json()).data.accessToken;
     const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
     const sku = 'UIUX-' + Date.now(); const created = await fetch(api + '/inventory/products', { method: 'POST', headers, body: JSON.stringify({ sku, name: '合成 UIUX 真 API 收貨測試', costPrice: 20, retailPrice: 30, safetyStock: 1 }) }); assert.equal(created.status, 201);
