@@ -96,3 +96,14 @@ npm run build
 - Do not read backend source files unless API behavior, auth, or persistence is part of the task.
 - Do not hardcode fake operational data when real API data is expected.
 - Do not infer feature completion from UI presence; read `../ROADMAP.md` for progress.
+
+### Change batch field corrections and history
+
+1. Read `../infrastructure/api/batch_field_audit.md` and ADR-020. Ordinary batch
+   PATCH no longer edits expiry, status or cost. `BatchAuditPanel.tsx` uses the
+   three reason-required correction endpoints plus paginated immutable history.
+2. Keep permission denial, request uncertainty, history failure and empty history
+   distinct. Preserve failed drafts and do not show success after a rejected write.
+   Disable repeated submission and closing the panel while its write is pending.
+3. `src/__tests__/batchAudit.test.tsx` exercises the real API client through mocked
+   HTTP methods; these tests do not replace actual browser or native DB acceptance.

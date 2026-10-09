@@ -1,3 +1,4 @@
+import BatchAuditPanel from './BatchAuditPanel';
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { batchesApi, ProductBatch } from '../../api/batches';
@@ -55,6 +56,7 @@ export default function BatchListPage() {
     const [showCreate, setShowCreate] = useState(false);
     const [batchForm, setBatchForm] = useState<BatchForm>(emptyBatchForm);
     const [saving, setSaving] = useState(false);
+    const [auditBatchId, setAuditBatchId] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
     const { data: batchesData, isLoading: loading, isError: batchError } = useQuery({
@@ -196,6 +198,7 @@ export default function BatchListPage() {
                                             <td>{batch.quantity.toLocaleString()}</td>
                                             <td>${Number(batch.costPrice).toLocaleString()}</td>
                                             <td style={{ textAlign: 'right' }}>
+                                                <button type="button" className="btn btn-ghost" style={{ minHeight: 44 }} onClick={() => setAuditBatchId(batch.id)}>更正／歷史</button>
                                                 <button
                                                     className="btn btn-danger btn-sm"
                                                     onClick={() => handleDelete(batch.id, batch.batchNumber)}
@@ -211,6 +214,8 @@ export default function BatchListPage() {
                     </table>
                 )}
             </div>
+
+            {!batchError && auditBatchId && batches.find(batch => batch.id === auditBatchId) && <BatchAuditPanel key={auditBatchId} batch={batches.find(batch => batch.id === auditBatchId)!} onClose={() => setAuditBatchId(null)} />}
 
             {showCreate && (
                 <div className="modal-overlay" onClick={() => { if (!saving) closeCreate(); }}>

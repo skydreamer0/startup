@@ -137,15 +137,15 @@ describe('Receipt authority and closed quantity bypasses (real PostgreSQL)', () 
     expect(await basePrisma.productBatch.count({ where: { tenantId: f.tenantId } })).toBe(0);
     expect(await basePrisma.inventoryTransaction.count({ where: { tenantId: f.tenantId } })).toBe(0);
   });
-  it('reads receipt provenance with a new client, retaining its original cost after metadata correction', async () => {
+  it('reads receipt provenance with a new client and rejects an unaudited cost correction', async () => {
     const f = await fixture();
     const batch = await receive(f);
-    await inTenant(f, () => ProductBatchService.update(batch.id, { costPrice: 50 }));
+    await expect(inTenant(f, () => ProductBatchService.update(batch.id, { costPrice: 50 }))).rejects.toMatchObject({ statusCode: 400 });
     const fresh = new PrismaClient();
     try {
       const movement = await fresh.inventoryTransaction.findFirstOrThrow({ where: { tenantId: f.tenantId, batchId: batch.id }, include: { receiptBatch: true } });
       expect(movement.costPriceAtReceipt?.toString()).toBe('40');
-      expect(movement.receiptBatch?.costPrice.toString()).toBe('50');
+      expect(movement.receiptBatch?.costPrice.toString()).toBe('40');
       expect((await inTenant(f, () => ProductBatchService.getById(batch.id))).receiptMovements[0].id).toBe(movement.id);
     } finally { await fresh.$disconnect(); }
   });

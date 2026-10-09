@@ -15,10 +15,10 @@ export const createProductBatchSchema = {
 export const updateProductBatchSchema = {
   body: z.object({
     quantity: z.never().optional(),
-    costPrice: z.number().positive().optional(),
-    expiryDate: z.string().datetime().optional(),
-    status: z.nativeEnum(BatchStockStatus).optional(),
-  }),
+    costPrice: z.never().optional(),
+    expiryDate: z.never().optional(),
+    status: z.never().optional(),
+  }).strict(),
 };
 
 export const getProductBatchesSchema = {
@@ -30,3 +30,15 @@ export const getProductBatchesSchema = {
       .transform((v) => v === 'true'),
   }),
 };
+
+const reason = z.string().trim().min(1, '請填寫更正原因').max(1000);
+export const changeBatchStatusSchema = { body: z.object({
+  status: z.nativeEnum(BatchStockStatus), reason,
+}).strict() };
+export const correctBatchExpirySchema = { body: z.object({
+  expiryDate: z.string().datetime(), reason,
+}).strict() };
+export const correctBatchCostSchema = { body: z.object({
+  costPrice: z.number().finite().positive().lt(100_000_000), reason,
+}).strict() };
+export const batchHistorySchema = { query: z.object({ cursor: z.string().min(1).optional() }).strict() };

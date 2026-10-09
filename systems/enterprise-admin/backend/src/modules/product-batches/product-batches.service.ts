@@ -78,22 +78,12 @@ export class ProductBatchService {
   }
 
   static async update(id: string, data: UpdateProductBatchDto) {
-    const tenantId = requireTenantId();
-    if (data.quantity !== undefined) throw new AppError(400, '批次数量不能直接修改，請使用庫存過帳作業');
-    const batch = await prisma.productBatch.findFirst({ where: { id, tenantId } });
-    if (!batch) throw new AppError(404, 'Product batch not found');
-
-    return prisma.productBatch.update({
-      where: { id },
-      data: {
-        ...(data.costPrice !== undefined ? { costPrice: data.costPrice } : {}),
-        ...(data.expiryDate !== undefined ? { expiryDate: new Date(data.expiryDate) } : {}),
-        ...(data.status !== undefined ? { status: data.status } : {}),
-      },
-      include: {
-        product: { select: { id: true, name: true, sku: true } },
-      },
-    });
+    requireTenantId();
+    // No mutable fields remain on the ordinary PATCH channel. Keep this guard
+    // at the service boundary as well as in HTTP validation/import callers.
+    void id;
+    void data;
+    throw new AppError(400, '批次数量不可直接修改；效期、狀態與成本請使用附原因的專用更正作業');
   }
 
   static async delete(id: string) {
