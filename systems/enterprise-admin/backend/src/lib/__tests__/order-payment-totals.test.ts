@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { describe, expect, it } from 'vitest';
 import { aggregateOrderPayments } from '../order-payment-totals';
 
@@ -41,4 +42,29 @@ describe('persisted order-payment aggregation', () => {
     const result = aggregateOrderPayments([{ ...split, payments: [{ method: '__proto__', amount: '100' }] }]);
     expect(Object.entries(result.paymentBreakdown)).toEqual([['__proto__', 100]]);
   });
+  it('adds stored Decimal 0.1 and 0.2 in the same method without binary intermediate drift', () => {
+    const result = aggregateOrderPayments([{
+      ...split, totalAmount: new Prisma.Decimal('0.3'),
+      payments: [{ method: 'CASH', amount: new Prisma.Decimal('0.1') }, { method: 'CASH', amount: new Prisma.Decimal('0.2') }],
+    }]);
+    expect(result).toEqual({ totalSales: 0.3, paymentBreakdown: { CASH: 0.3 } });
+  });
+
+  it('aggregates repeated same-method rows across orders while keeping order totals unchanged', () => {
+    const orders = ['0.1', '0.2'].map(amount => ({
+      ...split, totalAmount: amount, payments: [{ method: 'CASH', amount }],
+    }));
+    const result = aggregateOrderPayments(orders);
+    expect(result.paymentBreakdown).toEqual({ CASH: 0.3 });
+    // This slice changes payment summation, not existing order-total arithmetic.
+    expect(result.totalSales).toBe(Number('0.1') + Number('0.2'));
+  });
+  it('keeps fallback classification and ignores out-of-scope status payment rows', () => {
+    const result = aggregateOrderPayments([
+      { ...split, totalAmount: '0.1', payments: [] },
+      { ...split, status: 'refunded', totalAmount: '0.2', payments: [{ method: 'CARD', amount: '99' }] },
+    ]);
+    expect(result.paymentBreakdown).toEqual({ CASH: 0.3 });
+  });
+
 });

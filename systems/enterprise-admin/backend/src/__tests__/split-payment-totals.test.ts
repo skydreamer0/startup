@@ -85,3 +85,12 @@ it('daily groups TRANSFER and unknown methods into its unchanged other bucket', 
     totalSales: 100, cashAmount: 10, cardAmount: 20, linePayAmount: 30, otherAmount: 40,
   });
 });
+
+it('daily combines stored TRANSFER0.1 and OTHER0.2 before the numeric API boundary', async () => {
+  vi.mocked(prisma.shift.findFirst).mockResolvedValue({ id: 'shift-1' } as never);
+  vi.mocked(prisma.order.findMany).mockResolvedValue([{
+    status: 'completed', totalAmount: '0.3', paymentMethod: 'TRANSFER',
+    payments: [{ method: 'TRANSFER', amount: '0.1' }, { method: 'OTHER', amount: '0.2' }],
+  }] as never);
+  expect(await DailySettlementService.calculate('shift-1')).toMatchObject({ totalSales: 0.3, otherAmount: 0.3 });
+});

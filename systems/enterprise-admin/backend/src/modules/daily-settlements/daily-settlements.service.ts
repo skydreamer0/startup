@@ -88,13 +88,14 @@ export class DailySettlementService {
     });
 
     const totalOrders = orders.length;
-    const { totalSales, paymentBreakdown } = aggregateOrderPayments(orders);
+    const { totalSales, paymentBreakdown } = aggregateOrderPayments(
+      orders,
+      (method) => ['CASH', 'CARD', 'LINE_PAY'].includes(method) ? method : 'OTHER',
+    );
     const cashAmount = paymentBreakdown.CASH ?? 0;
     const cardAmount = paymentBreakdown.CARD ?? 0;
     const linePayAmount = paymentBreakdown.LINE_PAY ?? 0;
-    const otherAmount = Object.entries(paymentBreakdown)
-      .filter(([method]) => !['CASH', 'CARD', 'LINE_PAY'].includes(method))
-      .reduce((sum, [, amount]) => sum + amount, 0);
+    const otherAmount = paymentBreakdown.OTHER ?? 0;
 
     return {
       shiftId,

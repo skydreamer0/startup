@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 type Amount = Prisma.Decimal | number | string;
 interface PaymentOrder {
@@ -13,8 +13,11 @@ interface PaymentOrder {
  * the primary-method fallback. Other statuses deliberately retain old behavior
  * until refund/event semantics are defined. No rounding or allocation is done.
  */
-export function aggregateOrderPayments(orders: readonly PaymentOrder[]) {
-  const byMethod = new Map<string, number>();
+export function aggregateOrderPayments(
+  orders: readonly PaymentOrder[],
+  paymentGroup: (method: string) => string = (method) => method,
+) {
+  const byMethod = new Map<string, Prisma.Decimal>();
   let totalSales = 0;
   for (const order of orders) {
     totalSales += Number(order.totalAmount);
@@ -22,8 +25,14 @@ export function aggregateOrderPayments(orders: readonly PaymentOrder[]) {
       ? order.payments
       : [{ method: order.paymentMethod, amount: order.totalAmount }];
     for (const payment of payments) {
-      byMethod.set(payment.method, (byMethod.get(payment.method) ?? 0) + Number(payment.amount));
+      const group = paymentGroup(payment.method);
+      byMethod.set(group, (byMethod.get(group) ?? new Prisma.Decimal(0)).plus(payment.amount));
     }
   }
-  return { totalSales, paymentBreakdown: Object.fromEntries(byMethod) };
+  // Group persisted decimal facts before the existing numeric API boundary.
+  // No quantization, residual allocation or writer-policy change is performed.
+  const paymentBreakdown = Object.fromEntries(
+    Array.from(byMethod, ([method, amount]): [string, number] => [method, amount.toNumber()]),
+  );
+  return { totalSales, paymentBreakdown };
 }

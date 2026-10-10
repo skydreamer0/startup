@@ -5,7 +5,11 @@
 `backend/src/lib/order-payment-totals.ts` reads the already persisted payment rows
 for `status=completed` orders. Daily settlement maps CASH/CARD/LINE_PAY to its
 existing fields and other methods to `otherAmount`; shift reports retain method
-keys. Repeated methods are added. Order count and sale total remain order-derived.
+keys. Repeated methods are added with the existing Prisma.Decimal type. Daily
+settlement passes its final method grouping into the same helper so TRANSFER and
+OTHER are added before conversion, not recombined as Numbers. Each payment group
+converts to Number only at the existing numeric response boundary. Order count
+and sale-total arithmetic remain unchanged and order-derived.
 An empty payment relation explicitly falls back to the order's primary method
 and total, preserving legacy orders. Existing zero or inconsistent payment rows
 are not repaired, allocated, or replaced with a fabricated residual.
@@ -25,21 +29,30 @@ from silently deciding refund policy. Do not release financial reporting on this
 slice's evidence. Full #30, G1 and the other business/deployment gates remain open.
 
 No schema, writer, refund event, business date, historical cost, rounding, change,
-provider payment, or payment-allocation policy changes. Numeric API fields and
-existing Number arithmetic remain; this is not end-to-end exact-money acceptance.
+provider payment, or payment-allocation policy changes. Numeric API fields, Number-based order-total arithmetic and refund formulas remain.
+Only grouping/summing already stored payment amounts uses Decimal. No rounding,
+quantization or residual correction is added. This is not end-to-end exact-money
+or maximum-range/overflow acceptance.
 
 ## Verification
 
 - Precise mocked-reader RED: daily 100 cash / 0 card; shift opening 200 gave cash
   balance 300 instead of 260 for cash 60 + card 40. Both failures were observed.
-- Pure and mocked-reader tests: 16 passed after the fix. Ownership guards: 14 passed.
-- Isolated native PostgreSQL 15.19 + unchanged Express HTTP API: 9 passed, 30 HTTP
-  exchanges. Actual checkout stores 60/40; reverse payment order with CARD primary
+- Pure and mocked-reader tests: 20 passed after the fix. Ownership guards: 14 passed.
+- Isolated native PostgreSQL 15.19 + unchanged Express HTTP API: 11 passed, 36 HTTP
+  exchanges (the original nine cases plus two persisted-decimal regressions). Actual checkout stores 60/40; reverse payment order with CARD primary
   is identical; repeated methods and CASH/CARD/LINE_PAY/TRANSFER/OTHER reconcile;
   same-command replay leaves the entire database unchanged and retains exactly
   two payments, one allocation, one OUT movement and one command. Legacy rows,
   unchanged refund/noncompleted outputs, foreign-tenant payment filtering and
   both endpoints' tenant/RBAC/auth/missing-shift boundaries are checked.
+- Exact native REDs were observed before the Decimal follow-up: stored CASH0.1
+  + CASH0.2 produced CASH0.30000000000000004 in both HTTP readers; stored
+  TRANSFER0.1 + OTHER0.2 produced daily otherAmount0.30000000000000004. Both now
+  return numeric0.3. Each RED ran the original nine cases successfully first and
+  failed the added case, then verified all three owned-resource cleanup checks.
+  The follow-up also covers repeated methods across orders and fallback/status
+  classification without changing the original order-total calculation.
 - Both readers are surrounded by complete application-table snapshots. No row
   changes are allowed. Real receipts and checkout are synthetic fixtures only.
 - The first native attempt passed eight cases then failed because the harness
@@ -51,11 +64,13 @@ existing Number arithmetic remain; this is not end-to-end exact-money acceptance
   local copy of existing dependency bytes on Node 24.19.0, not a fresh Node 22
   frozen install. Broader non-integration tests: 240 passed, 5 failed in the
   existing startup-config suite because tsx CLI's Unix IPC bind returned EPERM.
+  These broader tests predate the Decimal follow-up and were not rerun.
   Those failures remain failures; no security bypass or source change was made.
   An earlier unconfigured full-suite attempt failed missing database/config
   prerequisites (232 passed / 43 failed / 64 skipped); it is not full acceptance.
-- Independent final review and exact final PR-head CI are separate pending gates
-  at author handoff. A pre-existing category lifecycle CI failure remains open.
+- Independent review of the previous `ecd21a22` / tree `491234dd` was bounded PASS
+  for its own subject only. The Decimal follow-up requires fresh independent
+  delta/runtime review and exact new-head CI; both are pending at author handoff. A pre-existing category lifecycle CI failure remains open.
 - No browser, device, production, full financial, refund-policy, rounding,
   overflow, historical-cost or cross-day acceptance is claimed.
 

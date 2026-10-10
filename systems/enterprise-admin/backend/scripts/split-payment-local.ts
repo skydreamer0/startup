@@ -184,10 +184,37 @@ async function main() {
       await http(`${prefix}/shifts/${randomUUID()}/report`, 404, token(0));
       assert.deepEqual(await snapshot(), before);
     });
+    await check('stored TRANSFER0.1 + OTHER0.2 combines to numeric daily otherAmount0.3', async () => {
+      await db.product.update({ where: { id: product.id }, data: { retailPrice: '0.3' } });
+      const ownShift = await shift();
+      const { response } = await sale(ownShift.id, [{ method: 'TRANSFER', amount: 0.1 }, { method: 'OTHER', amount: 0.2 }]);
+      const stored = await db.order.findUniqueOrThrow({ where: { id: response.data.id as string }, include: { payments: true } });
+      assert.equal(stored.totalAmount.toString(), '0.3');
+      assert.deepEqual(stored.payments.map(p => ({ method: p.method, amount: p.amount.toString() })).sort((a, b) => a.method.localeCompare(b.method)),
+        [{ method: 'OTHER', amount: '0.2' }, { method: 'TRANSFER', amount: '0.1' }]);
+      const pair = await readPair(ownShift.id);
+      save('decimal-other-group.json', { orderId: stored.id, total: stored.totalAmount, payments: stored.payments, pair });
+      assert.equal(pair.daily.totalSales, 0.3); assert.equal(pair.daily.otherAmount, 0.3);
+      assert.equal(pair.report.grossSales, 0.3); assert.deepEqual(pair.report.paymentBreakdown, { TRANSFER: 0.1, OTHER: 0.2 });
+      assert.equal(pair.report.cashBalance, 200);
+    });
+    await check('stored Decimal cash0.1 + cash0.2 returns numeric0.3 from both HTTP readers', async () => {
+      await db.product.update({ where: { id: product.id }, data: { retailPrice: '0.3' } });
+      const ownShift = await shift();
+      const { response } = await sale(ownShift.id, [{ method: 'CASH', amount: 0.1 }, { method: 'CASH', amount: 0.2 }]);
+      const stored = await db.order.findUniqueOrThrow({ where: { id: response.data.id as string }, include: { payments: true } });
+      assert.equal(stored.totalAmount.toString(), '0.3');
+      assert.deepEqual(stored.payments.map(p => p.amount.toString()).sort(), ['0.1', '0.2']);
+      const pair = await readPair(ownShift.id);
+      save('decimal-same-method.json', { orderId: stored.id, total: stored.totalAmount, payments: stored.payments, pair });
+      assert.equal(pair.daily.totalSales, 0.3); assert.equal(pair.daily.cashAmount, 0.3);
+      assert.equal(pair.report.grossSales, 0.3); assert.deepEqual(pair.report.paymentBreakdown, { CASH: 0.3 });
+      assert.equal(pair.report.cashBalance, 200.3);
+    });
     save('final-snapshot.json', await snapshot());
     save('acceptance.json', { status: 'passed', sourceHead: owned.sourceHead, cases, httpExchanges: exchanges.length,
       limits: ['Only completed-order split-payment classification is corrected', 'Refund status/filter/arithmetic intentionally unchanged and not approved policy',
-        'No precision/rounding/partial refund/historical cost or business-date acceptance', 'No browser/UI/device/production/full business gates', 'Cleanup is a separate receipt'] });
+        'Only persisted-payment grouping precision; no writer/rounding/overflow/refund/cost/date policy acceptance', 'No browser/UI/device/production/full business gates', 'Cleanup is a separate receipt'] });
   } finally {
     save('http-exchanges.json', exchanges);
     if (server) await new Promise<void>((resolve, reject) => server!.close(error => error ? reject(error) : resolve()));
