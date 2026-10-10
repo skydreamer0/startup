@@ -49,6 +49,13 @@ security checks for the exact PR head. Inspect the actual GitHub ruleset separat
 when checking enforced merge requirements; a document does not change that ruleset.
 
 Additional workflows:
+- `.github/workflows/checkout-abort-retry.yml` adds isolated exact-head #30 acceptance
+  by composing the unchanged Actions-only sequence/command/stock rollback harness
+  with seven retry cases (real deadlock, server abort injection, exhaustion and
+  same-command resend). It preserves ownership guards, zero-row checks and owned
+  DB removal; generic unknown outcomes do not retry. See
+  `../verification/checkout-command/abort-retry/README.md`. This remains a Draft
+  slice and does not complete #30 or any production gate.
 - `.github/workflows/dependency-review.yml` runs Dependency Review on PRs and rejects
   newly introduced high/critical vulnerable dependencies. Keep the existing audits
   and security checks; their results are separate from the nine-job pipeline.
