@@ -11,12 +11,11 @@ const CONFLICT_RECOVERY_MESSAGE = '此意圖曾發生衝突。請保留紀錄，
 
 interface UseCheckoutOptions {
   shiftId: string | undefined;
-  customerId?: string;
   onSuccess: (scope: string) => void;
   showToast: (msg: PosToastMessage) => void;
 }
 
-export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCheckoutOptions) {
+export function useCheckout({ shiftId, onSuccess, showToast }: UseCheckoutOptions) {
   const [checkoutResult, setCheckoutResult] = useState<CheckoutResult | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
@@ -24,6 +23,7 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
   const [checkoutScope, setCheckoutScope] = useState<string | null>(null);
   const pending = useCheckoutRecoveryStore((state) => state.pending);
   const busy = useRef(false);
+  const submittedDraft = useRef<{ commandId: string; revision: number } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -31,10 +31,17 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
       if (!active) return;
       const { tenantId, userId } = data.data;
       const scope = `${tenantId}:${userId}`;
-      const previousScope = useCheckoutRecoveryStore.getState().scope;
+      useCartStore.getState().bindCheckoutScope(scope);
       const restored = useCheckoutRecoveryStore.getState().hydrate(scope);
-      if (previousScope && previousScope !== scope) useCartStore.getState().clearCart();
-      if (restored) useCartStore.setState(restored.draft);
+      if (restored) {
+        // Recovery has no customer profile. Restore only its existing business
+        // fields and the frozen customer identifier, under a fresh boundary.
+        const revision = useCartStore.getState().draftRevision + 1;
+        const { items, paymentMethod, orderDiscountAmount, orderDiscountNote, currentSalesStaffId } = restored.draft;
+        useCartStore.setState({ items, paymentMethod, orderDiscountAmount, orderDiscountNote, currentSalesStaffId,
+          customerId: restored.payload.customerId ?? null, selectedCustomer: null, draftRevision: revision });
+        submittedDraft.current = { commandId: restored.payload.commandId, revision };
+      }
       setCheckoutScope(scope);
       setContextReady(true);
     }).catch(() => {
@@ -49,7 +56,10 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
     // Clear only this confirmed intent, preserving any later cart that bypassed
     // the normal frozen-cart UI while the request was in flight.
     const cart = useCartStore.getState();
-    const sameDraft = JSON.stringify(cart.items) === JSON.stringify(intent.draft.items)
+    const sameDraft = submittedDraft.current?.commandId === intent.payload.commandId
+      && submittedDraft.current.revision === cart.draftRevision
+      && cart.customerId === (intent.payload.customerId ?? null)
+      && JSON.stringify(cart.items) === JSON.stringify(intent.draft.items)
       && cart.orderDiscountAmount === intent.draft.orderDiscountAmount
       && cart.orderDiscountNote === intent.draft.orderDiscountNote
       && cart.paymentMethod === intent.draft.paymentMethod
@@ -108,12 +118,13 @@ export function useCheckout({ shiftId, customerId, onSuccess, showToast }: UseCh
         intent = recovery.prepare({ commandId: crypto.randomUUID(), ...buildCheckoutPayload({
           items: cart.items, paymentMethod: cart.paymentMethod, splitPayments,
           orderDiscountAmount: cart.orderDiscountAmount, orderDiscountNote: cart.orderDiscountNote,
-          customerId, shiftId, salesStaffId: cart.currentSalesStaffId,
+          customerId: cart.customerId ?? undefined, shiftId, salesStaffId: cart.currentSalesStaffId,
         }) }, {
           items: cart.items, paymentMethod: cart.paymentMethod,
           orderDiscountAmount: cart.orderDiscountAmount, orderDiscountNote: cart.orderDiscountNote,
           currentSalesStaffId: cart.currentSalesStaffId,
         });
+        submittedDraft.current = { commandId: intent.payload.commandId, revision: cart.draftRevision };
       }
       await recover(intent, false);
     } catch {

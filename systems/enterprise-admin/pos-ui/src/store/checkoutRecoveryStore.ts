@@ -18,6 +18,14 @@ export interface PendingCheckout {
 
 function storageKey(scope: string) { return `pos-checkout-intent-v1:${scope}`; }
 
+function safeDraft(draft: CheckoutDraft): CheckoutDraft {
+  return {
+    items: draft.items, orderDiscountAmount: draft.orderDiscountAmount,
+    orderDiscountNote: draft.orderDiscountNote, paymentMethod: draft.paymentMethod,
+    currentSalesStaffId: draft.currentSalesStaffId,
+  };
+}
+
 // Business fields only. Never persist authentication, including a supplied PIN.
 function safePayload(payload: CheckoutPayload): CheckoutPayload {
   return {
@@ -61,7 +69,7 @@ export const useCheckoutRecoveryStore = create<RecoveryState>((set, get) => ({
     const { scope, pending } = get();
     if (!scope) throw new Error('尚未確認結帳身分，請稍後再試');
     if (pending) return pending;
-    const intent: PendingCheckout = JSON.parse(JSON.stringify({ payload: safePayload(payload), draft, status: 'pending' }));
+    const intent: PendingCheckout = JSON.parse(JSON.stringify({ payload: safePayload(payload), draft: safeDraft(draft), status: 'pending' }));
     // A storage exception must occur before the caller can send any request.
     localStorage.setItem(storageKey(scope), JSON.stringify(intent));
     set({ pending: intent });

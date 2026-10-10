@@ -1,5 +1,7 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useLayoutEffect, useRef, useState } from 'react';
 import { isAxiosError } from 'axios';
+import { useCartStore } from '../store/cartStore';
+import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import { posApi } from '../api/pos';
 import type { PosCustomerLookup } from '../api/pos';
 import type { PosToastMessage } from './PosToast';
@@ -48,9 +50,41 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
   const [createPhone, setCreatePhone] = useState('');
   const [createName, setCreateName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [visibleCustomer, setVisibleCustomer] = useState<PosCustomerLookup | null>(selectedCustomer);
+  const requestGeneration = useRef(0);
+  const mounted = useRef(false);
 
-  const customer = selectedCustomer ?? visibleCustomer;
+  function invalidateRequest() {
+    requestGeneration.current += 1;
+    setQuery(''); setCreatePhone(''); setCreateName('');
+    setMode('idle'); setIsSubmitting(false);
+  }
+
+  useLayoutEffect(() => {
+    mounted.current = true;
+    // Subscribe synchronously: even a pending/scope ABA invalidates an old
+    // response permanently, without relying on a later React render.
+    const unsubscribeCart = useCartStore.subscribe((next, previous) => {
+      if (next.draftRevision !== previous.draftRevision || next.draftScope !== previous.draftScope
+        || next.customerId !== previous.customerId || next.selectedCustomer !== previous.selectedCustomer) invalidateRequest();
+    });
+    const unsubscribeRecovery = useCheckoutRecoveryStore.subscribe((next, previous) => {
+      if (next.scope !== previous.scope || next.pending !== previous.pending) invalidateRequest();
+    });
+    return () => { mounted.current = false; requestGeneration.current += 1; unsubscribeCart(); unsubscribeRecovery(); };
+  }, []);
+  useLayoutEffect(invalidateRequest, [selectedCustomer]);
+
+  function startRequest() {
+    if (useCheckoutRecoveryStore.getState().pending) return null;
+    return { generation: ++requestGeneration.current, scope: useCheckoutRecoveryStore.getState().scope };
+  }
+  function isCurrent(request: { generation: number; scope: string | null }) {
+    return mounted.current && requestGeneration.current === request.generation
+      && useCheckoutRecoveryStore.getState().scope === request.scope
+      && !useCheckoutRecoveryStore.getState().pending;
+  }
+
+  const customer = selectedCustomer;
   const segmentColor = customer ? SEGMENT_COLORS[customer.rfmSegment] : null;
 
   async function handleSubmit(event: FormEvent) {
@@ -58,9 +92,12 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
     const trimmed = query.trim();
     if (!trimmed) return;
 
+    const request = startRequest();
+    if (!request) return;
     setMode('searching');
     try {
       const response = await posApi.lookupCustomer(trimmed);
+      if (!isCurrent(request)) return;
       const found = response.data.data;
       if (!found) {
         setCreatePhone(trimmed);
@@ -68,11 +105,11 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
         setMode('not_found');
         return;
       }
-      setVisibleCustomer(found);
       setMode('selected');
       onSelect(found);
       onFeedback(feedbackFor(found));
     } catch {
+      if (!isCurrent(request)) return;
       setMode('idle');
       onFeedback({ type: 'error', message: '客戶查詢失敗，請稍後再試' });
     }
@@ -84,11 +121,20 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
     const name = createName.trim();
     if (!phone) return;
 
+    const request = startRequest();
+    if (!request) return;
     setIsSubmitting(true);
     try {
       const response = await posApi.createCustomer({ phone, name: name || undefined });
+      if (!isCurrent(request)) {
+        // The server write may have completed. Detaching it from an obsolete
+        // draft is not cancellation; never show a stale identity's name/phone.
+        if (mounted.current && useCheckoutRecoveryStore.getState().scope === request.scope) {
+          onFeedback({ type: 'info', message: '客戶已建立，但未套用至目前交易；請重新查詢' });
+        }
+        return;
+      }
       const created = response.data.data;
-      setVisibleCustomer(created);
       setQuery(phone);
       setMode('selected');
       onSelect(created);
@@ -97,13 +143,19 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
         message: `已建立新客戶：${created.name ?? created.phone ?? phone}`,
       });
     } catch (error: unknown) {
+      if (!isCurrent(request)) {
+        if (mounted.current && useCheckoutRecoveryStore.getState().scope === request.scope) {
+          onFeedback({ type: 'warning', message: '客戶建立結果未套用至目前交易；請重新查詢確認' });
+        }
+        return;
+      }
       if (isAxiosError(error) && error.response?.status === 409) {
         onFeedback({ type: 'error', message: '此電話已有客戶紀錄，請直接查詢' });
       } else {
         onFeedback({ type: 'error', message: '建立失敗，請稍後再試' });
       }
     } finally {
-      setIsSubmitting(false);
+      if (isCurrent(request)) setIsSubmitting(false);
     }
   }
 
@@ -114,7 +166,7 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
   }
 
   function clearCustomer() {
-    setVisibleCustomer(null);
+    requestGeneration.current += 1;
     setQuery('');
     setCreatePhone('');
     setCreateName('');
@@ -133,9 +185,11 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
         <input
           id="customer-lookup-input"
           value={query}
+          disabled={isSubmitting}
           onChange={(event) => {
+            requestGeneration.current += 1;
             setQuery(event.target.value);
-            if (mode === 'not_found') setMode('idle');
+            setMode('idle');
           }}
           placeholder="電話 / 會員碼"
           style={{ width: 150, padding: '8px 12px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', fontSize: 12, background: 'var(--bg-app)', outline: 'none', color: 'var(--text-primary)' }}
@@ -143,7 +197,7 @@ export default function CustomerLookupPanel({ selectedCustomer, onSelect, onClea
         <button
           type="submit"
           aria-label="查詢客戶"
-          disabled={isSearching}
+          disabled={isSearching || isSubmitting}
           style={{ border: '1.5px solid var(--border)', background: 'var(--surface)', borderRadius: 'var(--radius-full)', padding: '7px 12px', cursor: isSearching ? 'wait' : 'pointer', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 700 }}
         >
           {isSearching ? '查詢中' : '查詢'}

@@ -16,7 +16,7 @@ beforeEach(() => {
   vi.restoreAllMocks(); vi.clearAllMocks(); localStorage.clear();
   vi.stubGlobal("crypto", webcrypto);
   useCheckoutRecoveryStore.setState({ scope: null, pending: null });
-  useCartStore.setState({ items: [{ product, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1', heldCarts: [] });
+  useCartStore.setState({ items: [{ product, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1', heldCarts: [], draftScope: null, customerId: null, selectedCustomer: null });
   vi.mocked(posApi.getCheckoutContext).mockResolvedValue({ data: { data: { tenantId: 'tenant-1', userId: 'cashier-1' } } } as Awaited<ReturnType<typeof posApi.getCheckoutContext>>);
 });
 
@@ -163,6 +163,55 @@ describe('Frozen POS checkout recovery (synthetic API)', () => {
     act(() => { useCheckoutRecoveryStore.getState().prepare({ commandId: crypto.randomUUID(), cartItems: [{ productId: product.id, quantity: 1, discountRate: 0 }], shiftId: 'shift-1', paymentMethod: 'CASH', orderDiscountAmount: 0, adminPin: 'synthetic-secret' }, draft); });
     expect(localStorage.getItem('pos-checkout-intent-v1:tenant-1:cashier-1')).not.toContain('synthetic-secret');
     expect(localStorage.getItem('pos-checkout-intent-v1:tenant-1:cashier-1')).not.toContain('adminPin');
+  });
+
+  it('whitelists recovery draft fields even if given the full editable store', async () => {
+    const h = hook(); await waitFor(() => expect(h.result.current.contextReady).toBe(true));
+    act(() => { useCartStore.getState().setCustomer({ id: 'A', name: 'SYNTHETIC-PRIVATE-NAME', phone: 'SYNTHETIC-PRIVATE-PHONE',
+      rfmSegment: 'vip', totalSpent: 123456, purchaseCount: 7, lastPurchaseDate: null, daysSinceLastPurchase: null,
+      recentPurchases: [], supplementDueItems: [] }); });
+    act(() => { useCheckoutRecoveryStore.getState().prepare({ commandId: crypto.randomUUID(), cartItems: [{ productId: product.id, quantity: 1, discountRate: 0 }],
+      shiftId: 'shift-1', paymentMethod: 'CASH', orderDiscountAmount: 0, customerId: 'A' }, useCartStore.getState()); });
+    const saved = JSON.parse(localStorage.getItem('pos-checkout-intent-v1:tenant-1:cashier-1')!);
+    expect(saved.payload.customerId).toBe('A');
+    expect(Object.keys(saved.draft).sort()).toEqual(['items', 'paymentMethod', 'orderDiscountAmount', 'orderDiscountNote', 'currentSalesStaffId'].sort());
+  });
+
+  it.each(['customer only', 'same content new revision'])('does not clear a later draft changed by %s on an old confirmed response', async (change) => {
+    let reply!: (value: Awaited<ReturnType<typeof posApi.checkout>>) => void;
+    vi.mocked(posApi.checkout).mockImplementation(() => new Promise(resolve => { reply = resolve; }));
+    const h = hook(); await waitFor(() => expect(h.result.current.contextReady).toBe(true));
+    let submission!: Promise<void>; act(() => { submission = h.result.current.handleCheckout(); });
+    act(() => {
+      // Deliberately bypass the ordinary frozen-cart UI, as the existing late-cart probe does.
+      if (change === 'customer only') useCartStore.setState({ customerId: 'new-draft-customer' });
+      else useCartStore.setState({ draftRevision: useCartStore.getState().draftRevision + 1 });
+    });
+    await act(async () => { reply({ data: { data: result } } as Awaited<ReturnType<typeof posApi.checkout>>); await submission; });
+    expect(useCartStore.getState().items).toHaveLength(1);
+    if (change === 'customer only') expect(useCartStore.getState().customerId).toBe('new-draft-customer');
+    expect(h.result.current.checkoutResult?.id).toBe(result.id);
+  });
+  it('uses draft customerId in the frozen payload, restores only the ID and confirms without private profile persistence', async () => {
+    const member = { id: 'A', name: 'Synthetic private A', phone: 'SYNTHETIC-PRIVATE-PHONE', rfmSegment: 'vip' as const,
+      totalSpent: 654321, purchaseCount: 7, lastPurchaseDate: null, daysSinceLastPurchase: null, recentPurchases: [], supplementDueItems: [] };
+    useCartStore.getState().setCustomer(member);
+    useCartStore.getState().setPaymentMethod('CARD');
+    const h = hook(); await waitFor(() => expect(h.result.current.contextReady).toBe(true));
+    vi.mocked(posApi.checkout).mockRejectedValue(new Error('Synthetic lost response'));
+    await act(async () => { await h.result.current.handleCheckout(); });
+    const original = vi.mocked(posApi.checkout).mock.calls[0][0];
+    expect(original).toMatchObject({ customerId: 'A', paymentMethod: 'CARD' });
+    const saved = localStorage.getItem('pos-checkout-intent-v1:tenant-1:cashier-1')!;
+    for (const privateField of ['selectedCustomer', 'SYNTHETIC-PRIVATE-PHONE', 'Synthetic private A', '654321', 'rfmSegment', 'heldCarts']) expect(saved).not.toContain(privateField);
+    h.unmount(); useCheckoutRecoveryStore.setState({ scope: null, pending: null });
+    useCartStore.setState({ items: [], selectedCustomer: null, customerId: null });
+    const restored = hook(); await waitFor(() => expect(restored.result.current.pending?.status).toBe('unknown'));
+    expect(useCartStore.getState()).toMatchObject({ customerId: 'A', selectedCustomer: null, paymentMethod: 'CARD' });
+    vi.mocked(posApi.checkout).mockResolvedValue({ data: { data: result } } as Awaited<ReturnType<typeof posApi.checkout>>);
+    await act(async () => { await restored.result.current.handleCheckout([{ method: 'CASH', amount: 100 }]); });
+    expect(vi.mocked(posApi.checkout).mock.calls[1][0]).toEqual(original);
+    expect(useCartStore.getState()).toMatchObject({ items: [], customerId: null, selectedCustomer: null });
   });
 
   it('preserves a later cart when the original response arrives', async () => {

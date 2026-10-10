@@ -76,7 +76,7 @@ beforeEach(() => {
   vi.resetAllMocks(); localStorage.clear(); vi.stubGlobal('crypto', webcrypto);
   vi.mocked(useBarcodeScanner).mockReturnValue(vi.fn());
   useCheckoutRecoveryStore.setState({ scope: null, pending: null });
-  useCartStore.setState({ items: [{ product, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1', heldCarts: [] });
+  useCartStore.setState({ items: [{ product, quantity: 1, discountRate: 0 }], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1', heldCarts: [], draftScope: null, customerId: null, selectedCustomer: null });
   vi.mocked(posApi.getCheckoutContext).mockResolvedValue(response({ tenantId: 'tenant-1', userId: 'cashier-1' }) as Awaited<ReturnType<typeof posApi.getCheckoutContext>>);
   vi.mocked(posApi.getCategories).mockResolvedValue(response([]));
   vi.mocked(posApi.getStaff).mockResolvedValue(response([]));

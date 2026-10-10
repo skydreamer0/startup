@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -33,6 +34,13 @@ const vipCustomer: PosCustomerLookup = {
   supplementDueItems: [],
 };
 
+function ControlledPanel(props: React.ComponentProps<typeof CustomerLookupPanel>) {
+  const [selectedCustomer, setCustomer] = useState(props.selectedCustomer);
+  return <CustomerLookupPanel {...props} selectedCustomer={selectedCustomer}
+    onSelect={(customer) => { setCustomer(customer); props.onSelect(customer); }}
+    onClear={() => { setCustomer(null); props.onClear?.(); }} />;
+}
+
 describe('CustomerLookupPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +52,7 @@ describe('CustomerLookupPanel', () => {
     const onSelect = vi.fn();
     const onFeedback = vi.fn();
 
-    render(<CustomerLookupPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
+    render(<ControlledPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
 
     await user.type(screen.getByLabelText('客戶查詢'), '0912345678');
     await user.click(screen.getByRole('button', { name: '查詢客戶' }));
@@ -67,7 +75,7 @@ describe('CustomerLookupPanel', () => {
       },
     });
 
-    render(<CustomerLookupPanel selectedCustomer={null} onSelect={vi.fn()} onFeedback={onFeedback} />);
+    render(<ControlledPanel selectedCustomer={null} onSelect={vi.fn()} onFeedback={onFeedback} />);
 
     await user.type(screen.getByLabelText('客戶查詢'), '0922');
     await user.click(screen.getByRole('button', { name: '查詢客戶' }));
@@ -81,7 +89,7 @@ describe('CustomerLookupPanel', () => {
     const onFeedback = vi.fn();
     lookupCustomer.mockResolvedValue({ data: { success: true, data: null } });
 
-    render(<CustomerLookupPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
+    render(<ControlledPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
 
     await user.type(screen.getByLabelText('客戶查詢'), '0000');
     await user.click(screen.getByRole('button', { name: '查詢客戶' }));
@@ -111,7 +119,7 @@ describe('CustomerLookupPanel', () => {
     lookupCustomer.mockResolvedValue({ data: { success: true, data: null } });
     createCustomer.mockResolvedValue({ data: { success: true, data: newCustomer } });
 
-    render(<CustomerLookupPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
+    render(<ControlledPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
 
     await user.type(screen.getByLabelText('客戶查詢'), '0900000000');
     await user.click(screen.getByRole('button', { name: '查詢客戶' }));
@@ -137,7 +145,7 @@ describe('CustomerLookupPanel', () => {
     });
     createCustomer.mockRejectedValue(conflictError);
 
-    render(<CustomerLookupPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
+    render(<ControlledPanel selectedCustomer={null} onSelect={onSelect} onFeedback={onFeedback} />);
 
     await user.type(screen.getByLabelText('客戶查詢'), '0900000000');
     await user.click(screen.getByRole('button', { name: '查詢客戶' }));
@@ -155,7 +163,7 @@ describe('CustomerLookupPanel', () => {
     const user = userEvent.setup();
     lookupCustomer.mockResolvedValue({ data: { success: true, data: null } });
 
-    render(<CustomerLookupPanel selectedCustomer={null} onSelect={vi.fn()} onFeedback={vi.fn()} />);
+    render(<ControlledPanel selectedCustomer={null} onSelect={vi.fn()} onFeedback={vi.fn()} />);
 
     await user.type(screen.getByLabelText('客戶查詢'), '0900000000');
     await user.click(screen.getByRole('button', { name: '查詢客戶' }));
