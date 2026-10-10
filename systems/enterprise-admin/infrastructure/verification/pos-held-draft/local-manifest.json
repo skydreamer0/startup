@@ -1,0 +1,153 @@
+{
+  "sourceCommit": "f41db41280198bd442a38870b853dc2ea1a672eb",
+  "sourceTree": "df4870b79fcfe2fb7316891ffcdd27bd4fc514e0",
+  "base": "d5dcc6c22e3bd78d8efc68f120a8546ae615534a",
+  "environment": "selected cloud workspace /workspace/startup; Node22.23.3; pnpm10.34.6; existing frozen frontend lock",
+  "scope": "synthetic API + JSDOM/unit only; no native browser/API/DB acceptance",
+  "sourceSha256": {
+    "systems/enterprise-admin/pos-ui/src/__tests__/CustomerLookupPanel.draft.test.tsx": "834812f3292f677514110b1f27b015230df5edc9a5773064ab580bfa53670453",
+    "systems/enterprise-admin/pos-ui/src/__tests__/CustomerLookupPanel.test.tsx": "57bbc55602cdd82a312b2349aa3d9b966b8520b0ef98ad527a021cd5fc209e10",
+    "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.held-draft.test.tsx": "a02329c2417af43de3a949d4372c7152fc640354175af43f5cc889d1cf367b1f",
+    "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx": "3e5cca884d5690b35a6e8fa3f3ea35ff00b54dfca2d05596cb02c3443ff52452",
+    "systems/enterprise-admin/pos-ui/src/__tests__/cartStore.draft.test.ts": "a40eb642850583f112e6ed274c511b53f2cb55ff26ad80cabc048ff6b8e26c8d",
+    "systems/enterprise-admin/pos-ui/src/__tests__/useCheckout.test.tsx": "511849aaeaf15cb595a4518bc871f65b99b85711557c369219760de17b52a25d",
+    "systems/enterprise-admin/pos-ui/src/components/CustomerLookupPanel.tsx": "5da057b41ef031674ed9ae255041c7a423b4d8da953e4d48be9d1fcf12c968e7",
+    "systems/enterprise-admin/pos-ui/src/hooks/useCheckout.ts": "1c2c970dd900cc960f3654a383cb113e502db06565f94303e87e9f5171c94746",
+    "systems/enterprise-admin/pos-ui/src/pages/POSCheckoutPage.tsx": "818402de525ec5af6c67fa14f608fb85b2b04d7fc767e41b0d2ce4d286290f36",
+    "systems/enterprise-admin/pos-ui/src/store/cartStore.ts": "fefec84cbd66f83d3fbf9f50f0820c3506c0388328eb44b367425ebd17e1d06f",
+    "systems/enterprise-admin/pos-ui/src/store/checkoutRecoveryStore.ts": "0d911a6fef4e09ccbcb0ea50a4575580dbfd42abc51f3308371f79f7c0f92fa2"
+  },
+  "rawFiles": {
+    "01-red-page.log": {
+      "bytes": 1523,
+      "sha256": "dfe225fd323942f20cca6ad193799e2f1ac90799d11411397b34ff9dae691c20"
+    },
+    "02-green-page.log": {
+      "bytes": 238,
+      "sha256": "e56cdabfd6fb067fedcf4cd7a23fc996b344ee56ce6b000eeeeb1950cf80284c"
+    },
+    "03-red-late-lookup.log": {
+      "bytes": 1219,
+      "sha256": "e3b92e2ccc3020509a088d136d30a5fa2a477940bb668104d316fc8bfdc0ea57"
+    },
+    "04-focused.log": {
+      "bytes": 1099,
+      "sha256": "e567b6229440dd11d569bbfb907bbf2ee65881f610092033361b3d032dab16c3"
+    },
+    "05-red-recovery-privacy.log": {
+      "bytes": 1402,
+      "sha256": "c9641897a6cd6b04b254a405f99dfed64e04433d37dbafd7b29d6bbd6aacc277"
+    },
+    "06-focused-green.log": {
+      "bytes": 241,
+      "sha256": "0c5d3f2d61245b9b9c7903acb598d1842204a4cec6bc3c4cce6ba365d56b5965"
+    },
+    "07-context-boundaries.log": {
+      "bytes": 241,
+      "sha256": "7cea83b57270d5fc26434c3eb36d0f4a07785b4304203dac72024aedebb8b6a0"
+    },
+    "08-page-flow.log": {
+      "bytes": 238,
+      "sha256": "6adb42ca02ca4881a1499354a4360c8f9bebbefc48d26a3daf5624d17755664f"
+    },
+    "09-types.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "10-full-pos.log": {
+      "bytes": 4926,
+      "sha256": "d234f7a4999fef8d8fca65dd6f03223f44adb7f0a1ebb4d2c0b6df41faf876fd"
+    },
+    "11-build.log": {
+      "bytes": 575,
+      "sha256": "23a84296d1e88462fad76ce87c659e8cee9c4bccb194671abded2451019c1c54"
+    },
+    "12-full-pos-green.log": {
+      "bytes": 3619,
+      "sha256": "3d20c93bca5aad3bb46197281ab9ca2a2bda5224d1dd3ab6564c0150782f5d08"
+    },
+    "13-focused-source.log": {
+      "bytes": 245,
+      "sha256": "a591477a3948545cbe288ab77286e24d425abd746141404b4e87a1374bb21fb8"
+    },
+    "14-context.log": {
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    "15-locks.log": {
+      "bytes": 91,
+      "sha256": "bd3a37b1003b5bb2814c099b66db91b3c36edd7a07bf17e929b4d58d64854bd1"
+    },
+    "browser-preflight.log": {
+      "bytes": 7976,
+      "sha256": "bd7a167619dacea60a885af0716c0541ac0045eab4b0c568f08f47e1719337bb"
+    },
+    "independent-focused-f41db41.log": {
+      "bytes": 980,
+      "sha256": "229d3bb20c66237d2d97e130c7e197ce5531171eab6bfe3162cbfeebb0aee9f4"
+    },
+    "independent-probes-f41db41.log": {
+      "bytes": 534,
+      "sha256": "369e317b7216e950e1440f1fbdc042b5337f162a7fc48027f8204aba699fcd99"
+    }
+  },
+  "zip": {
+    "bytes": 10195,
+    "sha256": "ab3f2f274be9c09c0e615adbdc67fe7dd329859d65e03875dcca3e7ed7c6f42f"
+  },
+  "results": {
+    "initialPageRED": "1 failed: recalled A still displayed B",
+    "lateLookupRED": "1 failed: late lookup selected A after hold",
+    "recoveryPrivacyRED": "1 failed / 14 filtered: full editable store leaked extra fields into recovery draft",
+    "focusedIntermediate": "46 tests: 45 passed / 1 failed because candidate cleared sales staff; existing preservation restored",
+    "contextBoundaries": "23 passed",
+    "pageFlows": "4 passed",
+    "fullPOSInitial": "379 passed / 1 failed from stale draftScope across inventory test initialization",
+    "fullPOSFinal": "37 files / 380 passed, zero skipped",
+    "focusedSource": "13 files / 210 passed, zero skipped; overlap with full suite, never sum counts",
+    "build": "passed",
+    "types": "passed after correcting test getByRole options",
+    "context": "passed",
+    "lockBoundaries": "passed",
+    "browser": "BLOCKED before UI: Chromium151 SIGABRT, sandbox helper owned by nobody and crashpad database error. No official Chrome/Xvfb/sudo; NoNewPrivs=1; no retry or workaround",
+    "nativeAPI_DB": "NOT RUN; no confirmed owned isolated test DB/service used; no Preview/Production access",
+    "CI": "not yet read for remote checkpoint",
+    "independentReview": "bounded PASS; no introduced must-fix findings; 11 files/169 focused +6 extra probes on f41 source; source and raw evidence independently checked, no native rerun"
+  },
+  "notRun": [
+    "native browser keyboard/pointer at1366x768,1024x768,390px",
+    "screenshots and native 200% browser zoom",
+    "native API/DB and real customer-create side effect",
+    "physical scanner/touch/iPad/Safari",
+    "price/salable-quantity revalidation on recall",
+    "ordinary hold persistence",
+    "complete Issue31"
+  ],
+  "independentReview": {
+    "sourceCommit": "f41db41280198bd442a38870b853dc2ea1a672eb",
+    "evidenceCommit": "9a9c700170bc2f3570d8361bcaa01c71a55ee229",
+    "reviewer": "/root/independent_draft_review",
+    "zip": {
+      "bytes": 5365,
+      "sha256": "6fb8d505a1d53ffcb2aac04d38cb105882d82eb0d6e00d0a8731b365aa8458ea"
+    },
+    "files": {
+      "independent-focused-f41db41.log": {
+        "bytes": 980,
+        "sha256": "229d3bb20c66237d2d97e130c7e197ce5531171eab6bfe3162cbfeebb0aee9f4"
+      },
+      "independent-probes-f41db41.log": {
+        "bytes": 534,
+        "sha256": "369e317b7216e950e1440f1fbdc042b5337f162a7fc48027f8204aba699fcd99"
+      },
+      "independent-review-f41db41.txt": {
+        "bytes": 3646,
+        "sha256": "c202f3330d228f8aeeaa06e349dcbedaebfdef1b434e10732f9438438498c17e"
+      },
+      "independent-review-held-draft.test.tsx.txt": {
+        "bytes": 6298,
+        "sha256": "8f9c12192ad0f3328b13db4fd6f9b3256f01c3a402191cbb4aa5cc036912473f"
+      }
+    }
+  }
+}

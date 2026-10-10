@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { useCheckoutRecoveryStore } from './checkoutRecoveryStore';
-import type { PosProduct } from '@pharmasaas/types';
+import type { PosCustomerLookup, PosProduct } from '@pharmasaas/types';
 
 export interface CartItem {
   product: PosProduct;
@@ -8,24 +8,28 @@ export interface CartItem {
   discountRate: number; // 0-100
 }
 
-export interface HeldCart {
-  id: string;
-  label: string;
-  items: CartItem[];
-  orderDiscountAmount: number;
-  orderDiscountNote: string;
-  salesStaffId: string | null;
-  heldAt: Date;
-}
-
-interface CartState {
-  // In-memory draft boundary, never persisted with checkout/authentication.
+// Ordinary editable drafts stay in memory. Only customerId enters checkout recovery.
+export interface EditableDraft {
   draftRevision: number;
   items: CartItem[];
   orderDiscountAmount: number;
   orderDiscountNote: string;
   paymentMethod: 'CASH' | 'CARD' | 'LINE_PAY' | 'TRANSFER' | 'OTHER';
   currentSalesStaffId: string | null;
+  customerId: string | null;
+  selectedCustomer: PosCustomerLookup | null;
+}
+
+export interface HeldCart extends EditableDraft {
+  id: string;
+  label: string;
+  heldAt: Date;
+}
+
+interface CartState extends EditableDraft {
+  draftScope: string | null;
+  bindCheckoutScope: (scope: string) => void;
+  setCustomer: (customer: PosCustomerLookup | null) => void;
   heldCarts: HeldCart[];
 
   addItem: (product: PosProduct) => void;
@@ -45,18 +49,34 @@ interface CartState {
   total: () => number;
 }
 
+function snapshotDraft(state: EditableDraft): EditableDraft {
+  return {
+    draftRevision: state.draftRevision, items: state.items,
+    orderDiscountAmount: state.orderDiscountAmount, orderDiscountNote: state.orderDiscountNote,
+    paymentMethod: state.paymentMethod, currentSalesStaffId: state.currentSalesStaffId,
+    customerId: state.customerId, selectedCustomer: state.selectedCustomer,
+  };
+}
+const emptyDraft = {
+  items: [], orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH' as const,
+  currentSalesStaffId: null, customerId: null, selectedCustomer: null,
+};
+
 export const useCartStore = create<CartState>((set, get) => {
   const mutate = (update: Partial<CartState> | ((state: CartState) => Partial<CartState> | CartState)) => {
     if (!useCheckoutRecoveryStore.getState().pending) set(update);
   };
   return {
+  ...emptyDraft,
   draftRevision: 0,
-  items: [],
-  orderDiscountAmount: 0,
-  orderDiscountNote: '',
-  paymentMethod: 'CASH',
-  currentSalesStaffId: null,
+  draftScope: null,
   heldCarts: [],
+  // Identity changes must discard the old editable workspace even when recovery
+  // is frozen. The old persisted intent remains private under its original scope.
+  bindCheckoutScope: (scope) => set((state) => state.draftScope && state.draftScope !== scope
+    ? { ...emptyDraft, heldCarts: [], draftScope: scope, draftRevision: state.draftRevision + 1 }
+    : { draftScope: scope }),
+  setCustomer: (customer) => mutate({ selectedCustomer: customer, customerId: customer?.id ?? null }),
 
   addItem: (product) => mutate((state) => {
     const existing = state.items.find((item) => item.product.id === product.id);
@@ -97,11 +117,7 @@ export const useCartStore = create<CartState>((set, get) => {
   setSalesStaff: (staffId) => mutate({ currentSalesStaffId: staffId }),
 
   clearCart: () => mutate((state) => ({
-    draftRevision: state.draftRevision + 1,
-    items: [],
-    orderDiscountAmount: 0,
-    orderDiscountNote: '',
-    paymentMethod: 'CASH',
+    ...emptyDraft, currentSalesStaffId: state.currentSalesStaffId, draftRevision: state.draftRevision + 1,
   })),
 
   holdCurrentCart: (label) => mutate((state) => {
@@ -109,19 +125,14 @@ export const useCartStore = create<CartState>((set, get) => {
     const held: HeldCart = {
       id: crypto.randomUUID(),
       label: label ?? `掛單 #${state.heldCarts.length + 1}`,
-      items: state.items,
-      orderDiscountAmount: state.orderDiscountAmount,
-      orderDiscountNote: state.orderDiscountNote,
-      salesStaffId: state.currentSalesStaffId,
+      ...snapshotDraft(state),
       heldAt: new Date(),
     };
     return {
       heldCarts: [...state.heldCarts, held],
       draftRevision: state.draftRevision + 1,
-      items: [],
-      orderDiscountAmount: 0,
-      orderDiscountNote: '',
-      paymentMethod: 'CASH',
+      ...emptyDraft,
+      currentSalesStaffId: state.currentSalesStaffId,
     };
   }),
 
@@ -135,20 +146,15 @@ export const useCartStore = create<CartState>((set, get) => {
           .concat({
             id: crypto.randomUUID(),
             label: `掛單 #${state.heldCarts.length + 1}`,
-            items: state.items,
-            orderDiscountAmount: state.orderDiscountAmount,
-            orderDiscountNote: state.orderDiscountNote,
-            salesStaffId: state.currentSalesStaffId,
+            ...snapshotDraft(state),
             heldAt: new Date(),
           })
       : state.heldCarts.filter((c) => c.id !== id);
     return {
       heldCarts: newHeld,
+      ...snapshotDraft(held),
+      // Never restore an old revision: invalidate late effects even on A/B/A.
       draftRevision: state.draftRevision + 1,
-      items: held.items,
-      orderDiscountAmount: held.orderDiscountAmount,
-      orderDiscountNote: held.orderDiscountNote,
-      currentSalesStaffId: held.salesStaffId,
     };
   }),
 

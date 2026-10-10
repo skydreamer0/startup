@@ -2,7 +2,7 @@ import brandMarkLight from '../assets/brand/flow-capsule-v1/mark-light.svg?no-in
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
-import { posApi, PosStaff, PosOrderSummary, PosCustomerLookup } from '../api/pos';
+import { posApi, PosStaff, PosOrderSummary } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import CategoryNav from '../components/CategoryNav';
@@ -55,7 +55,6 @@ export default function POSCheckoutPage() {
   const [showOrderLookup, setShowOrderLookup] = useState(false);
   const [showShiftReport, setShowShiftReport] = useState(false);
   const [refundTarget, setRefundTarget] = useState<PosOrderSummary | null>(null);
-  const [selectedCustomer, setSelectedCustomer] = useState<PosCustomerLookup | null>(null);
   const [refundLoading, setRefundLoading] = useState(false);
   const [toast, setToast] = useState<PosToastMessage | null>(null);
   const [adminPinPending, setAdminPinPending] = useState<null | { action: 'checkout' | 'split'; splitPayments?: PaymentEntry[] }>(null);
@@ -67,7 +66,7 @@ export default function POSCheckoutPage() {
     orderDiscountAmount,
     addItem,
     setSalesStaff,
-    currentSalesStaffId,
+    currentSalesStaffId, selectedCustomer, setCustomer,
   } = useCartStore();
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -80,7 +79,6 @@ export default function POSCheckoutPage() {
 
   const { checkoutResult, setCheckoutResult, checkoutLoading, handleCheckout, queryCheckout, pending, recoveryError, contextReady, checkoutScope } = useCheckout({
     shiftId: shift.activeShift?.id,
-    customerId: selectedCustomer?.id,
     onSuccess: (scope) => {
       setShowPaymentModal(false); setShowSplitModal(false);
       refreshInventory(scope);
@@ -180,7 +178,7 @@ export default function POSCheckoutPage() {
         splitPayments,
         orderDiscountAmount: cart.orderDiscountAmount,
         orderDiscountNote: cart.orderDiscountNote,
-        customerId: selectedCustomer?.id,
+        customerId: cart.customerId ?? undefined,
         shiftId: shift.activeShift?.id,
         salesStaffId: cart.currentSalesStaffId,
       }),
@@ -374,8 +372,8 @@ export default function POSCheckoutPage() {
         />
         <CustomerLookupPanel
           selectedCustomer={selectedCustomer}
-          onSelect={setSelectedCustomer}
-          onClear={() => setSelectedCustomer(null)}
+          onSelect={setCustomer}
+          onClear={() => setCustomer(null)}
           onFeedback={showToast}
         />
         <HoldOrderBar onFeedback={showToast} />
