@@ -8,6 +8,7 @@ import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { createRunScope, cleanupRunProcesses } from './owned-run.mjs';
 import { assertEnvironment, assertReport, assertNetwork, assertDatabase, assertFonts, completionOutcome, caseStages, stableCases, lifecycleCases, emptyCase, expectedCases, databaseUrl } from './contract.mjs';
 import { assertOwnership, assertService, databaseName } from '../../../backend/scripts/pos-product-lookup-ci.mjs';
+import { assertNativeReceipt } from './native-browser.mjs';
 import { validatePng } from '../admin-margin-warning/png.mjs';
 import { assertBrandSources } from '../dialog-acceptance/brand-assets.mjs';
 
@@ -94,6 +95,11 @@ async function main() {
     const files = fs.readdirSync(path.join(output, 'tests'), { recursive: true });
     const ledgers = files.filter(file => file.endsWith('/network.json')).map(file => read(path.join('tests', file)));
     assert.deepEqual(ledgers.map(row => row.test).sort(), [...expectedCases].sort()); ledgers.forEach(row => assert.equal(row.nonce, nonce));
+    const nativeBrowsers = files.filter(file => file.endsWith('/native-browser.json')).map(file => read(path.join('tests', file)));
+    assert.deepEqual(nativeBrowsers.map(row => row.test).sort(), [...expectedCases].sort());
+    assert.equal(new Set(nativeBrowsers.map(row => row.profile)).size, expectedCases.length);
+    assert.equal(new Set(nativeBrowsers.map(row => row.caseNonce)).size, expectedCases.length);
+    nativeBrowsers.forEach(row => { assert.equal(row.nonce, nonce); assertNativeReceipt(row); });
     const api = read('api-ledger.json'), database = read('database-receipt.json');
     const networkReads = assertNetwork(ledgers, api); const databaseProof = assertDatabase(database, api);
     const captures = files.filter(file => file.endsWith('.png')).map(file => {
@@ -121,6 +127,10 @@ async function main() {
     for (const row of lifecycle) {
       assert.equal(row.nonce, nonce); assert.equal(row.realStaleWaitMs, 61000); assert.ok(row.realStaleElapsedMs >= 61000);
       assert.equal(row.focusEmulationDisabled, true); assert.equal(row.backgroundVisibility, 'hidden'); assert.equal(row.foregroundVisibility, 'visible');
+      assert.equal(row.afterWaitVisibility, 'hidden'); assert.equal(row.focusEmulationMode, 'never-enabled-noDefaults-default-context');
+      assert.deepEqual(row.visibilityEvents.map(event => event.state), ['hidden', 'visible']);
+      assert.ok(row.visibilityEvents.every(event => event.trusted === true));
+      assert.ok(row.visibilityEvents[1].epochMs - row.visibilityEvents[0].epochMs >= 61000);
       assert.deepEqual(row.cartBefore, row.cartAfter); assert.equal(row.search, '合成');
       assert.equal(row.selectedCategory, database.expected.categories[1].id);
       assert.deepEqual(row.latestProductIds, [database.expected.products.find(product => product.sku === 'CATEGORY-ONLY-2').id]);
@@ -130,7 +140,7 @@ async function main() {
     }
     write('captures.json', captures);
     accepted = { ...identity, nonce, status: 'passed', cases, networkReads, databaseProof, captures: captures.length,
-      checkoutRequests: 0, writesFromBrowser: 0, cartUnchanged: true, phases,
+      checkoutRequests: 0, writesFromBrowser: 0, cartUnchanged: true, nativeBrowsers, phases,
       databaseRemoval: 'Require the subsequent unchanged SKU cleanup receipt with ownedDatabaseAbsent=true; this runner only removes its exact fixture rows',
       visualReview: 'Actual screenshots still require independent Chinese readability, reachability and focus review',
       notRun: ['checkout/refund confirmed quantity', 'whole POS responsive layout', 'hardware/iPad/Safari', 'production DB or deployment'] };
@@ -138,6 +148,7 @@ async function main() {
   finally {
     try { const cleanup = await cleanupRunProcesses(scope); write('run-cleanup.json', cleanup); state.quiescent = state.quiescent && cleanup.quiescent === true; }
     catch (problem) { state.quiescent = false; error ??= problem; }
+    if (state.quiescent) fs.rmSync(path.join(output, '.owned-chrome-profiles'), { recursive: true, force: true });
     // A cancelled fixture may not get to its finally block. Never publish its JWT.
     fs.rmSync(path.join(output, '.bootstrap.json'), { force: true });
     const terminal = completionOutcome(error, owner.cancelled); error = terminal.error;
