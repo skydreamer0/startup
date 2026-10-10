@@ -8,6 +8,7 @@ import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { resolveProvenance } from '../ui-evidence/provenance.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
+import { assertCjkFonts } from './cjk.mjs';
 import { cleanupRunProcesses, createRunScope } from './owned-run.mjs';
 
 export const sourceInputs = ['systems/enterprise-admin/admin-ui', 'systems/enterprise-admin/packages/types',
@@ -45,13 +46,6 @@ export function canPublishEvidence(phases, quiescent) {
 export function completionOutcome(error, cancelled) {
   const finalError = error ?? (cancelled ? new Error(`Run cancelled during cleanup: ${cancelled}`) : null);
   return { error: finalError, status: finalError ? 'failed' : 'passed' };
-}
-export function assertCjkFonts(records, detailsOpen) {
-  assert.deepEqual(records.map(record => record.selector), ['strong', 'p', 'summary', ...(detailsOpen ? ['li:nth-child(1)', 'li:nth-child(2)', 'li:nth-child(3)'] : [])]);
-  for (const record of records) {
-    assert.ok(record.fonts.some(font => /^Noto Sans CJK(?: |$)/.test(font.familyName) && font.glyphCount > 0 && font.isCustomFont === false),
-      `Actual CJK glyphs missing for ${record.selector}`);
-  }
 }
 export function assertAttachment(output, file) {
   assert.equal(typeof file, 'string');

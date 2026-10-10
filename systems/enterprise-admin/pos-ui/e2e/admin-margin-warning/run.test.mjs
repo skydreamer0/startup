@@ -5,7 +5,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, assertCjkFonts } from './run.mjs';
+import { fileURLToPath } from 'node:url';
+import { assertCjkFonts } from './cjk.mjs';
+import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
 import { cleanupRunProcesses, findRunProcesses, signalRunProcess, createRunScope, readRunIdentity, isBaselineIdentity } from './owned-run.mjs';
@@ -149,4 +151,17 @@ test('CJK receipt rejects missing, zero-glyph, webfont and wrong-node platform e
   }
   assert.throws(() => assertCjkFonts([], false));
   assert.throws(() => assertCjkFonts(good, true));
+});
+
+test('locked Playwright loader collects all cases without launching a browser', () => {
+  const output = fs.mkdtempSync(path.join(os.tmpdir(), 'margin-discovery-'));
+  const pos = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  try {
+    const listed = execFileSync(process.execPath, [path.join(pos, 'node_modules/@playwright/test/cli.js'),
+      'test', '--config=e2e/admin-margin-warning/playwright.config.mts', '--list'], {
+      cwd: pos, env: childEnvironment(process.env, output, randomUUID()), encoding: 'utf8', timeout: 20000,
+    });
+    assert.match(listed, /Total: 22 tests in 1 file/);
+    for (const name of expectedCases) assert.ok(listed.includes(name), name);
+  } finally { fs.rmSync(output, { recursive: true, force: true }); }
 });

@@ -1,6 +1,6 @@
 import { test as base, expect, type Page, type TestInfo, type Route } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
-import { assertCjkFonts } from './run.mjs';
+import { assertCjkFonts } from './cjk.mjs';
 import type { MarginAnalysis } from '@pharmasaas/types';
 import type { reportsApi } from '../../../admin-ui/src/api/reports';
 
