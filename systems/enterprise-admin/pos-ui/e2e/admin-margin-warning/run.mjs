@@ -8,7 +8,7 @@ import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { resolveProvenance } from '../ui-evidence/provenance.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
-import { cleanupRunProcesses } from './owned-run.mjs';
+import { cleanupRunProcesses, createRunScope } from './owned-run.mjs';
 
 export const sourceInputs = ['systems/enterprise-admin/admin-ui', 'systems/enterprise-admin/packages/types',
   'systems/enterprise-admin/pnpm-lock.yaml', 'systems/enterprise-admin/pnpm-workspace.yaml', 'systems/enterprise-admin/package.json',
@@ -107,6 +107,10 @@ async function main() {
     browserChannel: 'chrome', browserSandbox: true, apiProxy: false, serviceWorkers: 'blocked', webSockets: 'blocked', syntheticAuth: true };
   write('source.json', identity);
   write('source-hashes.json', Object.fromEntries(git('ls-files', '--', ...sourceInputs).split('\n').map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
+  // Snapshot before the first child receives the unique nonce. The baseline
+  // records PID/start time only and never reads unrelated process environments.
+  const runScope = await createRunScope(identity.nonce);
+  write('run-baseline.json', runScope);
   const env = childEnvironment(process.env, output, identity.nonce), owner = processOwner();
   const log = fs.openSync(path.join(output, 'raw.log'), 'wx'), phases = {};
   let error = null, quiescent = true, accepted = null;
@@ -118,7 +122,7 @@ async function main() {
     ]) {
       quiescent = false;
       phases[phase] = await owner.run('pnpm', args, { cwd, env, stdio: ['ignore', log, log] });
-      phases[phase].runCleanup = await cleanupRunProcesses(identity.nonce);
+      phases[phase].runCleanup = await cleanupRunProcesses(runScope);
       quiescent = phases[phase].quiescent === true && phases[phase].runCleanup.quiescent === true;
       assert.equal(phases[phase].exitCode, 0, `${phase} must pass`);
       assert.equal(phases[phase].signal, null); assert.equal(phases[phase].error, null); assert.equal(owner.cancelled, null);
@@ -132,7 +136,7 @@ async function main() {
   } catch (problem) { error = problem; }
   finally {
     try {
-      const cleanup = await cleanupRunProcesses(identity.nonce);
+      const cleanup = await cleanupRunProcesses(runScope);
       write('run-cleanup.json', cleanup);
     } catch (problem) { quiescent = false; error ??= problem; }
     fs.closeSync(log); owner.dispose();
