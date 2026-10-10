@@ -35,7 +35,7 @@ and manual dispatch. It currently has eight jobs:
 | --- | --- |
 | Agent Context Validation | Context links/tracking and canonical dependency-lock boundaries. |
 | Backend CI | npm audit, Prisma generation, lint/build, final Docker image and migration CLI, PostgreSQL migrations/seed/tests, and isolated final-Alpine readiness acceptance with cleanup evidence. Individual tests may still mock dependencies; a PostgreSQL service alone does not prove every feature has native DB coverage. |
-| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, and Docker image. |
+| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin margin/ranking warning browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
 | POS UI CI | Unit/component tests, build/type-check, Docker image, real HTTP restart/lost-response recovery with isolated PostgreSQL, and fixed-subject scanner/supplier Chromium evidence. The fixed subjects are historical versions, not the current UI. |
 | Product pagination PostgreSQL acceptance | Exact-head pagination regression and native PostgreSQL cases, ownership guards, and cleanup evidence. |
 | Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU lookup cases plus current POS Chromium with synthetic HTTP; these are separate scopes, not one browser-to-real-DB flow. |
@@ -74,6 +74,20 @@ Additional workflows:
 - Report source head, execution commit/tree, subject version, command, result, and
   retained evidence. A failed, cancelled, missing, or unexpectedly skipped stage is
   not a pass. Do not mix counts across historical, mocked, native DB, and browser runs.
+- The separate `pos-ui/e2e/admin-margin-warning/` driver uses the existing locked
+  Playwright dependency and the GitHub-hosted runner's installed official Chrome,
+  with `chromiumSandbox: true`, no custom launch flags and no browser installation.
+  Its actual built Admin subject must match the submitted head for all application,
+  dependency and harness inputs, even when CI executes a merge commit. It covers
+  both report warnings at desktop/narrow viewports across loading, empty, success,
+  initial failure, refetch failure/recovery, period and ranking-sort changes, with
+  keyboard and pointer toggles. Synthetic HTTP, bundled fonts/system CJK fallback,
+  no API proxy, clean child environment and owned loopback process bounds are
+  explicit. Google font CSS is stubbed rather than downloaded. Screenshots and
+  geometry are retained; actual pixels need independent review before claiming
+  visual acceptance. Existing zero/empty error fallback and whole-report overflow
+  are not repaired or certified by this disclosure-only slice. Physical devices,
+  native zoom, screen readers, Safari and financial reconciliation remain separate.
 - Business acceptance, real payment-provider behavior, physical scanner/touch,
   Safari/iPad, OS keyboard, native zoom, and screen-reader checks remain separate
   when relevant. CI success does not close those gates or authorize deployment.

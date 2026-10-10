@@ -56,7 +56,7 @@
 1. Read ADR-013, `../infrastructure/adr/adr_014_sale_batch_posting.md` and active issues linked from `../ROADMAP.md`.
 2. POS and general orders call `src/lib/inventory-posting.ts` with the same caller-owned transaction for aggregate product/batch debits, OUT movements and durable `SaleBatchAllocation` rows. `sale-stock.ts` is its internal product-debit helper.
 3. Eligibility uses released stock and Asia/Taipei calendar dates from `batch-expiry.ts`; stock is unusable on its expiry day. Existing/unreviewed batches default to quarantine. Other writers still await common-authority cutover.
-4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention, FEFO, persistence and rollback evidence. Use `prisma/diagnostics/preflight-sales-stock.sql` for read-only legacy balance discrepancies. This partial boundary does not complete G1/G2/G4 or command dedupe.
+4. Use `src/__tests__/stock-contention.integration.test.ts` with real PostgreSQL for contention, FEFO, persistence and rollback evidence. Use unchanged `prisma/diagnostics/preflight-sales-stock.sql` for legacy balance discrepancies. The separate current-schema `prisma/diagnostics/preflight-inventory-provenance.sql` adds a read-only, single-snapshot report of physical projection versus all batch remainders and source-linked IN/OUT/allocation evidence. Matching quantities never establish an opening baseline or reconciled history. See `../infrastructure/verification/inventory-provenance/README.md` and guarded `inventory-provenance.integration.test.ts`; embedded PGlite SQL evidence is distinct from native PostgreSQL/service/concurrency acceptance. This partial boundary does not complete G1/G2/G4 or command dedupe.
 5. POS `refundOrder` registers money-only refund status with a conditional transition; it must not receive stock or modify sale allocations. Read ADR-015 before changing refund/return semantics. Physical-return receipt remains separate pending work.
 6. Excel product import is metadata-only and cannot set physical stock. Read ADR-016, `src/lib/product-import-preview.ts` and `src/__tests__/excel-import.integration.test.ts` before changing preview/confirm identity or normalization. Confirm requires a signed tenant/file/normalized-revision preview; bump parser version when semantics change.
 7. Initial batch receipt uses `InventoryPostingService.receiveBatch` in the caller-owned transaction, product lock first, then lot + IN movement with receipt cost snapshot. Product/batch editors reject direct quantity writes; CSV creates at zero. Read ADR-017 and `inventory-receipt.integration.test.ts`. Batch RBAC uses the existing product permission catalogue. This does not implement physical returns, same-lot additional delivery, bins or reversal/rebuild.
@@ -100,7 +100,12 @@ for exact-head provenance, safety controls, cleanup evidence and distinct browse
 This is SKU-only; Product has no barcode field. It does not replace the original five jobs.
 The same owned service separately validates category reads through real JWT, tenant,
 auth/RBAC and PostgreSQL using `src/__tests__/pos-categories.integration.test.ts`.
-The original SKU cases remain unchanged. See
+The original SKU cases remain unchanged. The same runner then executes the separate
+20-case `inventory-provenance.integration.test.ts` against that owned service only,
+with explicit opt-in plus matching source/run/container/network ownership proof.
+The exact SQL/test hashes, per-suite zero-row checks, zero skips and final owned-DB
+removal are required; local embedded SQL results do not establish native acceptance.
+See `../infrastructure/verification/inventory-provenance/README.md`. See
 `../infrastructure/verification/pos-categories/README.md` for the bounded nine-case
 contract, separate opt-in and remaining browser/device gates.
 
