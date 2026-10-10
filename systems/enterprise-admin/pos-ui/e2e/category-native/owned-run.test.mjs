@@ -57,3 +57,29 @@ test('identity changes during an ownership read fail closed', async () => {
     environment: async () => `CATEGORY_UI_NONCE=${scope.nonce}\0`,
   }), /identity changed/);
 });
+test('case marker excludes missing/wrong peer markers while global cleanup still owns both', async () => {
+  const nonce = randomUUID(), caseNonce = randomUUID();
+  const scope = { nonce, caseNonce, baseline: [] };
+  const identity = { pid: 123, uid: process.getuid(), state: 'S', startTime: '456' };
+  const inspect = marker => readRunIdentity(123, scope, null, { metadata: async () => identity, environment: async () => `CATEGORY_UI_NONCE=${nonce}\0${marker}` });
+  assert.equal(await inspect(''), null);
+  assert.equal(await inspect(`CATEGORY_BROWSER_CASE_NONCE=${randomUUID()}\0`), null);
+  assert.equal((await inspect(`CATEGORY_BROWSER_CASE_NONCE=${caseNonce}\0`)).pid, 123);
+  assert.equal((await readRunIdentity(123, { nonce, baseline: [] }, null, { metadata: async () => identity, environment: async () => `CATEGORY_UI_NONCE=${nonce}\0CATEGORY_BROWSER_CASE_NONCE=${randomUUID()}\0` })).pid, 123);
+  await assert.rejects(createRunScope(nonce, 'not-a-uuid'));
+});
+test('case cleanup kills escaped TERM-resistant descendants without touching same-run peer case', async () => {
+  const nonce = randomUUID();
+  const owned = await createRunScope(nonce, randomUUID()), peer = await createRunScope(nonce, randomUUID());
+  const launch = scope => Number(execFileSync(process.execPath, ['-e',
+    `const {spawn}=require('node:child_process'); const child=spawn(process.execPath,['-e',"process.on('SIGTERM',()=>{});process.stdout.write('ready');setInterval(()=>{},1000)"],{detached:true,stdio:['ignore','pipe','ignore']}); child.stdout.once('data',()=>{console.log(child.pid);child.stdout.destroy();child.unref();});`],
+  { encoding: 'utf8', env: { PATH: process.env.PATH, CATEGORY_UI_NONCE: nonce, CATEGORY_BROWSER_CASE_NONCE: scope.caseNonce } }).trim());
+  try {
+    const ownedPid = launch(owned), peerPid = launch(peer);
+    const started = Date.now(), receipt = await cleanupRunProcesses(owned);
+    assert.equal(receipt.quiescent, true); assert.ok(Date.now() - started < 10000);
+    assert.ok(receipt.signals.some(row => row.pid === ownedPid && row.signal === 'SIGKILL'));
+    assert.ok(receipt.signals.every(row => row.pid !== peerPid));
+    assert.ok((await findRunProcesses(peer)).some(row => row.pid === peerPid));
+  } finally { await cleanupRunProcesses(owned); await cleanupRunProcesses(peer); }
+});
