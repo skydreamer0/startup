@@ -45,7 +45,8 @@ export function assertEvidence(database, browser, api) {
     const actual = api.requests.find(r => r.id === row.id);
     assert.deepEqual(row, { id: actual.id, method: actual.method, path: actual.path, status: actual.status, sha256: actual.sha256 });
     assert.ok(allowedRequest(row.method, new URL(row.path, origin).pathname));
-    assert.equal(row.status, actual.injected ? 500 : 200);
+    const checkout = row.method === 'POST' && new URL(row.path, origin).pathname === `${prefix}/checkout`;
+    assert.equal(row.status, actual.injected ? 500 : checkout ? 201 : 200);
   }
   for (const width of widths) {
     const rows = api.requests.filter(row => row.width === width);

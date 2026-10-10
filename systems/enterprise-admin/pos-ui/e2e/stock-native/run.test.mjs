@@ -40,7 +40,7 @@ function evidence() {
       { method: 'POST', path: `${prefix}/orders/${String(index)}/refund`, phase: 'refund-failure', body: { data: { id: String(index) } }, snapshot: refund },
       { method: 'GET', path: `${prefix}/products?inStockOnly=true`, phase: 'refund-failure', body: { error: 'injected' }, snapshot: refund, injected: true },
       { method: 'GET', path: `${prefix}/products?inStockOnly=true`, phase: 'refund-recovery', body: { data: [{ stockQuantity: 4 }] }, snapshot: refund },
-    ].map((row, i) => ({ ...row, width, id: `${width}:${i}`, status: row.injected ? 500 : 200, sha256: 'a'.repeat(64) }));
+    ].map((row, i) => ({ ...row, width, id: `${width}:${i}`, status: row.injected ? 500 : row.path.endsWith('/checkout') ? 201 : 200, sha256: 'a'.repeat(64) }));
     // Use a real UUID-shaped identifier in both order receipts and refund path.
     const id = `${index}`.padStart(36, 'a');
     sale.orders[0].id = id; refund.orders[0].id = id; rows[0].body.data.id = id; rows[3].body.data.id = id; rows[3].path = `${prefix}/orders/${id}/refund`;
