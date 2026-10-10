@@ -112,7 +112,7 @@
     "browser": "BLOCKED before UI: Chromium151 SIGABRT, sandbox helper owned by nobody and crashpad database error. No official Chrome/Xvfb/sudo; NoNewPrivs=1; no retry or workaround",
     "nativeAPI_DB": "NOT RUN; no confirmed owned isolated test DB/service used; no Preview/Production access",
     "CI": "not yet read for remote checkpoint",
-    "independentReview": "in progress"
+    "independentReview": "bounded PASS; no introduced must-fix findings; 11 files/169 focused +6 extra probes on f41 source; source and raw evidence independently checked, no native rerun"
   },
   "notRun": [
     "native browser keyboard/pointer at1366x768,1024x768,390px",
@@ -122,5 +122,32 @@
     "price/salable-quantity revalidation on recall",
     "ordinary hold persistence",
     "complete Issue31"
-  ]
+  ],
+  "independentReview": {
+    "sourceCommit": "f41db41280198bd442a38870b853dc2ea1a672eb",
+    "evidenceCommit": "9a9c700170bc2f3570d8361bcaa01c71a55ee229",
+    "reviewer": "/root/independent_draft_review",
+    "zip": {
+      "bytes": 5365,
+      "sha256": "6fb8d505a1d53ffcb2aac04d38cb105882d82eb0d6e00d0a8731b365aa8458ea"
+    },
+    "files": {
+      "independent-focused-f41db41.log": {
+        "bytes": 980,
+        "sha256": "229d3bb20c66237d2d97e130c7e197ce5531171eab6bfe3162cbfeebb0aee9f4"
+      },
+      "independent-probes-f41db41.log": {
+        "bytes": 534,
+        "sha256": "369e317b7216e950e1440f1fbdc042b5337f162a7fc48027f8204aba699fcd99"
+      },
+      "independent-review-f41db41.txt": {
+        "bytes": 3646,
+        "sha256": "c202f3330d228f8aeeaa06e349dcbedaebfdef1b434e10732f9438438498c17e"
+      },
+      "independent-review-held-draft.test.tsx.txt": {
+        "bytes": 6298,
+        "sha256": "8f9c12192ad0f3328b13db4fd6f9b3256f01c3a402191cbb4aa5cc036912473f"
+      }
+    }
+  }
 }

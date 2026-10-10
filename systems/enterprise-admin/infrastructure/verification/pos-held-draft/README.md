@@ -23,7 +23,8 @@ member replacement, pending and scope transitions, including ABA. Edited queries
 and unmount invalidate earlier lookups. A late successful create does not select
 into a new draft; same-scope feedback states that the member was created and asks
 for a new lookup, without including the old profile. A detached write is never
-reported as successfully cancelled. Scope changes/unmount suppress old feedback.
+reported as successfully cancelled. A different current scope/unmount suppress old feedback; returning to the original
+scope after ABA allows only generic detached-write feedback, never old selection.
 
 Checkout reads customerId from the current editable store and keeps the existing
 commandId/frozen payload/pending/unknown/conflict/recovery semantics. Confirmation
@@ -81,8 +82,17 @@ payments, deployment and release gates remain separate.
 
 ## Independent review and remote checks
 
-Non-author exact-source review is in progress at this checkpoint. The eventual
-Draft PR records its exact source/tree and remote readback results. Existing CI
+Non-author agent `/root/independent_draft_review` reviewed exact source `f41db41`
+and evidence checkpoint `9a9c700`: bounded PASS, no introduced must-fix findings.
+The reviewer independently executed 11 files / 169 focused cases and six additional
+synthetic probes (counts overlap author tests; do not sum coverage). Those probes
+cover rejected creates after hold/pending/scope, a late lookup under sustained
+pending, and old checkout success/409 after scope change preserving the new draft
+and its pending record. `independent-review.zip` contains their raw logs, scratch
+probe source and report; the scratch test was removed from the workspace.
+All 11 source hashes and 18 original raw ZIP entries match the manifest, and ZIP
+integrity and final author counts were independently checked. No browser/API/DB
+rerun was claimed. The Draft PR records the exact remote head/tree/readback. Existing CI
 runs triggered by publication must be assessed at that exact remote head; previous
 heads and historical browser jobs are not acceptance for this held-draft slice.
 
