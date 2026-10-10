@@ -19,8 +19,27 @@ export default function CashFlowPage() {
         queryFn: () => reportsApi.getCashFlowTrend(period),
     });
 
+    const estimateNotice = (
+        <section role="note" aria-label="示範／估算，非實際現金流" className="card" style={{ padding: '16px', marginBottom: '24px' }}>
+            <strong>估算，非實際現金流</strong>
+            <p style={{ margin: '8px 0', lineHeight: 1.5 }}>期初採示範假設 $300,000；收支為近似值，勿作實際營運餘額或對帳依據。</p>
+            <details>
+                <summary>查看估算來源與限制</summary>
+                <ul style={{ paddingLeft: '20px', lineHeight: 1.6 }}>
+                    <li>單月期初固定為 $300,000；六個月趨勢也從此假設起算，未連結實際期初現金。</li>
+                    <li>流入使用已完成訂單總額，未依實際付款／退款事件對帳，非各支付方式實收。</li>
+                    <li>進貨流出以入庫數量 × 商品目前成本近似，非實際進貨付款，也非歷史成本。</li>
+                    <li>營運支出來自手動登錄；融資現金流暫為 0，均未完成銀行或現金抽屜對帳。</li>
+                </ul>
+            </details>
+        </section>
+    );
+
     if (isLoading && !data) {
-        return <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading cash flow data...</div>;
+        return <div className="admin-page report-page cashflow-report-page">
+            {estimateNotice}
+            <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading cash flow data...</div>
+        </div>;
     }
 
     const opCfsColor = (data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0) >= 0 ? '#10b981' : '#f87171';
@@ -29,8 +48,8 @@ export default function CashFlowPage() {
         <div className="admin-page report-page cashflow-report-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                    <h1 className="page-title">Cash Flow Statement</h1>
-                    <p className="page-subtitle">Track money entering and leaving the business</p>
+                    <h1 className="page-title">Cash Flow Statement（估算）</h1>
+                    <p className="page-subtitle">示範收支估算與趨勢</p>
                 </div>
                 <div className="flex gap-12" style={{ alignItems: 'center' }}>
                     <input
@@ -44,16 +63,18 @@ export default function CashFlowPage() {
                 </div>
             </header>
 
+            {estimateNotice}
+
             {/* Top Summary Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
                 <div className="stat-card">
-                    <div className="stat-label">Beginning Cash</div>
+                    <div className="stat-label">Beginning Cash（示範期初）</div>
                     <div className="stat-value price-md" style={{ marginTop: '12px', color: 'var(--text-muted)' }}>
                         ${data?.beginningCash.toLocaleString() ?? 0}
                     </div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-label">Net Operating Cash</div>
+                    <div className="stat-label">Net Operating Cash（估算）</div>
                     <div className="stat-value price-md" style={{ marginTop: '12px', color: opCfsColor }}>
                         ${((data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0)).toLocaleString()}
                     </div>
@@ -62,7 +83,7 @@ export default function CashFlowPage() {
                     </div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-label">Net Investing Cash</div>
+                    <div className="stat-label">Net Investing Cash（估算）</div>
                     <div className="stat-value price-md" style={{ marginTop: '12px', color: '#f59e0b' }}>
                         -${data?.investingOutflows.toLocaleString() ?? 0}
                     </div>
@@ -71,7 +92,7 @@ export default function CashFlowPage() {
                     </div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-label">Ending Cash</div>
+                    <div className="stat-label">Ending Cash（估算）</div>
                     <div className="stat-value price-md" style={{ marginTop: '12px' }}>
                         ${data?.endingCash.toLocaleString() ?? 0}
                     </div>
@@ -81,7 +102,7 @@ export default function CashFlowPage() {
             <div className="report-grid-wide">
                 {/* 6-Month Liquidity Trend */}
                 <section className="card" style={{ padding: '24px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>Cash Position & Net Cash Flow Trend</h3>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>Cash Position & Net Cash Flow Trend（估算）</h3>
                     <div style={{ width: '100%', height: '350px' }}>
                         <ResponsiveContainer>
                             <BarChart data={trend || []} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -90,8 +111,8 @@ export default function CashFlowPage() {
                                 <YAxis stroke="var(--text-muted)" />
                                 <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }} />
                                 <Legend />
-                                <Bar dataKey="endingCash" name="Ending Balance" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="netCashFlow" name="Net Flow" fill="#10b981" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="endingCash" name="Ending Balance（估算）" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="netCashFlow" name="Net Flow（估算）" fill="#10b981" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

@@ -61,7 +61,10 @@ Background inert/ARIA attributes are restored when the split overlay unmounts.
 See `src/__tests__/SplitPaymentModal.test.tsx`, `POSCheckoutPage.split-dialog.test.tsx`,
 `SplitPaymentModal.lifecycle.test.tsx` and
 `../infrastructure/verification/pos-split-dialog/README.md` for bounded synthetic
-verification and the blocked Chromium/native-device acceptance boundary.
+verification and the historical blocked local Chromium/native-device boundary.
+The dedicated `e2e/dialog-acceptance/run.mjs` is the current exact-head official
+Chrome/synthetic-HTTP route; it has its own report/ledger guards and never reruns
+the historical browser subject as evidence for the new dialog source.
 
 ### Change refund or physical-return behavior
 

@@ -1,0 +1,67 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 test
+> vitest run --maxWorkers=2 src/__tests__/CloseShiftDialog.test.tsx
+
+
+ RUN  v4.1.11 /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui
+
+ ❯ src/__tests__/CloseShiftDialog.test.tsx (16 tests | 2 failed) 438ms
+     × does not reclaim focus when loading completes behind a newer real payment modal 37ms
+     × keeps background inert until the newer close-shift dialog also releases it 17ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/CloseShiftDialog.test.tsx > CloseShiftDialog > does not reclaim focus when loading completes behind a newer real payment modal
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <input
+  data-testid="payment-tendered-input"
+  id="payment-tendered"
+  min="0"
+  style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 24px; font-weight: 700; text-align: right;"
+  type="number"
+  value="0"
+/>
+Received element with focus:
+  <input
+  id="_r_b_"
+  min="0"
+  style="flex: 1 1 0%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 14px;"
+  type="number"
+  value="500"
+/>
+ ❯ src/__tests__/CloseShiftDialog.test.tsx:45:22
+     43|     expect(tendered).toHaveFocus();
+     44|     old.rerender(<CloseShiftDialog {...props} loading={false} />);
+     45|     expect(tendered).toHaveFocus();
+       |                      ^
+     46|     old.unmount(); expect(tendered).toHaveFocus();
+     47|     newer.unmount();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/__tests__/CloseShiftDialog.test.tsx > CloseShiftDialog > keeps background inert until the newer close-shift dialog also releases it
+Error: expect(element).toHaveAttribute("inert") // element.hasAttribute("inert")
+
+Expected the element to have attribute:
+  inert
+Received:
+  null
+ ❯ src/__tests__/CloseShiftDialog.test.tsx:59:24
+     57|     view.rerender(<><button aria-hidden="false">背景</button><CloseShift…
+     58|     expect(newer).toHaveFocus();
+     59|     expect(background).toHaveAttribute('inert'); expect(background).to…
+       |                        ^
+     60|     view.rerender(<><button aria-hidden="false">背景</button></>);
+     61|     expect(background).not.toHaveAttribute('inert'); expect(background…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 14 passed (16)
+   Start at  01:47:37
+   Duration  1.29s (transform 121ms, setup 79ms, import 257ms, tests 438ms, environment 348ms)
+

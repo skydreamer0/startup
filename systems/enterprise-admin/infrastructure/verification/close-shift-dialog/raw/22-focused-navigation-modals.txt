@@ -1,0 +1,146 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 test
+> vitest run --maxWorkers=2 src/__tests__/CloseShiftDialog.test.tsx src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx src/__tests__/PaymentModal.test.tsx src/__tests__/SplitPaymentModal.test.tsx src/__tests__/AdminPinModal.test.tsx
+
+
+ RUN  v4.1.11 /workspace/scratch/a973af1f593f/pharmacy-close-shift-work/systems/enterprise-admin/pos-ui
+
+ ❯ src/__tests__/CloseShiftDialog.test.tsx (16 tests | 1 failed) 474ms
+     × keeps background inert until the newer close-shift dialog also releases it 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/CloseShiftDialog.test.tsx > CloseShiftDialog > keeps background inert until the newer close-shift dialog also releases it
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <div
+  aria-busy="true"
+  aria-labelledby="_r_e_"
+  aria-modal="true"
+  role="dialog"
+  style="background: var(--bg-card); border-radius: var(--radius-md); padding: 32px; width: 360px; box-shadow: var(--shadow-lg);"
+  tabindex="-1"
+>
+  <h3
+    id="_r_e_"
+    style="margin: 0px 0px 16px;"
+  >
+    確認交班
+  </h3>
+  <div
+    style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;"
+  >
+    <label
+      for="_r_f_"
+      style="font-size: 13px; color: var(--text-secondary); white-space: nowrap;"
+    >
+      結帳金額
+    </label>
+    <input
+      disabled=""
+      id="_r_f_"
+      min="0"
+      style="flex: 1 1 0%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 14px;"
+      type="number"
+      value="500"
+    />
+    <span
+      style="font-size: 13px;"
+    >
+      元
+    </span>
+  </div>
+  <div
+    style="display: flex; gap: 12px;"
+  >
+    <button
+      disabled=""
+      style="flex: 1 1 0%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); cursor: pointer; font-size: 14px;"
+      type="button"
+    >
+      取消
+    </button>
+    <button
+      disabled=""
+      style="flex: 1 1 0%; padding: 10px; background: var(--danger); color: rgb(255, 255, 255); border-radius: var(--radius-sm); cursor: not-allowed; font-size: 14px; font-weight: 700; opacity: 0.7;"
+      type="button"
+    >
+      交班中...
+    </button>
+  </div>
+</div>
+Received element with focus:
+  <div
+  aria-busy="true"
+  aria-labelledby="_r_c_"
+  aria-modal="true"
+  role="dialog"
+  style="background: var(--bg-card); border-radius: var(--radius-md); padding: 32px; width: 360px; box-shadow: var(--shadow-lg);"
+  tabindex="-1"
+>
+  <h3
+    id="_r_c_"
+    style="margin: 0px 0px 16px;"
+  >
+    確認交班
+  </h3>
+  <div
+    style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;"
+  >
+    <label
+      for="_r_d_"
+      style="font-size: 13px; color: var(--text-secondary); white-space: nowrap;"
+    >
+      結帳金額
+    </label>
+    <input
+      disabled=""
+      id="_r_d_"
+      min="0"
+      style="flex: 1 1 0%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 14px;"
+      type="number"
+      value="500"
+    />
+    <span
+      style="font-size: 13px;"
+    >
+      元
+    </span>
+  </div>
+  <div
+    style="display: flex; gap: 12px;"
+  >
+    <button
+      disabled=""
+      style="flex: 1 1 0%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); cursor: pointer; font-size: 14px;"
+      type="button"
+    >
+      取消
+    </button>
+    <button
+      disabled=""
+      style="flex: 1 1 0%; padding: 10px; background: var(--danger); color: rgb(255, 255, 255); border-radius: var(--radius-sm); cursor: not-allowed; font-size: 14px; font-weight: 700; opacity: 0.7;"
+      type="button"
+    >
+      交班中...
+    </button>
+  </div>
+</div>
+ ❯ src/__tests__/CloseShiftDialog.test.tsx:56:19
+     54|     view.rerender(<><button aria-hidden="false">背景</button><CloseShift…
+     55|     const newer = screen.getAllByRole('dialog')[1];
+     56|     expect(newer).toHaveFocus();
+       |                   ^
+     57|     view.rerender(<><button aria-hidden="false">背景</button><CloseShift…
+     58|     expect(newer).toHaveFocus();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 29 passed (30)
+   Start at  01:48:19
+   Duration  2.72s (transform 476ms, setup 190ms, import 1.08s, tests 2.35s, environment 1.06s)
+

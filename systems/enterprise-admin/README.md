@@ -1,60 +1,13 @@
-# Enterprise Admin System
+# Enterprise Admin｜PharmaSaaS
 
-藥局 SaaS 企業後台，包含 RBAC、CRM、庫存、訂單、財務報表、數據分析。
+單店藥局營運系統的程式工作區，包含管理後台、門市 POS、API 與共用型別。
 
-## 目前進度
+**開發設定與啟動步驟請從 [專案 README](../../README.md#快速開始) 開始。** 指令的工作目錄為本目錄 `systems/enterprise-admin`；後端使用獨立 npm，前端與共用型別使用 pnpm workspace。
 
-已完成既定產品與架構階段；目前只保留活 backlog 與延後決策。詳見 [ROADMAP.md](ROADMAP.md)。
+目前仍在開發與驗收階段，尚未完成實店端到端驗收；歷史階段完成不等於目前需求全部完成。
 
-## 本地開發
-
-```bash
-# 前置條件：Docker Desktop 執行中，Node.js 22（至少 22.12）
-npm install --global npm@11.21.0 pnpm@10.34.6
-pnpm install --frozen-lockfile
-
-# 1. 啟動 PostgreSQL
-docker-compose up -d postgres
-
-# 2. 後端
-cd backend
-npm ci
-npm run dev            # http://localhost:3000
-
-# 3. 前端
-cd ../admin-ui
-pnpm run dev           # http://localhost:5173
-```
-
-預設帳號由 seed 資料建立，請參考 `backend/prisma/seed.ts`。
-
-## 目錄結構
-
-```
-enterprise-admin/
-├── admin-ui/           React 19 前端
-│   └── src/
-│       ├── pages/      各功能頁面
-│       ├── hooks/      React hooks (useAuth 等)
-│       ├── api/        API 呼叫層
-│       └── components/ 共用元件
-├── backend/            Express 後端
-│   └── src/
-│       ├── modules/    功能模組 (crm, inventory, analytics…)
-│       ├── lib/        共用工具 (prisma, errors, tenant)
-│       └── middleware/ 中介層 (auth, rbac, audit)
-└── infrastructure/
-    ├── adr/            架構決策記錄
-    ├── api/            API 規格文件
-    └── standards/      工程標準與操作流程
-```
-
-## 測試
-
-```bash
-# 後端
-cd backend && npm test
-
-# 前端
-cd admin-ui && pnpm test
-```
+- [已可用功能與限制](../../README.md)：主線功能、測試層與待完成整合
+- [CONTEXT.md](CONTEXT.md)：模組位置與資料責任
+- [ROADMAP.md](ROADMAP.md)：工程進度與歷史證據
+- [單店整備 #37](https://github.com/skydreamer0/startup/issues/37)：完整交付與驗收門檻
+- [測試策略](infrastructure/standards/test_pyramid.md) · [Production Runbook](infrastructure/standards/production_runbook.md)

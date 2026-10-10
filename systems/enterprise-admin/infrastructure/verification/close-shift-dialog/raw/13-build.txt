@@ -1,0 +1,15 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pos-ui@1.0.0 build
+> tsc && vite build
+
+src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx(46,48): error TS2345: Argument of type 'AxiosResponse<ApiSuccess<{ id: string; fullName: string; }[], ApiMeta | undefined>, any, {}, any>' is not assignable to parameter of type 'AxiosResponse<ApiSuccess<PosStaff[], ApiMeta | undefined>, any, {}, any>'.
+  Types of property 'data' are incompatible.
+    Type 'ApiSuccess<{ id: string; fullName: string; }[], ApiMeta | undefined>' is not assignable to type 'ApiSuccess<PosStaff[], ApiMeta | undefined>'.
+      Type '{ id: string; fullName: string; }[]' is not assignable to type 'PosStaff[]'.
+        Property 'email' is missing in type '{ id: string; fullName: string; }' but required in type 'PosStaff'.
+src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx(60,59): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.

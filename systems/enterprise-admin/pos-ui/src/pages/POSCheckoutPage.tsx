@@ -115,7 +115,7 @@ export default function POSCheckoutPage() {
     enabled: !!checkoutScope,
   });
 
-  const { data: categories = [], isLoading: loadingCategories, isSuccess: categoriesLoaded, isError: categoriesError, error: categoriesFailure, isFetching: fetchingCategories, refetch: refetchCategories } = useQuery({
+  const { data: categories = [], isLoading: loadingCategories, isSuccess: categoriesLoaded, isError: categoriesError, isRefetchError: categoriesRefetchError, error: categoriesFailure, isFetching: fetchingCategories, refetch: refetchCategories } = useQuery({
     queryKey: ['pos-categories', checkoutScope],
     queryFn: () => posApi.getCategories().then((r) => r.data.data),
     staleTime: 60_000,
@@ -416,7 +416,8 @@ export default function POSCheckoutPage() {
             <div role="alert" className="pos-category-status">
               {isAxiosError(categoriesFailure) && categoriesFailure.response?.status === 403
                 ? '沒有讀取商品分類的權限，請聯絡管理員確認 POS 權限。'
-                : '分類載入失敗，分類資訊可能已過期。仍可使用全部商品與搜尋。'}
+                : '分類載入失敗。仍可使用全部商品與搜尋。'}
+              {categoriesRefetchError && '分類資訊可能已過期。'}
               <button type="button" className="pos-category-btn" disabled={fetchingCategories} onClick={() => void refetchCategories()}>
                 重新載入分類
               </button>

@@ -123,3 +123,77 @@ The repository pharmacy overrides and static UI/UX keyboard/focus guidance were 
 no vendored skill program, package or external asset was added/executed.
 - [W3C modal dialog keyboard/focus pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
 - [MDN inert behavior](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert)
+
+## 2026-10-10 current-master online acceptance checkpoint
+
+The original eight-file correction is integrated by clean three-way application
+onto master `08a3570cef5d3081aaafdb7f48083f26cf8017f3`, tree
+`c8d9acd8dedd951e5668bd90fdfa099fef7b6ba6`. The category status, query
+synchronization and close-shift corrections from #87/#95/#94 remain unchanged.
+The earlier reviews and blocked local Chromium evidence above are historical;
+no restricted local-browser retry or security-flag workaround was performed.
+
+The dedicated `pos-ui/e2e/dialog-acceptance/run.mjs` harness is intended only for
+an exact-head, existing GitHub-hosted Node 22 runner. It uses the official installed
+Google Chrome channel with Chromium sandbox enabled, a loopback Vite preview with
+no API proxy, blocked Service Workers and context-wide HTTP/WebSocket guards. It
+never forwards API writes: synthetic staff login and the two explicit confirmation
+cases are fulfilled/held in memory, with every other write rejected. Each case
+closes its disposable browser context before sealing its request/key ledger.
+
+Fourteen native-input cases cover three viewport sizes, dynamic row removal/fourth
+row addition, backdrop/title clicks, F4 isolation, nested PIN cancellation, ordinary
+payment pointer/Escape/Enter/Space cancellation, native CARD selection/confirmation,
+and exact split payload. On the real page, preparing the frozen checkout intent
+closes payment overlays and shows recovery; pending confirmation tests preserve
+that existing behavior rather than asserting a permanently mounted loading modal.
+Component loading controls remain covered separately in JSDOM.
+
+Current local integration checks: 84/84 focused tests across six files passed on
+Node 24.19.0, including category and close-shift regressions. Harness report/ledger
+negative controls, harness TypeScript, POS TypeScript/Vite build, context validation
+and 14-case discovery passed. Local pnpm 11 attempted automatic package
+manager handling and stopped on a missing home store path; no dependencies were
+changed. Checks then invoked the existing locked TypeScript/Vitest tools directly.
+Final exact-head CI, actual Chrome execution, screenshot review and independent
+review are still PENDING at this checkpoint. No real API/database/provider, physical
+scanner/touch, iPad/Safari, native 200% zoom or release acceptance is claimed.
+
+Run the pure guards with `node --test pos-ui/e2e/dialog-acceptance/run.test.mjs`.
+CI supplies `DIALOG_QA_HEAD` and runs `node pos-ui/e2e/dialog-acceptance/run.mjs`.
+Evidence is written exclusively to
+`$RUNNER_TEMP/dialog-qa-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/`, with source/tree/run
+identity, source hashes, official Chrome version, report, screenshots, context-closed
+network/key ledgers, and an acceptance receipt only after every case/ledger passes.
+
+### Evidence-publication safety gate
+
+Each child phase revokes publication until the owned process supervisor confirms
+that its entire process group is quiescent. Cleanup failure leaves no GitHub
+`evidence_dir` output, so CI cannot upload an actively written bundle. Normal test
+failure may publish diagnostic evidence only after verified quiescence; it never
+creates an acceptance receipt. Pure controls cover cleanup throw/false after a
+previous successful phase and a safely stopped failed phase. The initial fixed-path
+upload proposal was rejected during review coordination and was never run.
+
+The inherited supervisor only tracks its direct process group; independent review
+proved Playwright's detached descendants could outlive that group. The dedicated
+`owned-run.mjs` supplements it with same-UID, exact per-run nonce, and PID start-time
+ownership checks before every signal. Cleanup runs after each phase and again before
+publication; an unreadable identity, changed PID, or surviving process fails closed.
+No executable-name search or shared process-owner modification is used. The reviewed
+algorithm is copied from #98 source `9843b855e625f79680aed63814d6853d3108e30e`
+with only the nonce variable renamed. Dedicated controls create benign detached
+Node descendants, verify owned cleanup, preserve another nonce, and reject stale
+PID/non-quiescent/unknown identity. The final browser receipt is created only after
+this final cleanup. Both guard files must run before native acceptance.
+
+The first copied algorithm passed local guards but its #98 native runner control
+failed closed on an unreadable preexisting same-UID process environment, before
+Chrome launched. The independently reviewed `9406acd86f8146b9ef4cb99ee3cc89125dcc5665`
+revision now snapshots PID/start-time/UID before any child receives the new nonce.
+Only those exact pre-run identities are excluded without reading their environment.
+New/reused unreadable identities, mid-read ownership drift and stale signal targets
+remain blockers. The dialog copy changes only its nonce variable; its dedicated
+controls retain the same baseline and detached-child counterexamples. This is
+SOURCE/GUARD evidence only; successful native Chrome is still pending.

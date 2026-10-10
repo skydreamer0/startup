@@ -19,3 +19,11 @@ destination and content; force overwrite requires separate confirmation.
 See [README.md](README.md) for invocation and
 [INSTALLATION.md](ui-ux-pro-max/INSTALLATION.md) for provenance and verification.
 Keep upstream bytes unchanged and local rules in separate files.
+
+## Pharmacy touch and workflow acceptance
+
+For scanner/checkout focus, dialogs, pending states, long forms or PC/iPad/phone
+UI changes, read [pharmacy-touch-ui-review/SKILL.md](pharmacy-touch-ui-review/SKILL.md).
+Keep the existing PHARMACY-OVERRIDES route authoritative. This supplements existing
+skills with workflow acceptance and pinned static references; it does not install
+Impeccable runtime tooling.
