@@ -8,8 +8,9 @@ import { createRunScope, cleanupRunProcesses } from './owned-run.mjs';
 
 // Public Playwright 1.63 ConnectOverCDPOptions.noDefaults applies only to this
 // existing default context. Each case gets its own external Chrome/profile.
+// Preserve the already-owned xvfb-run authentication path, never its contents.
 export function browserEnvironment(env) {
-  return Object.fromEntries(['PATH', 'HOME', 'TMPDIR', 'DISPLAY', 'CATEGORY_UI_NONCE', 'CATEGORY_BROWSER_CASE_NONCE'].filter(key => env[key] !== undefined).map(key => [key, env[key]]));
+  return Object.fromEntries(['PATH', 'HOME', 'TMPDIR', 'DISPLAY', 'XAUTHORITY', 'CATEGORY_UI_NONCE', 'CATEGORY_BROWSER_CASE_NONCE'].filter(key => env[key] !== undefined).map(key => [key, env[key]]));
 }
 export function browserArguments(profile) {
   return ['--enable-automation', '--disable-background-networking', '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0', `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', 'about:blank'];
