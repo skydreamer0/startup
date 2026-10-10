@@ -58,7 +58,7 @@ export function assertFonts(fonts) {
 export function assertNetwork(browser, api) {
   assert.deepEqual(api.rejected, []);
   const observed = browser.flatMap(entry => {
-    assert.equal(entry.contextClosed, true); assert.deepEqual(entry.unexpected, []); assert.deepEqual(entry.pageErrors, []);
+    assert.equal(entry.contextClosed, true); assert.equal(entry.headed, true); assert.match(entry.display, /^:\d+$/); assert.deepEqual(entry.unexpected, []); assert.deepEqual(entry.pageErrors, []);
     assertBrandEvidence(entry.verifiedBrand);
     assert.ok(entry.keys.some(event => event.key === 'Enter')); assert.ok(entry.keys.every(event => event.trusted));
     assert.ok(entry.responses.length > 0); assert.equal(entry.requests.length, entry.responses.length);

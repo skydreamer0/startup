@@ -113,7 +113,8 @@ async function main() {
     server = await new Promise<Server>((resolve, reject) => { const listener = outer.listen(4291, '127.0.0.1', () => resolve(listener)); listener.once('error', reject); });
     assert.equal(cancelled, null);
     const pos = path.resolve(backend, '../pos-ui');
-    child = spawn(process.execPath, [path.join(pos, 'node_modules/@playwright/test/cli.js'), 'test', '--config', 'e2e/category-native.config.mts'], { cwd: pos, env: process.env, stdio: 'inherit' });
+    assert.equal(process.env.DISPLAY, undefined, 'Never reuse an ambient display');
+    child = spawn('xvfb-run', ['--auto-servernum', '--server-args=-screen 0 1920x1080x24 -nolisten tcp', process.execPath, path.join(pos, 'node_modules/@playwright/test/cli.js'), 'test', '--config', 'e2e/category-native.config.mts'], { cwd: pos, env: process.env, stdio: 'inherit' });
     browser = await new Promise((resolve, reject) => { child!.once('error', reject); child!.once('close', (exitCode, signal) => resolve({ exitCode, signal })); });
     child = undefined;
     assert.ok(browser); assert.equal(browser.exitCode, 0); assert.equal(browser.signal, null); assert.equal(cancelled, null);

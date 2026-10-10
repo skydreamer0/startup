@@ -29,6 +29,15 @@ without fake timers, application hooks or cache mutation.
 Use only the ordinary GitHub-hosted SKU job and its fresh, exclusive PostgreSQL15
 service. The original environment, source, service/network/empty-schema guards,
 Chrome sandbox, installed CJK fonts and process quiescence requirements remain.
+Headless Chrome keeps these pages visible; actual hidden/visible transitions require
+headed Chrome. The fixture uses the already-installed `xvfb-run` to create a fresh
+1920x1080 local virtual display with TCP disabled, rejects ambient DISPLAY and passes
+the run nonce to all child processes. The same cleanup must remove Xvfb as well as
+Chrome/Playwright. Browser ledgers require headed=true and a local numeric display;
+the spec requires actual hidden/visible transitions. No custom Chrome launch flags,
+sandbox changes or shared CI changes. This follows
+[Playwright's headed Linux CI guidance](https://playwright.dev/docs/ci#running-headed)
+and is virtual-display browser evidence, not physical device evidence.
 Do not invent CI environment values or use an ambient/Preview/Production URL.
 The existing job owns service creation/migrations; this fixture only creates and
 removes its generated UUID tenants/users/shifts/categories/products. Complete

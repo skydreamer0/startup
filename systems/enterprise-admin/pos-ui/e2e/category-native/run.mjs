@@ -57,7 +57,7 @@ async function main() {
   const write = (name, value) => fs.writeFileSync(path.join(output, name), JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
   const read = name => JSON.parse(fs.readFileSync(path.join(output, name), 'utf8'));
   const nonce = randomUUID();
-  write('source.json', { ...identity, nonce, chrome, sandbox: true, scope: 'Issue49 category stable/loading/empty/injected 403/500/stale/manual retry/slow response: built POS -> real successful API -> owned isolated PostgreSQL',
+  write('source.json', { ...identity, nonce, chrome, sandbox: true, headed: true, display: 'fresh run-owned Xvfb; TCP disabled; ambient DISPLAY rejected', scope: 'Issue49 category stable/loading/empty/injected 403/500/stale/manual retry/slow response: built POS -> real successful API -> owned isolated PostgreSQL',
     faults: 'Test-only outer middleware injects category errors/delays; injected 403 is UI presentation, not a real authorization test',
     staleExpiry: 'Real 61000ms wall-clock wait and native tab visibility; no fake timers/cache hooks',
     login: 'fixture-issued synthetic JWT for real active synthetic user; login UI not under test', externalCss: 'blocked; installed Noto CJK',

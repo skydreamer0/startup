@@ -55,12 +55,12 @@ test('actual noncustom CJK glyphs are required rather than CSS family or tofu', 
 });
 const network = () => {
   const row = { id: 'nonce:1', method: 'GET', path: '/api/v1/admin/pos/categories', status: 200, sha256: createHash('sha256').update('{}').digest('hex') };
-  return { browser: [{ test: stableCases[0], contextClosed: true, unexpected: [], pageErrors: [], verifiedBrand: brandAssets.map(asset => ({ method: 'GET', ...asset })), keys: [{ key: 'Enter', trusted: true }], requests: [{ id: row.id }], responses: [row] }], api: { rejected: [], categories: [], requests: [{ ...row, body: {}, testCase: stableCases[0], phase: 'initial', fault: { kind: 'none', status: 200, delayMs: 0 }, elapsedMs: 0, productionHandler: true }] } };
+  return { browser: [{ test: stableCases[0], contextClosed: true, headed: true, display: ':99', unexpected: [], pageErrors: [], verifiedBrand: brandAssets.map(asset => ({ method: 'GET', ...asset })), keys: [{ key: 'Enter', trusted: true }], requests: [{ id: row.id }], responses: [row] }], api: { rejected: [], categories: [], requests: [{ ...row, body: {}, testCase: stableCases[0], phase: 'initial', fault: { kind: 'none', status: 200, delayMs: 0 }, elapsedMs: 0, productionHandler: true }] } };
 };
 test('browser response hashes must match unique completed real API requests', () => {
   const value = network(); assert.equal(assertNetwork(value.browser, value.api), 1);
   for (const mutate of [v => v.api.requests.pop(), v => v.api.rejected.push('POST /checkout'), v => { v.api.requests[0].sha256 = 'b'.repeat(64); },
-    v => { v.browser[0].responses[0].status = 500; }, v => { v.browser[0].contextClosed = false; },
+    v => { v.browser[0].responses[0].status = 500; }, v => { v.browser[0].contextClosed = false; }, v => { v.browser[0].headed = false; }, v => { v.browser[0].display = 'remote:0'; },
     v => v.browser[0].unexpected.push('POST /checkout'), v => { v.browser[0].keys[0].trusted = false; },
     v => v.browser[0].requests.push({ id: 'missing-response' }), v => v.browser[0].responses.push(v.browser[0].responses[0]),
     v => { delete v.browser[0].verifiedBrand; }, v => { v.browser[0].verifiedBrand[0].sha256 = '0'.repeat(64); },

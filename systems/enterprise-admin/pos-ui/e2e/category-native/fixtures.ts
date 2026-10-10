@@ -72,7 +72,7 @@ export const test = base.extend<{ guard: Guard }>({
       await context.close(); await Promise.all(pending);
       mkdirSync(info.outputDir, { recursive: true });
       writeFileSync(info.outputPath('network.json'), JSON.stringify({ test: info.title, nonce: bootstrap.nonce,
-        viewport: page.viewportSize(), browserVersion: browser.version(), contextClosed, keys,
+        viewport: page.viewportSize(), headed: true, display: process.env.DISPLAY, browserVersion: browser.version(), contextClosed, keys,
         requests: guard.requests, responses: guard.responses, verifiedBrand: guard.verifiedBrand, unexpected: guard.unexpected, pageErrors: guard.pageErrors }, null, 2) + '\n');
       expect(contextClosed).toBe(true); expect(guard.unexpected).toEqual([]); expect(guard.pageErrors).toEqual([]);
     }

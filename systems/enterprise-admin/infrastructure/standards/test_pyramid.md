@@ -100,7 +100,8 @@ Additional workflows:
   native zoom, screen readers, Safari and financial reconciliation remain separate.
 - `e2e/category-native/run.mjs` covers the bounded Issue #49 category slice: single-SKU/empty searches and category switching retain every category entry; real keyboard/pointer activation preserves the cart and makes no checkout/write request. A synthetic active shift and signed test JWT avoid unrelated login/shift-opening writes. Browser/API response hashes and all business rows are compared before/after; exact fixture rows are removed before the existing owned-DB cleanup. Chrome sandbox, CJK glyphs, sealed ledgers and quiescent-only artifact publication are required. Independent raw/pixel review is still needed; the seven-case matrix additionally covers initial loading/error/retry, real empty
   tenant, injected 403/500, stale refetch failure/recovery and delayed real product
-  responses. The 61-second stale wait and tab focus are real; error injection is
+  responses. Headed official Chrome uses an owned Xvfb display (no ambient DISPLAY, no TCP);
+  the 61-second stale wait and tab focus are real; error injection is
   labelled test-only and is not an auth or database-outage test. Whole-page
   responsive layout and other Issue #49 criteria remain separate. See
   `verification/pos-category-lifecycle/README.md` for the finite matrix.
