@@ -47,6 +47,15 @@ export function assertEvidence(ledgers, nonce) {
   }
   return ledgers.length;
 }
+export function assertFontEvidence(receipts, nonce) {
+  assert.deepEqual([...new Set(receipts.map(receipt => receipt.test))].sort(), [...expectedCases].sort());
+  for (const receipt of receipts) {
+    assert.equal(receipt.nonce, nonce); assert.match(receipt.text ?? '', /[\u3400-\u9fff]/);
+    assert.ok(receipt.fonts.some(font => /Noto Sans CJK/.test(font.familyName) && font.glyphCount > 0));
+    assert.equal(typeof receipt.fontFamily, 'string');
+  }
+  return receipts.length;
+}
 export async function runOwnedPhase(owner, command, args, options, state, cleanup) {
   // A throw from process-group cleanup must revoke even an earlier safe phase.
   state.quiescent = false;
@@ -120,14 +129,17 @@ async function main() {
     const cases = assertReport(JSON.parse(fs.readFileSync(path.join(output, 'report.json'), 'utf8')));
     const ledgers = fs.readdirSync(path.join(output, 'tests'), { recursive: true }).filter(file => file.endsWith('network-evidence.json')).map(file => JSON.parse(fs.readFileSync(path.join(output, 'tests', file), 'utf8')));
     const sealedLedgers = assertEvidence(ledgers, identity.nonce);
+    const fonts = fs.readdirSync(path.join(output, 'tests'), { recursive: true }).filter(file => file.endsWith('.fonts.json')).map(file => JSON.parse(fs.readFileSync(path.join(output, 'tests', file), 'utf8')));
+    const fontReceipts = assertFontEvidence(fonts, identity.nonce);
     assert.equal(owner.cancelled, null);
-    accepted = { ...identity, status: 'passed', cases, sealedLedgers, phases,
+    accepted = { ...identity, status: 'passed', cases, sealedLedgers, fontReceipts, phases,
       visualReview: 'Screenshots and measured controls require independent visual review; no whole-page visual acceptance claimed',
       notRun: ['tenant switch through UI (no entry point in current POS)', 'native browser zoom at 200%' , 'physical scanner', 'iPad/Safari', 'real API to database through UI', 'whole POS layout and release gates'] };
   } catch (problem) { error = problem; }
   finally {
     try {
       const cleanup = await cleanupRunProcesses(processScope);
+      assert.equal(cleanup.quiescent, true, 'Final owned-process cleanup must be quiescent');
       write('run-cleanup.json', cleanup);
       processState.quiescent = processState.quiescent && cleanup.quiescent === true;
     } catch (problem) { processState.quiescent = false; error ??= problem; }

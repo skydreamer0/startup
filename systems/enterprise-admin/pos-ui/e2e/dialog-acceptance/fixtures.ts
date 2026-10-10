@@ -1,7 +1,7 @@
-import { test as base, expect, type Route, type Page } from '@playwright/test';
+import { test as base, expect, type Route, type Page, type TestInfo } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { screenshot, readKeys } from '../sku-acceptance/fixtures';
+import { screenshot as captureScreenshot, readKeys } from '../sku-acceptance/fixtures';
 
 export const origin = 'http://127.0.0.1:4288';
 export const product = { id: 'synthetic-product', sku: 'SYNTHETIC', name: '合成焦點測試商品', retailPrice: 1000, stockQuantity: 20 };
@@ -80,7 +80,34 @@ export const test = base.extend<{ fixture: Fixture }>({
     }
   }, { auto: true }],
 });
-export { expect, screenshot };
+export { expect };
+export async function screenshot(page: Page, info: TestInfo, name: string) {
+  await captureScreenshot(page, info, name);
+  // Inspect real product/dialog text, never the synthetic screenshot badge.
+  const candidates = [
+    '[data-pos-modal="admin-pin"] [role="dialog"] h3',
+    '[data-pos-modal="split-payment"]:not([inert]) [role="dialog"] h3',
+    '#payment-title',
+    '[data-testid="product-card-synthetic-product"] > span:first-of-type',
+  ];
+  let selector = '';
+  for (const candidate of candidates) if (await page.locator(candidate).isVisible()) { selector = candidate; break; }
+  expect(selector, 'A real Chinese dialog/product label must be rendered').not.toBe('');
+  const target = page.locator(selector);
+  const computed = await target.evaluate(node => ({ text: node.textContent, fontFamily: getComputedStyle(node).fontFamily }));
+  expect(computed.text).toMatch(/[\u3400-\u9fff]/);
+  const session = await page.context().newCDPSession(page);
+  try {
+    await session.send('DOM.enable'); await session.send('CSS.enable');
+    const { root } = await session.send('DOM.getDocument');
+    const { nodeId } = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector });
+    expect(nodeId).toBeGreaterThan(0);
+    const { fonts } = await session.send('CSS.getPlatformFontsForNode', { nodeId });
+    expect(fonts.some(font => /Noto Sans CJK/.test(font.familyName) && font.glyphCount > 0), 'Actual CJK glyphs must use the installed font').toBe(true);
+    await writeFile(info.outputPath(name + '.fonts.json'), JSON.stringify({ nonce: process.env.DIALOG_UI_NONCE,
+      test: info.title, screenshot: name, selector, ...computed, fonts }, null, 2) + '\n');
+  } finally { await session.detach(); }
+}
 export async function setup(page: Page) {
   await page.goto(origin);
   await page.getByTestId('login-employee-code-input').fill('SYNTHETIC-CASHIER');

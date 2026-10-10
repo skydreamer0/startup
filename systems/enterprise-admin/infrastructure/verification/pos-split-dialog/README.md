@@ -197,3 +197,13 @@ New/reused unreadable identities, mid-read ownership drift and stale signal targ
 remain blockers. The dialog copy changes only its nonce variable; its dedicated
 controls retain the same baseline and detached-child counterexamples. This is
 SOURCE/GUARD evidence only; successful native Chrome is still pending.
+
+### Chinese glyph and CI prerequisite
+
+The isolated CI job installs Ubuntu `fonts-noto-cjk` through its official package
+manager and checks its version and Traditional Chinese font availability. Each
+screenshot records the computed CSS family and Chrome's actual platform-font glyph
+counts on a real Chinese dialog heading or product name. The exact-case validator
+rejects missing, stale or zero-CJK-glyph receipts. No app font download, stylesheet
+change, dependency-lock edit or sandbox change is introduced. Actual screenshots
+still require independent pixel review; installing a font alone is not that review.

@@ -29,7 +29,7 @@ To maintain a high deployment velocity without sacrificing stability, we follow 
 
 The execution source of truth is `.github/workflows/ci.yml` at repository root.
 It runs for every PR, including stacked PRs, plus pushes to `master` / `main`
-and manual dispatch. It currently has eight jobs:
+and manual dispatch. It currently has nine jobs:
 
 | Job | Coverage and important limits |
 | --- | --- |
@@ -41,6 +41,7 @@ and manual dispatch. It currently has eight jobs:
 | Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU lookup cases plus current POS Chromium with synthetic HTTP; these are separate scopes, not one browser-to-real-DB flow. |
 | Batch audit PostgreSQL acceptance | Exact-head append-only batch audit cases and schema contracts, with owned fixture evidence. |
 | Order sequence PostgreSQL acceptance | Exact-head numbering, legacy-upgrade, and checkout regression cases with owned DB cleanup. |
+| Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 14 split/PIN/ordinary-payment native-input cases, locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. |
 
 The four core check names in `AGENTS.md` are the existing required-check baseline,
 not an exhaustive inventory of CI coverage. Review all current jobs and applicable
@@ -50,7 +51,7 @@ when checking enforced merge requirements; a document does not change that rules
 Additional workflows:
 - `.github/workflows/dependency-review.yml` runs Dependency Review on PRs and rejects
   newly introduced high/critical vulnerable dependencies. Keep the existing audits
-  and security checks; their results are separate from the eight-job pipeline.
+  and security checks; their results are separate from the nine-job pipeline.
 - `.github/workflows/argon2-compat.yml` is intentionally restricted to the named
   Argon2 compatibility branches. A skip on another branch is not fresh Argon2
   compatibility evidence and is not a general backend regression pass.
@@ -68,6 +69,10 @@ Additional workflows:
   pipeline. It still needs a browser and its configured backend/seed prerequisites;
   do not report it as passed from the narrower CI jobs. Adding it as a gate requires
   a separate change proving deterministic setup and bounded data ownership.
+- `e2e/dialog-acceptance/run.mjs` is dedicated to the submitted dialog source;
+  prior local socket denial remains NOT RUN and is never retried or bypassed.
+  The bounded dialog runner installs Ubuntu `fonts-noto-cjk` and verifies CJK
+  font availability; screenshots still require independent actual-pixel review.
 - Browser downloads require access to the relevant Playwright/CDN hosts or a valid
   pre-populated cache. A denied launch or unavailable prerequisite is BLOCKED / NOT
   RUN. Do not bypass security restrictions or relabel it as successful verification.

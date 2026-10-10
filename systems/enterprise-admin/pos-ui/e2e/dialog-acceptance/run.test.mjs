@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { assertReport, assertEvidence, runOwnedPhase, publishEvidenceIfQuiescent, completionOutcome } from './run.mjs';
+import { assertReport, assertEvidence, runOwnedPhase, publishEvidenceIfQuiescent, completionOutcome, assertFontEvidence } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 
 test('browser evidence requires every exact case without retries or skips', () => {
@@ -88,4 +88,15 @@ test('cancellation during delayed final cleanup cannot become an accepted result
   assert.equal(!terminal.error, false, 'The acceptance-write condition must remain false');
   const prior = new Error('original phase failure');
   assert.equal(completionOutcome(prior, owner.cancelled).error, prior);
+});
+
+test('font evidence requires actual CJK glyphs for every current case', () => {
+  const nonce = '00000000-0000-4000-8000-000000000000';
+  const receipts = expectedCases.map(title => ({ test: title, nonce, text: '拆單付款', fontFamily: 'Inter, sans-serif', fonts: [{ familyName: 'Noto Sans CJK TC', glyphCount: 4 }] }));
+  assert.equal(assertFontEvidence(receipts, nonce), expectedCases.length);
+  for (const mutate of [values => values.pop(), values => { values[0].fonts[0].glyphCount = 0; },
+    values => { values[0].fonts[0].familyName = 'Arial'; }, values => { values[0].nonce = 'old'; },
+    values => { values[0].text = 'No Chinese text'; }]) {
+    const invalid = structuredClone(receipts); mutate(invalid); assert.throws(() => assertFontEvidence(invalid, nonce));
+  }
 });
