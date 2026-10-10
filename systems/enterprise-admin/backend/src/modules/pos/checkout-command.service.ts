@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { tenantPersistence } from '../../lib/tenant-persistence';
@@ -32,7 +33,22 @@ type JsonResult<T> = T extends Date | Prisma.Decimal ? string
 
 type CheckoutTransaction = Omit<typeof prisma, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
 
+function isConfirmedTransactionAbort(error: unknown): boolean {
+  if (error instanceof Prisma.PrismaClientUnknownRequestError && error.clientVersion === '6.19.3') {
+    // This engine version does not map ORM PostgreSQL deadlocks to P2034.
+    // Accept only its complete server diagnostic with SQLSTATE 40P01, never
+    // a free-text "deadlock" mention or a generic unknown request failure.
+    return /(?:^|\n)ConnectorError\(ConnectorError \{ user_facing_error: None, kind: QueryError\(PostgresError \{ code: "40P01", message: "(?:[^"\\]|\\.)*", severity: "ERROR", detail: [^\n]*, column: [^\n]*, hint: [^\n]* \}\), transient: false \}\)$/.test(error.message);
+  }
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false;
+  // Prisma's write-conflict/deadlock error, or PostgreSQL SQLSTATE from raw SQL.
+  // Connection loss, timeouts and generic transaction errors have unknown outcomes.
+  return error.code === 'P2034' || (error.code === 'P2010'
+    && (error.meta?.code === '40001' || error.meta?.code === '40P01'));
+}
+
 export class CheckoutCommandService {
+  // post must use only the supplied tx: no provider transfers, printing or notifications.
   static async execute<T extends { id: string }>(input: CheckoutDto, post: (tx: CheckoutTransaction, dto: CheckoutDto) => Promise<T>): Promise<JsonResult<T>> {
     const tenant = tenantPersistence();
     const parsed = checkoutSchema.body.safeParse(input);
@@ -41,7 +57,7 @@ export class CheckoutCommandService {
     const payloadHash = checkoutPayloadHash(dto);
     const key = tenant.where({ kind: CHECKOUT_COMMAND_KIND, commandId: dto.commandId });
 
-    return prisma.$transaction(async (tx) => {
+    const attempt = () => prisma.$transaction(async (tx) => {
       // INSERT ON CONFLICT DO NOTHING waits for an in-flight owner of this key.
       // A subsequent Read Committed read sees its committed result; no unique
       // violation is caught inside an already-aborted PostgreSQL transaction.
@@ -65,6 +81,17 @@ export class CheckoutCommandService {
       if (completed.count !== 1) throw new AppError(500, 'Checkout command completion failed');
       return result as JsonResult<T>;
     }, { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted });
+
+    for (let number = 1; ; number++) {
+      try {
+        return await attempt();
+      } catch (error) {
+        // Await the rejected transaction (and its rollback) before reacquiring
+        // the same key/hash in a fresh transaction. At most three total attempts.
+        if (number >= 3 || !isConfirmedTransactionAbort(error)) throw error;
+        await delay(10 * number);
+      }
+    }
   }
 
   static async getResult(commandId: string) {

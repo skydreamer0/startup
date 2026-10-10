@@ -1,0 +1,61 @@
+{
+  "sourceBase": "d5dcc6c22e3bd78d8efc68f120a8546ae615534a",
+  "scope": "local cloud workspace, not GitHub Actions",
+  "node": "v22.23.3",
+  "sourceHashes": {
+    "src/modules/pos/checkout-command.service.ts": "2f1ca419f7759fef3e3056af8c9d02913c971eee20e6020212606f618297ba35",
+    "src/__tests__/checkout-command-retry.test.ts": "b632253cea80e064efe024df1fed862a732560649f9a1668d9f983db2da4a9d8",
+    "src/__tests__/checkout-command-retry.integration.test.ts": "cc4e41dd10bf08319e786d2412c14ce3928f4bae89a8ebc9c3539d7bf897aacd"
+  },
+  "reports": {
+    "local-native-first.json": {
+      "numTotalTests": 7,
+      "numPassedTests": 4,
+      "numFailedTests": 3,
+      "numPendingTests": 0,
+      "success": false
+    },
+    "local-native-second.json": {
+      "numTotalTests": 7,
+      "numPassedTests": 7,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "local-original-regressions.json": {
+      "numTotalTests": 68,
+      "numPassedTests": 68,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "unit-first.json": {
+      "numTotalTests": 20,
+      "numPassedTests": 20,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "unit-final.json": {
+      "numTotalTests": 21,
+      "numPassedTests": 21,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  },
+  "files": {
+    "local-cleanup.json": "c73b86da881b4b4d5cd674bb8d8337535c9ca7df17e3ce6e7ce9d7ffbcf6e34a",
+    "local-original-regressions.log": "c5a55b5643620515692e1ad1f0c6779393841352e43fa7756ca306ccb764384e",
+    "local-original-regressions.json": "8fd27f556b04c248c215975e9af90304e856d2d2a0b8e1e7570398ae654613db",
+    "local-native-second.log": "5968815265e0a9f962143d79d7b344be4b05a8355291021c7e041ad5d337fb45",
+    "local-native-second.json": "1a9509f378ce80ea0464730a68aa4c181e335866193fc5cca7107f4f5497a0c0",
+    "unit-final.json": "8339ed4a1c244a8f55cb33bbded8ca87b0ac6fc452e3af53fa65f7c3fb247f3f",
+    "local-native-first.log": "6e9498eda5983cf54248db09130bcb096819e1763150093d924d0a274ba5a8a7",
+    "local-native-first.json": "76b1715e1e8a3179eda275de767fed3dfb78a7ba1e7659f5cbfb6bc6fdcc0cd4",
+    "local-migrations-first.log": "6beb19a42a30ccb371d0606a632e3a401bd727b1bd50ed9735e4c8d0b6694516",
+    "unit-first.json": "8f873dffd7c1786c6f337e4424058b9d4a6ab98cc685e1a9b4fd40ddb8ecca7f",
+    "local-ownership.json": "54ef052d42aae23be0f2309bc2cc6cece7ff128e82101cb4609d9a891747b127",
+    "first-build-stale-client.log": "942113877ecc2780106c792f4345ab9b4725344ab3d2bfbbb5f843704dd8c551"
+  }
+}

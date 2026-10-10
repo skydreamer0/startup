@@ -46,6 +46,23 @@ Proposed — bounded #30 slice; Draft PR only. No production deployment or gate 
 
 ## Migration and limits
 
+### Draft follow-up: confirmed transaction abort retry (#30)
+
+The command orchestrator may attempt the same identity/payload hash transaction
+up to three times, with 10/20ms delays after completed rollback. The checkout
+callback is restricted to the supplied transaction; no external payment, printing
+or notification may be replayed. Read Committed isolation and claim/result replay
+semantics remain unchanged. Exhaustion preserves the last original error.
+
+Retry only Prisma P2034 or raw P2010 SQLSTATE 40001/40P01. Native PG15 exposed that
+Prisma 6.19.3 returns ORM 40P01 as an UnknownRequestError containing only the complete
+engine server diagnostic; accept that exact version/diagnostic shape conservatively.
+Generic unknown outcomes, connection errors, timeouts and unrelated failures do
+not retry automatically. Version/diagnostic changes fail closed pending new native
+acceptance. The isolated evidence, side-effect audit and dedicated workflow are in
+`../verification/checkout-command/abort-retry/README.md`; this remains a Draft slice
+and does not complete #30 or any production gate.
+
 20261006110000_checkout_commands is additive: it does not touch legacy quantities,
 payments, orders or invent historical commands. Backend and POS contract updates
 must ship together in a future approved deployment; legacy checkout clients without
