@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { expectedCases } from './cases.mjs';
 import { createRunScope, cleanupRunProcesses } from './owned-run.mjs';
+import { assertBrandSources, assertBrandEvidence } from './brand-assets.mjs';
 
 export function assertReport(report, requiredCases = expectedCases) {
   assert.deepEqual(report.errors, []);
@@ -34,6 +35,7 @@ export function assertEvidence(ledgers, nonce) {
     assert.deepEqual(entry.unexpected, []); assert.deepEqual(entry.pageErrors, []);
     assert.ok(entry.forwardedStatic.length > 0);
     assert.ok(entry.forwardedStatic.every(url => /^(GET|HEAD) \/(assets\/[^?]+|login|favicon\.ico)?$/.test(url)));
+    assertBrandEvidence(entry.verifiedBrand);
     assert.ok(entry.keyboardEvents.every(event => event.trusted === true));
     assert.match(entry.browserVersion, /^\d+\.\d+\.\d+\.\d+$/);
     const submits = entry.test.includes('submits exactly once') || entry.test.includes('preserves payload');
@@ -90,6 +92,7 @@ async function main() {
     assert.equal(git('status', '--porcelain'), '', 'Exact-head source must remain clean');
     assert.equal(git('ls-files', '--others', '--ignored', '--exclude-standard', '--', 'systems/enterprise-admin/pos-ui/.env*'), '', 'No ambient Vite env');
     assert.equal(git('ls-files', '-v').split('\n').some(line => /^[a-zS]/.test(line)), false, 'No hidden index flags');
+    assertBrandSources(app);
   };
   assertSource();
   const chromeVersion = execFileSync('google-chrome', ['--version'], { encoding: 'utf8', timeout: 10000 }).trim();
@@ -100,7 +103,8 @@ async function main() {
   const identity = { sourceSha: git('rev-parse', 'HEAD'), tree: git('rev-parse', 'HEAD^{tree}'),
     runId: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, nonce: randomUUID(),
     scope: 'actual exact-head official Google Chrome UI with synthetic intercepted HTTP; separate from PostgreSQL acceptance',
-    node: process.version, chromeVersion, chromeSandbox: true, apiProxy: false, serviceWorkers: 'blocked', webSockets: 'closed by fixture' };
+    node: process.version, chromeVersion, chromeSandbox: true, apiProxy: false, serviceWorkers: 'blocked', webSockets: 'closed by fixture',
+    brandAssets: assertBrandSources(app) };
   write('source.json', identity);
   const sourceFiles = git('ls-files', '--', 'systems/enterprise-admin/pos-ui', 'systems/enterprise-admin/packages/types', 'systems/enterprise-admin/pnpm-lock.yaml', '.github/workflows/ci.yml').split('\n');
   write('source-hashes.json', Object.fromEntries(sourceFiles.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));

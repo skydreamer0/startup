@@ -13,7 +13,7 @@
 
 Admin 與 POS 的 `public/brand/flow-capsule-v1/` 保存核准 favicon、Apple touch icon 與透明主版 `mark.svg`；POS 另有現有 manifest 的 App／maskable 圖示。核准淺底／深底 `mark-light.svg`／`mark-dark.svg` 位於各網站 `src/assets/brand/flow-capsule-v1/`，以 Vite 資產匯入，輸出為 `/assets/` 下具內容雜湊的 SVG URL（不內嵌、不改原檔）。登入頁、Admin 側欄、POS 頁首、顧客顯示頁首與既有 Admin POS 原型使用相應版本；圖片旁已有品牌文字，使用空 `alt` 避免重複朗讀。保留原品牌文字、操作與版面 class。
 
-兩個網站提供 SVG／ICO／16、32 px PNG favicon，以及不透明 180 px Apple touch icon。HTML 引用遵循 Vite 的 BASE_URL，React 圖示匯入則由 Vite 處理部署 base 與內容雜湊。既有 browser harness 的靜態網路封鎖規則保持不變；頁面圖片使用其原已允許的 `/assets/` 路徑。
+兩個網站提供 SVG／ICO／16、32 px PNG favicon，以及不透明 180 px Apple touch icon。HTML 引用遵循 Vite 的 BASE_URL，React 圖示匯入則由 Vite 處理部署 base 與內容雜湊。頁面圖片使用 browser harness 原已允許的 `/assets/` 路徑。dialog Chrome harness 另只接受同源、無 query 的 GET `favicon.svg`／`favicon-32.png`／`favicon-16.png` 三個版本化品牌路徑；來源與實際回應逐份核對固定 SHA-256、長度、MIME 及 HTTP 200，回應不跟隨 redirect、不自動重試，並保存獨立資產收據。未知品牌路徑、外站與未驗證回應仍由嚴格 network gate 拒絕。
 
 ## 現有 PWA
 
