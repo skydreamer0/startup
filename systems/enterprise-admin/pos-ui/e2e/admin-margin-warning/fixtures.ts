@@ -1,5 +1,6 @@
 import { test as base, expect, type Page, type TestInfo, type Route } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
+import { assertCjkFonts } from './run.mjs';
 import type { MarginAnalysis } from '@pharmasaas/types';
 import type { reportsApi } from '../../../admin-ui/src/api/reports';
 
@@ -79,7 +80,7 @@ export const test = base.extend<{ harness: Harness }>({
     const evidence = { title: info.title, browser: context.browser()?.version(), viewport: page.viewportSize(),
       input: 'case-specific native browser automation', syntheticHttp: true, physicalDevice: false,
       reads: state.reads, responses: state.responses, unexpected: state.unexpected, pageErrors: state.pageErrors,
-      fontScope: 'Bundled Geist and system CJK fallback; external Google font CSS stubbed, no downloads', stubbedStylesheets: state.stubbedStylesheets };
+      fontScope: 'Ubuntu Noto CJK verified via actual Chrome platform glyphs; external Google font CSS stubbed, no browser font downloads', stubbedStylesheets: state.stubbedStylesheets };
     await writeFile(info.outputPath('network.json'), JSON.stringify(evidence, null, 2));
     await info.attach('network.json', { path: info.outputPath('network.json'), contentType: 'application/json' });
     expect(state.unexpected, 'No external request, API write or unexpected endpoint').toEqual([]);
@@ -89,6 +90,7 @@ export const test = base.extend<{ harness: Harness }>({
 export { expect };
 
 export async function capture(page: Page, info: TestInfo, name: string) {
+  await page.evaluate(() => document.fonts.ready);
   await notice(page).scrollIntoViewIfNeeded();
   const measurements = await notice(page).evaluate(element => {
     const bounds = (el: Element) => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }; };
@@ -96,11 +98,27 @@ export async function capture(page: Page, info: TestInfo, name: string) {
     return { viewport: { width: innerWidth, height: innerHeight }, documentWidth: document.documentElement.scrollWidth,
       warning: bounds(element), warningClientWidth: element.clientWidth, warningScrollWidth: element.scrollWidth,
       summary: bounds(summary), summaryFocus: document.activeElement === summary,
-      font: { size: style.fontSize, lineHeight: style.lineHeight, foreground: style.color, background: style.backgroundColor },
+      font: { family: style.fontFamily, size: style.fontSize, lineHeight: style.lineHeight, foreground: style.color, background: style.backgroundColor },
       detailsOpen: element.querySelector('details')!.open,
       textRects: [...element.querySelectorAll('strong,p,summary,li')].filter(el => el.getClientRects().length).map(el => ({ text: el.textContent, ...bounds(el) })) };
   });
-  await writeFile(info.outputPath(`${name}.json`), JSON.stringify(measurements, null, 2));
+  // Computed CSS alone can still render tofu. Record and require the actual
+  // platform font used for each visible Traditional Chinese disclosure block.
+  const session = await page.context().newCDPSession(page);
+  const platformFonts = [];
+  try {
+    await session.send('DOM.enable'); await session.send('CSS.enable');
+    const { root } = await session.send('DOM.getDocument');
+    for (const selector of ['strong', 'p', 'summary', ...(measurements.detailsOpen ? ['li:nth-child(1)', 'li:nth-child(2)', 'li:nth-child(3)'] : [])]) {
+      const { nodeId } = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector: `section[role="note"] ${selector}` });
+      expect(nodeId).toBeGreaterThan(0);
+      const { fonts } = await session.send('CSS.getPlatformFontsForNode', { nodeId });
+      platformFonts.push({ selector, fonts });
+    }
+  } finally { await session.detach(); }
+  assertCjkFonts(platformFonts, measurements.detailsOpen);
+  const evidence = { ...measurements, platformFonts };
+  await writeFile(info.outputPath(`${name}.json`), JSON.stringify(evidence, null, 2));
   await page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true });
   await info.attach(`${name}.png`, { path: info.outputPath(`${name}.png`), contentType: 'image/png' });
   await info.attach(`${name}.json`, { path: info.outputPath(`${name}.json`), contentType: 'application/json' });

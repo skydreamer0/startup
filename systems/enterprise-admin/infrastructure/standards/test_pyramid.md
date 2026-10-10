@@ -59,6 +59,11 @@ Additional workflows:
 
 ## 5. Browser and acceptance boundaries
 
+- The Admin warning runner installs Ubuntu `fonts-noto-cjk`, verifies fontconfig
+  coverage and records actual Chrome platform glyphs for each disclosure capture.
+  Computed CSS, text bounds and green automation alone do not establish readable
+  Chinese pixels; independent screenshot review remains required.
+
 - POS Vitest includes only `src/**/*.{test,spec}.{ts,tsx}`. Playwright specs use their
   own runner; JSDOM is not proof of native browser focus, geometry, or accessibility.
 - CI already installs Chromium and runs the bounded HTTP recovery, fixed-subject UI,

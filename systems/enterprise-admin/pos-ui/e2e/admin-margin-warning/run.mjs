@@ -42,6 +42,17 @@ export function childEnvironment(env, output, nonce) {
 export function canPublishEvidence(phases, quiescent) {
   return quiescent === true && Object.keys(phases).length > 0 && Object.values(phases).every(phase => phase.quiescent === true);
 }
+export function completionOutcome(error, cancelled) {
+  const finalError = error ?? (cancelled ? new Error(`Run cancelled during cleanup: ${cancelled}`) : null);
+  return { error: finalError, status: finalError ? 'failed' : 'passed' };
+}
+export function assertCjkFonts(records, detailsOpen) {
+  assert.deepEqual(records.map(record => record.selector), ['strong', 'p', 'summary', ...(detailsOpen ? ['li:nth-child(1)', 'li:nth-child(2)', 'li:nth-child(3)'] : [])]);
+  for (const record of records) {
+    assert.ok(record.fonts.some(font => /^Noto Sans CJK(?: |$)/.test(font.familyName) && font.glyphCount > 0 && font.isCustomFont === false),
+      `Actual CJK glyphs missing for ${record.selector}`);
+  }
+}
 export function assertAttachment(output, file) {
   assert.equal(typeof file, 'string');
   assert.ok(path.resolve(file).startsWith(path.resolve(output) + path.sep), 'Evidence must stay in the owned run');
@@ -75,10 +86,11 @@ export function validateEvidence(output, cases) {
       const measure = item.attachments.find(a => a.name === image.name.replace(/\.png$/, '.json'));
       assert.ok(measure);
       const geometry = JSON.parse(assertAttachment(output, measure.path));
+      assertCjkFonts(geometry.platformFonts, geometry.detailsOpen);
       return { name: image.name, sha256: createHash('sha256').update(bytes).digest('hex'),
         ...dimensions,
         pageOverflow: geometry.documentWidth > geometry.viewport.width + 1,
-        summaryTarget: geometry.summary, warning: geometry.warning };
+        summaryTarget: geometry.summary, warning: geometry.warning, computedFont: geometry.font, platformFonts: geometry.platformFonts };
     });
     return { title: item.title, duration: item.duration, browser: data.browser, viewport: data.viewport, observations };
   });
@@ -132,13 +144,16 @@ async function main() {
     accepted = { ...identity, status: 'passed', cases, phases,
       visualReview: 'PNG pixels require separate independent review; automated checks alone are not full visual acceptance',
       knownLimits: ['Existing initial-error zero/empty fallback is not repaired', 'Whole-report layout overflow is recorded separately',
-        'Google font CSS stubbed; bundled font and system CJK fallback', 'No native page zoom, physical devices, Safari/iPad, screen reader, financial reconciliation, real API or DB acceptance'] };
+        'Google font CSS stubbed; Ubuntu Noto CJK fallback verified by actual Chrome platform glyphs', 'No native page zoom, physical devices, Safari/iPad, screen reader, financial reconciliation, real API or DB acceptance'] };
   } catch (problem) { error = problem; }
   finally {
     try {
       const cleanup = await cleanupRunProcesses(runScope);
       write('run-cleanup.json', cleanup);
+      quiescent = quiescent && cleanup.quiescent === true;
     } catch (problem) { quiescent = false; error ??= problem; }
+    const terminal = completionOutcome(error, owner.cancelled);
+    error = terminal.error;
     fs.closeSync(log); owner.dispose();
     if (canPublishEvidence(phases, quiescent)) {
       if (!error && accepted) {
@@ -146,7 +161,7 @@ async function main() {
         console.log(`Admin margin browser: ${accepted.cases.length} cases passed. PNG pixels await independent review.`);
         console.log(JSON.stringify(accepted.cases.map(({ title, observations }) => ({ title, observations }))));
       }
-      write('completion.json', { ...identity, phases, status: error ? 'failed' : 'passed', error: error?.message ?? null });
+      write('completion.json', { ...identity, phases, status: terminal.status, error: error?.message ?? null });
       if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `evidence_dir=${output}\n`);
     }
     // Raw browser/type/build diagnostics stay inspectable even if a phase fails.

@@ -187,6 +187,14 @@ jobs:
     - name: Build admin Docker image
       run: docker build --tag pharmasaas-admin:ci --file admin-ui/Dockerfile .
 
+    - name: Install and verify Ubuntu CJK fonts for actual Chinese pixels
+      run: |
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends -y fonts-noto-cjk
+        dpkg-query -W -f='${Package} ${Version} ${Status}\n' fonts-noto-cjk
+        fc-match 'sans-serif:lang=zh-tw'
+        fc-list :lang=zh-tw family | grep -F 'Noto Sans CJK'
+
     - name: Verify existing official Chrome and margin evidence guards
       run: |
         google-chrome --version

@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity } from './run.mjs';
+import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, assertCjkFonts } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
 import { cleanupRunProcesses, findRunProcesses, signalRunProcess, createRunScope, readRunIdentity, isBaselineIdentity } from './owned-run.mjs';
@@ -122,4 +122,31 @@ test('identity changes during an ownership read fail closed', async () => {
     metadata: async () => ({ pid: 123, uid: process.getuid(), state: 'S', startTime: ++reads === 1 ? '456' : '789' }),
     environment: async () => `MARGIN_UI_RUN_NONCE=${scope.nonce}\0`,
   }), /identity changed/);
+});
+
+test('cancellation during delayed final cleanup cannot become an accepted result', async () => {
+  const owner = { cancelled: null };
+  const cleanup = async () => {
+    await new Promise(resolve => setImmediate(() => { owner.cancelled = 'SIGTERM'; resolve(); }));
+    return { quiescent: true };
+  };
+  const receipt = await cleanup();
+  const terminal = completionOutcome(null, owner.cancelled);
+  assert.equal(receipt.quiescent, true);
+  assert.equal(terminal.status, 'failed');
+  assert.match(terminal.error.message, /cancelled during cleanup: SIGTERM/);
+  assert.equal(!terminal.error, false, 'The acceptance-write condition must remain false');
+  const prior = new Error('original phase failure');
+  assert.equal(completionOutcome(prior, owner.cancelled).error, prior);
+  assert.deepEqual(completionOutcome(null, null), { error: null, status: 'passed' });
+});
+test('CJK receipt rejects missing, zero-glyph, webfont and wrong-node platform evidence', () => {
+  const good = ['strong', 'p', 'summary'].map(selector => ({ selector, fonts: [{ familyName: 'Noto Sans CJK JP', glyphCount: 17, isCustomFont: false }] }));
+  assertCjkFonts(good, false);
+  for (const patch of [{ familyName: 'Arial' }, { glyphCount: 0 }, { isCustomFont: true }]) {
+    const bad = structuredClone(good); Object.assign(bad[0].fonts[0], patch);
+    assert.throws(() => assertCjkFonts(bad, false), /Actual CJK glyphs missing/);
+  }
+  assert.throws(() => assertCjkFonts([], false));
+  assert.throws(() => assertCjkFonts(good, true));
 });
