@@ -182,3 +182,19 @@ See `../infrastructure/verification/checkout-command/http-restart/README.md`.
 - Do not read admin UI unless the task involves shared behavior or shared components.
 - Do not change backend assumptions without checking the API spec and relevant backend module.
 - Do not infer POS roadmap completion from UI files; read `../ROADMAP.md` first.
+
+### Session-ownership diagnostic successor
+
+The existing diagnostic branch/workflow now invokes
+`e2e/category-native/session-ownership-probe.mjs`, preserving A15's
+`visibility-probe.mjs` and immutable original commit. This uses Node's built-in
+WebSocket and public CDP only, with preinstalled official Chrome 154.0.8037.97
+and Xvfb; no package/browser/OS installation, application or DB is involved.
+It requires a real trusted visible-hidden-visible baseline in two blank tabs
+in one fresh owned native window before comparing an enabling S1 session with
+an unrelated S2 session. S2 false must retain A visible while B is focused;
+S1 false must release A to hidden, followed by native activation back to A.
+Run health, observed mechanism and owned-process cleanup have separate verdicts;
+missing or contradictory observations fail the diagnostic. This isolates the
+Chromium session mechanism, not the internal state of an earlier Playwright
+run. No product acceptance or fixture correction follows automatically.
