@@ -11,7 +11,7 @@ import { createRunScope, cleanupRunProcesses } from './owned-run.mjs';
 
 const script = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(script), '../../../../..');
-const parent = '8e13f270cdde64ce2aab07da958b583c54cfb553';
+const parent = '1fd906b1c383e7f800e10e9c26da5432232d5c78';
 const branch = 'refs/heads/chore/pos-category-visibility-probe-20261010';
 const expectedChrome = /^Google Chrome 154\.0\.8037\.97\b/;
 class ObservationMismatch extends Error {}
@@ -21,6 +21,10 @@ export function checkObservation(sample, expectedA, expectedB) {
     throw new ObservationMismatch(`${sample.phase}: expected ${expectedA}/${expectedB}, observed ${sample.A.visibilityState}/${sample.B.visibilityState}`);
   if (!sample.A.hasFocus && (sample.phase.includes('A-front') || sample.phase.includes('A-return'))) throw new ObservationMismatch('A is not the focused native page');
   if (!sample.B.hasFocus && sample.phase.includes('B-front')) throw new ObservationMismatch('B is not the focused native page');
+}
+export function observationMatches(sample, expectedA, expectedB) {
+  try { checkObservation(sample, expectedA, expectedB); return true; }
+  catch (error) { if (error instanceof ObservationMismatch) return false; throw error; }
 }
 export function checkArguments(args, profile) {
   assert.ok(Array.isArray(args));
@@ -111,18 +115,24 @@ async function worker(output) {
     async function sample(phase) { return { phase, A: await evaluate(S1, snapshot), B: await evaluate(SB, snapshot) }; }
     async function waitFor(phase, a, b) {
       const deadline = Date.now() + 3000; let value;
-      do { value = await sample(phase); if (value.A.visibilityState === a && value.B.visibilityState === b) break; await delay(50); } while (Date.now() < deadline);
-      result.stages.push(value); save(); checkObservation(value, a, b); return value;
+      do {
+        value = await sample(phase); result.stages.push(value); save();
+        if (observationMatches(value, a, b)) break;
+        await delay(50);
+      } while (Date.now() < deadline);
+      checkObservation(value, a, b); return value;
     }
+    // Pinned Chromium154 Page.bringToFront activates AND focuses the native
+    // WebContents; Target.activateTarget alone does not explicitly focus it.
     stage = 'baseline'; result.control = { rawCdpOnly: true, priorFocusEmulationCommands: result.emulationCommands.length }; assert.equal(result.control.priorFocusEmulationCommands, 0);
-    await cdp.send('Target.activateTarget', { targetId: A }); const initial = await waitFor('baseline-A-front', 'visible', 'hidden');
+    await cdp.send('Page.bringToFront', {}, S1); const initial = await waitFor('baseline-A-front', 'visible', 'hidden');
     const startEvents = initial.A.events.length;
-    await cdp.send('Target.activateTarget', { targetId: B }); await waitFor('baseline-B-front', 'hidden', 'visible');
-    await cdp.send('Target.activateTarget', { targetId: A }); const baseline = await waitFor('baseline-A-return', 'visible', 'hidden');
+    await cdp.send('Page.bringToFront', {}, SB); await waitFor('baseline-B-front', 'hidden', 'visible');
+    await cdp.send('Page.bringToFront', {}, S1); const baseline = await waitFor('baseline-A-return', 'visible', 'hidden');
     if (!trustedTransition(baseline.A.events, 'hidden', startEvents) || !trustedTransition(baseline.A.events, 'visible', startEvents)) throw new ObservationMismatch('Baseline lacks native trusted hidden/visible events');
     result.baseline = 'passed';
     stage = 'S1-enable'; result.emulationCommands.push({ session: 'S1', enabled: true, utc: new Date().toISOString() }); save(); await cdp.send('Emulation.setFocusEmulationEnabled', { enabled: true }, S1); s1Enabled = true;
-    await cdp.send('Target.activateTarget', { targetId: B }); await waitFor('S1-true-B-front', 'visible', 'visible');
+    await cdp.send('Page.bringToFront', {}, SB); await waitFor('S1-true-B-front', 'visible', 'visible');
     const S2 = (await cdp.send('Target.attachToTarget', { targetId: A, flatten: true })).sessionId;
     result.sessions.S2 = S2; assert.notEqual(S1, S2);
     stage = 'S2-disable'; result.emulationCommands.push({ session: 'S2', enabled: false, utc: new Date().toISOString() }); save(); await cdp.send('Emulation.setFocusEmulationEnabled', { enabled: false }, S2);
@@ -133,7 +143,7 @@ async function worker(output) {
     stage = 'S1-disable'; result.emulationCommands.push({ session: 'S1', enabled: false, utc: new Date().toISOString() }); save(); await cdp.send('Emulation.setFocusEmulationEnabled', { enabled: false }, S1); s1Enabled = false;
     const released = await waitFor('S1-false-B-front', 'hidden', 'visible');
     if (!trustedTransition(released.A.events, 'hidden', second.A.events.length)) throw new ObservationMismatch('S1 release lacks native trusted hidden event');
-    stage = 'return-A'; await cdp.send('Target.activateTarget', { targetId: A });
+    stage = 'return-A'; await cdp.send('Page.bringToFront', {}, S1);
     const final = await waitFor('final-A-front', 'visible', 'hidden');
     if (!trustedTransition(final.A.events, 'visible', released.A.events.length)) throw new ObservationMismatch('Final return lacks native trusted visible event');
     result.runHealth = 'completed'; result.verdict = 'session-ownership-supported';

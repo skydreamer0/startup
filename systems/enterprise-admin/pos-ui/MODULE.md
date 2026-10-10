@@ -198,3 +198,11 @@ Run health, observed mechanism and owned-process cleanup have separate verdicts;
 missing or contradictory observations fail the diagnostic. This isolates the
 Chromium session mechanism, not the internal state of an earlier Playwright
 run. No product acceptance or fixture correction follows automatically.
+
+The first successor `1fd906b` stopped on the first A-visible/B-hidden sample
+because A's focus was false; no emulation command ran. Its evidence does not
+prove that focus could not settle. The corrective successor uses public
+`Page.bringToFront` (native activate plus focus in pinned Chromium154) and waits
+for the complete visibility/focus predicate within the same three-second limit,
+preserving all observations and the original assertions. It adds no installation
+or environment change; the first result remains a failed, inconclusive control.
