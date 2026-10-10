@@ -68,13 +68,25 @@ for (const [index, width] of widths.entries()) {
 
     // Real wall-clock staleTime expiry, then real tab visibility/focus. No query/cache hook or fake timer.
     guard.phase = 'refetch-error';
-    const background = await context.newPage(); await background.bringToFront();
-    await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe('hidden');
-    const staleWaitStarted = Date.now();
-    await page.waitForTimeout(61_000);
-    const realStaleElapsedMs = Date.now() - staleWaitStarted; expect(realStaleElapsedMs).toBeGreaterThanOrEqual(61_000);
-    await page.bringToFront(); await background.close();
-    await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe('visible');
+    // Playwright defaults to emulating every page as focused/active. Remove that
+    // override so Chrome's actual foreground tab drives visibilitychange.
+    const nativeFocus = await context.newCDPSession(page);
+    const { realStaleElapsedMs, backgroundVisibility, foregroundVisibility } = await (async () => {
+      try {
+        await page.bringToFront();
+        await nativeFocus.send('Emulation.setFocusEmulationEnabled', { enabled: false });
+        await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe('visible');
+        const background = await context.newPage(); await background.bringToFront();
+        await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe('hidden');
+        const backgroundVisibility = await page.evaluate(() => document.visibilityState);
+        const staleWaitStarted = Date.now();
+        await page.waitForTimeout(61_000);
+        const realStaleElapsedMs = Date.now() - staleWaitStarted; expect(realStaleElapsedMs).toBeGreaterThanOrEqual(61_000);
+        await page.bringToFront(); await background.close();
+        await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe('visible');
+        return { realStaleElapsedMs, backgroundVisibility, foregroundVisibility: await page.evaluate(() => document.visibilityState) };
+      } finally { await nativeFocus.detach(); }
+    })();
     const stale = page.getByRole('alert').filter({ hasText: '分類資訊可能已過期。' });
     await expect(stale).toBeVisible(); await expect(retry).toBeEnabled();
     await stable(); await expect(search).toHaveValue('合成');
@@ -93,6 +105,7 @@ for (const [index, width] of widths.entries()) {
     writeFileSync(info.outputPath('lifecycle.json'), JSON.stringify({ test: info.title, nonce: guard.bootstrap.nonce, width,
       initialStatus: width === 1024 ? 403 : 500, faultInjection: 'Test outer middleware; 403 is UI presentation, not authorization acceptance',
       realStaleWaitMs: 61_000, realStaleElapsedMs, reachability, selectedCategory: guard.bootstrap.categories[1].id,
+      focusEmulationDisabled: true, backgroundVisibility, foregroundVisibility,
       search: '合成', latestProductIds: await productIds(), cartBefore: baseline, cartAfter: await cartSnapshot(page) }, null, 2) + '\n');
   });
 }
