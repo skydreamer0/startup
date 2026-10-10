@@ -3,9 +3,9 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 if (!process.env.CATEGORY_UI_OUTPUT) throw new Error('Use the owned category runner');
 export default defineConfig({
-  testDir: './category-native', testMatch: 'category.spec.ts',
+  testDir: './category-native', testMatch: ['category.spec.ts', 'lifecycle.spec.ts'],
   outputDir: resolve(process.env.CATEGORY_UI_OUTPUT, 'tests'), fullyParallel: false, workers: 1,
-  retries: 0, forbidOnly: true, timeout: 90_000, expect: { timeout: 8_000 },
+  retries: 0, forbidOnly: true, timeout: 150_000, expect: { timeout: 20_000 },
   reporter: [['list'], ['json', { outputFile: resolve(process.env.CATEGORY_UI_OUTPUT, 'report.json') }]],
   use: { browserName: 'chromium', channel: 'chrome', launchOptions: { chromiumSandbox: true },
     serviceWorkers: 'block', screenshot: 'only-on-failure', trace: 'off', video: 'off' },

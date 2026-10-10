@@ -133,6 +133,15 @@ and retryable error states stay separate. Synthetic coverage lives in
 `POSCheckoutPage.inventory.test.tsx` and `CategoryNav.test.tsx`; backend route/service
 coverage is `pos.categories.test.ts`. These do not replace real database or device acceptance.
 
+`e2e/category-native/run.mjs` is the owned exact-head GitHub-hosted acceptance
+route. Its finite seven-case matrix retains stable navigation at 1366/1024/390px
+and adds loading, explicitly injected category 403/500, manual retry, real 61-second
+stale expiry/native tab focus, delayed real product reads and a real empty fixture
+tenant. API/body hashes, complete DB snapshots and exact fixture cleanup are
+required. Injection is test outer middleware; 403 presentation is not authorization
+acceptance. No production DB, login or tenant-switch UI is involved. See
+`../infrastructure/verification/pos-category-lifecycle/README.md`.
+
 ### Change POS API calls
 
 1. Read `../infrastructure/api/api_spec.md`.

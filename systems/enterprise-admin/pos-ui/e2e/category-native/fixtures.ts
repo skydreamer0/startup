@@ -2,13 +2,13 @@ import { test as base, expect, type Page, type TestInfo, type Request } from '@p
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
-import { allowedRead, assertFonts, origin } from './contract.mjs';
+import { allowedRead, assertFonts, origin, emptyCase } from './contract.mjs';
 import { brandRequest, assertBrandResponse } from '../dialog-acceptance/brand-assets.mjs';
 export type Product = { id: string; sku: string; name: string; categoryId: string; stockQuantity: number };
-export type Bootstrap = { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string; nonce: string };
+export type Bootstrap = { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string; nonce: string; empty: { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string } };
 type RequestRow = { id: string; method: string; path: string };
 type ResponseRow = RequestRow & { status: number; sha256: string };
-export type Guard = { requests: RequestRow[]; responses: ResponseRow[]; unexpected: string[]; pageErrors: string[]; bootstrap: Bootstrap; verifiedBrand: ReturnType<typeof assertBrandResponse>[] };
+export type Guard = { requests: RequestRow[]; responses: ResponseRow[]; unexpected: string[]; pageErrors: string[]; bootstrap: Bootstrap; phase: string; verifiedBrand: ReturnType<typeof assertBrandResponse>[] };
 const fonts = new Set([
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
@@ -17,9 +17,10 @@ const fonts = new Set([
 declare global { interface Window { __categoryKeys: { key: string; trusted: boolean }[] } }
 export const test = base.extend<{ guard: Guard }>({
   guard: [async ({ page, context, browser }, use, info) => {
-    const bootstrap: Bootstrap = JSON.parse(readFileSync(join(process.env.CATEGORY_UI_OUTPUT!, '.bootstrap.json'), 'utf8'));
+    const allBootstrap: Bootstrap = JSON.parse(readFileSync(join(process.env.CATEGORY_UI_OUTPUT!, '.bootstrap.json'), 'utf8'));
+    const bootstrap = info.title === emptyCase ? { ...allBootstrap, ...allBootstrap.empty } : allBootstrap;
     expect(bootstrap.nonce).toBe(process.env.CATEGORY_UI_NONCE);
-    const guard: Guard = { bootstrap, requests: [], responses: [], unexpected: [], pageErrors: [], verifiedBrand: [] };
+    const guard: Guard = { bootstrap, requests: [], responses: [], unexpected: [], pageErrors: [], phase: 'initial', verifiedBrand: [] };
     const ids = new WeakMap<Request, RequestRow>(); const pending: Promise<void>[] = [];
     const observe = (page: Page) => page.on('pageerror', error => guard.pageErrors.push(error.message));
     context.pages().forEach(observe); context.on('page', observe);
@@ -47,7 +48,7 @@ export const test = base.extend<{ guard: Guard }>({
         if (!allowedRead(method, url.pathname)) { guard.unexpected.push(label); await route.abort(); return; }
         const row = { id: `${bootstrap.nonce}:${randomUUID()}`, method, path: url.pathname + url.search };
         ids.set(request, row); guard.requests.push(row);
-        await route.continue({ headers: { ...request.headers(), 'x-category-qa-request': row.id } }); return;
+        await route.continue({ headers: { ...request.headers(), 'x-category-qa-request': row.id, 'x-category-qa-case': info.title, 'x-category-qa-phase': guard.phase } }); return;
       }
       const brand = brandRequest(url, method, origin);
       if (brand) {
