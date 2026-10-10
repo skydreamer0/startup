@@ -5,14 +5,14 @@ const batch = { id: 'synthetic-trace-batch', tenantId: 'synthetic-tenant', produ
   batchNumber: '合成來源追溯批次-LONG-ID-1234567890-ABCDEFGHIJ-1234567890', quantity: 4, status: 'QUARANTINE',
   expiryDate: '2026-10-20T00:00:00Z', receivedAt: '2026-10-01T00:00:00Z', costPrice: '20',
   product: { name: '合成藥品長中文名稱用於核對來源明細在窄版是否可以正常換行閱讀', sku: 'SYNTHETIC-TRACE-ONLY' } };
-function detail(count = 1, marker = '合成訂單') {
+function detail(count = 1, marker = '合成訂單', nullOrderNumber = false) {
   return { ...batch,
     receiptMovements: [{ id: 'synthetic-receipt-1234567890-ABCDEFGHIJ-1234567890-ABCDEFGHIJ', tenantId: batch.tenantId,
       batchId: batch.id, type: 'IN', quantity: 7, createdAt: '2026-09-30T16:00:00Z' }],
     saleAllocations: Array.from({ length: Math.min(count, 100) }, (_, index) => ({ id: `allocation-${index}`, tenantId: batch.tenantId,
       batchId: batch.id, orderId: `order-${index}`, orderItemId: `synthetic-order-line-${index}-1234567890-ABCDEFGHIJ-1234567890`,
       movementId: `synthetic-movement-${index}-1234567890-ABCDEFGHIJ-1234567890`, quantity: 3,
-      createdAt: '2026-10-01T16:00:00Z', expiryDateAtSale: '2026-10-20T00:00:00Z', order: { id: `order-${index}`, orderNumber: `${marker}-${index}` } })),
+      createdAt: '2026-10-01T16:00:00Z', expiryDateAtSale: '2026-10-20T00:00:00Z', order: { id: `order-${index}`, orderNumber: nullOrderNumber && index === 0 ? null : `${marker}-${index}` } })),
     _count: { saleAllocations: count } };
 }
 function nonDetail(url: URL) {
@@ -36,7 +36,7 @@ test.describe('batch trace desktop', () => {
   test.use({ viewport: { width: 1366, height: 768 } });
   test('batch-trace 1366: source lifecycle', async ({ page, harness }, info) => {
     const old = deferred(); let detailReads = 0;
-    harness.batchHandler = url => nonDetail(url) ?? (++detailReads === 1 ? old.promise : { status: 200, data: detail(132) });
+    harness.batchHandler = url => nonDetail(url) ?? (++detailReads === 1 ? old.promise : { status: 200, data: detail(132, '合成訂單', true) });
     await ready(page); await opener(page).click();
     await expect(dialog(page).getByRole('status')).toHaveText('正在載入批次來源…');
     await captureTrace(page, info, 'source-loading');
@@ -53,6 +53,10 @@ test.describe('batch trace desktop', () => {
     await expect.poll(() => harness.responses.length).toBe(responses + 1);
     await expect(dialog(page)).not.toContainText('STALE-RESPONSE-MUST-NOT-APPEAR');
     await expect(dialog(page)).toContainText('顯示 100 / 132 筆分攤');
+    await expect(dialog(page)).toContainText('訂單 未編號（order-0）');
+    await expect(dialog(page)).toContainText('訂單 合成訂單-1');
+    await expect(dialog(page)).toContainText('進貨紀錄：synthetic-receipt-1234567890-ABCDEFGHIJ-1234567890-ABCDEFGHIJ');
+    await expect(dialog(page).getByRole('alert')).toHaveCount(0);
     await captureTrace(page, info, 'source-linked');
     // Initial title focus and a real key cycle, without DOM focus/click shortcuts.
     await expect(dialog(page).getByRole('heading', { level: 2 })).toBeFocused();
@@ -67,15 +71,30 @@ test.describe('batch trace desktop', () => {
 test.describe('batch trace narrow', () => {
   test.use({ viewport: { width: 390, height: 844 } });
   test('batch-trace 390: source errors', async ({ page, harness }, info) => {
-    let status = 200; let empty = false;
-    harness.batchHandler = url => nonDetail(url) ?? { status, data: empty ? { ...detail(0), receiptMovements: [] } : detail() };
+    let status = 200; let empty = false; let nullOrderNumber = false;
+    harness.batchHandler = url => nonDetail(url) ?? { status, data: empty ? { ...detail(0), receiptMovements: [] } : detail(nullOrderNumber ? 2 : 1, '合成訂單', nullOrderNumber) };
     await ready(page); await opener(page).click();
     await expect(dialog(page)).toContainText('訂單 合成訂單-0');
     await captureTrace(page, info, 'source-long');
+    nullOrderNumber = true; await refresh(page).click();
+    await expect(dialog(page)).toContainText('訂單 未編號（order-0）');
+    await expect(dialog(page)).toContainText('訂單 合成訂單-1');
+    await expect(dialog(page)).not.toContainText('訂單 合成訂單-0');
+    await expect(dialog(page)).toContainText('進貨紀錄：synthetic-receipt-1234567890-ABCDEFGHIJ-1234567890-ABCDEFGHIJ');
+    await expect(dialog(page).getByRole('alert')).toHaveCount(0);
+    await expect(dialog(page)).toContainText('顯示 2 / 2 筆分攤');
+    await captureTrace(page, info, 'source-null-order', dialog(page).getByText('訂單 未編號（order-0）・本批實扣數量 3', { exact: true }));
+    nullOrderNumber = false; await refresh(page).click();
+    await expect(dialog(page)).toContainText('訂單 合成訂單-0');
+    await expect(dialog(page)).toContainText('顯示 1 / 1 筆分攤');
+    await expect(dialog(page)).not.toContainText('訂單 未編號');
+    await expect(dialog(page)).not.toContainText('訂單 合成訂單-1');
     for (const code of [403, 404, 500]) {
       status = code; await refresh(page).click();
       await expect(dialog(page).getByRole('alert')).toContainText(code === 403 ? '權限不足' : code === 404 ? '找不到此批次' : '無法載入批次來源');
       await expect(dialog(page)).not.toContainText('訂單 合成訂單-0');
+      await expect(dialog(page)).not.toContainText('訂單 未編號');
+      await expect(dialog(page)).not.toContainText('訂單 合成訂單-1');
       await expect(dialog(page)).not.toContainText('目前沒有已連結');
       await captureTrace(page, info, `source-${code}`);
     }
