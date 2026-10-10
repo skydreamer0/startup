@@ -1,4 +1,5 @@
 import { webcrypto } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -57,6 +58,23 @@ async function openPage() {
 }
 
 describe('POS header keyboard accessibility (synthetic DOM, not scroll geometry)', () => {
+  it('contains out-of-flow toolbar labels inside the scrolling row (CSS contract only)', async () => {
+    await openPage();
+    const stylesheet = document.createElement('style');
+    const css = readFileSync('src/index.css', 'utf8');
+    const rule = css.match(/\.pos-topbar\s*\{[^}]*\}/)?.[0];
+    expect(rule).toBeDefined();
+    stylesheet.textContent = rule!;
+    document.head.append(stylesheet);
+    try {
+      // The real customer lookup's absolute hidden label must have a containing
+      // block inside the scroller. JSDOM cannot prove viewport or clipping geometry.
+      expect(getComputedStyle(screen.getByRole('region', { name: '收銀工具列' })).position).toBe('relative');
+    } finally {
+      stylesheet.remove();
+    }
+  });
+
   it('provides a named keyboard-focusable header region and persistent scrolling instructions', async () => {
     await openPage();
     const header = screen.getByRole('region', { name: '收銀工具列' });

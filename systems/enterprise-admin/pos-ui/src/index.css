@@ -92,6 +92,8 @@ input { font-family: inherit; }
 }
 
 .pos-topbar {
+  /* Keep absolute hidden labels inside this scroller's containing block. */
+  position: relative;
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
