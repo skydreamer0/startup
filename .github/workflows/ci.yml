@@ -491,6 +491,17 @@ jobs:
           SKU_QA_NETWORK: ${{ job.services.postgres.network }}
           CATEGORY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
         run: node pos-ui/e2e/category-native/run.mjs
+      - name: Confirmed POS stock and stale retry through real API and owned PostgreSQL
+        id: stock_native
+        timeout-minutes: 5
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+          CATEGORY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+          STOCK_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+        run: |
+          node --test pos-ui/e2e/stock-native/run.test.mjs
+          node pos-ui/e2e/stock-native/run.mjs
       - name: Verify zero rows and drop only the owned SKU database
         if: ${{ always() && steps.sku_preflight.outcome == 'success' }}
         env:
@@ -511,6 +522,15 @@ jobs:
         with:
           name: pos-sku-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/sku-qa-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Preserve quiescent confirmed stock browser API database evidence
+        if: ${{ always() && steps.stock_native.outputs.evidence_dir != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pos-stock-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.stock_native.outputs.evidence_dir }}
           if-no-files-found: error
           retention-days: 7
 
