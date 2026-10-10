@@ -1,4 +1,4 @@
-import { test as base, expect, type Page, type TestInfo, type Route } from '@playwright/test';
+import { test as base, expect, type Page, type TestInfo, type Route, type Locator } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import type { MarginAnalysis } from '@pharmasaas/types';
@@ -140,10 +140,12 @@ export async function capture(page: Page, info: TestInfo, name: string) {
 
 // Reuse the same owned browser, network allowlist, artifact and CJK guards for
 // the batch-source slice. No backend, proxy, new service or additional auth.
-export async function captureTrace(page: Page, info: TestInfo, name: string) {
+export async function captureTrace(page: Page, info: TestInfo, name: string, captureTarget?: Locator) {
   await page.evaluate(() => document.fonts.ready);
   const dialog = page.getByRole('dialog');
-  await dialog.locator('h2').scrollIntoViewIfNeeded();
+  await (captureTarget ?? dialog.locator('h2')).scrollIntoViewIfNeeded();
+  if (captureTarget) await expect(captureTarget).toBeInViewport({ ratio: 1 });
+  const capturedTarget = captureTarget ? { text: await captureTarget.innerText(), bounds: await captureTarget.boundingBox() } : null;
   const geometry = await dialog.evaluate(element => {
     const bounds = (el: Element) => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }; };
     return { subject: 'batch-trace', viewport: { width: innerWidth, height: innerHeight }, documentWidth: document.documentElement.scrollWidth,
@@ -169,7 +171,7 @@ export async function captureTrace(page: Page, info: TestInfo, name: string) {
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
   for (const target of geometry.targets) { expect(target.width).toBeGreaterThanOrEqual(44); expect(target.height).toBeGreaterThanOrEqual(44); }
   for (const text of geometry.textRects) { expect(text.x).toBeGreaterThanOrEqual(geometry.dialog.x); expect(text.right).toBeLessThanOrEqual(geometry.dialog.right); }
-  await writeFile(info.outputPath(`${name}.json`), JSON.stringify({ ...geometry, platformFonts }, null, 2));
+  await writeFile(info.outputPath(`${name}.json`), JSON.stringify({ ...geometry, platformFonts, capturedTarget }, null, 2));
   await page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true });
   await info.attach(`${name}.png`, { path: info.outputPath(`${name}.png`), contentType: 'image/png' });
   await info.attach(`${name}.json`, { path: info.outputPath(`${name}.json`), contentType: 'application/json' });
