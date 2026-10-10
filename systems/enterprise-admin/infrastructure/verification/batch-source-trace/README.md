@@ -97,3 +97,20 @@ modified here; that failure is still a failure, not this slice's acceptance.
 Supplemental Chrome results and PNG review must be recorded for the new exact head.
 Real API/DB, 1024px, native 200% zoom, touch, iPad/Safari, hardware and whole #31
 acceptance remain NOT RUN.
+
+### First supplement execution and bounded validator repair
+
+Head `1ebe5cac6ccae3d67d9994d6fe73deb2e23bd3a0`, run `38050357132`, executed
+24/24 Chrome cases successfully, including both new source journeys. The Admin
+job still FAILED while validating the seven screenshots: the existing generic
+PNG guard required a minimum 844px height, whereas the reviewed desktop scenario
+produced valid 1366×768 PNGs. Artifact `11669331944` and its raw failure are retained
+with ZIP SHA256 `8985602eed4af4bdd42243b0e5c38ee7becc91aefce9601d73a0511b0fa9993e`.
+This is not relabelled as a passing job or complete visual acceptance.
+
+The repair routes only the exact registered desktop-trace scenario to a PNG
+decoder requiring exactly 1366×768. Every other case retains the original 844px
+minimum and all CRC/chunk/decompression checks. Wrong widths/heights, unknown
+scenario names and truncated images are negative-tested. Application code,
+workflow, fixtures and browser actions are unchanged. A new exact-head CI result
+and independent PNG review are required.

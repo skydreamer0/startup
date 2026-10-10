@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { resolveProvenance } from '../ui-evidence/provenance.mjs';
 import { expectedCases } from './cases.mjs';
-import { validatePng } from './png.mjs';
+import { validatePng, validateTraceDesktopPng } from './png.mjs';
 import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import { cleanupRunProcesses, createRunScope } from './owned-run.mjs';
 
@@ -54,6 +54,10 @@ export function assertAttachment(output, file) {
   assert.ok(fs.realpathSync(file).startsWith(fs.realpathSync(output) + path.sep));
   return fs.readFileSync(file);
 }
+export function validateScreenshot(bytes, title) {
+  assert.ok(expectedCases.includes(title), 'Unknown screenshot case');
+  return title === 'batch-trace 1366: source lifecycle' ? validateTraceDesktopPng(bytes) : validatePng(bytes);
+}
 export function validateEvidence(output, cases) {
   return cases.map(item => {
     const names = item.attachments.map(a => a.name);
@@ -78,7 +82,7 @@ export function validateEvidence(output, cases) {
     assert.deepEqual(images.map(a => a.name).sort(), required.map(name => `${name}.png`).sort());
     const observations = images.map(image => {
       const bytes = assertAttachment(output, image.path);
-      const dimensions = validatePng(bytes);
+      const dimensions = validateScreenshot(bytes, item.title);
       const measure = item.attachments.find(a => a.name === image.name.replace(/\.png$/, '.json'));
       assert.ok(measure);
       const geometry = JSON.parse(assertAttachment(output, measure.path));
