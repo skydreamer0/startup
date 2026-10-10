@@ -72,6 +72,15 @@ the historical browser subject as evidence for the new dialog source.
 2. Keep `RefundModal`, order lookup, checkout toasts and shift-report labels consistent with refund registration. Actual goods receipt/inspection is a separate pending workflow.
 3. Use `e2e/checkout-flow.spec.ts` for the real checkout-to-refund flow; backend PostgreSQL cases verify unchanged product/lot/movement/allocation balances and competing refund requests.
 
+`e2e/stock-native/run.mjs` is the opt-in exact-head CI path for Issue #49 AC1/AC2,
+reusing the owned SKU PostgreSQL service and unchanged production API. Two sandboxed
+Chrome journeys cover confirmed quantities, test-injected product GET 500s,
+keyboard/pointer retry, new-draft preservation and money-only refunds. Response
+hashes, independent DB snapshots and exact-tenant cleanup are required; the final
+SKU cleanup separately proves owned DB removal. See
+`../infrastructure/verification/pos-confirmed-stock/README.md`. Login, unknown/conflict
+native recovery, narrow-phone and physical-device acceptance remain separate.
+
 ### Change scanner matching or asynchronous scan behavior
 
 1. Start with `src/hooks/useBarcodeScanner.ts`, its nearest test, `POSCheckoutPage` and `cartStore`. Automatic additions require one exact string match on SKU or a barcode already present in supplied candidates. Do not treat a single fuzzy search result as exact.
