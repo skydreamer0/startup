@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "rootDir": "..", "noEmit": true, "allowJs": true, "declaration": false, "declarationMap": false },
+  "include": ["scripts/category-browser-fixture.ts", "src/types/**/*.d.ts"]
+}

@@ -38,7 +38,7 @@ and manual dispatch. It currently has nine jobs:
 | Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin margin/ranking warning browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
 | POS UI CI | Unit/component tests, build/type-check, Docker image, real HTTP restart/lost-response recovery with isolated PostgreSQL, and fixed-subject scanner/supplier Chromium evidence. The fixed subjects are historical versions, not the current UI. |
 | Product pagination PostgreSQL acceptance | Exact-head pagination regression and native PostgreSQL cases, ownership guards, and cleanup evidence. |
-| Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU lookup cases plus current POS Chromium with synthetic HTTP; these are separate scopes, not one browser-to-real-DB flow. |
+| Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU/category/provenance cases and current POS Chromium with synthetic HTTP retain their separate scopes. A dedicated stable-category Chrome slice also follows the real built POS through the unchanged HTTP/JWT/RBAC API to the same owned PostgreSQL fixture, at 1366/1024/390px; this does not certify checkout/refund quantity or stale-state UX. |
 | Batch audit PostgreSQL acceptance | Exact-head append-only batch audit cases and schema contracts, with owned fixture evidence. |
 | Order sequence PostgreSQL acceptance | Exact-head numbering, legacy-upgrade, and checkout regression cases with owned DB cleanup. |
 | Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 14 split/PIN/ordinary-payment native-input cases, locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. |
@@ -98,6 +98,7 @@ Additional workflows:
   visual acceptance. Existing zero/empty error fallback and whole-report overflow
   are not repaired or certified by this disclosure-only slice. Physical devices,
   native zoom, screen readers, Safari and financial reconciliation remain separate.
+- `e2e/category-native/run.mjs` covers Issue #49 AC3 only: single-SKU/empty searches and category switching retain every category entry; real keyboard/pointer activation preserves the cart and makes no checkout/write request. A synthetic active shift and signed test JWT avoid unrelated login/shift-opening writes. Browser/API response hashes and all business rows are compared before/after; exact fixture rows are removed before the existing owned-DB cleanup. Chrome sandbox, CJK glyphs, sealed ledgers and quiescent-only artifact publication are required. Independent raw/pixel review is still needed; whole-page responsive layout and the other Issue #49 criteria remain separate.
 - Business acceptance, real payment-provider behavior, physical scanner/touch,
   Safari/iPad, OS keyboard, native zoom, and screen-reader checks remain separate
   when relevant. CI success does not close those gates or authorize deployment.
