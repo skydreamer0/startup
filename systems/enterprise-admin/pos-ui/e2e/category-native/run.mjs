@@ -9,6 +9,7 @@ import { createRunScope, cleanupRunProcesses } from './owned-run.mjs';
 import { assertEnvironment, assertReport, assertNetwork, assertDatabase, assertFonts, completionOutcome, stages, widths, expectedCases, databaseUrl } from './contract.mjs';
 import { assertOwnership, assertService, databaseName } from '../../../backend/scripts/pos-product-lookup-ci.mjs';
 import { validatePng } from '../admin-margin-warning/png.mjs';
+import { assertBrandSources } from '../dialog-acceptance/brand-assets.mjs';
 
 export async function runOwnedPhase(owner, command, args, options, state, cleanup) {
   state.quiescent = false;
@@ -36,6 +37,7 @@ async function main() {
       assert.equal(git('ls-files', '--others', '--ignored', '--exclude-standard', '--', `systems/enterprise-admin/${directory}/.env*`), '');
       assert.equal(fs.existsSync(path.join(app, '..', directory, '.env')), false);
     }
+    assertBrandSources(app);
   };
   assertSource();
   const container = process.env.SKU_QA_CONTAINER, networkName = process.env.SKU_QA_NETWORK;
@@ -56,7 +58,8 @@ async function main() {
   const read = name => JSON.parse(fs.readFileSync(path.join(output, name), 'utf8'));
   const nonce = randomUUID();
   write('source.json', { ...identity, nonce, chrome, sandbox: true, scope: 'Issue49 AC3 only: built POS -> unchanged real HTTP/JWT/RBAC -> owned isolated PostgreSQL',
-    login: 'fixture-issued synthetic JWT for real active synthetic user; login UI not under test', externalCss: 'blocked; installed Noto CJK' });
+    login: 'fixture-issued synthetic JWT for real active synthetic user; login UI not under test', externalCss: 'blocked; installed Noto CJK',
+    brandAssets: assertBrandSources(app) });
   const inputs = ['systems/enterprise-admin/pos-ui', 'systems/enterprise-admin/backend', 'systems/enterprise-admin/packages',
     'systems/enterprise-admin/package.json', 'systems/enterprise-admin/pnpm-lock.yaml', 'systems/enterprise-admin/pnpm-workspace.yaml', '.github/workflows/ci.yml'];
   const sourceFiles = git('ls-files', '-z', '--', ...inputs).split('\0').filter(Boolean);

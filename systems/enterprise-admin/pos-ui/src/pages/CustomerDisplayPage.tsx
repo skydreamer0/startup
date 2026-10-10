@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import brandMarkDark from '../assets/brand/flow-capsule-v1/mark-dark.svg?no-inline';
 
 interface CartItem {
   name: string;
@@ -186,7 +187,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 function SmallHeader({ isFs, toggle, standalone }: { isFs: boolean; toggle: () => void; standalone: boolean }) {
   return (
     <div style={{ flexShrink: 0, height: 38, background: '#1C1917', display: 'flex', alignItems: 'center', paddingInline: 14, gap: 8 }}>
-      <span style={{ fontSize: 16 }}>🌿</span>
+      <img src={brandMarkDark} alt="" width={32} height={32} />
       <span style={{ color: '#78716C', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em' }}>健康生活藥局</span>
       {!standalone && (
         <button

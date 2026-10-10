@@ -3,11 +3,12 @@ import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { allowedRead, assertFonts, origin } from './contract.mjs';
+import { brandRequest, assertBrandResponse } from '../dialog-acceptance/brand-assets.mjs';
 export type Product = { id: string; sku: string; name: string; categoryId: string; stockQuantity: number };
 export type Bootstrap = { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string; nonce: string };
 type RequestRow = { id: string; method: string; path: string };
 type ResponseRow = RequestRow & { status: number; sha256: string };
-export type Guard = { requests: RequestRow[]; responses: ResponseRow[]; unexpected: string[]; pageErrors: string[]; bootstrap: Bootstrap };
+export type Guard = { requests: RequestRow[]; responses: ResponseRow[]; unexpected: string[]; pageErrors: string[]; bootstrap: Bootstrap; verifiedBrand: ReturnType<typeof assertBrandResponse>[] };
 const fonts = new Set([
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
@@ -18,7 +19,7 @@ export const test = base.extend<{ guard: Guard }>({
   guard: [async ({ page, context, browser }, use, info) => {
     const bootstrap: Bootstrap = JSON.parse(readFileSync(join(process.env.CATEGORY_UI_OUTPUT!, '.bootstrap.json'), 'utf8'));
     expect(bootstrap.nonce).toBe(process.env.CATEGORY_UI_NONCE);
-    const guard: Guard = { bootstrap, requests: [], responses: [], unexpected: [], pageErrors: [] };
+    const guard: Guard = { bootstrap, requests: [], responses: [], unexpected: [], pageErrors: [], verifiedBrand: [] };
     const ids = new WeakMap<Request, RequestRow>(); const pending: Promise<void>[] = [];
     const observe = (page: Page) => page.on('pageerror', error => guard.pageErrors.push(error.message));
     context.pages().forEach(observe); context.on('page', observe);
@@ -48,6 +49,17 @@ export const test = base.extend<{ guard: Guard }>({
         ids.set(request, row); guard.requests.push(row);
         await route.continue({ headers: { ...request.headers(), 'x-category-qa-request': row.id } }); return;
       }
+      const brand = brandRequest(url, method, origin);
+      if (brand) {
+        try {
+          const response = await route.fetch({ maxRedirects: 0, maxRetries: 0 });
+          const receipt = assertBrandResponse(brand, { status: response.status(), contentType: response.headers()['content-type'], body: await response.body() });
+          await route.fulfill({ response }); guard.verifiedBrand.push(receipt);
+        } catch (error) {
+          guard.unexpected.push(`${label}: ${error instanceof Error ? error.message : String(error)}`); await route.abort();
+        }
+        return;
+      }
       if (['/', '/login', '/favicon.ico'].includes(url.pathname) || url.pathname.startsWith('/assets/')) { await route.continue(); return; }
       guard.unexpected.push(label); await route.abort();
     });
@@ -60,7 +72,7 @@ export const test = base.extend<{ guard: Guard }>({
       mkdirSync(info.outputDir, { recursive: true });
       writeFileSync(info.outputPath('network.json'), JSON.stringify({ test: info.title, nonce: bootstrap.nonce,
         viewport: page.viewportSize(), browserVersion: browser.version(), contextClosed, keys,
-        requests: guard.requests, responses: guard.responses, unexpected: guard.unexpected, pageErrors: guard.pageErrors }, null, 2) + '\n');
+        requests: guard.requests, responses: guard.responses, verifiedBrand: guard.verifiedBrand, unexpected: guard.unexpected, pageErrors: guard.pageErrors }, null, 2) + '\n');
       expect(contextClosed).toBe(true); expect(guard.unexpected).toEqual([]); expect(guard.pageErrors).toEqual([]);
     }
   }, { auto: true }],

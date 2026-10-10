@@ -1,0 +1,21 @@
+{
+  "admin-ui/public/brand/flow-capsule-v1/apple-touch-icon-180.png": "d08bfe32c0ad65775539df372311aa0c673d8b1312ffc5330ee84d78bae56232",
+  "admin-ui/public/brand/flow-capsule-v1/favicon-16.png": "61f504fb26753251014d89f5f65f85d33cc98ac3b17028cde03cd88f3e55387f",
+  "admin-ui/public/brand/flow-capsule-v1/favicon-32.png": "92490160cede109b0e85bdf22ae2c7c117efa4e591053576370595498eb8257d",
+  "admin-ui/public/brand/flow-capsule-v1/favicon.ico": "7df4b415431853087614acfc25a15d37eeadca4ab527dab877cce1be9cdf97bc",
+  "admin-ui/public/brand/flow-capsule-v1/favicon.svg": "f06be1c64087299a4768beaa8cea530b1a3a1b463bac13a9c198abedf06417dc",
+  "admin-ui/public/brand/flow-capsule-v1/mark.svg": "f06be1c64087299a4768beaa8cea530b1a3a1b463bac13a9c198abedf06417dc",
+  "admin-ui/src/assets/brand/flow-capsule-v1/mark-dark.svg": "4d8c39a0965f9f774a24ac8bfebf0536bf9a65ceda645adc0bc6f5164d28532d",
+  "admin-ui/src/assets/brand/flow-capsule-v1/mark-light.svg": "77654a5f8a77212c281bc065e317ad5d9d8e4b7bfaf9d2fa5b7cf616aaedd092",
+  "pos-ui/public/brand/flow-capsule-v1/app-icon-192.png": "08ce9008b51e8c477da8b7d196295de117570cf347147f25c345c463f85fe6db",
+  "pos-ui/public/brand/flow-capsule-v1/app-icon-512.png": "a2e1e1fbac9a6c73364f8fe6b14400d0cd1938a7a52b4bc5d4a07d6becd2b888",
+  "pos-ui/public/brand/flow-capsule-v1/apple-touch-icon-180.png": "d08bfe32c0ad65775539df372311aa0c673d8b1312ffc5330ee84d78bae56232",
+  "pos-ui/public/brand/flow-capsule-v1/favicon-16.png": "61f504fb26753251014d89f5f65f85d33cc98ac3b17028cde03cd88f3e55387f",
+  "pos-ui/public/brand/flow-capsule-v1/favicon-32.png": "92490160cede109b0e85bdf22ae2c7c117efa4e591053576370595498eb8257d",
+  "pos-ui/public/brand/flow-capsule-v1/favicon.ico": "7df4b415431853087614acfc25a15d37eeadca4ab527dab877cce1be9cdf97bc",
+  "pos-ui/public/brand/flow-capsule-v1/favicon.svg": "f06be1c64087299a4768beaa8cea530b1a3a1b463bac13a9c198abedf06417dc",
+  "pos-ui/public/brand/flow-capsule-v1/mark.svg": "f06be1c64087299a4768beaa8cea530b1a3a1b463bac13a9c198abedf06417dc",
+  "pos-ui/public/brand/flow-capsule-v1/maskable-512.png": "9bfd5a1fdd39cbf048f85c51849fbd193fc3fc8cd8119b7935c9e41939869bc4",
+  "pos-ui/src/assets/brand/flow-capsule-v1/mark-dark.svg": "4d8c39a0965f9f774a24ac8bfebf0536bf9a65ceda645adc0bc6f5164d28532d",
+  "pos-ui/src/assets/brand/flow-capsule-v1/mark-light.svg": "77654a5f8a77212c281bc065e317ad5d9d8e4b7bfaf9d2fa5b7cf616aaedd092"
+}

@@ -2,6 +2,7 @@ import { test as base, expect, type Route, type Page, type TestInfo } from '@pla
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { screenshot as captureScreenshot, readKeys } from '../sku-acceptance/fixtures';
+import { brandRequest, assertBrandResponse } from './brand-assets.mjs';
 
 export const origin = 'http://127.0.0.1:4288';
 export const product = { id: 'synthetic-product', sku: 'SYNTHETIC', name: '合成焦點測試商品', retailPrice: 1000, stockQuantity: 20 };
@@ -14,10 +15,11 @@ type Write = { method: string; path: string; body: unknown };
 export type Fixture = {
   reads: string[]; expectedWrites: Write[]; unexpected: string[]; pageErrors: string[];
   forwardedStatic: string[]; checkoutCalls: Route[]; allowCheckout: boolean;
+  verifiedBrand: ReturnType<typeof assertBrandResponse>[];
 };
 export const test = base.extend<{ fixture: Fixture }>({
   fixture: [async ({ page, context, browser }, use, info) => {
-    const fixture: Fixture = { reads: [], expectedWrites: [], unexpected: [], pageErrors: [], forwardedStatic: [], checkoutCalls: [], allowCheckout: false };
+    const fixture: Fixture = { reads: [], expectedWrites: [], unexpected: [], pageErrors: [], forwardedStatic: [], verifiedBrand: [], checkoutCalls: [], allowCheckout: false };
     const observe = (target: Page) => target.on('pageerror', error => fixture.pageErrors.push(error.message));
     context.pages().forEach(observe); context.on('page', observe);
     await context.addInitScript(() => {
@@ -43,6 +45,19 @@ export const test = base.extend<{ fixture: Fixture }>({
         fixture.checkoutCalls.push(route); return; // No forwarding: the case controls the local synthetic response.
       }
       if (!['GET', 'HEAD'].includes(method)) { fixture.unexpected.push(label); await route.abort(); return; }
+      const brand = brandRequest(url, method, origin);
+      if (brand) {
+        try {
+          const response = await route.fetch({ maxRedirects: 0, maxRetries: 0 });
+          const receipt = assertBrandResponse(brand, { status: response.status(), contentType: response.headers()['content-type'], body: await response.body() });
+          await route.fulfill({ response });
+          fixture.verifiedBrand.push(receipt);
+        } catch (error) {
+          fixture.unexpected.push(`${label}: ${error instanceof Error ? error.message : String(error)}`);
+          await route.abort();
+        }
+        return;
+      }
       if (url.pathname.startsWith('/api/')) {
         fixture.reads.push(label);
         const data: Record<string, unknown> = {
@@ -71,6 +86,7 @@ export const test = base.extend<{ fixture: Fixture }>({
       const evidence = { scope: 'Official Chrome with real built POS and locally fulfilled synthetic HTTP; no API/DB/hardware acceptance',
         nonce: process.env.DIALOG_UI_NONCE, test: info.title, browserVersion: browser.version(), viewport, contextClosed,
         keyboardEvents, reads: fixture.reads, expectedWrites: fixture.expectedWrites, forwardedStatic: fixture.forwardedStatic,
+        verifiedBrand: fixture.verifiedBrand,
         unexpected: fixture.unexpected, pageErrors: fixture.pageErrors };
       await mkdir(dirname(info.outputPath('network-evidence.json')), { recursive: true });
       await writeFile(info.outputPath('network-evidence.json'), JSON.stringify(evidence, null, 2) + '\n');

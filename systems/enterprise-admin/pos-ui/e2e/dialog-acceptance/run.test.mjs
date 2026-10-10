@@ -5,6 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { assertReport, assertEvidence, runOwnedPhase, publishEvidenceIfQuiescent, completionOutcome, assertFontEvidence } from './run.mjs';
 import { expectedCases } from './cases.mjs';
+import { brandAssets, brandRequest, assertBrandSources, assertBrandResponse, assertBrandEvidence } from './brand-assets.mjs';
+import { fileURLToPath } from 'node:url';
 
 test('browser evidence requires every exact case without retries or skips', () => {
   const report = { errors: [], suites: [{ specs: expectedCases.map(title => ({ title, ok: true,
@@ -28,7 +30,7 @@ test('browser evidence requires every exact case without retries or skips', () =
 test('sealed ledgers reject omitted cases, extra writes, egress, wrong nonce and untrusted keys', () => {
   const nonce = '00000000-0000-4000-8000-000000000000';
   const entries = expectedCases.map(title => ({ test: title, nonce, contextClosed: true, unexpected: [], pageErrors: [],
-    forwardedStatic: ['GET /', 'GET /assets/app.js'], browserVersion: '143.0.0.0', keyboardEvents: [{ key: 'Enter', trusted: true }],
+    forwardedStatic: ['GET /', 'GET /assets/app.js'], verifiedBrand: [], browserVersion: '143.0.0.0', keyboardEvents: [{ key: 'Enter', trusted: true }],
     expectedWrites: [{ method: 'POST', path: '/api/v1/admin/pos/staff-login', body: { employeeCode: 'SYNTHETIC-CASHIER' } },
       ...(title.includes('submits exactly once') || title.includes('preserves payload') ? [{ method: 'POST', path: '/api/v1/admin/pos/checkout' }] : [])] }));
   assert.equal(assertEvidence(entries, nonce), expectedCases.length);
@@ -39,7 +41,61 @@ test('sealed ledgers reject omitted cases, extra writes, egress, wrong nonce and
     rows => { rows[0].unexpected.push('WebSocket wss://unexpected.invalid'); },
     rows => { rows[0].expectedWrites.push({ method: 'POST', path: '/api/v1/admin/pos/checkout' }); },
     rows => { rows[0].pageErrors.push('uncaught error'); },
+    rows => { delete rows[0].verifiedBrand; },
+    rows => { rows[0].verifiedBrand.push({ method: 'GET', path: '/brand/unknown.svg' }); },
+    rows => { rows[0].forwardedStatic.push(`GET ${brandAssets[0].path}`); },
   ]) { const bad = structuredClone(entries); mutate(bad); assert.throws(() => assertEvidence(bad, nonce)); }
+});
+
+test('brand forwarding allows only the three observed same-origin GET paths without query or credentials', () => {
+  const origin = 'http://127.0.0.1:4288';
+  for (const asset of brandAssets) assert.equal(brandRequest(new URL(origin + asset.path), 'GET', origin), asset);
+  for (const [url, method] of [
+    [origin + brandAssets[0].path, 'POST'], [origin + brandAssets[0].path, 'HEAD'],
+    [origin + brandAssets[0].path + '?cache=1', 'GET'], [origin + brandAssets[0].path + '#fragment', 'GET'],
+    ['https://unexpected.invalid' + brandAssets[0].path, 'GET'],
+    ['http://127.0.0.1:4289' + brandAssets[0].path, 'GET'],
+    ['http://user:pass@127.0.0.1:4288' + brandAssets[0].path, 'GET'],
+    [origin + '/brand/flow-capsule-v1/favicon.ico', 'GET'],
+    [origin + '/brand/flow-capsule-v1/unknown.png', 'GET'],
+    [origin + '/brand/flow-capsule-v2/favicon.svg', 'GET'],
+    [origin + '/brand/flow-capsule-v1/favicon.svg/extra', 'GET'],
+  ]) assert.equal(brandRequest(new URL(url), method, origin), undefined, `${method} ${url}`);
+});
+
+test('brand source and response receipts require approved bytes, status and MIME', () => {
+  const app = fileURLToPath(new URL('../..', import.meta.url));
+  assert.deepEqual(assertBrandSources(app), brandAssets);
+  for (const asset of brandAssets) {
+    const body = fs.readFileSync(path.join(app, 'public', asset.path));
+    const response = { status: 200, contentType: asset.mime + '; charset=utf-8', body };
+    const receipt = assertBrandResponse(asset, response);
+    assertBrandEvidence([receipt]);
+    for (const bad of [
+      { ...response, status: 302 }, { ...response, status: 404 },
+      { ...response, contentType: 'text/html' }, { ...response, contentType: undefined },
+      { ...response, body: body.subarray(1) },
+      { ...response, body: Buffer.from(body).fill(0, 0, 1) },
+    ]) assert.throws(() => assertBrandResponse(asset, bad));
+    for (const bad of [
+      { ...receipt, method: 'HEAD' }, { ...receipt, bytes: receipt.bytes + 1 },
+      { ...receipt, sha256: '0'.repeat(64) }, { ...receipt, mime: 'text/html' },
+      { ...receipt, path: receipt.path + '?query=1' }, { ...receipt, extra: 'unsealed' },
+    ]) assert.throws(() => assertBrandEvidence([bad]));
+  }
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dialog-brand-source-'));
+  try {
+    assert.throws(() => assertBrandSources(directory));
+    for (const asset of brandAssets) {
+      const target = path.join(directory, 'public', asset.path);
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.copyFileSync(path.join(app, 'public', asset.path), target);
+    }
+    assertBrandSources(directory);
+    const target = path.join(directory, 'public', brandAssets[0].path);
+    const altered = fs.readFileSync(target); altered[0] ^= 1; fs.writeFileSync(target, altered);
+    assert.throws(() => assertBrandSources(directory), /SHA-256/);
+  } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 });
 
 test('cleanup rejection revokes publication even after a previous successful phase', async () => {
