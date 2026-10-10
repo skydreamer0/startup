@@ -19,7 +19,10 @@ export default function AdminLayout() {
     return (
         <div className="admin-layout">
             <aside className="sidebar">
-                <div className="sidebar-logo">STARTER ADMIN</div>
+                <div className="sidebar-logo">
+                    <img src={`${import.meta.env.BASE_URL}brand/flow-capsule-v1/mark-dark.svg`} alt="" width={32} height={32} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+                    STARTER ADMIN
+                </div>
 
                 <nav className="sidebar-nav">
                     <NavLink to="/dashboard" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>

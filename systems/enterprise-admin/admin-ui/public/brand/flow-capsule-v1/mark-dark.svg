@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 256 256" role="img">
+<title>Pharmacy Flow Capsule — approved master v1.0</title>
+<rect width="256" height="256" fill="#123C46"/>
+<path id="capsule-left" d="M106 76H76A52 52 0 0 0 76 180H106V146H138V122H106Z" fill="#F3FFF9" transform="rotate(-45 128 128)"/>
+<path id="capsule-right" d="M122 76H180A52 52 0 0 1 180 180H122V162H154V106H122Z" fill="#85DCC0" transform="rotate(-45 128 128)"/>
+</svg>

@@ -349,7 +349,7 @@ export default function POSCheckoutPage() {
       <div className="pos-topbar-container">
       <div className="pos-topbar" role="region" aria-label="收銀工具列" aria-describedby="pos-topbar-scroll-hint" tabIndex={0}>
         <div className="pos-brand">
-          <div className="pos-brand-mark">🌿</div>
+          <img className="pos-brand-mark" src={`${import.meta.env.BASE_URL}brand/flow-capsule-v1/mark-light.svg`} alt="" width={32} height={32} />
           <div>
             <div className="pos-brand-title">PharmaSaaS POS</div>
             <div className="pos-brand-subtitle">健康生活藥局</div>
