@@ -4,6 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import brandMarkDark from '../../assets/brand/flow-capsule-v1/mark-dark.svg?no-inline';
 
 // ─── Shared demo data ────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ function VariantA() {
             {/* Top bar */}
             <header style={{ background: '#1e293b', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: 56, flexShrink: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px' }}><img src={`${import.meta.env.BASE_URL}brand/flow-capsule-v1/mark-dark.svg`} alt="" width={32} height={32} style={{ verticalAlign: 'middle', marginRight: 8 }} />PharmaPOS</span>
+                    <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px' }}><img src={brandMarkDark} alt="" width={32} height={32} style={{ verticalAlign: 'middle', marginRight: 8 }} />PharmaPOS</span>
                     <span style={{ background: '#334155', borderRadius: 6, padding: '2px 10px', fontSize: 12, color: '#94a3b8' }}>班次 #S-241</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

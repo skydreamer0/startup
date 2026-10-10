@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
+import brandMarkLight from '../assets/brand/flow-capsule-v1/mark-light.svg?no-inline';
 
 export default function POSLoginPage() {
   const [code, setCode] = useState('');
@@ -36,7 +37,7 @@ export default function POSLoginPage() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-app)', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '48px 44px', width: 400, boxShadow: 'var(--shadow-lg)', textAlign: 'center', border: '1.5px solid var(--border)' }}>
-        <img src={`${import.meta.env.BASE_URL}brand/flow-capsule-v1/mark-light.svg`} alt="" width={68} height={68} style={{ display: 'block', margin: '0 auto 20px', borderRadius: 22 }} />
+        <img src={brandMarkLight} alt="" width={68} height={68} style={{ display: 'block', margin: '0 auto 20px', borderRadius: 22 }} />
         <h2 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>PharmaSaaS POS</h2>
         <p style={{ margin: '0 0 6px', color: 'var(--text-muted)', fontSize: 13 }}>健康生活藥局</p>
         <p style={{ margin: '0 0 28px', color: 'var(--text-muted)', fontSize: 13 }}>

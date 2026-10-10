@@ -11,9 +11,9 @@
 - 核准預覽：Library `libfile_d7187a719ca88191b7b0d14bb208af89`；與套件內預覽逐位元組相同。
 - [套件說明與色票](approved-kit-README.txt)保留原始內容；[SHA256SUMS.json](SHA256SUMS.json)記錄兩個網站實際引用資產的 SHA-256。
 
-Admin 與 POS 的 `public/brand/flow-capsule-v1/` 保存未修改的套件資產：`mark.svg` 為透明主版，`mark-light.svg`／`mark-dark.svg` 為核准淺底／深底版本。登入頁、Admin 側欄、POS 頁首、顧客顯示頁首與既有 Admin POS 原型使用相應版本；圖片旁已有品牌文字，使用空 `alt` 避免重複朗讀。保留原品牌文字、操作與版面 class。
+Admin 與 POS 的 `public/brand/flow-capsule-v1/` 保存核准 favicon、Apple touch icon 與透明主版 `mark.svg`；POS 另有現有 manifest 的 App／maskable 圖示。核准淺底／深底 `mark-light.svg`／`mark-dark.svg` 位於各網站 `src/assets/brand/flow-capsule-v1/`，以 Vite 資產匯入，輸出為 `/assets/` 下具內容雜湊的 SVG URL（不內嵌、不改原檔）。登入頁、Admin 側欄、POS 頁首、顧客顯示頁首與既有 Admin POS 原型使用相應版本；圖片旁已有品牌文字，使用空 `alt` 避免重複朗讀。保留原品牌文字、操作與版面 class。
 
-兩個網站提供 SVG／ICO／16、32 px PNG favicon，以及不透明 180 px Apple touch icon。HTML 與 React 圖示引用遵循 Vite 的 BASE_URL。
+兩個網站提供 SVG／ICO／16、32 px PNG favicon，以及不透明 180 px Apple touch icon。HTML 引用遵循 Vite 的 BASE_URL，React 圖示匯入則由 Vite 處理部署 base 與內容雜湊。既有 browser harness 的靜態網路封鎖規則保持不變；頁面圖片使用其原已允許的 `/assets/` 路徑。
 
 ## 現有 PWA
 
@@ -23,7 +23,7 @@ manifest 的名稱、start_url、scope、display、方向、theme_color 與 back
 
 ## 快取與更新限制
 
-現有 Nginx 對 PNG／ICO／SVG 設定一年 `immutable` 快取。這次使用新版本路徑 `/brand/flow-capsule-v1/`，讓取得新版 HTML／JavaScript／manifest 的用戶請求新 URL。未改 Nginx、CDN、Actions 或部署設定。未來換資產時須增加路徑版本，不能在相同 immutable URL 覆寫內容。
+現有 Nginx 對 PNG／ICO／SVG 設定一年 `immutable` 快取。這次使用新版本 public 路徑 `/brand/flow-capsule-v1/` 及 Vite 輸出的圖片內容雜湊，讓取得新版 HTML／JavaScript／manifest 的用戶請求新 URL。未改 Nginx、CDN、Actions 或部署設定。未來換資產時須增加路徑版本，不能在相同 immutable URL 覆寫內容。
 
 manifest URL 保持 `/manifest.json`，以維持既有安裝識別；此 JSON 不匹配目前 Nginx 的一年資產快取規則。實際部署平台／CDN 可能另有策略，部署後仍須核對 HTML、manifest 與圖示回應。瀏覽器、作業系統與已安裝 PWA 各有更新時機，**不能保證既有安裝立即換圖**；需要時可重新開啟網站，或移除後重新加入主畫面。這不是自動清除使用者快取的承諾。
 

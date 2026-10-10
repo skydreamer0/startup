@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/authContext';
 import { isDemoModeEnabled } from '../hooks/authDemo';
 import ThemeToggle from '../components/ThemeToggle';
+import brandMarkLight from '../assets/brand/flow-capsule-v1/mark-light.svg?no-inline';
 
 export default function LoginPage() {
     const { login, demoLogin } = useAuth();
@@ -32,7 +33,7 @@ export default function LoginPage() {
             </div>
             <div className="login-box card">
                 <h1 className="login-logo">
-                    <img src={`${import.meta.env.BASE_URL}brand/flow-capsule-v1/mark-light.svg`} alt="" width={48} height={48} style={{ verticalAlign: 'middle', marginRight: 12 }} />
+                    <img src={brandMarkLight} alt="" width={48} height={48} style={{ verticalAlign: 'middle', marginRight: 12 }} />
                     Admin
                 </h1>
                 <p className="login-subtitle">Enterprise Management Console</p>

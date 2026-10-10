@@ -1,3 +1,4 @@
+import brandMarkLight from '../assets/brand/flow-capsule-v1/mark-light.svg?no-inline';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
@@ -349,7 +350,7 @@ export default function POSCheckoutPage() {
       <div className="pos-topbar-container">
       <div className="pos-topbar" role="region" aria-label="收銀工具列" aria-describedby="pos-topbar-scroll-hint" tabIndex={0}>
         <div className="pos-brand">
-          <img className="pos-brand-mark" src={`${import.meta.env.BASE_URL}brand/flow-capsule-v1/mark-light.svg`} alt="" width={32} height={32} />
+          <img className="pos-brand-mark" src={brandMarkLight} alt="" width={32} height={32} />
           <div>
             <div className="pos-brand-title">PharmaSaaS POS</div>
             <div className="pos-brand-subtitle">健康生活藥局</div>

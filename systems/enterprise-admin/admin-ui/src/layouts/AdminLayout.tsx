@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/authContext';
 import { usePlan, planMeets } from '../hooks/usePlan';
 import ThemeToggle from '../components/ThemeToggle';
 import { PlanUpgradeToast } from '../components/PlanUpgradeToast';
+import brandMarkDark from '../assets/brand/flow-capsule-v1/mark-dark.svg?no-inline';
 
 export default function AdminLayout() {
     const { user, logout } = useAuth();
@@ -20,7 +21,7 @@ export default function AdminLayout() {
         <div className="admin-layout">
             <aside className="sidebar">
                 <div className="sidebar-logo">
-                    <img src={`${import.meta.env.BASE_URL}brand/flow-capsule-v1/mark-dark.svg`} alt="" width={32} height={32} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+                    <img src={brandMarkDark} alt="" width={32} height={32} style={{ verticalAlign: 'middle', marginRight: 8 }} />
                     STARTER ADMIN
                 </div>
 
