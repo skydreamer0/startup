@@ -1,4 +1,5 @@
 import BatchAuditPanel from './BatchAuditPanel';
+import BatchTraceDialog from './BatchTraceDialog';
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { batchesApi, ProductBatch } from '../../api/batches';
@@ -57,7 +58,8 @@ function getExpiryStatus(expiryDate: string): { label: string; badgeClass: strin
 }
 
 export default function BatchListPage() {
-    const { loading: authLoading, hasPermission } = useAuth();
+    const { user, loading: authLoading, hasPermission } = useAuth();
+    const canTrace = !authLoading && !!user && hasPermission('read:products');
     const canReceive = !authLoading && hasPermission('create:products');
     const canRelease = !authLoading && hasPermission('release:product_batches');
     const [expiringSoon, setExpiringSoon] = useState(false);
@@ -90,6 +92,10 @@ export default function BatchListPage() {
     useEffect(() => {
         if (receiptError) receiptErrorRef.current?.focus();
     }, [receiptError]);
+    const [traceSelection, setTraceSelection] = useState<{ batch: ProductBatch; userId: string } | null>(null);
+    useEffect(() => {
+        if (traceSelection && (!canTrace || user?.id !== traceSelection.userId)) setTraceSelection(null);
+    }, [canTrace, user?.id, traceSelection]);
     const [auditBatchId, setAuditBatchId] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
@@ -241,6 +247,7 @@ export default function BatchListPage() {
                                             <td className="batch-numeric">{batch.quantity.toLocaleString()}</td>
                                             <td className="batch-numeric">${Number(batch.costPrice).toLocaleString()}</td>
                                             <td className="batch-row-actions">
+                                                <button type="button" className="btn btn-ghost" disabled={batchesFetching || !canTrace} onClick={() => { if (user) setTraceSelection({ batch, userId: user.id }); }}>來源／售出分攤</button>
                                                 <button type="button" className="btn btn-ghost" disabled={batchesFetching} onClick={() => setAuditBatchId(batch.id)}>更正／歷史</button>
                                                 <button
                                                     className="btn btn-danger btn-sm"
@@ -259,6 +266,8 @@ export default function BatchListPage() {
             </div>
 
             {!batchError && auditBatchId && batches.find(batch => batch.id === auditBatchId) && <BatchAuditPanel key={auditBatchId} batch={batches.find(batch => batch.id === auditBatchId)!} onClose={() => setAuditBatchId(null)} />}
+
+            {traceSelection && canTrace && user?.id === traceSelection.userId && <BatchTraceDialog key={traceSelection.batch.id} batch={traceSelection.batch} onClose={() => setTraceSelection(null)} />}
 
             {showCreate && (
                 <div className="modal-overlay" onClick={requestClose}>
