@@ -474,12 +474,37 @@ jobs:
         run: pnpm --filter pos-ui exec playwright install --with-deps chromium
       - name: Build and verify current exact-head POS with synthetic HTTP
         run: node pos-ui/e2e/sku-acceptance/run.mjs
+      - name: Prepare installed Chrome and Ubuntu CJK for real category flow
+        run: |
+          google-chrome --version
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y fonts-noto-cjk
+          dpkg-query -W -f='${Package} ${Version} ${Status}\n' fonts-noto-cjk
+          fc-match 'sans-serif:lang=zh-tw'
+          fc-list :lang=zh-tw family | grep -F 'Noto Sans CJK'
+          node --test pos-ui/e2e/category-native/run.test.mjs pos-ui/e2e/category-native/owned-run.test.mjs
+      - name: Stable POS categories through real API and owned PostgreSQL
+        id: category_native
+        timeout-minutes: 8
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+          CATEGORY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+        run: node pos-ui/e2e/category-native/run.mjs
       - name: Verify zero rows and drop only the owned SKU database
         if: ${{ always() && steps.sku_preflight.outcome == 'success' }}
         env:
           SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
           SKU_QA_NETWORK: ${{ job.services.postgres.network }}
         run: node backend/scripts/pos-product-lookup-ci.mjs cleanup
+      - name: Preserve quiescent category browser API database evidence
+        if: ${{ always() && steps.category_native.outputs.evidence_dir != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pos-category-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.category_native.outputs.evidence_dir }}
+          if-no-files-found: error
+          retention-days: 7
       - name: Preserve separate PostgreSQL and current POS evidence
         if: always()
         uses: actions/upload-artifact@v7

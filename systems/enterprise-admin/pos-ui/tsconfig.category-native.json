@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "ESNext", "moduleResolution": "Bundler",
+    "strict": true, "noEmit": true, "esModuleInterop": true, "skipLibCheck": true,
+    "allowJs": true, "types": ["node"], "lib": ["ES2022", "DOM"]
+  },
+  "include": ["e2e/category-native.config.mts", "e2e/category-native/**/*.ts", "e2e/category-native/contract.mjs"]
+}
