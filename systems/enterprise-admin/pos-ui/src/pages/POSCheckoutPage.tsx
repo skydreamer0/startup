@@ -225,8 +225,19 @@ export default function POSCheckoutPage() {
   const handleKeydown = useCallback((event: KeyboardEvent) => {
     if (pending) return;
     if (event.defaultPrevented) return;
+    // Backstop modal ownership even if a removed control/backdrop lost focus.
+    if ((showPaymentModal || showSplitModal || adminPinPending) && event.key !== 'Escape') {
+      const nativeModalControl = event.target instanceof HTMLElement
+        && event.target.closest('[role="dialog"]')
+        && event.target.closest('input, textarea, select, button, a[href], [contenteditable="true"], [role="button"], [role="link"]')
+        && !event.target.closest('[inert], [aria-hidden="true"]');
+      // Return without cancelling native Enter activation inside the active modal.
+      if (/^F[2-8]$/.test(event.key) || (event.key === 'Enter' && !nativeModalControl)) event.preventDefault();
+      return;
+    }
     // Escape closes an open overlay even when its search/input owns text keys.
     if (event.key === 'Escape') {
+      if (adminPinPending || checkoutLoading) return;
       setShowStaffModal(false);
       setShowPaymentModal(false);
       setShowSplitModal(false);
@@ -278,7 +289,7 @@ export default function POSCheckoutPage() {
         }
         break;
     }
-  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending]);
+  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -458,6 +469,7 @@ export default function POSCheckoutPage() {
       )}
       {showSplitModal && (
         <SplitPaymentModal
+          suspended={!!adminPinPending}
           onConfirm={(payments) => requirePin('split', payments)}
           onClose={() => setShowSplitModal(false)}
           loading={checkoutLoading}

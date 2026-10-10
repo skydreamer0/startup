@@ -632,3 +632,48 @@ jobs:
           path: ${{ runner.temp }}/order-sequence-qa-${{ github.run_id }}-${{ github.run_attempt }}/
           if-no-files-found: error
           retention-days: 7
+
+  pos-dialog-acceptance:
+    name: Exact-head POS dialog Chrome acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin
+    env:
+      DIALOG_QA_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.34.6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: './systems/enterprise-admin/pnpm-lock.yaml'
+      - name: Install canonical locked frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install and verify Ubuntu CJK fonts for actual Chinese pixels
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y fonts-noto-cjk
+          dpkg-query -W -f='${Package} ${Version} ${Status}\n' fonts-noto-cjk
+          fc-match 'sans-serif:lang=zh-tw'
+          fc-list :lang=zh-tw family | grep -F 'Noto Sans CJK'
+      - name: Validate dialog report and sealed network evidence guards
+        run: node --test pos-ui/e2e/dialog-acceptance/run.test.mjs pos-ui/e2e/dialog-acceptance/owned-run.test.mjs
+      - name: Verify exact-head dialogs in installed official Chrome
+        id: dialog_chrome
+        run: node pos-ui/e2e/dialog-acceptance/run.mjs
+      - name: Preserve exact-head dialog evidence
+        if: ${{ always() && steps.dialog_chrome.outputs.evidence_dir != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pos-dialog-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.dialog_chrome.outputs.evidence_dir }}
+          if-no-files-found: error
+          retention-days: 7
