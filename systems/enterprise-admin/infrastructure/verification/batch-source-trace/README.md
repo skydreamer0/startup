@@ -64,3 +64,36 @@ is not a substitute for it. No physical devices, store data, inventory changes,
 full historical ledger, older-than-100 pagination or production activation was
 performed. Full #31, #29, #37 and G0–G7 remain open. Exact-head CI and independent
 review must be recorded separately; a Draft checkpoint is not release approval.
+
+## Bounded browser supplement (pending exact-head execution)
+
+The existing Admin UI CI job calls the same `admin-margin-warning/run.mjs`; its
+unchanged 22 warning scenarios are joined by two `batch-trace.spec.ts` scenarios:
+
+- 1366×768: filtered row → delayed source → ordinary pointer close and actual
+  cancelled read → reopen → 100 of 132 allocations → resolve obsolete response →
+  native Tab/Shift+Tab/Escape with retained filter and returned focus.
+- 390×844: long Chinese names/identifiers → 403/404/500 failed refresh and retry →
+  unknown empty histories → ordinary pointer close and visible backdrop close.
+
+The same owned Vite build/preview, Chrome sandbox, fixed synthetic auth, GET-only
+allowlist, zero unexpected requests/page errors, source hashes, quiescence, PNG
+validation and actual Noto CJK glyph checks are retained. The new cases require
+seven labelled screenshots plus geometry/platform-font/network receipts. Dialog
+horizontal overflow and 44px targets are checked; ordinary actions still use
+pointer and keyboard, not geometry or DOM-click substitutes. No new workflow,
+job, service, environment, dependency or permission is introduced. This adds two
+short scenarios to the existing browser invocation; publishing the supplemental
+head triggers the repository's normal complete CI once. No manual repeat run was
+requested, and prior gate failures are not relabelled as passes.
+
+The local native-browser attempt was BLOCKED (socket EPERM; cloud-browser
+localhost connection refused); it produced no application browser PASS.
+Initial head `0d2817afdda366f959c2e8e2fb2ae9ba37f05859` passed independent source/DOM
+review and 8 of 9 ordinary CI jobs, but run `38047588858` failed solely in unchanged
+category-native visibility expectations (three sizes expected hidden at line 80).
+Abort-retry and Dependency Review succeeded. Those old category inputs are not
+modified here; that failure is still a failure, not this slice's acceptance.
+Supplemental Chrome results and PNG review must be recorded for the new exact head.
+Real API/DB, 1024px, native 200% zoom, touch, iPad/Safari, hardware and whole #31
+acceptance remain NOT RUN.

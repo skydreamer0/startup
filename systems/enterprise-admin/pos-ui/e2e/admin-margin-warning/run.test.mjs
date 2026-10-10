@@ -6,7 +6,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { assertCjkFonts } from './cjk.mjs';
+import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
@@ -14,9 +14,10 @@ import { cleanupRunProcesses, findRunProcesses, signalRunProcess, createRunScope
 
 const report = () => ({ errors: [], suites: [{ specs: expectedCases.map(title => ({ title, ok: true,
   tests: [{ expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', errors: [], duration: 1, attachments: [] }] }] })) }] });
-test('registry covers both actual routes and viewports plus ranking sort', () => {
-  assert.equal(expectedCases.length, 22); assert.equal(new Set(expectedCases).size, 22);
-  assert.equal(assertReport(report()).length, 22);
+test('registry retains original 22 warning cases and adds two read-only trace flows', () => {
+  assert.equal(expectedCases.length, 24); assert.equal(new Set(expectedCases).size, 24);
+  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ')).length, 22);
+  assert.equal(assertReport(report()).length, 24);
 });
 for (const [name, change] of [
   ['missing case', r => r.suites[0].specs.pop()],
@@ -161,7 +162,16 @@ test('locked Playwright loader collects all cases without launching a browser', 
       'test', '--config=e2e/admin-margin-warning/playwright.config.mts', '--list'], {
       cwd: pos, env: childEnvironment(process.env, output, randomUUID()), encoding: 'utf8', timeout: 20000,
     });
-    assert.match(listed, /Total: 22 tests in 1 file/);
+    assert.match(listed, /Total: 24 tests in 2 files/);
     for (const name of expectedCases) assert.ok(listed.includes(name), name);
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
+});
+
+test('trace CJK receipt requires the actual title, explanation and control glyphs', () => {
+  const records = ['#batch-trace-title', '#batch-trace-description', 'button'].map(selector => ({ selector, fonts: [{ familyName: 'Noto Sans CJK TC', glyphCount: 12, isCustomFont: false }] }));
+  assertTraceCjkFonts(records);
+  assert.throws(() => assertTraceCjkFonts(records.slice(1)));
+  for (const patch of [{ familyName: 'Arial' }, { glyphCount: 0 }, { isCustomFont: true }]) {
+    const bad = structuredClone(records); Object.assign(bad[0].fonts[0], patch); assert.throws(() => assertTraceCjkFonts(bad));
+  }
 });
