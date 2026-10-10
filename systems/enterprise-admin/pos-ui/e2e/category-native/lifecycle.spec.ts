@@ -68,11 +68,13 @@ for (const [index, width] of widths.entries()) {
 
     // Real wall-clock staleTime expiry, then real tab visibility/focus. No query/cache hook or fake timer.
     guard.phase = 'refetch-error';
-    const background = await context.newPage(); await background.goto(origin + '/favicon.ico'); await background.bringToFront();
+    const background = await context.newPage(); await background.bringToFront();
+    await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe('hidden');
     const staleWaitStarted = Date.now();
     await page.waitForTimeout(61_000);
     const realStaleElapsedMs = Date.now() - staleWaitStarted; expect(realStaleElapsedMs).toBeGreaterThanOrEqual(61_000);
     await page.bringToFront(); await background.close();
+    await expect.poll(() => page.evaluate(() => document.visibilityState)).toBe('visible');
     const stale = page.getByRole('alert').filter({ hasText: '分類資訊可能已過期。' });
     await expect(stale).toBeVisible(); await expect(retry).toBeEnabled();
     await stable(); await expect(search).toHaveValue('合成');
