@@ -5,7 +5,7 @@ import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import type { Server } from 'node:http';
-import { allowedRead, assertEnvironment, databaseUrl } from '../../pos-ui/e2e/category-native/contract.mjs';
+import { allowedRead, assertEnvironment, databaseUrl, faultPlan, expectedCases } from '../../pos-ui/e2e/category-native/contract.mjs';
 
 async function main() {
   assertEnvironment(process.env, process.version); // Before importing any DB/app module.
@@ -31,6 +31,7 @@ async function main() {
   const { signAccessToken } = await import('../src/lib/jwt');
   const { default: app } = await import('../src/app');
   const { default: express } = await import('express');
+  const emptyTenantId = randomUUID();
   const tenantId = randomUUID(); const userId = randomUUID(); const shiftId = randomUUID();
   let server: Server | undefined, child: ChildProcess | undefined, cancelled: string | null = null;
   let browser: { exitCode: number | null; signal: NodeJS.Signals | null } | null = null;
@@ -64,7 +65,7 @@ async function main() {
     await db.tenant.create({ data: { id: tenantId, slug: tenantId, name: 'Synthetic category browser tenant', plan: 'pro' } });
     const email = `${userId}@category-browser.example.test`;
     await db.user.create({ data: { id: userId, tenantId, email, fullName: '合成分類收銀員', passwordHash: 'not-a-login-hash', status: 'active' } });
-    const categories = [];
+    const categories: { id: string; name: string }[] = [];
     for (const name of ['A 合成營養保健', 'B 合成日常用品', 'C 合成空分類']) {
       categories.push(await db.productCategory.create({ data: { tenantId, name }, select: { id: true, name: true } }));
     }
@@ -73,31 +74,47 @@ async function main() {
     }
     await db.shift.create({ data: { id: shiftId, tenantId, staffId: userId, status: 'OPEN', openingCash: 0 } });
     const products = await db.product.findMany({ where: { tenantId }, orderBy: { name: 'asc' }, select: { id: true, sku: true, name: true, categoryId: true, stockQuantity: true } });
-    expected = { tenantId, userId, shiftId, categories, products };
+    await db.tenant.create({ data: { id: emptyTenantId, slug: emptyTenantId, name: 'Synthetic empty category tenant', plan: 'pro' } });
+    const emptyUserId = randomUUID(), emptyShiftId = randomUUID(), emptyEmail = `${emptyUserId}@category-browser.example.test`;
+    await db.user.create({ data: { id: emptyUserId, tenantId: emptyTenantId, email: emptyEmail, fullName: '合成空分類收銀員', passwordHash: 'not-a-login-hash', status: 'active' } });
+    await db.shift.create({ data: { id: emptyShiftId, tenantId: emptyTenantId, staffId: emptyUserId, status: 'OPEN', openingCash: 0 } });
+    const emptyBootstrap = { tenantId: emptyTenantId, userId: emptyUserId, shiftId: emptyShiftId, categories: [], products: [],
+      accessToken: signAccessToken({ userId: emptyUserId, email: emptyEmail, tenantId: emptyTenantId, plan: 'pro', permissions: ['manage:pos'] }) };
+    expected = { tenantId, userId, shiftId, categories, products, emptyTenantId };
     before = await snapshot();
     const accessToken = signAccessToken({ userId, email, tenantId, plan: 'pro', permissions: ['manage:pos'] });
     // Ephemeral public-synthetic JWT only. Deleted before any artifact output is released.
-    fs.writeFileSync(bootstrap, JSON.stringify({ ...(expected as object), accessToken, nonce: process.env.CATEGORY_UI_NONCE }), { flag: 'wx', mode: 0o600 });
+    fs.writeFileSync(bootstrap, JSON.stringify({ ...(expected as object), accessToken, empty: emptyBootstrap, nonce: process.env.CATEGORY_UI_NONCE }), { flag: 'wx', mode: 0o600 });
     const outer = express();
     outer.use((req, res, next) => {
       const requestId = req.get('x-category-qa-request') ?? '';
-      if (!allowedRead(req.method, req.path) || !requestId.startsWith(`${process.env.CATEGORY_UI_NONCE}:`) || identities.has(requestId)) {
+      const testCase = req.get('x-category-qa-case') ?? '', phase = req.get('x-category-qa-phase') ?? '';
+      const started = performance.now();
+      if (!expectedCases.includes(testCase) || !['initial', 'recover', 'rapid', 'refetch-error', 'refetch-recover'].includes(phase) || !allowedRead(req.method, req.path) || !requestId.startsWith(`${process.env.CATEGORY_UI_NONCE}:`) || identities.has(requestId)) {
         rejected.push(`${req.method} ${req.originalUrl}`); res.status(405).json({ success: false, error: { code: 'QA_READ_ONLY' } }); return;
       }
       identities.add(requestId);
+      const fault = faultPlan(testCase, phase, req.originalUrl, categories);
       const json = res.json.bind(res);
       res.json = body => {
         const sha256 = createHash('sha256').update(JSON.stringify(body)).digest('hex');
-        res.once('finish', () => requests.push({ id: requestId, method: req.method, path: req.originalUrl, status: res.statusCode, sha256, body }));
+        res.once('finish', () => requests.push({ id: requestId, method: req.method, path: req.originalUrl, status: res.statusCode, sha256, body, testCase, phase, fault,
+          productionHandler: fault.kind !== 'injected-category-error', elapsedMs: performance.now() - started, finishedAt: Date.now() }));
         return json(body);
       };
-      next();
+      const respond = () => {
+        if (fault.kind === 'injected-category-error') {
+          res.status(fault.status).json({ success: false, error: { code: 'QA_INJECTED_CATEGORY_FAILURE', message: 'Test-only injected category read failure' } });
+        } else next(); // Successful/delayed reads reach unchanged production handlers.
+      };
+      if (fault.delayMs) setTimeout(respond, fault.delayMs + 10); else respond();
     });
     outer.use(app); // Unchanged production app, JWT/RBAC/tenant/controller/service/Prisma.
     server = await new Promise<Server>((resolve, reject) => { const listener = outer.listen(4291, '127.0.0.1', () => resolve(listener)); listener.once('error', reject); });
     assert.equal(cancelled, null);
     const pos = path.resolve(backend, '../pos-ui');
-    child = spawn(process.execPath, [path.join(pos, 'node_modules/@playwright/test/cli.js'), 'test', '--config', 'e2e/category-native.config.mts'], { cwd: pos, env: process.env, stdio: 'inherit' });
+    assert.equal(process.env.DISPLAY, undefined, 'Never reuse an ambient display');
+    child = spawn('xvfb-run', ['--auto-servernum', '--server-args=-screen 0 1920x1080x24 -nolisten tcp', process.execPath, path.join(pos, 'node_modules/@playwright/test/cli.js'), 'test', '--config', 'e2e/category-native.config.mts'], { cwd: pos, env: process.env, stdio: 'inherit' });
     browser = await new Promise((resolve, reject) => { child!.once('error', reject); child!.once('close', (exitCode, signal) => resolve({ exitCode, signal })); });
     child = undefined;
     assert.ok(browser); assert.equal(browser.exitCode, 0); assert.equal(browser.signal, null); assert.equal(cancelled, null);
@@ -112,11 +129,13 @@ async function main() {
     try {
       if (seeded) {
         // No reset/truncate and no ambient IDs. Foreign-key failures stay failures.
-        await db.shift.deleteMany({ where: { tenantId } });
-        await db.product.deleteMany({ where: { tenantId } });
-        await db.productCategory.deleteMany({ where: { tenantId } });
-        await db.user.deleteMany({ where: { tenantId } });
-        await db.tenant.deleteMany({ where: { id: tenantId } });
+        for (const id of [tenantId, emptyTenantId]) {
+          await db.shift.deleteMany({ where: { tenantId: id } });
+          await db.product.deleteMany({ where: { tenantId: id } });
+          await db.productCategory.deleteMany({ where: { tenantId: id } });
+          await db.user.deleteMany({ where: { tenantId: id } });
+          await db.tenant.deleteMany({ where: { id } });
+        }
       }
       const final = await snapshot(); afterEmpty = empty(final);
       write('final-counts.json', Object.fromEntries(Object.entries(final).map(([table, rows]) => [table, rows.length])));
@@ -124,7 +143,7 @@ async function main() {
     } catch (problem) { error ??= problem; }
     await db.$disconnect();
     fs.rmSync(bootstrap, { force: true });
-    write('api-ledger.json', { requests, rejected });
+    write('api-ledger.json', { requests, rejected, categories: expected ? (expected as { categories: unknown }).categories : [] });
     write('database-receipt.json', { beforeEmpty, afterEmpty, before, after, expected, browser, cancelled, error: error instanceof Error ? error.message : error });
     process.off('SIGTERM', term); process.off('SIGINT', interrupt);
   }

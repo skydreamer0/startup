@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
-import { assertEnvironment, allowedRead, assertFonts, assertReport, assertNetwork, assertDatabase, completionOutcome, expectedCases, databaseUrl } from './contract.mjs';
+import { assertEnvironment, allowedRead, assertFonts, assertReport, assertNetwork, assertDatabase, completionOutcome, expectedCases, stableCases, lifecycleCases, emptyCase, faultPlan, databaseUrl } from './contract.mjs';
 import { runOwnedPhase, publishEvidence } from './run.mjs';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { brandAssets, brandRequest } from '../dialog-acceptance/brand-assets.mjs';
@@ -34,14 +35,14 @@ test('the real locked Playwright loader collects all cases without starting a br
     const text = execFileSync(process.execPath, ['node_modules/@playwright/test/cli.js', 'test', '--config', 'e2e/category-native.config.mts', '--list'],
       { cwd: app, env: { PATH: process.env.PATH, HOME: process.env.HOME, CATEGORY_UI_OUTPUT: output }, encoding: 'utf8', timeout: 20000 });
     for (const title of expectedCases) assert.ok(text.includes(title));
-    assert.match(text, /Total: 3 tests in 1 file/);
+    assert.match(text, /Total: 7 tests in 2 files/);
     assert.equal(fs.existsSync(path.join(output, 'tests')), false);
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
 });
 const report = () => ({ errors: [], suites: [{ specs: expectedCases.map(title => ({ title, ok: true,
   tests: [{ expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', errors: [], duration: 1 }] }] })) }] });
 test('missing skipped retried duplicated and failed cases cannot become a pass', () => {
-  assert.equal(assertReport(report()).length, 3);
+  assert.equal(assertReport(report()).length, 7);
   for (const mutate of [value => value.suites[0].specs.pop(), value => value.suites[0].specs.push(value.suites[0].specs[0]),
     value => value.errors.push('failure'), value => { value.suites[0].specs[0].tests[0].results[0].status = 'skipped'; },
     value => value.suites[0].specs[0].tests[0].results.push({ status: 'passed', errors: [] })]) {
@@ -53,13 +54,13 @@ test('actual noncustom CJK glyphs are required rather than CSS family or tofu', 
   for (const fonts of [[], [{ familyName: 'Noto Sans CJK TC', glyphCount: 0 }], [{ familyName: 'Arial', glyphCount: 8 }], [{ familyName: 'Noto Sans CJK JP', glyphCount: 8, isCustomFont: true }]]) assert.throws(() => assertFonts(fonts));
 });
 const network = () => {
-  const row = { id: 'nonce:1', method: 'GET', path: '/api/v1/admin/pos/categories', status: 200, sha256: 'a'.repeat(64) };
-  return { browser: [{ contextClosed: true, unexpected: [], pageErrors: [], verifiedBrand: brandAssets.map(asset => ({ method: 'GET', ...asset })), keys: [{ key: 'Enter', trusted: true }], requests: [{ id: row.id }], responses: [row] }], api: { rejected: [], requests: [{ ...row, body: {} }] } };
+  const row = { id: 'nonce:1', method: 'GET', path: '/api/v1/admin/pos/categories', status: 200, sha256: createHash('sha256').update('{}').digest('hex') };
+  return { browser: [{ test: stableCases[0], contextClosed: true, headed: true, display: ':99', unexpected: [], pageErrors: [], verifiedBrand: brandAssets.map(asset => ({ method: 'GET', ...asset })), keys: [{ key: 'Enter', trusted: true }], requests: [{ id: row.id }], responses: [row] }], api: { rejected: [], categories: [], requests: [{ ...row, body: {}, testCase: stableCases[0], phase: 'initial', fault: { kind: 'none', status: 200, delayMs: 0 }, elapsedMs: 0, productionHandler: true }] } };
 };
 test('browser response hashes must match unique completed real API requests', () => {
   const value = network(); assert.equal(assertNetwork(value.browser, value.api), 1);
   for (const mutate of [v => v.api.requests.pop(), v => v.api.rejected.push('POST /checkout'), v => { v.api.requests[0].sha256 = 'b'.repeat(64); },
-    v => { v.browser[0].responses[0].status = 500; }, v => { v.browser[0].contextClosed = false; },
+    v => { v.browser[0].responses[0].status = 500; }, v => { v.browser[0].contextClosed = false; }, v => { v.browser[0].headed = false; }, v => { v.browser[0].display = 'remote:0'; },
     v => v.browser[0].unexpected.push('POST /checkout'), v => { v.browser[0].keys[0].trusted = false; },
     v => v.browser[0].requests.push({ id: 'missing-response' }), v => v.browser[0].responses.push(v.browser[0].responses[0]),
     v => { delete v.browser[0].verifiedBrand; }, v => { v.browser[0].verifiedBrand[0].sha256 = '0'.repeat(64); },
@@ -67,6 +68,20 @@ test('browser response hashes must match unique completed real API requests', ()
     v => { v.browser[0].verifiedBrand[0].method = 'POST'; }, v => { v.browser[0].verifiedBrand[0].path = '/brand/unknown.svg'; }]) {
     const bad = network(); mutate(bad); assert.throws(() => assertNetwork(bad.browser, bad.api));
   }
+});
+test('fault status and delayed provenance cannot turn arbitrary backend failures into acceptance', () => {
+  const base = network();
+  const api = base.api.requests[0], browser = base.browser[0].responses[0];
+  base.browser[0].test = lifecycleCases[0];
+  Object.assign(api, { testCase: lifecycleCases[0], fault: faultPlan(lifecycleCases[0], 'initial', api.path, []), status: 500, elapsedMs: 1500, productionHandler: false,
+    body: { success: false, error: { code: 'QA_INJECTED_CATEGORY_FAILURE', message: 'Test-only injected category read failure' } } });
+  browser.status = 500; api.sha256 = browser.sha256 = createHash('sha256').update(JSON.stringify(api.body)).digest('hex'); assert.equal(assertNetwork(base.browser, base.api), 1);
+  for (const mutate of [v => { v.api.requests[0].productionHandler = true; }, v => { v.api.requests[0].elapsedMs = 1499; },
+    v => { v.api.requests[0].body.error.code = 'REAL_OUTAGE'; }, v => { v.api.requests[0].phase = 'recover'; },
+    v => { v.api.requests[0].testCase = stableCases[0]; }]) {
+    const bad = structuredClone(base); mutate(bad); assert.throws(() => assertNetwork(bad.browser, bad.api));
+  }
+  assert.throws(() => faultPlan('unknown', 'initial', api.path, []));
 });
 test('category brand paths never become API reads or allow arbitrary static requests', () => {
   for (const asset of brandAssets) {
@@ -91,7 +106,12 @@ const database = () => {
     { path: '/api/v1/admin/pos/products?q=one&categoryId=a&inStockOnly=true', body: { success: true, data: [products[0]] } },
     { path: '/api/v1/admin/pos/products?q=missing&inStockOnly=true', body: { success: true, data: [] } },
   ];
-  return { receipt, api: { requests } };
+  return { receipt, api: { requests: requests.map(row => ({ ...row, testCase: stableCases[0], phase: 'initial' })).concat(lifecycleCases.flatMap(testCase => [
+      ...['initial', 'refetch-error'].flatMap(phase => Array.from({ length: 4 }, () => ({ path: '/api/v1/admin/pos/categories', body: { success: false }, testCase, phase, fault: faultPlan(testCase, phase, '/api/v1/admin/pos/categories', categories) }))),
+      ...['recover', 'refetch-recover'].map(phase => ({ path: '/api/v1/admin/pos/categories', body: { success: true, data: categories }, testCase, phase })),
+      { path: '/api/v1/admin/pos/products?categoryId=a', body: { success: true, data: [products[0]] }, testCase, phase: 'rapid', fault: faultPlan(testCase, 'rapid', '/api/v1/admin/pos/products?categoryId=a', categories), finishedAt: 3 },
+      { path: '/api/v1/admin/pos/products?categoryId=b', body: { success: true, data: [products[1]] }, testCase, phase: 'rapid', fault: faultPlan(testCase, 'rapid', '/api/v1/admin/pos/products?categoryId=b', categories), finishedAt: 2 },
+    ]), [{ path: '/api/v1/admin/pos/categories', body: { success: true, data: [] }, testCase: emptyCase, phase: 'initial' }]).map(row => ({ ...row, status: row.fault?.status ?? 200, fault: row.fault ?? faultPlan(row.testCase, row.phase, row.path, categories) })) } };
 };
 test('category and product HTTP bodies must agree with independent PG fixture rows', () => {
   const value = database(); assert.equal(assertDatabase(value.receipt, value.api).fixtureRowsRemoved, true);
@@ -99,6 +119,9 @@ test('category and product HTTP bodies must agree with independent PG fixture ro
     v => { v.receipt.cancelled = 'SIGTERM'; }, v => { v.receipt.after = { mutated: true }; },
     v => { v.receipt.browser.exitCode = 1; }, v => { v.api.requests[0].body.data = []; },
     v => { v.api.requests.at(-1).body.data = [v.receipt.expected.products[0]]; },
+    v => { v.api.requests = v.api.requests.filter(row => row.phase !== 'refetch-error'); },
+    v => { v.api.requests.find(row => row.phase === 'rapid' && row.path.includes('categoryId=a')).finishedAt = 1; },
+    v => { v.api.requests.find(row => row.phase === 'initial' && row.testCase === lifecycleCases[0]).fault.kind = 'none'; },
     v => { v.receipt.error = 'cleanup failed'; }]) {
     const bad = structuredClone(database()); mutate(bad); assert.throws(() => assertDatabase(bad.receipt, bad.api));
   }

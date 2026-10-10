@@ -1,8 +1,8 @@
 import { writeFileSync } from 'node:fs';
 import { test, expect, capture, cartSnapshot, assertReachable } from './fixtures';
-import { widths, expectedCases, origin } from './contract.mjs';
+import { widths, stableCases, origin } from './contract.mjs';
 for (const [index, width] of widths.entries()) {
-  test(expectedCases[index], async ({ page, guard }, info) => {
+  test(stableCases[index], async ({ page, guard }, info) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(origin);
     const nav = page.getByRole('navigation', { name: '商品分類' });
