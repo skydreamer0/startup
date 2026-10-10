@@ -144,6 +144,13 @@ required. Injection is test outer middleware; 403 presentation is not authorizat
 acceptance. No production DB, login or tenant-switch UI is involved. See
 `../infrastructure/verification/pos-category-lifecycle/README.md`.
 
+`e2e/category-native/visibility-probe.mjs` and the separate
+`category-visibility-probe.yml` workflow diagnose only two blank Chrome tabs per
+arm on the dedicated `chore/pos-category-visibility-probe-20261010` push branch.
+The sandboxed headed comparison keeps the existing launch/newContext harness
+and contrasts an existing default context connected with `noDefaults: true`.
+This is a visibility diagnostic with owned-process cleanup, not POS/API/DB acceptance.
+
 ### Change POS API calls
 
 1. Read `../infrastructure/api/api_spec.md`.
