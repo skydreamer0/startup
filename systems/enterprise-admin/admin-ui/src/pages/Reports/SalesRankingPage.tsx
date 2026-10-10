@@ -16,8 +16,26 @@ export default function SalesRankingPage() {
     const products: SalesRankingProduct[] = data?.topProducts ?? [];
     const categories = data?.categories ?? [];
 
+    const estimateNotice = (
+        <section role="note" aria-label="目前成本估算，非歷史實際毛利" className="card" style={{ padding: '16px', marginBottom: '24px' }}>
+            <strong>目前成本估算，非歷史實際毛利</strong>
+            <p style={{ margin: '8px 0', lineHeight: 1.5 }}>毛利率依商品目前成本估算；舊訂單缺少成交時成本快照時，無法還原歷史實際毛利。折扣分攤與退款尚未完成對帳。</p>
+            <details>
+                <summary>查看毛利估算來源與限制</summary>
+                <ul style={{ paddingLeft: '20px', lineHeight: 1.6 }}>
+                    <li>收入以已完成訂單明細的數量 × 成交單價計算，非折扣／退款對帳後的淨實收。</li>
+                    <li>成本以明細數量 × 商品目前成本估算，未使用成交時成本快照；商品成本變更會影響過往月份的估算。</li>
+                    <li>排名仍依明細收入或銷售數量排序；毛利率勿作歷史實際毛利或已完成財務對帳的依據。</li>
+                </ul>
+            </details>
+        </section>
+    );
+
     if (isLoading && products.length === 0) {
-        return <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading sales ranking...</div>;
+        return <div className="admin-page report-page sales-ranking-page">
+            {estimateNotice}
+            <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading sales ranking...</div>
+        </div>;
     }
 
     const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#f87171', '#14b8a6', '#6366f1'];
@@ -49,6 +67,8 @@ export default function SalesRankingPage() {
                     <button className="btn btn-primary" onClick={() => queryClient.invalidateQueries()}>Refresh</button>
                 </div>
             </header>
+
+            {estimateNotice}
 
             <div className="report-grid-wide">
                 {/* Category Breakdown Pie Chart */}
@@ -93,7 +113,7 @@ export default function SalesRankingPage() {
                                     <th style={{ textAlign: 'center' }}>Category</th>
                                     <th style={{ textAlign: 'right' }}>Sold Qty</th>
                                     <th style={{ textAlign: 'right' }}>Revenue</th>
-                                    <th style={{ textAlign: 'right' }}>Margin %</th>
+                                    <th style={{ textAlign: 'right' }}>Margin %（估算）</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -153,6 +153,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+      with:
+        # Margin browser evidence verifies the submitted source and execution parents.
+        fetch-depth: 0
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v6
@@ -183,6 +186,38 @@ jobs:
 
     - name: Build admin Docker image
       run: docker build --tag pharmasaas-admin:ci --file admin-ui/Dockerfile .
+
+    - name: Install and verify Ubuntu CJK fonts for actual Chinese pixels
+      run: |
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends -y fonts-noto-cjk
+        dpkg-query -W -f='${Package} ${Version} ${Status}\n' fonts-noto-cjk
+        fc-match 'sans-serif:lang=zh-tw'
+        fc-list :lang=zh-tw family | grep -F 'Noto Sans CJK'
+
+    - name: Verify existing official Chrome and margin evidence guards
+      run: |
+        google-chrome --version
+        node --test pos-ui/e2e/admin-margin-warning/run.test.mjs
+
+    - name: Current Admin margin warnings in sandboxed Chrome
+      id: admin_margin_browser
+      timeout-minutes: 8
+      env:
+        UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      run: node pos-ui/e2e/admin-margin-warning/run.mjs
+
+    - name: Preserve separate Admin warning browser evidence
+      if: ${{ always() && steps.admin_margin_browser.outputs.evidence_dir != '' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: admin-margin-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+        path: ${{ steps.admin_margin_browser.outputs.evidence_dir }}
+        if-no-files-found: error
+        retention-days: 7
 
   pos-ui:
     name: POS UI CI
