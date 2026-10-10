@@ -112,3 +112,26 @@ npm run build
    Disable repeated submission and closing the panel while its write is pending.
 3. `src/__tests__/batchAudit.test.tsx` exercises the real API client through mocked
    HTTP methods; these tests do not replace actual browser or native DB acceptance.
+
+### Read batch receipt and sale provenance
+
+`BatchListPage` opens the read-only `BatchTraceDialog` without changing its current
+expiry filter or starting a mutation. `api/batchTrace.ts` validates the existing
+`GET /product-batches/:id` envelope, requested batch/tenant identities, linked IN
+receipts and sale allocations. It exposes only the latest 100 sale allocations
+and the server total; an empty link set means unknown history, never proof of no
+receipt or sale. It does not calculate balances, money or opening stock.
+The query is user/tenant/batch-scoped, abortable and discarded after unmount;
+auth identity/permission changes forget the open selection. Loading, 403, 404,
+failed refresh and successful empty histories remain distinct. Tests use the
+real read client with synthetic HTTP, not backend authorization proof. See
+`src/__tests__/batchTrace.test.tsx` and
+`../infrastructure/verification/batch-source-trace/README.md`.
+
+The existing Admin CI Chrome harness (`../pos-ui/e2e/admin-margin-warning/`)
+retains its original 22 warning cases and adds two batch-source journeys at
+1366×768 and 390×844. It reuses the same build, GET-only synthetic HTTP boundary,
+sandboxed Chrome, CJK glyph/PNG evidence and owned-process cleanup. The extension
+adds no job/service/environment and does not validate real API/DB, 1024px, native
+200% zoom or physical devices. Native CI evidence remains subject to independent
+artifact review; the separate local browser route was blocked by socket policy.

@@ -57,3 +57,9 @@
   .batch-list-page .receipt-dialog { padding: 20px; width: calc(100% - 24px); max-height: calc(100dvh - 24px); }
   .batch-list-page .receipt-actions .btn { flex: 1 1 120px; }
 }
+
+.batch-list-page .batch-trace-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.batch-list-page .batch-trace-heading h2 { min-width: 0; flex: 1 1 320px; overflow-wrap: anywhere; }
+.batch-list-page .batch-trace-dialog h3 { font: inherit; font-size: 18px; font-weight: 700; margin: 24px 0 12px; }
+.batch-list-page .batch-trace-records { padding-inline-start: 24px; }
+.batch-list-page .batch-trace-records li { margin-bottom: 16px; overflow-wrap: anywhere; }

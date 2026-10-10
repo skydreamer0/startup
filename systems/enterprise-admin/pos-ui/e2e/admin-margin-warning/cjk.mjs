@@ -9,3 +9,9 @@ export function assertCjkFonts(records, detailsOpen) {
       `Actual CJK glyphs missing for ${record.selector}`);
   }
 }
+
+export function assertTraceCjkFonts(records) {
+  assert.deepEqual(records.map(record => record.selector), ['#batch-trace-title', '#batch-trace-description', 'button']);
+  for (const record of records) assert.ok(record.fonts.some(font => /^Noto Sans CJK(?: |$)/.test(font.familyName)
+    && font.glyphCount > 0 && font.isCustomFont === false), `Actual trace CJK glyphs missing for ${record.selector}`);
+}

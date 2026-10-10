@@ -5,18 +5,20 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { deflateSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { assertCjkFonts } from './cjk.mjs';
-import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome } from './run.mjs';
+import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
+import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
 import { cleanupRunProcesses, findRunProcesses, signalRunProcess, createRunScope, readRunIdentity, isBaselineIdentity } from './owned-run.mjs';
 
 const report = () => ({ errors: [], suites: [{ specs: expectedCases.map(title => ({ title, ok: true,
   tests: [{ expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', errors: [], duration: 1, attachments: [] }] }] })) }] });
-test('registry covers both actual routes and viewports plus ranking sort', () => {
-  assert.equal(expectedCases.length, 22); assert.equal(new Set(expectedCases).size, 22);
-  assert.equal(assertReport(report()).length, 22);
+test('registry retains original 22 warning cases and adds two read-only trace flows', () => {
+  assert.equal(expectedCases.length, 24); assert.equal(new Set(expectedCases).size, 24);
+  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ')).length, 22);
+  assert.equal(assertReport(report()).length, 24);
 });
 for (const [name, change] of [
   ['missing case', r => r.suites[0].specs.pop()],
@@ -161,7 +163,52 @@ test('locked Playwright loader collects all cases without launching a browser', 
       'test', '--config=e2e/admin-margin-warning/playwright.config.mts', '--list'], {
       cwd: pos, env: childEnvironment(process.env, output, randomUUID()), encoding: 'utf8', timeout: 20000,
     });
-    assert.match(listed, /Total: 22 tests in 1 file/);
+    assert.match(listed, /Total: 24 tests in 2 files/);
     for (const name of expectedCases) assert.ok(listed.includes(name), name);
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
+});
+
+test('trace CJK receipt requires the actual title, explanation and control glyphs', () => {
+  const records = ['#batch-trace-title', '#batch-trace-description', 'button'].map(selector => ({ selector, fonts: [{ familyName: 'Noto Sans CJK TC', glyphCount: 12, isCustomFont: false }] }));
+  assertTraceCjkFonts(records);
+  assert.throws(() => assertTraceCjkFonts(records.slice(1)));
+  for (const patch of [{ familyName: 'Arial' }, { glyphCount: 0 }, { isCustomFont: true }]) {
+    const bad = structuredClone(records); Object.assign(bad[0].fonts[0], patch); assert.throws(() => assertTraceCjkFonts(bad));
+  }
+});
+
+function syntheticPng(width, height) {
+  const crc = bytes => {
+    let value = 0xffffffff;
+    for (const byte of bytes) { value ^= byte; for (let bit = 0; bit < 8; bit++) value = (value >>> 1) ^ ((value & 1) ? 0xedb88320 : 0); }
+    return (value ^ 0xffffffff) >>> 0;
+  };
+  const chunk = (name, body) => {
+    const type = Buffer.from(name), size = Buffer.alloc(4), sum = Buffer.alloc(4);
+    size.writeUInt32BE(body.length); sum.writeUInt32BE(crc(Buffer.concat([type, body])));
+    return Buffer.concat([size, type, body, sum]);
+  };
+  const header = Buffer.alloc(13); header.writeUInt32BE(width); header.writeUInt32BE(height, 4); header[8] = 8; header[9] = 2;
+  return Buffer.concat([Buffer.from('89504e470d0a1a0a', 'hex'), chunk('IHDR', header),
+    chunk('IDAT', deflateSync(Buffer.alloc((1 + width * 3) * height))), chunk('IEND', Buffer.alloc(0))]);
+}
+test('only the fixed desktop trace case accepts an exact 1366 by 768 decoded PNG', () => {
+  const bytes = syntheticPng(1366, 768);
+  assert.deepEqual(validateScreenshot(bytes, 'batch-trace 1366: source lifecycle'), { width: 1366, height: 768 });
+  assert.throws(() => validatePng(bytes), 'Original generic minimum must remain 844');
+  for (const title of expectedCases.filter(title => title !== 'batch-trace 1366: source lifecycle'))
+    assert.throws(() => validateScreenshot(bytes, title), `No 768px exception for ${title}`);
+});
+test('desktop trace rejects wrong widths and both smaller and larger heights', () => {
+  for (const [width, height] of [[1365, 768], [1366, 767], [1366, 769], [390, 844], [1440, 900]])
+    assert.throws(() => validateScreenshot(syntheticPng(width, height), 'batch-trace 1366: source lifecycle'));
+});
+test('screenshot dispatch rejects unknown cases and truncated desktop bytes', () => {
+  const bytes = syntheticPng(1366, 768);
+  assert.throws(() => validateScreenshot(bytes, 'batch-trace 1024: source lifecycle'), /Unknown screenshot case/);
+  assert.throws(() => validateScreenshot(bytes.subarray(0, -8), 'batch-trace 1366: source lifecycle'));
+});
+test('original warning and mobile dimensions still decode with their unchanged bounds', () => {
+  assert.deepEqual(validateScreenshot(syntheticPng(1440, 900), 'margin 1440: pending and empty'), { width: 1440, height: 900 });
+  assert.deepEqual(validateScreenshot(syntheticPng(390, 844), 'batch-trace 390: source errors'), { width: 390, height: 844 });
 });

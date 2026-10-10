@@ -9,7 +9,7 @@ const crc32 = bytes => {
   }
   return (value ^ 0xffffffff) >>> 0;
 };
-export function validatePng(bytes) {
+function decodePng(bytes, exactTraceDesktop) {
   assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
   let offset = 8, header = null, ended = false;
   const data = [];
@@ -28,7 +28,8 @@ export function validatePng(bytes) {
   }
   assert.ok(header && ended && data.length);
   const width = header.readUInt32BE(0), height = header.readUInt32BE(4);
-  assert.ok(width >= 390 && width <= 10000 && height >= 844 && height <= 20000);
+  if (exactTraceDesktop) { assert.equal(width, 1366); assert.equal(height, 768); }
+  else assert.ok(width >= 390 && width <= 10000 && height >= 844 && height <= 20000);
   assert.equal(header[8], 8); assert.ok([2, 6].includes(header[9]));
   assert.deepEqual([...header.subarray(10)], [0, 0, 0]);
   const stride = 1 + width * (header[9] === 2 ? 3 : 4), size = stride * height;
@@ -38,3 +39,8 @@ export function validatePng(bytes) {
   for (let row = 0; row < decoded.length; row += stride) assert.ok(decoded[row] <= 4);
   return { width, height };
 }
+
+// Existing warning/mobile bounds remain unchanged. The only additional entry
+// point admits the exact reviewed desktop-trace viewport, not a lower minimum.
+export function validatePng(bytes) { return decodePng(bytes, false); }
+export function validateTraceDesktopPng(bytes) { return decodePng(bytes, true); }

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 if (!process.env.MARGIN_UI_OUTPUT || !process.env.MARGIN_UI_BUILD) throw new Error('Use the owned margin-warning runner');
 export default defineConfig({
-  testDir: '.', testMatch: 'warning.spec.ts', outputDir: resolve(process.env.MARGIN_UI_OUTPUT, 'tests'),
+  testDir: '.', testMatch: ['warning.spec.ts', 'batch-trace.spec.ts'], outputDir: resolve(process.env.MARGIN_UI_OUTPUT, 'tests'),
   fullyParallel: false, workers: 1, retries: 0, forbidOnly: true,
   timeout: 30_000, expect: { timeout: 7_000 },
   reporter: [['list'], ['json', { outputFile: resolve(process.env.MARGIN_UI_OUTPUT, 'report.json') }]],

@@ -1,6 +1,6 @@
 import { test as base, expect, type Page, type TestInfo, type Route } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
-import { assertCjkFonts } from './cjk.mjs';
+import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import type { MarginAnalysis } from '@pharmasaas/types';
 import type { reportsApi } from '../../../admin-ui/src/api/reports';
 
@@ -38,6 +38,7 @@ type Harness = {
   reads: string[]; responses: number[]; unexpected: string[]; pageErrors: string[];
   stubbedStylesheets: string[];
   handler: (url: URL) => Reply | Promise<Reply>;
+  batchHandler?: (url: URL) => Reply | Promise<Reply>;
 };
 export const test = base.extend<{ harness: Harness }>({
   harness: [async ({ page, context }, use, info) => {
@@ -72,6 +73,8 @@ export const test = base.extend<{ harness: Harness }>({
       else if (endpoint === '/reports/margin/trend') reply = { status: 200, data: [{ period: '2026-10', revenue: 1500, margin: 400, marginPct: 26.67 }] };
       else if (endpoint === '/reports/margin' || endpoint === '/reports/sales-ranking') {
         state.reads.push(`${endpoint}${url.search}`); reply = await state.handler(url); state.responses.push(reply.status);
+      } else if (state.batchHandler && ['/inventory/products', '/product-batches', '/product-batches/synthetic-trace-batch'].includes(endpoint)) {
+        state.reads.push(`${endpoint}${url.search}`); reply = await state.batchHandler(url); state.responses.push(reply.status);
       } else { state.unexpected.push(endpoint); await route.abort('blockedbyclient'); return; }
       await route.fulfill({ status: reply.status, json: reply.status === 200 ? { success: true, data: reply.data }
         : { success: false, error: { code: 'SYNTHETIC_ERROR', message: 'Synthetic test failure' } } });
@@ -133,4 +136,41 @@ export async function capture(page: Page, info: TestInfo, name: string) {
     expect(rect.right).toBeLessThanOrEqual(measurements.warning.right + 1);
   }
   return measurements;
+}
+
+// Reuse the same owned browser, network allowlist, artifact and CJK guards for
+// the batch-source slice. No backend, proxy, new service or additional auth.
+export async function captureTrace(page: Page, info: TestInfo, name: string) {
+  await page.evaluate(() => document.fonts.ready);
+  const dialog = page.getByRole('dialog');
+  await dialog.locator('h2').scrollIntoViewIfNeeded();
+  const geometry = await dialog.evaluate(element => {
+    const bounds = (el: Element) => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }; };
+    return { subject: 'batch-trace', viewport: { width: innerWidth, height: innerHeight }, documentWidth: document.documentElement.scrollWidth,
+      dialog: bounds(element), clientWidth: element.clientWidth, scrollWidth: element.scrollWidth,
+      targets: [...element.querySelectorAll('button')].map(bounds),
+      textRects: [...element.querySelectorAll('h2,p')].filter(el => el.getClientRects().length).map(bounds) };
+  });
+  const session = await page.context().newCDPSession(page);
+  const platformFonts = [];
+  try {
+    await session.send('DOM.enable'); await session.send('CSS.enable');
+    const { root } = await session.send('DOM.getDocument');
+    for (const selector of ['#batch-trace-title', '#batch-trace-description', 'button']) {
+      const { nodeId } = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector: `.batch-trace-dialog ${selector}` });
+      expect(nodeId).toBeGreaterThan(0);
+      const { fonts } = await session.send('CSS.getPlatformFontsForNode', { nodeId });
+      platformFonts.push({ selector, fonts });
+    }
+  } finally { await session.detach(); }
+  assertTraceCjkFonts(platformFonts);
+  expect(geometry.dialog.x).toBeGreaterThanOrEqual(0);
+  expect(geometry.dialog.right).toBeLessThanOrEqual(geometry.viewport.width + 1);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+  for (const target of geometry.targets) { expect(target.width).toBeGreaterThanOrEqual(44); expect(target.height).toBeGreaterThanOrEqual(44); }
+  for (const text of geometry.textRects) { expect(text.x).toBeGreaterThanOrEqual(geometry.dialog.x); expect(text.right).toBeLessThanOrEqual(geometry.dialog.right); }
+  await writeFile(info.outputPath(`${name}.json`), JSON.stringify({ ...geometry, platformFonts }, null, 2));
+  await page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true });
+  await info.attach(`${name}.png`, { path: info.outputPath(`${name}.png`), contentType: 'image/png' });
+  await info.attach(`${name}.json`, { path: info.outputPath(`${name}.json`), contentType: 'application/json' });
 }

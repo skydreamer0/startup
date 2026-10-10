@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { resolveProvenance } from '../ui-evidence/provenance.mjs';
 import { expectedCases } from './cases.mjs';
-import { validatePng } from './png.mjs';
-import { assertCjkFonts } from './cjk.mjs';
+import { validatePng, validateTraceDesktopPng } from './png.mjs';
+import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import { cleanupRunProcesses, createRunScope } from './owned-run.mjs';
 
 export const sourceInputs = ['systems/enterprise-admin/admin-ui', 'systems/enterprise-admin/packages/types',
@@ -54,6 +54,10 @@ export function assertAttachment(output, file) {
   assert.ok(fs.realpathSync(file).startsWith(fs.realpathSync(output) + path.sep));
   return fs.readFileSync(file);
 }
+export function validateScreenshot(bytes, title) {
+  assert.ok(expectedCases.includes(title), 'Unknown screenshot case');
+  return title === 'batch-trace 1366: source lifecycle' ? validateTraceDesktopPng(bytes) : validatePng(bytes);
+}
 export function validateEvidence(output, cases) {
   return cases.map(item => {
     const names = item.attachments.map(a => a.name);
@@ -72,19 +76,29 @@ export function validateEvidence(output, cases) {
       'refetch failure and recovery': ['refetch-pending', 'refetch-failed', 'refetch-recovered'],
       'period change': ['period-pending', 'period-recovered'],
       'quantity sort': ['sort-pending', 'sort-recovered'],
+      'source lifecycle': ['source-loading', 'source-linked'],
+      'source errors': ['source-long', 'source-403', 'source-404', 'source-500', 'source-empty'],
     }[suffix];
     assert.deepEqual(images.map(a => a.name).sort(), required.map(name => `${name}.png`).sort());
     const observations = images.map(image => {
       const bytes = assertAttachment(output, image.path);
-      const dimensions = validatePng(bytes);
+      const dimensions = validateScreenshot(bytes, item.title);
       const measure = item.attachments.find(a => a.name === image.name.replace(/\.png$/, '.json'));
       assert.ok(measure);
       const geometry = JSON.parse(assertAttachment(output, measure.path));
-      assertCjkFonts(geometry.platformFonts, geometry.detailsOpen);
+      if (item.title.startsWith('batch-trace ')) {
+        assert.equal(geometry.subject, 'batch-trace');
+        assert.ok(geometry.dialog.width > 0 && geometry.dialog.height > 0);
+        assertTraceCjkFonts(geometry.platformFonts);
+        assert.ok(geometry.dialog.x >= 0 && geometry.dialog.right <= geometry.viewport.width + 1);
+        assert.ok(geometry.scrollWidth <= geometry.clientWidth + 1);
+        assert.ok(geometry.targets.length >= 1);
+        for (const target of geometry.targets) assert.ok(target.width >= 44 && target.height >= 44);
+      } else assertCjkFonts(geometry.platformFonts, geometry.detailsOpen);
       return { name: image.name, sha256: createHash('sha256').update(bytes).digest('hex'),
         ...dimensions,
         pageOverflow: geometry.documentWidth > geometry.viewport.width + 1,
-        summaryTarget: geometry.summary, warning: geometry.warning, computedFont: geometry.font, platformFonts: geometry.platformFonts };
+        subject: geometry.subject ?? 'margin-warning', dialog: geometry.dialog, targets: geometry.targets, summaryTarget: geometry.summary, warning: geometry.warning, computedFont: geometry.font, platformFonts: geometry.platformFonts };
     });
     return { title: item.title, duration: item.duration, browser: data.browser, viewport: data.viewport, observations };
   });
@@ -152,7 +166,7 @@ async function main() {
     if (canPublishEvidence(phases, quiescent)) {
       if (!error && accepted) {
         write('accepted.json', accepted);
-        console.log(`Admin margin browser: ${accepted.cases.length} cases passed. PNG pixels await independent review.`);
+        console.log(`Admin read-only browser: ${accepted.cases.length} cases passed. PNG pixels await independent review.`);
         console.log(JSON.stringify(accepted.cases.map(({ title, observations }) => ({ title, observations }))));
       }
       write('completion.json', { ...identity, phases, status: terminal.status, error: error?.message ?? null });
