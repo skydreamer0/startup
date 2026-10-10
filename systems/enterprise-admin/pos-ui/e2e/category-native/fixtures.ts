@@ -24,11 +24,11 @@ export const test = base.extend<{ guard: Guard }>({
     const ids = new WeakMap<Request, RequestRow>(); const pending: Promise<void>[] = [];
     const observe = (page: Page) => page.on('pageerror', error => guard.pageErrors.push(error.message));
     context.pages().forEach(observe); context.on('page', observe);
-    await context.addInitScript(({ token }) => {
-      localStorage.setItem('pos_accessToken', token);
+    await context.addInitScript(({ token, appOrigin }) => {
+      if (location.origin === appOrigin) localStorage.setItem('pos_accessToken', token);
       window.__categoryKeys = [];
       document.addEventListener('keydown', event => window.__categoryKeys.push({ key: event.key, trusted: event.isTrusted }), true);
-    }, { token: bootstrap.accessToken });
+    }, { token: bootstrap.accessToken, appOrigin: origin });
     await context.routeWebSocket('**/*', socket => { guard.unexpected.push(`WebSocket ${socket.url()}`); void socket.close(); });
     context.on('response', response => {
       const request = response.request(); const row = ids.get(request); if (!row) return;

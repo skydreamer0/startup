@@ -119,7 +119,7 @@ async function main() {
     const lifecycle = files.filter(file => file.endsWith('/lifecycle.json')).map(file => read(path.join('tests', file)));
     assert.deepEqual(lifecycle.map(row => row.test).sort(), [...lifecycleCases].sort());
     for (const row of lifecycle) {
-      assert.equal(row.nonce, nonce); assert.equal(row.realStaleWaitMs, 61000);
+      assert.equal(row.nonce, nonce); assert.equal(row.realStaleWaitMs, 61000); assert.ok(row.realStaleElapsedMs >= 61000);
       assert.deepEqual(row.cartBefore, row.cartAfter); assert.equal(row.search, '合成');
       assert.equal(row.selectedCategory, database.expected.categories[1].id);
       assert.deepEqual(row.latestProductIds, [database.expected.products.find(product => product.sku === 'CATEGORY-ONLY-2').id]);

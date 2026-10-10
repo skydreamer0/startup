@@ -30,8 +30,10 @@ for (const [index, width] of widths.entries()) {
     const reachability = [];
     await retry.scrollIntoViewIfNeeded();
     if (width === 1024) {
-      await page.keyboard.press('F2'); await page.keyboard.press('Tab');
-      await expect(nav.getByRole('button', { name: names[0], exact: true })).toBeFocused(); await page.keyboard.press('Enter');
+      await page.keyboard.press('F2');
+      const all = nav.getByRole('button', { name: names[0], exact: true });
+      for (let count = 0; count < 64 && !(await all.evaluate(node => node === document.activeElement)); count++) await page.keyboard.press('Tab');
+      await expect(all).toBeFocused(); await page.keyboard.press('Enter'); await retry.scrollIntoViewIfNeeded();
       reachability.push({ mode: 'pointer', ...(await assertReachable(page, retry)) }); await retry.click(); }
     else {
       await page.keyboard.press('F2'); await expect(search).toBeFocused();
@@ -66,8 +68,11 @@ for (const [index, width] of widths.entries()) {
 
     // Real wall-clock staleTime expiry, then real tab visibility/focus. No query/cache hook or fake timer.
     guard.phase = 'refetch-error';
-    const background = await context.newPage(); await background.bringToFront();
-    await page.waitForTimeout(61_000); await page.bringToFront(); await background.close();
+    const background = await context.newPage(); await background.goto(origin + '/favicon.ico'); await background.bringToFront();
+    const staleWaitStarted = Date.now();
+    await page.waitForTimeout(61_000);
+    const realStaleElapsedMs = Date.now() - staleWaitStarted; expect(realStaleElapsedMs).toBeGreaterThanOrEqual(61_000);
+    await page.bringToFront(); await background.close();
     const stale = page.getByRole('alert').filter({ hasText: '分類資訊可能已過期。' });
     await expect(stale).toBeVisible(); await expect(retry).toBeEnabled();
     await stable(); await expect(search).toHaveValue('合成');
@@ -85,7 +90,7 @@ for (const [index, width] of widths.entries()) {
     await capture(page, info, 'stale-recovered', baseline, guard.bootstrap.categories);
     writeFileSync(info.outputPath('lifecycle.json'), JSON.stringify({ test: info.title, nonce: guard.bootstrap.nonce, width,
       initialStatus: width === 1024 ? 403 : 500, faultInjection: 'Test outer middleware; 403 is UI presentation, not authorization acceptance',
-      realStaleWaitMs: 61_000, reachability, selectedCategory: guard.bootstrap.categories[1].id,
+      realStaleWaitMs: 61_000, realStaleElapsedMs, reachability, selectedCategory: guard.bootstrap.categories[1].id,
       search: '合成', latestProductIds: await productIds(), cartBefore: baseline, cartAfter: await cartSnapshot(page) }, null, 2) + '\n');
   });
 }
