@@ -1,6 +1,7 @@
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
+import { aggregateOrderPayments } from '../../lib/order-payment-totals';
 
 export interface CreateDailySettlementDto {
   shiftId: string;
@@ -81,34 +82,19 @@ export class DailySettlementService {
       select: {
         totalAmount: true,
         paymentMethod: true,
+        status: true,
+        payments: { where: { tenantId }, select: { method: true, amount: true } },
       },
     });
 
     const totalOrders = orders.length;
-    let totalSales = 0;
-    let cashAmount = 0;
-    let cardAmount = 0;
-    let linePayAmount = 0;
-    let otherAmount = 0;
-
-    for (const order of orders) {
-      const amount = Number(order.totalAmount);
-      totalSales += amount;
-      switch (order.paymentMethod) {
-        case 'CASH':
-          cashAmount += amount;
-          break;
-        case 'CARD':
-          cardAmount += amount;
-          break;
-        case 'LINE_PAY':
-          linePayAmount += amount;
-          break;
-        default:
-          otherAmount += amount;
-          break;
-      }
-    }
+    const { totalSales, paymentBreakdown } = aggregateOrderPayments(orders);
+    const cashAmount = paymentBreakdown.CASH ?? 0;
+    const cardAmount = paymentBreakdown.CARD ?? 0;
+    const linePayAmount = paymentBreakdown.LINE_PAY ?? 0;
+    const otherAmount = Object.entries(paymentBreakdown)
+      .filter(([method]) => !['CASH', 'CARD', 'LINE_PAY'].includes(method))
+      .reduce((sum, [, amount]) => sum + amount, 0);
 
     return {
       shiftId,

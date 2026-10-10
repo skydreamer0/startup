@@ -1,6 +1,7 @@
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
+import { aggregateOrderPayments } from '../../lib/order-payment-totals';
 
 export interface CreateShiftDto {
   staffId: string;
@@ -102,7 +103,9 @@ export class ShiftService {
         staff: { select: { id: true, fullName: true } },
         orders: {
           where: { status: { in: ['completed', 'refunded'] } },
-          select: { id: true, orderNumber: true, status: true, totalAmount: true, discountAmount: true, paymentMethod: true, createdAt: true },
+          select: { id: true, orderNumber: true, status: true, totalAmount: true, discountAmount: true, paymentMethod: true, createdAt: true,
+            payments: { where: { tenantId }, select: { method: true, amount: true } },
+          },
         },
       },
     });
@@ -111,13 +114,7 @@ export class ShiftService {
     const completed = shift.orders.filter((o) => o.status === 'completed');
     const refunded = shift.orders.filter((o) => o.status === 'refunded');
 
-    const paymentBreakdown: Record<string, number> = {};
-    let grossSales = 0;
-    for (const o of completed) {
-      const amt = Number(o.totalAmount);
-      paymentBreakdown[o.paymentMethod] = (paymentBreakdown[o.paymentMethod] ?? 0) + amt;
-      grossSales += amt;
-    }
+    const { totalSales: grossSales, paymentBreakdown } = aggregateOrderPayments(completed);
 
     const refundTotal = refunded.reduce((s, o) => s + Number(o.totalAmount), 0);
     const netTotal = grossSales - refundTotal;
