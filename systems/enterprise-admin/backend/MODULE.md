@@ -109,6 +109,13 @@ See `../infrastructure/verification/inventory-provenance/README.md`. See
 `../infrastructure/verification/pos-categories/README.md` for the bounded nine-case
 contract, separate opt-in and remaining browser/device gates.
 
+The separate `scripts/stock-browser-fixture.ts` runs after category cleanup against
+the same owned SKU service. It mounts the unchanged app, permits one synthetic
+checkout and one refund per fixture tenant and injects product-read 500s outside
+production handlers. PostgreSQL snapshots verify sale deduction and unchanged
+physical stock/payment/movement/allocation/command state after refund and retries.
+See `../infrastructure/verification/pos-confirmed-stock/README.md`.
+
 ### Debug a backend test failure
 
 1. Read the failing test file.
