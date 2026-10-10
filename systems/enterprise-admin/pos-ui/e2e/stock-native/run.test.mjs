@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { assertEnvironment, allowedRequest, assertReport, assertEvidence, expectedCases, widths, databaseUrl } from './contract.mjs';
+import { brandAssets, brandRequest } from '../dialog-acceptance/brand-assets.mjs';
+import { origin } from './contract.mjs';
 const prefix = '/api/v1/admin/pos';
 test('stock opt-in retains the existing exact owned CI database guard', () => {
   const env = { GITHUB_ACTIONS: 'true', RUNNER_ENVIRONMENT: 'github-hosted', DATABASE_URL: databaseUrl,
@@ -46,7 +48,7 @@ function evidence() {
     sale.orders[0].id = id; refund.orders[0].id = id; rows[0].body.data.id = id; rows[3].body.data.id = id; rows[3].path = `${prefix}/orders/${id}/refund`;
     api.requests.push(...rows); database.finalSnapshots[width] = refund;
     database.after.order_items.push(...refund.items);
-    browser.push({ test: expectedCases[index], contextClosed: true, unexpected: [], pageErrors: [], requests: rows.map(row => ({ id: row.id })), responses: rows.map(({ id, method, path, status, sha256 }) => ({ id, method, path, status, sha256 })) });
+    browser.push({ test: expectedCases[index], contextClosed: true, unexpected: [], pageErrors: [], verifiedBrand: brandAssets.map(asset => ({ method: 'GET', ...asset })), requests: rows.map(row => ({ id: row.id })), responses: rows.map(({ id, method, path, status, sha256 }) => ({ id, method, path, status, sha256 })) });
   }
   database.after.order_items.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
   return { database, api, browser };
@@ -64,7 +66,23 @@ test('native receipt rejects stock restoration write retry false recovery and fa
     v => v.api.rejected.push('duplicate POST'),
     v => { v.database.after.users = ['changed']; },
     v => { v.browser[0].contextClosed = false; },
+    v => { delete v.browser[0].verifiedBrand; }, v => { v.browser[0].verifiedBrand[0].sha256 = '0'.repeat(64); },
+    v => { v.browser[0].verifiedBrand[0].mime = 'text/html'; }, v => { v.browser[0].verifiedBrand[0].bytes++; },
+    v => { v.browser[0].verifiedBrand[0].method = 'POST'; }, v => { v.browser[0].verifiedBrand[0].path = '/brand/unknown.svg'; },
   ]) {
     const bad = structuredClone(evidence()); mutate(bad); assert.throws(() => assertEvidence(bad.database, bad.browser, bad.api));
+  }
+});
+test('stock brand paths never become API writes or allow arbitrary static requests', () => {
+  for (const asset of brandAssets) {
+    assert.equal(brandRequest(new URL(origin + asset.path), 'GET', origin), asset);
+    assert.equal(allowedRequest('GET', asset.path), false);
+    assert.equal(allowedRequest('POST', asset.path), false);
+    for (const [url, method] of [
+      [origin + asset.path, 'HEAD'], [origin + asset.path, 'POST'],
+      [origin + asset.path + '?v=1', 'GET'], ['https://unexpected.invalid' + asset.path, 'GET'],
+      ['http://user:pass@127.0.0.1:4290' + asset.path, 'GET'],
+      [origin + '/brand/flow-capsule-v1/unknown.png', 'GET'],
+    ]) assert.equal(brandRequest(new URL(url), method, origin), undefined);
   }
 });

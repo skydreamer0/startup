@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { assertBrandEvidence } from '../dialog-acceptance/brand-assets.mjs';
 export const widths = [1366, 1024, 390];
 export const expectedCases = widths.map(width => `stable categories preserve cart through real API at ${width}px`);
 export const stages = ['initial', 'single-sku', 'empty-search', 'keyboard-category', 'pointer-category', 'empty-category', 'restored-all'];
@@ -39,6 +40,7 @@ export function assertNetwork(browser, api) {
   assert.deepEqual(api.rejected, []);
   const observed = browser.flatMap(entry => {
     assert.equal(entry.contextClosed, true); assert.deepEqual(entry.unexpected, []); assert.deepEqual(entry.pageErrors, []);
+    assertBrandEvidence(entry.verifiedBrand);
     assert.ok(entry.keys.some(event => event.key === 'Enter')); assert.ok(entry.keys.every(event => event.trusted));
     assert.ok(entry.responses.length > 0); assert.equal(entry.requests.length, entry.responses.length);
     assert.deepEqual(entry.requests.map(row => row.id).sort(), entry.responses.map(row => row.id).sort());

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { assertBrandEvidence } from '../dialog-acceptance/brand-assets.mjs';
 import { assertEnvironment as categoryEnvironment, allowedRead, databaseUrl, origin, apiOrigin } from '../category-native/contract.mjs';
 export { databaseUrl, origin, apiOrigin };
 export const widths = [1366, 1024];
@@ -36,6 +37,7 @@ export function assertEvidence(database, browser, api) {
   assert.deepEqual(browser.map(row => row.test).sort(), [...expectedCases].sort());
   const responses = browser.flatMap(row => {
     assert.equal(row.contextClosed, true); assert.deepEqual(row.unexpected, []); assert.deepEqual(row.pageErrors, []);
+    assertBrandEvidence(row.verifiedBrand);
     assert.deepEqual(row.requests.map(r => r.id).sort(), row.responses.map(r => r.id).sort());
     return row.responses;
   });

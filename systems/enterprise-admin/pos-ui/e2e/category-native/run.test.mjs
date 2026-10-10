@@ -8,6 +8,8 @@ import { execFileSync } from 'node:child_process';
 import { assertEnvironment, allowedRead, assertFonts, assertReport, assertNetwork, assertDatabase, completionOutcome, expectedCases, databaseUrl } from './contract.mjs';
 import { runOwnedPhase, publishEvidence } from './run.mjs';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
+import { brandAssets, brandRequest } from '../dialog-acceptance/brand-assets.mjs';
+import { origin } from './contract.mjs';
 const env = { GITHUB_ACTIONS: 'true', RUNNER_ENVIRONMENT: 'github-hosted', DATABASE_URL: databaseUrl,
   POS_PRODUCT_LOOKUP_DATABASE_URL: databaseUrl, CATEGORY_QA_DATABASE_URL: databaseUrl,
   SKU_QA_HEAD: 'a'.repeat(40), SKU_QA_CONTAINER: 'b'.repeat(64), SKU_QA_NETWORK: 'github_network_abcd', GITHUB_RUN_ID: '1', GITHUB_RUN_ATTEMPT: '1' };
@@ -52,15 +54,30 @@ test('actual noncustom CJK glyphs are required rather than CSS family or tofu', 
 });
 const network = () => {
   const row = { id: 'nonce:1', method: 'GET', path: '/api/v1/admin/pos/categories', status: 200, sha256: 'a'.repeat(64) };
-  return { browser: [{ contextClosed: true, unexpected: [], pageErrors: [], keys: [{ key: 'Enter', trusted: true }], requests: [{ id: row.id }], responses: [row] }], api: { rejected: [], requests: [{ ...row, body: {} }] } };
+  return { browser: [{ contextClosed: true, unexpected: [], pageErrors: [], verifiedBrand: brandAssets.map(asset => ({ method: 'GET', ...asset })), keys: [{ key: 'Enter', trusted: true }], requests: [{ id: row.id }], responses: [row] }], api: { rejected: [], requests: [{ ...row, body: {} }] } };
 };
 test('browser response hashes must match unique completed real API requests', () => {
   const value = network(); assert.equal(assertNetwork(value.browser, value.api), 1);
   for (const mutate of [v => v.api.requests.pop(), v => v.api.rejected.push('POST /checkout'), v => { v.api.requests[0].sha256 = 'b'.repeat(64); },
     v => { v.browser[0].responses[0].status = 500; }, v => { v.browser[0].contextClosed = false; },
     v => v.browser[0].unexpected.push('POST /checkout'), v => { v.browser[0].keys[0].trusted = false; },
-    v => v.browser[0].requests.push({ id: 'missing-response' }), v => v.browser[0].responses.push(v.browser[0].responses[0])]) {
+    v => v.browser[0].requests.push({ id: 'missing-response' }), v => v.browser[0].responses.push(v.browser[0].responses[0]),
+    v => { delete v.browser[0].verifiedBrand; }, v => { v.browser[0].verifiedBrand[0].sha256 = '0'.repeat(64); },
+    v => { v.browser[0].verifiedBrand[0].mime = 'text/html'; }, v => { v.browser[0].verifiedBrand[0].bytes++; },
+    v => { v.browser[0].verifiedBrand[0].method = 'POST'; }, v => { v.browser[0].verifiedBrand[0].path = '/brand/unknown.svg'; }]) {
     const bad = network(); mutate(bad); assert.throws(() => assertNetwork(bad.browser, bad.api));
+  }
+});
+test('category brand paths never become API reads or allow arbitrary static requests', () => {
+  for (const asset of brandAssets) {
+    assert.equal(brandRequest(new URL(origin + asset.path), 'GET', origin), asset);
+    assert.equal(allowedRead('GET', asset.path), false);
+    for (const [url, method] of [
+      [origin + asset.path, 'HEAD'], [origin + asset.path, 'POST'],
+      [origin + asset.path + '?v=1', 'GET'], ['https://unexpected.invalid' + asset.path, 'GET'],
+      ['http://user:pass@127.0.0.1:4290' + asset.path, 'GET'],
+      [origin + '/brand/flow-capsule-v1/unknown.png', 'GET'],
+    ]) assert.equal(brandRequest(new URL(url), method, origin), undefined);
   }
 });
 const database = () => {
