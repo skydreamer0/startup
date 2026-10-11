@@ -1,6 +1,7 @@
 # Product import dialog ownership — bounded Issue #31 slice
 
-Base: master dff3f71afc4f3d92a580bca6d667c21cb28d6c23.
+First-publication base: master dff3f71afc4f3d92a580bca6d667c21cb28d6c23.
+Later integration and corrections are recorded below; this is historical provenance.
 
 Only ImportProductsModal and its tests change at runtime. ProductListPage was
 inspected read-only: conditional mounting owns close/reopen; success invalidates
@@ -108,3 +109,47 @@ original failing click remain. New geometry/hit-test and pending-backdrop
 assertions make the missing overlay fail directly; they do not hide the failure.
 Independent source/PNG review and final-head CI are still required. This repair
 does not claim assistive-technology or physical-device acceptance.
+
+## Confirmed-write freshness correction after PR #122 integration
+
+The combined source at `e78780a9dde14c6cf1406d5733461433bbdb9da5`
+(tree `2048c3c80dba2e1f1ef191f8d6cfafd7d11c8e2a`) retained a real
+cache bug: its mounted guard suppressed the caller's catalog invalidation when
+confirmation completed after route unmount. A reopened list could finish its GET
+before the old write committed, then remain stale. The prior late-success browser
+case even required no additional read. An independent extracted-function Node
+probe reproduced this source path; that probe was not React or browser evidence.
+
+Confirmation now invalidates the products query after a successful HTTP response,
+independently of the dialog instance. It does so only while the originating
+nonempty login session still matches: the existing stable refresh-token identity
+survives access-token renewal, with access-token identity as the fallback. Token
+values remain transient and are not logged or included in mutation variables.
+Logout or a different login does not refresh the new session's catalog. The cache
+read is not awaited as part of the confirmed import, so a slow or failed refetch
+cannot turn a committed write into an import error. Local result, success callback,
+alerts and focus retain their mounted-instance ownership. The product page no
+longer duplicates the modal's cache invalidation.
+
+The same source probe also demonstrated that a delivered file-change event can
+change native FileList before a pending guard returns, leaving the chooser label
+out of sync with the retained file/token. Native OS-picker reachability was not
+proven. Pending changes now restore the last accepted FileList; an empty accepted
+selection uses an empty input value. Preview/confirmation ownership is unchanged.
+
+Added component regressions use a real QueryObserver for a reopened catalog whose
+old read finishes before late confirmation. They cover same-session refresh,
+access-token renewal, access-only ownership, changed login, logout, absent session
+and failed confirmation, while retaining detached UI/focus/alert protections and
+same-tick preview/confirm file-list checks. The existing late-confirm browser
+case now changes a synthetic product fixture on confirmed success and requires
+exactly one refreshed catalog GET and the new product row. Other late outcomes
+still require no extra read. All HTTP remains browser-fulfilled synthetic data;
+no actual workbook or backend writes are added.
+
+Local diff/context validation passes. Local Vitest did not start because the
+workspace lacks its complete frontend dependencies (`vitest/config` unresolved);
+Node is 24.19.0 rather than canonical 22. The authored React/browser regressions,
+strict types, full tests and build require fresh exact-head GitHub CI. The earlier
+green combined-tree evidence is not a pass for this correction. Independent review
+and fresh artifacts remain required; no production release is claimed.

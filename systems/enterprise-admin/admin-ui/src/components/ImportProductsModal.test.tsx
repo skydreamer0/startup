@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, QueryObserver } from '@tanstack/react-query';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ImportProductsModal from './ImportProductsModal';
 import { excelApi, type ImportPreview, type ImportSummary } from '../api/excel';
@@ -10,16 +10,22 @@ function preview(token: string): ImportPreview {
   return { created: 1, updated: 0, errors: [], warnings: ['庫存數量不匯入'], previewToken: token,
     fileHash: 'a'.repeat(64), normalizedRevision: 'b'.repeat(64), expiresAt: Date.now() + 900_000 };
 }
-function setup() {
+const clients: QueryClient[] = [];
+function setup(client = new QueryClient({ defaultOptions: { mutations: { retry: false } } })) {
+  clients.push(client);
   const onSuccess = vi.fn();
   const onClose = vi.fn();
-  const view = render(<QueryClientProvider client={new QueryClient({ defaultOptions: { mutations: { retry: false } } })}>
+  const view = render(<QueryClientProvider client={client}>
     <ImportProductsModal onClose={onClose} onSuccess={onSuccess} />
   </QueryClientProvider>);
   return { ...view, onClose, input: screen.getByLabelText('Excel File (.xlsx)'), onSuccess };
 }
 beforeEach(() => vi.resetAllMocks());
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  clients.splice(0).forEach(client => client.clear());
+  localStorage.clear();
+});
 describe('Reviewed product import', () => {
   it('requires a new preview when the file changes and confirms the matching reviewed file/token', async () => {
     const { input, onSuccess } = setup();
@@ -116,6 +122,7 @@ describe('Import dialog keyboard and request ownership', () => {
       fireEvent.change(view.input, { target: { files: [new File(['other'], 'other.xlsx')] } });
     });
     await waitFor(() => expect(excelApi.previewImportProducts).toHaveBeenCalledExactlyOnceWith(file));
+    expect((view.input as HTMLInputElement).files?.[0]).toBe(file);
     expect(view.onClose).not.toHaveBeenCalled();
     expect(view.input).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
@@ -139,8 +146,12 @@ describe('Import dialog keyboard and request ownership', () => {
     const view = setup(); const file = selectFile(view.input);
     fireEvent.click(screen.getByRole('button', { name: 'Preview' }));
     const confirm = await screen.findByRole('button', { name: 'Confirm Import' });
-    act(() => { confirm.click(); confirm.click(); fireEvent.keyDown(confirm, { key: 'Escape' }); });
+    act(() => {
+      confirm.click(); confirm.click(); fireEvent.keyDown(confirm, { key: 'Escape' });
+      fireEvent.change(view.input, { target: { files: [new File(['other'], 'other.xlsx')] } });
+    });
     await waitFor(() => expect(excelApi.confirmImportProducts).toHaveBeenCalledExactlyOnceWith(file, 'owned-token'));
+    expect((view.input as HTMLInputElement).files?.[0]).toBe(file);
     expect(view.onClose).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
     await act(async () => pending.resolve({ created: 1, updated: 0, errors: [], warnings: [] }));
@@ -171,6 +182,57 @@ describe('Import dialog keyboard and request ownership', () => {
     expect(alert).not.toHaveBeenCalled();
     alert.mockRestore();
   });
+
+  it.each(['same-session', 'access-renewal', 'access-only', 'other-session', 'signed-out', 'no-session', 'failure'])
+    ('keeps reopened catalog freshness separate from detached UI: %s', async (scenario) => {
+      localStorage.setItem('accessToken', 'synthetic-access-before');
+      localStorage.setItem('refreshToken', 'synthetic-original-session');
+      if (scenario === 'access-only') localStorage.removeItem('refreshToken');
+      if (scenario === 'no-session') localStorage.clear();
+      const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+      const pending = deferred<ImportSummary>();
+      vi.mocked(excelApi.previewImportProducts).mockResolvedValue(preview('old-token'));
+      vi.mocked(excelApi.confirmImportProducts).mockReturnValue(pending.promise);
+      const alert = vi.spyOn(window, 'alert').mockImplementation(() => {});
+      const old = setup(client); selectFile(old.input);
+      fireEvent.click(screen.getByRole('button', { name: 'Preview' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Confirm Import' }));
+      await waitFor(() => expect(excelApi.confirmImportProducts).toHaveBeenCalledOnce());
+      old.unmount();
+
+      // A real query observer represents a reopened list whose GET has already
+      // completed before the outstanding import confirms its durable write.
+      let serverProducts = ['before'];
+      let visibleProducts: string[] | undefined;
+      const queryFn = vi.fn(async () => serverProducts);
+      const observer = new QueryObserver(client, {
+        queryKey: ['inventory', 'products', { page: 1 }], queryFn, staleTime: 0, retry: false,
+      });
+      const unsubscribe = observer.subscribe(result => { visibleProducts = result.data; });
+      try {
+        await waitFor(() => expect(visibleProducts).toEqual(['before']));
+        client.setQueryData(['inventory', 'suppliers'], ['unchanged']);
+        const current = setup(client);
+        if (scenario === 'access-renewal') localStorage.setItem('accessToken', 'synthetic-access-renewed');
+        if (scenario === 'other-session') localStorage.setItem('refreshToken', 'synthetic-new-session');
+        if (scenario === 'signed-out') localStorage.clear();
+        serverProducts = ['after confirmed import'];
+        await act(async () => {
+          if (scenario === 'failure') pending.reject(new Error('detached failure'));
+          else pending.resolve({ created: 1, updated: 0, errors: [], warnings: [] });
+        });
+        await waitFor(() => expect(client.isMutating()).toBe(0));
+        const sameSessionSuccess = ['same-session', 'access-renewal', 'access-only'].includes(scenario);
+        await waitFor(() => expect(visibleProducts).toEqual(sameSessionSuccess ? serverProducts : ['before']));
+        expect(queryFn).toHaveBeenCalledTimes(sameSessionSuccess ? 2 : 1);
+        expect(client.getQueryState(['inventory', 'suppliers'])?.isInvalidated).toBe(false);
+        expect(current.input).toHaveFocus();
+        expect(screen.queryByText('Import Complete')).not.toBeInTheDocument();
+        expect(old.onSuccess).not.toHaveBeenCalled();
+        expect(current.onSuccess).not.toHaveBeenCalled();
+        expect(alert).not.toHaveBeenCalled();
+      } finally { unsubscribe(); alert.mockRestore(); }
+    });
 
 
   it('discards late preview after an external close/reopen', async () => {

@@ -1,19 +1,28 @@
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { excelApi, ImportPreview, ImportSummary } from '../api/excel';
 import './ImportProductsModal.css';
 
 interface ImportProductsModalProps {
     onClose: () => void;
-    onSuccess: () => void;
+    onSuccess?: () => void;
 }
 
 type ApiError = {
     response?: { data?: { error?: { message?: string } } };
 };
 
+function importSessionIdentity(): string | null {
+    // Refresh ownership survives access-token renewal, but not a new login.
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) return `refresh:${refreshToken}`;
+    const accessToken = localStorage.getItem('accessToken');
+    return accessToken ? `access:${accessToken}` : null;
+}
+
 export default function ImportProductsModal({ onClose, onSuccess }: ImportProductsModalProps) {
+    const queryClient = useQueryClient();
     const [file, setFile] = useState<File | null>(null);
     const [reviewed, setReviewed] = useState<{ file: File; summary: ImportPreview } | null>(null);
     const preview = reviewed?.file === file ? reviewed.summary : null;
@@ -24,6 +33,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     // React Query's pending render is asynchronous; guard same-tick actions too.
     const requestPending = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const acceptedFiles = useRef<FileList | null>(null);
 
     useLayoutEffect(() => {
         mounted.current = true;
@@ -55,11 +65,20 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
 
     const confirmMutation = useMutation({
         onSettled: () => { requestPending.current = false; },
-        mutationFn: (input: { file: File; previewToken: string }) => excelApi.confirmImportProducts(input.file, input.previewToken),
+        mutationFn: async (input: { file: File; previewToken: string }) => {
+            const session = importSessionIdentity();
+            const result = await excelApi.confirmImportProducts(input.file, input.previewToken);
+            // A confirmed write remains real after this dialog unmounts. Refresh
+            // the original session's catalog without touching detached UI.
+            if (session !== null && session === importSessionIdentity()) {
+                void queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
+            }
+            return result;
+        },
         onSuccess: (data) => {
             if (!mounted.current) return;
             setConfirmResult(data);
-            onSuccess();
+            onSuccess?.();
         },
         onError: (err: unknown) => {
             if (!mounted.current) return;
@@ -104,8 +123,15 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     }
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-        if (requestPending.current || busy) return;
-        const f = e.target.files?.[0] ?? null;
+        if (requestPending.current || busy) {
+            // Native selection changes FileList before dispatching change.
+            // Keep the visible chooser paired with the retained request file.
+            if (acceptedFiles.current) e.currentTarget.files = acceptedFiles.current;
+            else e.currentTarget.value = '';
+            return;
+        }
+        acceptedFiles.current = e.currentTarget.files;
+        const f = acceptedFiles.current?.[0] ?? null;
         setFile(f);
         setReviewed(null);
         setConfirmResult(null);
@@ -134,6 +160,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
         setFile(null);
         setReviewed(null);
         setConfirmResult(null);
+        acceptedFiles.current = null;
         if (fileInputRef.current) fileInputRef.current.value = '';
         onClose();
     }

@@ -144,6 +144,12 @@ test.describe('import requests', () => {
   for (const phase of ['preview', 'confirm']) for (const outcome of ['success', 'error']) {
     test(`import 1440: late ${phase} ${outcome}`, async ({ page, harness }, info) => {
       const held = deferred(); const alerts: string[] = [];
+      let committed = false;
+      harness.importProductsHandler = () => ({ status: 200, data: {
+        total: committed ? 1 : 0, page: 1, limit: 50,
+        data: committed ? [{ id: 'synthetic-imported-product', sku: 'SYNTHETIC-IMPORTED',
+          name: '合成匯入後商品', costPrice: '10', retailPrice: '20', stockQuantity: 0, safetyStock: 1 }] : [],
+      } });
       page.on('dialog', async message => { alerts.push(message.message()); await message.accept(); });
       harness.importHandler = entry => entry.endpoint === phase ? held.promise : { status: 200, data: preview() };
       await ready(page, true); await choose(page); await button(page, 'Preview').click();
@@ -157,6 +163,7 @@ test.describe('import requests', () => {
       await opener(page).click(); await expect(input(page)).toBeFocused();
       const reads = harness.reads.length, responses = harness.responses.length;
       const returned = page.waitForResponse(response => response.url().endsWith(`/excel/import/products/${phase}`));
+      committed = phase === 'confirm' && outcome === 'success';
       held.resolve({ status: outcome === 'success' ? 200 : 500, data: phase === 'preview' ? preview() : summary });
       await (await returned).finished();
       await expect.poll(() => harness.responses.length).toBe(responses + 1);
@@ -165,7 +172,10 @@ test.describe('import requests', () => {
       await expect(input(page)).toHaveValue(''); await expect(input(page)).toBeFocused();
       await expect(button(page, 'Preview')).toBeDisabled(); await expect(button(page, 'Confirm Import')).toHaveCount(0);
       await expect(dialog(page)).not.toContainText('Import Complete');
-      expect(alerts).toEqual([]); expect(harness.reads.length).toBe(reads);
+      expect(alerts).toEqual([]);
+      await expect.poll(() => harness.reads.length).toBe(reads + (committed ? 1 : 0));
+      if (committed) await expect(page.getByRole('row').filter({ hasText: 'SYNTHETIC-IMPORTED' })).toHaveCount(1);
+      else await expect(page.getByText('No products found', { exact: true })).toBeVisible();
       await capture(page, info, 'late-response-ignored');
     });
   }

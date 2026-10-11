@@ -40,6 +40,7 @@ type Harness = {
   stubbedStylesheets: string[];
   imports: Awaited<ReturnType<typeof readImportRequest>>[];
   importHandler?: (entry: Awaited<ReturnType<typeof readImportRequest>>) => Reply | Promise<Reply>;
+  importProductsHandler?: () => Reply;
   handler: (url: URL) => Reply | Promise<Reply>;
   batchHandler?: (url: URL) => Reply | Promise<Reply>;
 };
@@ -86,7 +87,9 @@ export const test = base.extend<{ harness: Harness }>({
       else if (endpoint === '/tenants/me/plan') reply = { status: 200, data: { plan: 'starter', features: [] } };
       else if (state.importHandler && ['/inventory/products', '/inventory/suppliers'].includes(endpoint)) {
         state.reads.push(`${endpoint}${url.search}`);
-        reply = { status: 200, data: endpoint.endsWith('/suppliers') ? [] : { total: 0, page: 1, limit: 50, data: [] } };
+        reply = endpoint === '/inventory/products' && state.importProductsHandler
+          ? state.importProductsHandler()
+          : { status: 200, data: endpoint.endsWith('/suppliers') ? [] : { total: 0, page: 1, limit: 50, data: [] } };
       }
       else if (endpoint === '/reports/margin/trend') reply = { status: 200, data: [{ period: '2026-10', revenue: 1500, margin: 400, marginPct: 26.67 }] };
       else if (endpoint === '/reports/margin' || endpoint === '/reports/sales-ranking') {
