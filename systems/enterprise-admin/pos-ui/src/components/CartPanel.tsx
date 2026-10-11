@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useCartStore } from '../store/cartStore';
+import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import CartItemComponent from './CartItem';
 import { PosToastMessage } from './PosToast';
 import { PAYMENT_LABELS } from '../constants';
@@ -12,35 +13,64 @@ interface Props {
   onFeedback?: (toast: PosToastMessage) => void;
 }
 
+interface ClearConfirmation {
+  draftRevision: number;
+  draftScope: string | null;
+}
+
 export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckout, onSwitchStaff, onFeedback }: Props) {
   const {
-    items, orderDiscountAmount, paymentMethod,
-    setOrderDiscount, setPaymentMethod, clearCart, subtotal, total,
+    items, orderDiscountAmount, paymentMethod, draftRevision, draftScope,
+    setOrderDiscount, setPaymentMethod, subtotal, total,
   } = useCartStore();
+  const checkoutPending = useCheckoutRecoveryStore((state) => state.pending !== null);
   const totalQty = items.reduce((sum, item) => sum + item.quantity, 0);
-  const [confirmingClear, setConfirmingClear] = useState(false);
-  const [panelMessage, setPanelMessage] = useState('');
+  const [clearConfirmation, setClearConfirmation] = useState<ClearConfirmation | null>(null);
+  const confirmingClear = clearConfirmation !== null
+    && clearConfirmation.draftRevision === draftRevision
+    && clearConfirmation.draftScope === draftScope
+    && items.length > 0 && !checkoutPending;
 
   useEffect(() => {
-    if (!confirmingClear) return;
-    const timeout = window.setTimeout(() => setConfirmingClear(false), 3000);
+    if (!clearConfirmation) return;
+    const timeout = window.setTimeout(() => setClearConfirmation(null), 3000);
     return () => window.clearTimeout(timeout);
-  }, [confirmingClear]);
+  }, [clearConfirmation]);
+
+  useEffect(() => {
+    // Observe every transition, including hold/recall or pending/unlocked ABA
+    // transitions batched before React renders the next editable draft.
+    const unsubscribeCart = useCartStore.subscribe((state, previous) => {
+      if (state.draftRevision !== previous.draftRevision
+        || state.draftScope !== previous.draftScope || state.items.length === 0) {
+        setClearConfirmation(null);
+      }
+    });
+    const unsubscribeRecovery = useCheckoutRecoveryStore.subscribe((state) => {
+      if (state.pending) setClearConfirmation(null);
+    });
+    return () => { unsubscribeCart(); unsubscribeRecovery(); };
+  }, []);
 
   function handleClearCart() {
-    if (items.length === 0) {
+    const cart = useCartStore.getState();
+    if (useCheckoutRecoveryStore.getState().pending) {
+      setClearConfirmation(null);
+      return;
+    }
+    if (cart.items.length === 0) {
+      setClearConfirmation(null);
       onFeedback?.({ type: 'info', message: '購物車目前沒有商品' });
       return;
     }
-    if (!confirmingClear) {
-      setConfirmingClear(true);
-      setPanelMessage('再按一次確認清空');
+    if (!clearConfirmation || clearConfirmation.draftRevision !== cart.draftRevision
+      || clearConfirmation.draftScope !== cart.draftScope) {
+      setClearConfirmation({ draftRevision: cart.draftRevision, draftScope: cart.draftScope });
       onFeedback?.({ type: 'warning', message: '再按一次清空購物車' });
       return;
     }
-    clearCart();
-    setConfirmingClear(false);
-    setPanelMessage('');
+    cart.clearCart();
+    setClearConfirmation(null);
     onFeedback?.({ type: 'success', message: '購物車已清空' });
   }
 
@@ -126,8 +156,8 @@ export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckou
           </span>
         </div>
 
-        {panelMessage && (
-          <div role="status" style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{panelMessage}</div>
+        {confirmingClear && (
+          <div role="status" style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>再按一次確認清空</div>
         )}
 
         {/* Checkout button */}
@@ -167,6 +197,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckou
         </div>
         <button
           onClick={handleClearCart}
+          disabled={checkoutPending}
           style={{
             width: '100%', padding: '10px', background: 'transparent',
             border: `1.5px solid ${confirmingClear ? 'var(--danger)' : 'var(--border)'}`,
