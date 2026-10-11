@@ -78,7 +78,7 @@
     overflow-wrap: anywhere;
 }
 
-.product-batches-view h2,
-.product-batches-view p {
+.inventory-product-page.product-batches-view h2,
+.inventory-product-page.product-batches-view p {
     overflow-wrap: anywhere;
 }
