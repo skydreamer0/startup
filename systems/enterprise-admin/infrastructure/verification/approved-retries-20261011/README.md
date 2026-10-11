@@ -1,6 +1,6 @@
 # Scoped POS release checkpoint — 2026-10-11
 
-This text-only checkpoint contains repository commit/check metadata and aggregate synthetic test outcomes. Local receipts, screenshots, logs, test payloads, machine paths and deployment process details are not exported. The full evidence archive remains local pending explicit export approval.
+This text-only checkpoint contains repository commit/check metadata and aggregate synthetic test outcomes. Local receipts, screenshots, logs, test payloads, machine paths and deployment process details are not exported. The complete report and evidence archive remain LOCAL ONLY under the latest explicit user direction; no full-bundle upload occurred.
 
 ## Accepted source and merges
 
@@ -15,7 +15,7 @@ This text-only checkpoint contains repository commit/check metadata and aggregat
 - Shared category/current-browser CI remains FAIL (expected hidden, received visible); downstream stock steps SKIPPED. No overall CI PASS claim.
 - Current-master integration:73 focused and427 full POS tests PASS, zero failures/skips; types/build PASS.
 - Independently inspected built-browser run5: five defined editable/frozen journeys PASS, including1366/1024 editable views and pending/unknown/conflict. Native disabled controls and frozen intent preservation were verified with synthetic local HTTP. Prior attempts1–4 remain historical FAIL. No real API/DB or physical-device acceptance is claimed.
-- Final-master pipeline: https://github.com/skydreamer0/startup/actions/runs/38129243209 — still pending/in progress at publication; source checks do not transfer to final-master jobs. CodeQL checks on final master completed successfully.
+- Final-master pipeline: https://github.com/skydreamer0/startup/actions/runs/38129243209 — terminal FAILURE:8/9 jobs PASS. All four core jobs and three final CodeQL checks PASS; exact-master POS427 tests PASS. Category job has three hidden/visible mismatches; downstream stock steps SKIPPED. Owned DB/evidence/container cleanup steps PASS. No overall CI PASS claim.
 
 ## Held scope and cleanup
 
