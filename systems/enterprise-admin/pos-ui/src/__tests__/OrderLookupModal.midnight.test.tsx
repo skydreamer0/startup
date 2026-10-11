@@ -141,7 +141,7 @@ describe('today orders cache at Asia/Taipei midnight (synthetic API, real QueryC
     const customer: PosCustomerLookup = { id: 'A', name: 'Synthetic A', phone: null, rfmSegment: 'new', totalSpent: 0, purchaseCount: 0, lastPurchaseDate: null, daysSinceLastPurchase: null, recentPurchases: [], supplementDueItems: [] };
     const draft = { items: [{ product, quantity: 1, discountRate: 0 }], paymentMethod: 'CARD' as const, orderDiscountAmount: 0, orderDiscountNote: 'held', currentSalesStaffId: 'user-a', customerId: 'A', selectedCustomer: customer, draftRevision: 7 };
     useCartStore.setState({ ...draft, draftScope: 'tenant-a:user-a', customerId: 'B', selectedCustomer: { ...customer, id: 'B', name: 'Synthetic B' }, paymentMethod: 'CASH', draftRevision: 8, heldCarts: [{ ...draft, id: 'held-A', label: 'A', heldAt: beforeMidnight }] });
-    useCheckoutRecoveryStore.setState({ scope: 'tenant-a:user-a', pending: { status: 'unknown', payload: { commandId: 'frozen-B', cartItems: [{ productId: 'p1', quantity: 1, discountRate: 0 }], paymentMethod: 'CASH', orderDiscountAmount: 0, customerId: 'B' }, draft: { ...draft, paymentMethod: 'CASH' } } });
+    useCheckoutRecoveryStore.setState({ scope: 'tenant-a:user-a', pending: { status: 'unknown', payload: { commandId: 'frozen-B', shiftId: 'shift-a', cartItems: [{ productId: 'p1', quantity: 1, discountRate: 0 }], paymentMethod: 'CASH', orderDiscountAmount: 0, customerId: 'B' }, draft: { ...draft, paymentMethod: 'CASH' } } });
     const cart = useCartStore.getState();
     const recovery = useCheckoutRecoveryStore.getState();
     mount(); await flush();
