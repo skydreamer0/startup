@@ -136,6 +136,14 @@ coverage is `pos.categories.test.ts`. These do not replace real database or devi
 `e2e/category-native/run.mjs` is the owned exact-head GitHub-hosted acceptance
 route. Headed official Chrome uses a fresh owned Xvfb display for actual tab
 visibility; ambient DISPLAY is rejected and sandbox/quiescence remain required.
+`category-native/native-context.ts` owns a fresh Chrome server/profile per case and
+attaches to its default context with public CDP `noDefaults:true`; a second-session
+focus-disable command cannot release Playwright's original capturer. A standalone
+about:blank preflight and per-case trusted hidden/visible receipts validate this
+prerequisite before application acceptance. HTTP/WebSocket/SW guards and actual
+owned-server closure remain mandatory. `category-native/static-assets.mjs` pins
+only the existing manifest and its declared icons; source/response bytes, MIME
+and hash are verified, without widening API or arbitrary JSON access.
 Its finite seven-case matrix retains stable navigation at 1366/1024/390px
 and adds loading, explicitly injected category 403/500, manual retry, real 61-second
 stale expiry/native tab focus, delayed real product reads and a real empty fixture
