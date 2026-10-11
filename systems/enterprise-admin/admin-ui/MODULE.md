@@ -63,7 +63,8 @@
 
 1. `inventoryApi.getProducts` consumes ApiSuccess<InventoryProductPage> with total/page/limit/data, not the shared meta/items pagination types.
 2. `ProductListPage` keys reads by page and lowStock; filter changes reset page one. Pending/error data is unavailable, no previous-page placeholder is shown, and server total reductions only clamp downward to the new last page. Supplier selection/draft handling is independent.
-3. `src/__tests__/productPagination.test.tsx` uses real clients with synthetic HTTP-boundary fixtures, deferred responses and BatchList cross-page options. Evidence/union checkpoint and reproduction are in `../infrastructure/verification/product-ui-pagination/README.md`. JSDOM is not browser/real HTTP acceptance.
+3. Product navigation stores the existing `page`/`lowStock` and selected `productId` in the `/inventory` URL. `ProductBatchesView` reads only that product through the existing batch-list API; `api/productBatches.ts` checks the wire envelope and product identity. Back/Forward and return preserve the list location, while user-scoped abortable queries discard old reads. No receipt, correction, trace-detail, stock or money mutation is part of this view. See `src/__tests__/productBatchNavigation.test.tsx` and `../infrastructure/verification/product-batch-navigation/README.md`.
+4. `src/__tests__/productPagination.test.tsx` uses real clients with synthetic HTTP-boundary fixtures, deferred responses and BatchList cross-page options. Evidence/union checkpoint and reproduction are in `../infrastructure/verification/product-ui-pagination/README.md`. JSDOM is not browser/real HTTP acceptance.
 
 ### Change supplier list consumption
 
