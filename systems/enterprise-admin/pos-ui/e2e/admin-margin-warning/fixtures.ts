@@ -1,5 +1,6 @@
 import { test as base, expect, type Page, type TestInfo, type Route, type Locator } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
+import { importRequestAllowed, readImportRequest } from './import-contract.mjs';
 import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import type { MarginAnalysis } from '@pharmasaas/types';
 import type { reportsApi } from '../../../admin-ui/src/api/reports';
@@ -37,12 +38,14 @@ export const notice = (page: Page) => page.getByRole('note', { name: noticeName 
 type Harness = {
   reads: string[]; responses: number[]; unexpected: string[]; pageErrors: string[];
   stubbedStylesheets: string[];
+  imports: Awaited<ReturnType<typeof readImportRequest>>[];
+  importHandler?: (entry: Awaited<ReturnType<typeof readImportRequest>>) => Reply | Promise<Reply>;
   handler: (url: URL) => Reply | Promise<Reply>;
   batchHandler?: (url: URL) => Reply | Promise<Reply>;
 };
 export const test = base.extend<{ harness: Harness }>({
   harness: [async ({ page, context }, use, info) => {
-    const state: Harness = { reads: [], responses: [], unexpected: [], pageErrors: [], stubbedStylesheets: [], handler: url => ({ status: 200,
+    const state: Harness = { reads: [], responses: [], unexpected: [], pageErrors: [], stubbedStylesheets: [], imports: [], handler: url => ({ status: 200,
       data: url.pathname.endsWith('/sales-ranking') ? ranking : margin }) };
     await context.addInitScript(() => {
       localStorage.setItem('accessToken', 'synthetic-ui-fixture-not-a-credential');
@@ -61,6 +64,17 @@ export const test = base.extend<{ harness: Harness }>({
         state.stubbedStylesheets.push(request.url());
         await route.fulfill({ status: 200, contentType: 'text/css', body: '' }); return;
       }
+      // Opt-in only for import cases; exact loopback POSTs are fulfilled here,
+      // never continued to a server. The original read-only cases stay read-only.
+      if (state.importHandler && importRequestAllowed(request.method(), request.url(), origin)) {
+        const entry = await readImportRequest(request.url(), request.headers()['content-type'], request.postDataBuffer());
+        state.imports.push(entry);
+        const reply = await state.importHandler(entry);
+        state.responses.push(reply.status);
+        await route.fulfill({ status: reply.status, json: reply.status === 200 ? { success: true, data: reply.data }
+          : { success: false, error: { code: 'SYNTHETIC_ERROR', message: 'Synthetic import failure' } } });
+        return;
+      }
       if (url.origin !== origin || !['GET', 'HEAD'].includes(request.method())) {
         state.unexpected.push(`${request.method()} ${url.origin}${url.pathname}`);
         await route.abort('blockedbyclient'); return;
@@ -70,6 +84,10 @@ export const test = base.extend<{ harness: Harness }>({
       let reply: Reply;
       if (endpoint === '/auth/me') reply = { status: 200, data: { id: 'synthetic-user', email: 'synthetic@example.invalid', fullName: '合成驗收使用者', roles: ['Admin'], permissions: ['*'] } };
       else if (endpoint === '/tenants/me/plan') reply = { status: 200, data: { plan: 'starter', features: [] } };
+      else if (state.importHandler && ['/inventory/products', '/inventory/suppliers'].includes(endpoint)) {
+        state.reads.push(`${endpoint}${url.search}`);
+        reply = { status: 200, data: endpoint.endsWith('/suppliers') ? [] : { total: 0, page: 1, limit: 50, data: [] } };
+      }
       else if (endpoint === '/reports/margin/trend') reply = { status: 200, data: [{ period: '2026-10', revenue: 1500, margin: 400, marginPct: 26.67 }] };
       else if (endpoint === '/reports/margin' || endpoint === '/reports/sales-ranking') {
         state.reads.push(`${endpoint}${url.search}`); reply = await state.handler(url); state.responses.push(reply.status);
@@ -82,8 +100,9 @@ export const test = base.extend<{ harness: Harness }>({
     await use(state);
     const evidence = { title: info.title, browser: context.browser()?.version(), viewport: page.viewportSize(),
       input: 'case-specific native browser automation', syntheticHttp: true, physicalDevice: false,
+      imports: state.imports, importScope: 'exact loopback synthetic POST fulfillment only; no backend writes',
       reads: state.reads, responses: state.responses, unexpected: state.unexpected, pageErrors: state.pageErrors,
-      fontScope: 'Ubuntu Noto CJK verified via actual Chrome platform glyphs; external Google font CSS stubbed, no browser font downloads', stubbedStylesheets: state.stubbedStylesheets };
+      fontScope: state.importHandler ? 'Import screenshots need independent CJK/visual review; no glyph attestation for this slice' : 'Ubuntu Noto CJK verified via actual Chrome platform glyphs; external Google font CSS stubbed, no browser font downloads', stubbedStylesheets: state.stubbedStylesheets };
     await writeFile(info.outputPath('network.json'), JSON.stringify(evidence, null, 2));
     await info.attach('network.json', { path: info.outputPath('network.json'), contentType: 'application/json' });
     expect(state.unexpected, 'No external request, API write or unexpected endpoint').toEqual([]);
