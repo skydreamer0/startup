@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import ProductBatchesView from './ProductBatchesView';
 import { isAxiosError } from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi, Product, Supplier } from '../../api/inventory';
@@ -38,8 +40,47 @@ const emptyProductForm: ProductForm = {
 };
 
 export default function ProductListPage() {
-    const [filter, setFilter] = useState({ lowStock: '' });
-    const [page, setPage] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const rawPage = searchParams.get('page') ?? '1';
+    const parsedPage = /^\d+$/.test(rawPage) ? Number(rawPage) : 1;
+    const page = Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+    const filter = { lowStock: searchParams.get('lowStock') === 'true' ? 'true' : '' };
+    const productId = searchParams.get('productId') ?? '';
+    const returnFocus = useRef<string | null>(null);
+    const setPage = useCallback((next: number | ((current: number) => number), replace = false) => {
+        setSearchParams(current => {
+            const params = new URLSearchParams(current);
+            params.set('page', String(typeof next === 'function' ? next(page) : next));
+            return params;
+        }, { replace });
+    }, [page, setSearchParams]);
+    function setLowStock(value: string) {
+        setSearchParams(current => {
+            const params = new URLSearchParams(current);
+            if (value === 'true') params.set('lowStock', 'true');
+            else params.delete('lowStock');
+            params.set('page', '1');
+            return params;
+        });
+    }
+    function openBatches(id: string) {
+        returnFocus.current = id;
+        setSearchParams(current => {
+            const params = new URLSearchParams(current);
+            params.set('productId', id);
+            return params;
+        }, { state: { productBatchNavigation: true } });
+    }
+    function closeBatches() {
+        if (location.state?.productBatchNavigation === true) navigate(-1);
+        else setSearchParams(current => {
+            const params = new URLSearchParams(current);
+            params.delete('productId');
+            return params;
+        }, { replace: true });
+    }
     const [showCreate, setShowCreate] = useState(false);
     const [editProduct, setEditProduct] = useState<Product | null>(null);
     const [productForm, setProductForm] = useState<ProductForm>(emptyProductForm);
@@ -83,8 +124,15 @@ export default function ProductListPage() {
     const loading = productsPending || productsFetching || recoveringPage;
     const products: Product[] = confirmedProducts?.data ?? [];
     useEffect(() => {
-        if (loadedProducts && page > totalPages) setPage(totalPages);
-    }, [loadedProducts, page, totalPages]);
+        if (!productId && loadedProducts && page > totalPages) setPage(totalPages, true);
+    }, [loadedProducts, page, totalPages, productId, setPage]);
+    useEffect(() => {
+        if (productId) { returnFocus.current = productId; return; }
+        if (loading || !returnFocus.current) return;
+        const opener = document.getElementById(`product-batches-${returnFocus.current}`);
+        (opener ?? document.getElementById('inventory-products-title'))?.focus();
+        returnFocus.current = null;
+    }, [productId, loading]);
     const productStatus = isAxiosError(productsError) ? productsError.response?.status : undefined;
     const productErrorMessage = productStatus === 403
         ? 'You do not have permission to view products (403).'
@@ -160,11 +208,13 @@ export default function ProductListPage() {
 
     const modalTitle = editProduct ? 'Edit Product' : 'Add Product';
 
+    if (productId) return <ProductBatchesView key={productId} productId={productId} onBack={closeBatches} />;
+
     return (
         <div className="inventory-product-page">
             <header className="page-header product-header">
                 <div className="product-heading">
-                    <h1 className="page-title">Inventory (Products)</h1>
+                    <h1 id="inventory-products-title" className="page-title" tabIndex={-1}>Inventory (Products)</h1>
                     <p className="page-subtitle">{loading ? 'Loading catalog...' : productsFailed ? 'Catalog unavailable' : confirmedProducts ? `${confirmedProducts.total} SKUs in catalog` : 'Loading catalog...'}</p>
                 </div>
                 <div className="product-toolbar">
@@ -172,7 +222,7 @@ export default function ProductListPage() {
                         aria-label="Inventory filter"
                         className="input-field product-filter"
                         value={filter.lowStock}
-                        onChange={(e) => { setFilter({ lowStock: e.target.value }); setPage(1); }}
+                        onChange={(e) => setLowStock(e.target.value)}
                     >
                         <option value="">All Inventory</option>
                         <option value="true">{'\u26A0\uFE0F'} Low Stock Alerts</option>
@@ -268,6 +318,7 @@ export default function ProductListPage() {
                                                 )}
                                             </td>
                                             <td style={{ textAlign: 'right' }}>
+                                                <button id={`product-batches-${p.id}`} type="button" className="btn btn-ghost product-batches-button" aria-label={`查看 ${p.name} 的批次`} onClick={() => openBatches(p.id)}>查看批次</button>
                                                 <button className="btn btn-ghost btn-sm" onClick={() => openEdit(p)}>Edit</button>
                                             </td>
                                         </tr>
