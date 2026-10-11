@@ -14,6 +14,12 @@ filter/page when its read view closes. Out-of-range list pages still clamp only
 when a successful server total confirms the last page. Invalid page syntax falls
 back to page one. A deleted/missing opener returns focus to the product heading.
 
+While a product batch view is selected, the existing catalog and supplier queries
+stay mounted but disabled. Direct/reloaded batch URLs do not fetch hidden lists;
+cached list data remains available and invalidation does not start background
+list reads. Returning re-enables the original queries with the saved filter/page.
+Reads already started while the list was visible are not retroactively cancelled.
+
 The list validates the existing response envelope, selected product identity,
 row identity, status, quantity and date fields. This validation is not proof of
 backend authorization. Reads are user/product-scoped, consume AbortSignal and
@@ -31,6 +37,8 @@ Tests use real clients with synthetic HTTP boundaries. They cover selection,
 return/focus/filter/page, history, direct URL, late and interrupted reads,
 identity/permission changes, error/retry/empty, malformed pages and wire data.
 Each navigation test asserts zero POST/PUT/DELETE calls.
+Targeted lazy-read tests also cover pending/success/error direct batch URLs,
+batch-to-batch navigation, cached invalidation, Back/Forward and deferred return.
 
 From `systems/enterprise-admin/admin-ui` after the approved workspace installation:
 

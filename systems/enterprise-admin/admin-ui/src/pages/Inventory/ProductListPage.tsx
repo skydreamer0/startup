@@ -103,6 +103,7 @@ export default function ProductListPage() {
         error: productsError, refetch: retryProducts } = useQuery({
         queryKey: ['inventory', 'products', { page, lowStock: filter.lowStock }],
         queryFn: () => inventoryApi.getProducts({ ...filter, page: String(page) }),
+        enabled: !productId,
         retry: false,
         staleTime: 0,
         placeholderData: () => undefined,
@@ -114,6 +115,7 @@ export default function ProductListPage() {
     } = useQuery({
         queryKey: ['inventory', 'suppliers'],
         queryFn: () => inventoryApi.getSuppliers(),
+        enabled: !productId,
         retry: false,
     });
 

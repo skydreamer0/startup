@@ -31,6 +31,7 @@ function deferred<T>() {
 }
 const batchRequest = vi.fn<(id: string, signal: AbortSignal) => Promise<{ data: unknown }>>();
 const clients: QueryClient[] = [];
+const readCount = (path: string) => httpGet.mock.calls.filter(([requestedPath]) => requestedPath === path).length;
 function Harness() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -77,6 +78,64 @@ afterEach(() => {
 });
 
 describe('product → product-scoped batches → original product list', () => {
+    it('defers hidden catalog and supplier reads on direct batch URLs until returning', async () => {
+        const pending = deferred<{ data: unknown }>();
+        batchRequest.mockImplementationOnce(() => pending.promise);
+        setup('/inventory?page=2&lowStock=true&productId=product-a');
+        await waitFor(() => expect(batchRequest).toHaveBeenCalledTimes(1));
+        expect(readCount('/inventory/products')).toBe(0);
+        expect(readCount('/inventory/suppliers')).toBe(0);
+        await act(async () => pending.resolve({ data: envelope() }));
+        await screen.findByText('LOT-A');
+        fireEvent.click(screen.getByRole('button', { name: 'Navigate B' }));
+        await screen.findByText('LOT-B');
+        expect(readCount('/inventory/products')).toBe(0);
+        expect(readCount('/inventory/suppliers')).toBe(0);
+        fireEvent.click(screen.getByRole('button', { name: '返回商品清單' }));
+        expect(await screen.findByText('Page 2 of 3')).toBeInTheDocument();
+        expect(screen.getByRole('combobox', { name: 'Inventory filter' })).toHaveValue('true');
+        expect(httpGet).toHaveBeenCalledWith('/inventory/products', { params: { page: '2', lowStock: 'true' } });
+        expect(readCount('/inventory/products')).toBe(1);
+        expect(readCount('/inventory/suppliers')).toBe(1);
+    });
+    it('keeps cached list reads paused during batch invalidation and resumes them on Back', async () => {
+        const { client } = setup();
+        const opener = await screen.findByRole('button', { name: '查看 商品 product-a 的批次' });
+        await waitFor(() => expect(client.getQueryState(['inventory', 'suppliers'])?.status).toBe('success'));
+        const productKey = ['inventory', 'products', { page: 2, lowStock: 'true' }];
+        const savedProducts = client.getQueryData(productKey);
+        const savedSuppliers = client.getQueryData(['inventory', 'suppliers']);
+        fireEvent.click(opener);
+        await screen.findByText('LOT-A');
+        httpGet.mockClear();
+        await act(async () => { await client.invalidateQueries({ queryKey: ['inventory'] }); });
+        expect(readCount('/inventory/products')).toBe(0);
+        expect(readCount('/inventory/suppliers')).toBe(0);
+        expect(client.getQueryData(productKey)).toBe(savedProducts);
+        expect(client.getQueryData(['inventory', 'suppliers'])).toBe(savedSuppliers);
+        fireEvent.click(screen.getByRole('button', { name: 'Browser Back' }));
+        expect(await screen.findByText('Page 2 of 3')).toBeInTheDocument();
+        expect(screen.getByRole('combobox', { name: 'Inventory filter' })).toHaveValue('true');
+        expect(readCount('/inventory/products')).toBe(1);
+        expect(readCount('/inventory/suppliers')).toBe(1);
+        expect(screen.getByRole('button', { name: '查看 商品 product-a 的批次' })).toHaveFocus();
+        fireEvent.click(screen.getByRole('button', { name: 'Browser Forward' }));
+        await screen.findByText('LOT-A');
+        await act(async () => { await client.invalidateQueries({ queryKey: ['inventory'] }); });
+        expect(readCount('/inventory/products')).toBe(1);
+        expect(readCount('/inventory/suppliers')).toBe(1);
+    });
+    it('keeps failed batch reads independent from the deferred catalog and supplier reads', async () => {
+        batchRequest.mockRejectedValueOnce(failure(500));
+        setup('/inventory?page=2&lowStock=true&productId=product-a');
+        expect(await screen.findByRole('alert')).toHaveTextContent('無法載入');
+        expect(readCount('/inventory/products')).toBe(0);
+        expect(readCount('/inventory/suppliers')).toBe(0);
+        fireEvent.click(screen.getByRole('button', { name: '返回商品清單' }));
+        expect(await screen.findByText('Page 2 of 3')).toBeInTheDocument();
+        expect(readCount('/inventory/products')).toBe(1);
+        expect(readCount('/inventory/suppliers')).toBe(1);
+    });
     it('reads the selected product only and returns to the original filter, page and opener', async () => {
         setup();
         const opener = await screen.findByRole('button', { name: '查看 商品 product-a 的批次' });
