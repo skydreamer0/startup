@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useId, useLayoutEffect, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { excelApi, ImportPreview, ImportSummary } from '../api/excel';
 
@@ -16,12 +16,35 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     const [reviewed, setReviewed] = useState<{ file: File; summary: ImportPreview } | null>(null);
     const preview = reviewed?.file === file ? reviewed.summary : null;
     const [confirmResult, setConfirmResult] = useState<ImportSummary | null>(null);
+    const titleId = useId();
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const mounted = useRef(false);
+    // React Query's pending render is asynchronous; guard same-tick actions too.
+    const requestPending = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useLayoutEffect(() => {
+        mounted.current = true;
+        const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        const dialog = dialogRef.current;
+        fileInputRef.current?.focus();
+        return () => {
+            mounted.current = false;
+            // Never take focus back from a newer dialog/navigation.
+            if (opener?.isConnected && (dialog?.contains(document.activeElement) || document.activeElement === document.body)) {
+                opener.focus();
+            }
+        };
+    }, []);
 
     const previewMutation = useMutation({
         mutationFn: (f: File) => excelApi.previewImportProducts(f),
-        onSuccess: (data, reviewedFile) => setReviewed({ file: reviewedFile, summary: data }),
+        onSuccess: (data, reviewedFile) => {
+            if (mounted.current) setReviewed({ file: reviewedFile, summary: data });
+        },
+        onSettled: () => { requestPending.current = false; },
         onError: (err: unknown) => {
+            if (!mounted.current) return;
             const msg = (err as ApiError).response?.data?.error?.message
                 ?? (err instanceof Error ? err.message : 'Preview failed');
             alert(msg);
@@ -29,12 +52,15 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     });
 
     const confirmMutation = useMutation({
+        onSettled: () => { requestPending.current = false; },
         mutationFn: (input: { file: File; previewToken: string }) => excelApi.confirmImportProducts(input.file, input.previewToken),
         onSuccess: (data) => {
+            if (!mounted.current) return;
             setConfirmResult(data);
             onSuccess();
         },
         onError: (err: unknown) => {
+            if (!mounted.current) return;
             setReviewed(null);
             const msg = (err as ApiError).response?.data?.error?.message
                 ?? (err instanceof Error ? err.message : 'Import failed');
@@ -44,7 +70,39 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
 
     const busy = previewMutation.isPending || confirmMutation.isPending;
 
+    useLayoutEffect(() => {
+        // Pending controls are disabled; the dialog remains a keyboard target.
+        if (document.activeElement === dialogRef.current && !busy && !requestPending.current) {
+            (fileInputRef.current ?? dialogRef.current?.querySelector<HTMLButtonElement>('button'))?.focus();
+        }
+    });
+
+    function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            handleClose();
+        }
+        if (e.key !== 'Tab') return;
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const controls = Array.from(dialog.querySelectorAll<HTMLElement>('input:not(:disabled), button:not(:disabled)'));
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (!first) {
+            e.preventDefault();
+            dialog.focus();
+        } else if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && (document.activeElement === last || document.activeElement === dialog)) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (requestPending.current || busy) return;
         const f = e.target.files?.[0] ?? null;
         setFile(f);
         setReviewed(null);
@@ -52,20 +110,25 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     }
 
     function handlePreview() {
+        if (!mounted.current || requestPending.current || busy) return;
         if (!file) {
             alert('Please choose an .xlsx file first.');
             return;
         }
+        requestPending.current = true;
+        dialogRef.current?.focus();
         previewMutation.mutate(file);
     }
 
     function handleConfirm() {
-        if (!file || !preview || busy) return;
+        if (!mounted.current || !file || !preview?.previewToken || requestPending.current || busy) return;
+        requestPending.current = true;
+        dialogRef.current?.focus();
         confirmMutation.mutate({ file, previewToken: preview.previewToken });
     }
 
     function handleClose() {
-        if (busy) return;
+        if (!mounted.current || requestPending.current || busy) return;
         setFile(null);
         setReviewed(null);
         setConfirmResult(null);
@@ -76,11 +139,18 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     return (
         <div className="modal-overlay" onClick={handleClose}>
             <div
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                aria-busy={busy}
+                tabIndex={-1}
+                onKeyDown={handleKeyDown}
                 className="modal-content card"
                 onClick={(e) => e.stopPropagation()}
                 style={{ maxWidth: '720px', width: '90%' }}
             >
-                <h2 className="modal-title">Import Products from Excel</h2>
+                <h2 id={titleId} className="modal-title">Import Products from Excel</h2>
 
                 {!confirmResult && (
                     <div className="input-group">
@@ -159,7 +229,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                             type="button"
                             className="btn btn-primary"
                             onClick={handlePreview}
-                            disabled={!file || previewMutation.isPending}
+                            disabled={!file || busy}
                         >
                             {previewMutation.isPending ? 'Previewing...' : 'Preview'}
                         </button>
