@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../lib/prisma', () => ({
@@ -93,4 +94,44 @@ it('daily combines stored TRANSFER0.1 and OTHER0.2 before the numeric API bounda
     payments: [{ method: 'TRANSFER', amount: '0.1' }, { method: 'OTHER', amount: '0.2' }],
   }] as never);
   expect(await DailySettlementService.calculate('shift-1')).toMatchObject({ totalSales: 0.3, otherAmount: 0.3 });
+});
+
+it('daily adds separate persisted 0.1 and 0.2 order totals to numeric 0.3', async () => {
+  vi.mocked(prisma.shift.findFirst).mockResolvedValue({ id: 'shift-1' } as never);
+  vi.mocked(prisma.order.findMany).mockResolvedValue(['0.1', '0.2'].map(amount => ({
+    status: 'completed', totalAmount: new Prisma.Decimal(amount), paymentMethod: 'CARD',
+    payments: [{ method: 'CASH', amount: new Prisma.Decimal(amount) }],
+  })) as never);
+  expect(await DailySettlementService.calculate('shift-1')).toEqual({
+    shiftId: 'shift-1', totalOrders: 2, totalSales: 0.3,
+    cashAmount: 0.3, cardAmount: 0, linePayAmount: 0, otherAmount: 0,
+  });
+});
+
+it('shift adds completed order totals precisely while leaving its refund and net formulas intact', async () => {
+  vi.mocked(prisma.shift.findFirst).mockResolvedValue({
+    id: 'shift-1', staff: { fullName: 'Staff' }, openingCash: 0,
+    orders: [
+      ...['0.1', '0.2'].map(amount => ({
+        status: 'completed', totalAmount: new Prisma.Decimal(amount), discountAmount: 0,
+        paymentMethod: 'CASH', payments: [{ method: 'CASH', amount: new Prisma.Decimal(amount) }],
+      })),
+      { status: 'refunded', totalAmount: new Prisma.Decimal('0.4'), discountAmount: 0,
+        paymentMethod: 'CARD', payments: [{ method: 'CARD', amount: new Prisma.Decimal('0.4') }] },
+    ],
+  } as never);
+  expect(await ShiftService.getReport('shift-1')).toMatchObject({
+    orderCount: 2, refundCount: 1, grossSales: 0.3, refundTotal: 0.4,
+    netTotal: 0.3 - 0.4, discountTotal: 0,
+    paymentBreakdown: { CASH: 0.3 }, cashBalance: 0.3 - 0.4,
+  });
+});
+
+it('empty daily and shift cohorts retain numeric zero totals and counts', async () => {
+  vi.mocked(prisma.shift.findFirst).mockResolvedValue({
+    id: 'shift-1', staff: { fullName: 'Staff' }, openingCash: 0, orders: [],
+  } as never);
+  vi.mocked(prisma.order.findMany).mockResolvedValue([]);
+  expect(await DailySettlementService.calculate('shift-1')).toMatchObject({ totalOrders: 0, totalSales: 0 });
+  expect(await ShiftService.getReport('shift-1')).toMatchObject({ orderCount: 0, grossSales: 0, netTotal: 0 });
 });
