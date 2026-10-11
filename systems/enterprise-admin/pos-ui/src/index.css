@@ -223,6 +223,7 @@ input { font-family: inherit; }
 }
 
 .pos-recommendation-strip {
+  flex-shrink: 0;
   padding: 10px 12px 0;
 }
 
@@ -247,6 +248,10 @@ input { font-family: inherit; }
 .pos-cart {
   width: 370px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Status bar */
@@ -268,6 +273,7 @@ input { font-family: inherit; }
   gap: 8px;
   padding: 14px 20px 10px;
   overflow-x: auto;
+  scroll-padding-inline: 4px;
   flex-shrink: 0;
   scrollbar-width: none;
 }
@@ -285,7 +291,7 @@ input { font-family: inherit; }
   font-size: 16px;
   font-weight: 500;
   white-space: nowrap;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
   flex-shrink: 0;
 }
 .pos-category-btn:focus-visible {
@@ -324,10 +330,12 @@ input { font-family: inherit; }
 .pos-cart-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  /* Share the bounded column with recommendations instead of adding 100% to it. */
+  flex: 1;
+  min-height: 0;
   border-left: 1.5px solid var(--border);
   background: var(--bg-cart);
-  overflow: hidden;
+  overflow-y: auto;
   padding: 0;
   gap: 0;
 }

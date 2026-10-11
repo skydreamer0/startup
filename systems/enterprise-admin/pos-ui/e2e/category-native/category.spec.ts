@@ -1,6 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { test, expect, capture, cartSnapshot, assertReachable } from './fixtures';
 import { widths, stableCases, origin } from './contract.mjs';
+import { assertCategoryFullyVisible } from '../visible-controls';
 for (const [index, width] of widths.entries()) {
   test(stableCases[index], async ({ page, guard }, info) => {
     await page.setViewportSize({ width, height: 900 });
@@ -34,12 +35,30 @@ for (const [index, width] of widths.entries()) {
       const button = nav.getByRole('button', { name, exact: true });
       for (let i = 0; i < 64 && !(await button.evaluate(node => node === document.activeElement)); i++) await page.keyboard.press('Tab');
       await expect(button).toBeFocused();
-      reachability.push({ mode: 'keyboard', name, ...(await assertReachable(page, button)) });
+      const beforeSelection = await assertReachable(page, button);
       await page.keyboard.press(name === names[1] ? ' ' : 'Enter'); await expect(button).toHaveAttribute('aria-pressed', 'true'); await stable();
+      await expect(button).toBeFocused();
+      reachability.push({ mode: 'keyboard', name, ...beforeSelection, selectedVisibility: await assertCategoryFullyVisible(button) });
       expect(await cartSnapshot(page)).toEqual(baseline); await expect(page.locator('[data-pos-modal]')).toHaveCount(0);
       await expect(page.getByText('沒有符合條件的商品', { exact: true })).toBeVisible();
       if (name === names[2]) await capture(page, info, 'keyboard-category', baseline, guard.bootstrap.categories);
     }
+    // Focus a non-selected category, then let actual browser resize observation
+    // restore the whole label. Do not repair the strip from the test.
+    const focusedOnly = nav.getByRole('button', { name: names[2], exact: true });
+    await page.keyboard.press('F2'); await expect(search).toBeFocused();
+    for (let i = 0; i < 64 && !(await focusedOnly.evaluate(node => node === document.activeElement)); i++) await page.keyboard.press('Tab');
+    await expect(focusedOnly).toBeFocused();
+    await expect(focusedOnly).toHaveAttribute('aria-pressed', 'false');
+    const scrollYBeforeResize = await page.evaluate(() => scrollY);
+    await page.setViewportSize({ width: width - 70, height: 900 });
+    await expect(async () => { await assertCategoryFullyVisible(focusedOnly); }).toPass({ timeout: 5_000 });
+    await expect(focusedOnly).toBeFocused();
+    const resizedVisibility = await assertCategoryFullyVisible(focusedOnly);
+    expect(resizedVisibility.scrollY).toBe(scrollYBeforeResize);
+    expect(await cartSnapshot(page)).toEqual(baseline);
+    await page.setViewportSize({ width, height: 900 });
+    await expect(async () => { await assertCategoryFullyVisible(focusedOnly); }).toPass({ timeout: 5_000 });
     await search.fill(''); await expect.poll(productIds).toEqual([productA.id, productB.id].sort());
     for (const [name, expected, stage] of [
       [names[2], [productB.id], 'pointer-category'], [names[3], [], 'empty-category'],
@@ -47,14 +66,15 @@ for (const [index, width] of widths.entries()) {
     ] as const) {
       const button = nav.getByRole('button', { name, exact: true });
       await button.scrollIntoViewIfNeeded();
-      reachability.push({ mode: 'pointer', name, ...(await assertReachable(page, button)) });
+      const beforeSelection = await assertReachable(page, button);
       await button.click(); await expect(button).toHaveAttribute('aria-pressed', 'true');
+      reachability.push({ mode: 'pointer', name, ...beforeSelection, selectedVisibility: await assertCategoryFullyVisible(button) });
       await expect.poll(productIds).toEqual(expected);
       if (!expected.length) await expect(page.getByText('沒有符合條件的商品', { exact: true })).toBeVisible();
       await stable(); expect(await cartSnapshot(page)).toEqual(baseline);
       if (stage) await capture(page, info, stage, baseline, guard.bootstrap.categories);
     }
     writeFileSync(info.outputPath('reachability.json'), JSON.stringify({ test: info.title, nonce: process.env.CATEGORY_UI_NONCE,
-      width, expectedNames: names, reachability, cartBefore: baseline, cartAfter: await cartSnapshot(page) }, null, 2) + '\n');
+      width, expectedNames: names, reachability, resizedVisibility, cartBefore: baseline, cartAfter: await cartSnapshot(page) }, null, 2) + '\n');
   });
 }
