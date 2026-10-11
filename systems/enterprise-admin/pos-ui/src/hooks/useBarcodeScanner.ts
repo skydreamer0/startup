@@ -4,7 +4,7 @@ import { lookupProduct } from '../api/productLookup';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import {
-  startBarcodeListener, stopBarcodeListener, onBarcode, onBarcodeSequence, getBarcodeInputSequence,
+  startBarcodeListener, stopBarcodeListener, cancelBarcodeInput, onBarcode, onBarcodeSequence, getBarcodeInputSequence,
 } from '../services/barcodeService';
 import { PosToastMessage } from '../components/PosToast';
 
@@ -92,7 +92,10 @@ export function useBarcodeScanner(
   }, [invalidateLookups]);
 
   useLayoutEffect(() => {
-    if (previousBlocked.current !== blocked) invalidateLookups();
+    if (previousBlocked.current !== blocked) {
+      cancelBarcodeInput();
+      invalidateLookups();
+    }
     previousBlocked.current = blocked;
   }, [blocked, invalidateLookups]);
 
