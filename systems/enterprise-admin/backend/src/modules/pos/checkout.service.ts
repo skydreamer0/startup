@@ -407,13 +407,12 @@ export class CheckoutService {
     });
   }
 
-  static async getTodayOrders(shiftId?: string) {
+  static async getTodayOrders(shiftId?: string, clock: Clock = systemClock) {
     const tenant = tenantPersistence();
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const { start, end } = taipeiBusinessDay(clock());
     return prisma.order.findMany({
       where: tenant.where({
-        createdAt: { gte: startOfDay },
+        createdAt: { gte: start, lt: end },
         ...(shiftId ? { shiftId } : {}),
       }),
       include: {
