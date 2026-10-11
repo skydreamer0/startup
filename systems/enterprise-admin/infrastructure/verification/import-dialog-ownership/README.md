@@ -86,3 +86,25 @@ Authored test code is not a runtime pass. The local Chromium socket-policy denia
 is not retried or relaxed. Execution is assigned to the existing GitHub Admin CI
 job; exact-head result, artifact and independent PNG review must be recorded
 before claiming this bounded browser gate passed. No merge/deploy is authorized.
+
+### First actual-browser finding and bounded repair
+
+The first test-only head `0c024039a1357c74b623f662e6c355489a88a7b7` ran in
+GitHub run `38131484433`: 31/33 browser cases passed. All seven import request
+cases passed; both idle keyboard flows failed at the final `(2, 2)` backdrop
+click. Artifact `11699311473` (ZIP SHA-256
+`f84eb4c9fed9d4bd710188e2da2f149f85d880164fd54d120317384cd43fa99f`)
+shows the dialog was an inline card. The existing `modal-overlay` class had no
+stylesheet rule; `(2, 2)` therefore hit the sidebar. At 390px the card also
+extended below the viewport. Typecheck/build and all 29 harness guard cases
+passed; the browser result remained failed, with owned processes quiescent.
+
+The follow-up adds an import-only body portal, full-viewport fixed dimmed
+backdrop and bounded scrollable card, using the existing receipt dialog's
+720px/55%-backdrop/44px-control visual pattern. Backdrop mousedown preserves
+the pending dialog's keyboard focus. It does not change shared modal classes,
+other dialogs, HTTP/token semantics, or backend code. The same nine cases and
+original failing click remain. New geometry/hit-test and pending-backdrop
+assertions make the missing overlay fail directly; they do not hide the failure.
+Independent source/PNG review and final-head CI are still required. This repair
+does not claim assistive-technology or physical-device acceptance.

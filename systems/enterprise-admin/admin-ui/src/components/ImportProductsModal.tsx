@@ -1,6 +1,8 @@
 import { useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useMutation } from '@tanstack/react-query';
 import { excelApi, ImportPreview, ImportSummary } from '../api/excel';
+import './ImportProductsModal.css';
 
 interface ImportProductsModalProps {
     onClose: () => void;
@@ -136,8 +138,15 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
         onClose();
     }
 
-    return (
-        <div className="modal-overlay" onClick={handleClose}>
+    return createPortal(
+        <div
+            className="import-products-overlay"
+            onMouseDown={(event) => {
+                // A pending backdrop click must not move focus out of the trap.
+                if (event.target === event.currentTarget) event.preventDefault();
+            }}
+            onClick={handleClose}
+        >
             <div
                 ref={dialogRef}
                 role="dialog"
@@ -146,9 +155,8 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                 aria-busy={busy}
                 tabIndex={-1}
                 onKeyDown={handleKeyDown}
-                className="modal-content card"
+                className="import-products-dialog card"
                 onClick={(e) => e.stopPropagation()}
-                style={{ maxWidth: '720px', width: '90%' }}
             >
                 <h2 id={titleId} className="modal-title">Import Products from Excel</h2>
 
@@ -246,6 +254,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }

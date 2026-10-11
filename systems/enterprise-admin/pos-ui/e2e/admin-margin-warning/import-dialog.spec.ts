@@ -33,8 +33,13 @@ async function capture(page: Page, info: TestInfo, name: string) {
   await page.evaluate(() => document.fonts.ready);
   const geometry = await dialog(page).evaluate(element => {
     const r = element.getBoundingClientRect();
+    const overlay = element.parentElement!;
+    const backdrop = overlay.getBoundingClientRect();
     return { subject: 'import-dialog', viewport: { width: innerWidth, height: innerHeight },
       documentWidth: document.documentElement.scrollWidth, dialog: { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom },
+      overlay: { x: backdrop.x, y: backdrop.y, right: backdrop.right, bottom: backdrop.bottom },
+      backdropHit: document.elementFromPoint(2, 2) === overlay,
+      viewportBounded: r.y >= 0 && r.bottom <= innerHeight,
       clientWidth: element.clientWidth, scrollWidth: element.scrollWidth,
       focusInside: element === document.activeElement || element.contains(document.activeElement),
       focused: document.activeElement?.getAttribute('id') || document.activeElement?.textContent,
@@ -43,6 +48,9 @@ async function capture(page: Page, info: TestInfo, name: string) {
   expect(geometry.dialog.x).toBeGreaterThanOrEqual(0);
   expect(geometry.dialog.right).toBeLessThanOrEqual(geometry.viewport.width + 1);
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+  expect(geometry.overlay).toEqual({ x: 0, y: 0, right: geometry.viewport.width, bottom: geometry.viewport.height });
+  expect(geometry.backdropHit).toBe(true);
+  expect(geometry.viewportBounded).toBe(true);
   expect(geometry.focusInside).toBe(true);
   await writeFile(info.outputPath(`${name}.json`), JSON.stringify(geometry, null, 2));
   await page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true });
@@ -82,6 +90,8 @@ test.describe('import requests', () => {
     await expect(dialog(page)).toBeFocused(); await expect(dialog(page)).toHaveAttribute('aria-busy', 'true');
     await expect(input(page)).toBeDisabled(); await expect(button(page, 'Cancel')).toBeDisabled();
     for (const key of ['Tab', 'Shift+Tab', 'Escape']) { await page.keyboard.press(key); await expect(dialog(page)).toBeFocused(); }
+    await page.mouse.click(2, 2); await expect(dialog(page)).toBeFocused();
+    await expect(dialog(page)).toHaveAttribute('aria-busy', 'true');
     await capture(page, info, 'preview-pending');
     held.resolve({ status: 500 });
     await expect(input(page)).toBeEnabled(); await expect(input(page)).toBeFocused();
@@ -102,6 +112,8 @@ test.describe('import requests', () => {
     await expect.poll(() => harness.imports.length).toBe(3);
     await expect(input(page)).toBeDisabled(); await expect(button(page, 'Cancel')).toBeDisabled();
     for (const key of ['Escape', 'Tab', 'Shift+Tab']) { await page.keyboard.press(key); await expect(dialog(page)).toBeFocused(); }
+    await page.mouse.click(2, 2); await expect(dialog(page)).toBeFocused();
+    await expect(dialog(page)).toHaveAttribute('aria-busy', 'true');
     await capture(page, info, 'confirm-pending');
     expect(harness.imports).toEqual([
       { endpoint: 'preview', fileName: files[0].name, fileSha256: digest(files[0].buffer), token: null },

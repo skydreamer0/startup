@@ -1,0 +1,48 @@
+/* Import-only modal surface. Other admin dialogs retain their own contracts. */
+.import-products-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgb(0 0 0 / 55%);
+}
+
+.import-products-dialog {
+    width: min(720px, 100%);
+    max-height: calc(100dvh - 32px);
+    min-width: 0;
+    overflow: auto;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    overscroll-behavior: contain;
+}
+
+.import-products-dialog .modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.import-products-dialog .input-field {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+}
+
+.import-products-dialog .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.import-products-dialog .modal-actions .btn { min-height: 44px; }
+
+.import-products-dialog :is(button, input):focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: 3px;
+}

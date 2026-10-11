@@ -112,6 +112,9 @@ export function validateEvidence(output, cases) {
       } else if (item.title.startsWith('import ')) {
         assert.equal(geometry.subject, 'import-dialog');
         assert.equal(geometry.focusInside, true);
+        assert.equal(geometry.backdropHit, true);
+        assert.equal(geometry.viewportBounded, true);
+        assert.deepEqual(geometry.overlay, { x: 0, y: 0, right: geometry.viewport.width, bottom: geometry.viewport.height });
         assert.equal(geometry.viewport.width, item.title.includes(' 390:') ? 390 : 1440);
         assert.ok(geometry.dialog.width > 0 && geometry.dialog.height > 0);
         assert.ok(geometry.dialog.x >= 0 && geometry.dialog.right <= geometry.viewport.width + 1);

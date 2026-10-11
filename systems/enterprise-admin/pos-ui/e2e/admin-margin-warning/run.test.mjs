@@ -218,6 +218,28 @@ function syntheticPng(width, height) {
   return Buffer.concat([Buffer.from('89504e470d0a1a0a', 'hex'), chunk('IHDR', header),
     chunk('IDAT', deflateSync(Buffer.alloc((1 + width * 3) * height))), chunk('IEND', Buffer.alloc(0))]);
 }
+test('import geometry rejects a missing viewport backdrop or offscreen dialog', () => {
+  const output = fs.mkdtempSync(path.join(os.tmpdir(), 'import-geometry-'));
+  try {
+    const title = 'import 1440: keyboard and idle dismissal';
+    const network = path.join(output, 'network.json'), png = path.join(output, 'import-open.png'), measure = path.join(output, 'import-open.json');
+    fs.writeFileSync(network, JSON.stringify({ title, browser: 'synthetic guard test', syntheticHttp: true,
+      physicalDevice: false, unexpected: [], pageErrors: [], imports: [] }));
+    fs.writeFileSync(png, syntheticPng(1440, 900));
+    const geometry = { subject: 'import-dialog', viewport: { width: 1440, height: 900 }, documentWidth: 1440,
+      focusInside: true, backdropHit: true, viewportBounded: true,
+      overlay: { x: 0, y: 0, right: 1440, bottom: 900 },
+      dialog: { x: 360, width: 720, height: 400, right: 1080 }, clientWidth: 720, scrollWidth: 720 };
+    const evidence = [{ title, duration: 1, attachments: [
+      { name: 'network.json', path: network }, { name: 'import-open.png', path: png }, { name: 'import-open.json', path: measure }] }];
+    fs.writeFileSync(measure, JSON.stringify(geometry));
+    assert.equal(validateEvidence(output, evidence).length, 1);
+    for (const patch of [{ backdropHit: false }, { viewportBounded: false }, { overlay: { ...geometry.overlay, right: 1439 } }]) {
+      fs.writeFileSync(measure, JSON.stringify({ ...geometry, ...patch }));
+      assert.throws(() => validateEvidence(output, evidence));
+    }
+  } finally { fs.rmSync(output, { recursive: true, force: true }); }
+});
 test('only the fixed desktop trace case accepts an exact 1366 by 768 decoded PNG', () => {
   const bytes = syntheticPng(1366, 768);
   assert.deepEqual(validateScreenshot(bytes, 'batch-trace 1366: source lifecycle'), { width: 1366, height: 768 });

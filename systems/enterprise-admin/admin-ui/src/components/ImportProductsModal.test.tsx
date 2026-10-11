@@ -75,6 +75,8 @@ describe('Import dialog keyboard and request ownership', () => {
     const view = setup();
     const dialog = screen.getByRole('dialog', { name: 'Import Products from Excel' });
     expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(dialog.parentElement).toHaveClass('import-products-overlay');
+    expect(dialog.parentElement?.parentElement).toBe(document.body);
     expect(view.input).toHaveFocus();
     const cancel = screen.getByRole('button', { name: 'Cancel' });
     fireEvent.keyDown(view.input, { key: 'Tab', shiftKey: true });
@@ -118,6 +120,7 @@ describe('Import dialog keyboard and request ownership', () => {
     expect(view.input).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
     expect(screen.getByRole('dialog')).toHaveFocus();
+    expect(fireEvent.mouseDown(screen.getByRole('dialog').parentElement!)).toBe(false);
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Tab', shiftKey: true });
     expect(screen.getByRole('dialog')).toHaveFocus();
     await act(async () => pending.reject(new Error('preview offline')));
