@@ -74,6 +74,28 @@ binary drift; compatibility is not refund-policy approval.
   gates, including the reported category lifecycle/browser CI gate. No merge or
   deployment is authorized by this evidence.
 
+## Cross-order native regression addition (2026-10-11)
+
+The existing owned native harness now adds a twelfth case: two real checkout
+requests in one synthetic shift, separately priced at 0.1 and 0.2. It requires two
+distinct persisted completed/paid orders, each with its matching tenant, shift,
+Decimal total and one CASH payment. Both unchanged HTTP readers must return two
+orders and numeric totalSales/grossSales/CASH totals of 0.3. Complete before/after
+application-table snapshots must be identical; the separate
+`decimal-cross-order.json` artifact retains the stored facts, responses and snapshots.
+This specifically exercises accumulation across orders, unlike the two historical
+decimal cases, which each store one order totaling 0.3.
+
+Native execution of this new case is **NOT RUN** in the author checkout: neither
+PostgreSQL nor Docker is installed. No installation or existing database fallback
+was attempted. The existing CI workflows provision isolated PostgreSQL for other
+acceptance suites, but neither their commands nor package scripts invoke this
+nonce-owned split-payment runner. An ordinary CI pass therefore cannot establish
+native cross-order acceptance. No workflow, runner ownership guard, dependency,
+production code, schema, refund, tenant or date policy is changed in this addition.
+Typechecking or pure/mocked tests are not native PostgreSQL evidence. Keep Draft;
+fresh native results and independent acceptance remain required.
+
 ## Historical #111 verification (not rerun by the follow-up)
 
 - Precise mocked-reader RED: daily 100 cash / 0 card; shift opening 200 gave cash

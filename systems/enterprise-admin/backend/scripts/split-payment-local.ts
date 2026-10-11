@@ -211,6 +211,35 @@ async function main() {
       assert.equal(pair.report.grossSales, 0.3); assert.deepEqual(pair.report.paymentBreakdown, { CASH: 0.3 });
       assert.equal(pair.report.cashBalance, 200.3);
     });
+    await check('separate stored orders 0.1 + 0.2 return numeric totalSales and grossSales 0.3 without writes', async () => {
+      const ownShift = await shift();
+      const orderIds: string[] = [];
+      for (const amount of [0.1, 0.2]) {
+        await db.product.update({ where: { id: product.id }, data: { retailPrice: amount.toString() } });
+        const { response } = await sale(ownShift.id, [{ method: 'CASH', amount }]);
+        orderIds.push(response.data.id as string);
+      }
+      assert.equal(new Set(orderIds).size, 2);
+      const stored = await db.order.findMany({ where: { shiftId: ownShift.id }, include: { payments: true } });
+      assert.equal(stored.length, 2);
+      assert.deepEqual(stored.map(order => order.id).sort(), [...orderIds].sort());
+      assert.deepEqual(stored.map(order => ({
+        tenantId: order.tenantId, shiftId: order.shiftId, status: order.status,
+        paymentStatus: order.paymentStatus, total: order.totalAmount.toString(),
+        payments: order.payments.map(payment => ({ tenantId: payment.tenantId, method: payment.method, amount: payment.amount.toString() })),
+      })).sort((a, b) => a.total.localeCompare(b.total)), ['0.1', '0.2'].map(total => ({
+        tenantId: tenants[0].id, shiftId: ownShift.id, status: 'completed', paymentStatus: 'paid', total,
+        payments: [{ tenantId: tenants[0].id, method: 'CASH', amount: total }],
+      })));
+      const before = await snapshot();
+      const pair = await readPair(ownShift.id);
+      const after = await snapshot();
+      save('decimal-cross-order.json', { orderIds, stored, pair, before, after });
+      assert.deepEqual(after, before, 'Cross-order reader requests must preserve every persisted table');
+      assert.equal(pair.daily.totalOrders, 2); assert.equal(pair.report.orderCount, 2);
+      assert.equal(pair.daily.totalSales, 0.3); assert.equal(pair.report.grossSales, 0.3);
+      assert.equal(pair.daily.cashAmount, 0.3); assert.deepEqual(pair.report.paymentBreakdown, { CASH: 0.3 });
+    });
     save('final-snapshot.json', await snapshot());
     save('acceptance.json', { status: 'passed', sourceHead: owned.sourceHead, cases, httpExchanges: exchanges.length,
       limits: ['Only completed-order split-payment classification is corrected', 'Refund status/filter/arithmetic intentionally unchanged and not approved policy',
