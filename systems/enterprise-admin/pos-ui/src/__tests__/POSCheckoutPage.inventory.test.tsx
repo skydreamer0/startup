@@ -39,6 +39,7 @@ const product = { id: 'product-1', name: 'Synthetic product', sku: 'SYNTHETIC', 
 const checkoutResult = { id: 'order-1', orderNumber: 'SYNTHETIC-1', totalAmount: '100', paymentMethod: 'CASH', items: [{ productId: product.id, quantity: 1, unitPrice: '100', finalUnitPrice: '100' }] };
 const order = { ...checkoutResult, status: 'completed', discountAmount: 0, createdAt: '2026-10-08T12:00:00Z', items: [{ id: 'item-1', productId: product.id, product: { id: product.id, name: product.name, sku: product.sku }, quantity: 1, unitPrice: '100', finalUnitPrice: '100' }] };
 const productKey = (keyScope = scope, search = '', category: string | null = null) => ['pos-products', keyScope, search, category];
+const todayOrdersKey = (keyScope: string) => ['pos-today-orders', keyScope, 'shift-1', new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10)];
 const clients: QueryClient[] = [];
 
 function response<T>(data: T): AxiosResponse<ApiSuccess<T>> {
@@ -243,7 +244,7 @@ describe('POS inventory refresh after confirmed mutations (synthetic API, real q
     const { client } = renderPage(); await screen.findByText('✓ 3 件');
     client.setQueryData(productKey(scope, 'vitamin', 'category-1'), [product]);
     client.setQueryData(productKey(otherScope), [product]);
-    client.setQueryData(['pos-today-orders', otherScope, 'shift-1'], [order]);
+    client.setQueryData(todayOrdersKey(otherScope), [order]);
     await openRefund();
     fireEvent.click(screen.getByRole('button', { name: '確認退款' }));
     const draft = { items: useCartStore.getState().items, paymentMethod: 'CASH' as const, orderDiscountAmount: 0, orderDiscountNote: '', currentSalesStaffId: 'cashier-1' };
@@ -254,9 +255,9 @@ describe('POS inventory refresh after confirmed mutations (synthetic API, real q
     await waitFor(() => expect(posApi.getProducts).toHaveBeenCalledTimes(2));
     expect(within(screen.getByTestId('product-card-product-1')).getByText('✓ 3 件')).toBeInTheDocument();
     expect(client.getQueryState(productKey(scope, 'vitamin', 'category-1'))?.isInvalidated).toBe(true);
-    expect(client.getQueryState(['pos-today-orders', scope, 'shift-1'])?.isInvalidated).toBe(true);
+    expect(client.getQueryState(todayOrdersKey(scope))?.isInvalidated).toBe(true);
     expect(client.getQueryState(productKey(otherScope))?.isInvalidated).toBe(false);
-    expect(client.getQueryState(['pos-today-orders', otherScope, 'shift-1'])?.isInvalidated).toBe(false);
+    expect(client.getQueryState(todayOrdersKey(otherScope))?.isInvalidated).toBe(false);
     expect(useCheckoutRecoveryStore.getState().pending).toEqual(pending);
     expect(useCartStore.getState().items).toEqual(draft.items);
   });
@@ -271,7 +272,7 @@ describe('POS inventory refresh after confirmed mutations (synthetic API, real q
     expect(screen.getByRole('button', { name: '確認退款' })).toBeEnabled();
     expect(posApi.getProducts).toHaveBeenCalledTimes(1);
     expect(client.getQueryState(productKey())?.isInvalidated).toBe(false);
-    expect(client.getQueryState(['pos-today-orders', scope, 'shift-1'])?.isInvalidated).toBe(false);
+    expect(client.getQueryState(todayOrdersKey(scope))?.isInvalidated).toBe(false);
     expect(useCartStore.getState().items).toHaveLength(1);
   });
 
