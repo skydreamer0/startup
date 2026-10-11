@@ -45,6 +45,16 @@
 4. Open the nearest tests for that module.
 5. Update API spec and context if the contract meaning changes.
 
+### Read split-payment totals
+
+Daily settlement and shift report share `src/lib/order-payment-totals.ts` for
+completed-order payment classification from tenant-scoped `OrderPayment` rows.
+Empty rows explicitly retain the legacy primary-method fallback. Reader cohorts,
+refund arithmetic and numeric output types are unchanged; the existing refund
+inconsistency is NOT an approved policy or fixed by this slice. See
+`../infrastructure/verification/split-payment-totals/README.md` for the bounded
+contract, isolated native API/DB runner and remaining financial gates.
+
 ### Change process health or startup
 
 1. `/health` is process-only liveness; `/ready` checks database connectivity and all packaged Prisma migration history. See `../infrastructure/verification/health-readiness/README.md` for the contract and deployment usage.
