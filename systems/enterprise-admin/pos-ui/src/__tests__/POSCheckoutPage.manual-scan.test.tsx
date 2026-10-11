@@ -62,10 +62,10 @@ async function setup() {
   const opener = screen.getByRole('button', { name: '手動貼碼' });
   return { ...view, user, opener };
 }
-function scan(code: string) {
+function scan(code: string, target: HTMLElement | Document = document) {
   act(() => {
-    for (const key of code) fireEvent.keyDown(document, { key });
-    fireEvent.keyDown(document, { key: 'Enter' });
+    for (const key of code) fireEvent.keyDown(target, { key });
+    fireEvent.keyDown(target, { key: 'Enter' });
   });
 }
 function deferredLookup() {
@@ -102,17 +102,44 @@ describe('manual scan + real POS page/scanner/cart integration', () => {
 
   it('resumes unchanged USB Enter/min3 flow after a fast open/close, dropping both boundary partials', async () => {
     const { opener } = await setup(); const legacy = vi.fn(); const off = onBarcode(legacy);
+    const search = screen.getByTestId('product-search-input');
+    const observedKeys = vi.fn((event: KeyboardEvent) => event.target);
+    search.addEventListener('keydown', observedKeys);
+    const time = vi.spyOn(Date, 'now').mockReturnValue(Date.now());
     try {
-      // All events happen without advancing the clock beyond the 300ms gate.
+      // Freeze the decoder clock so neither boundary can rely on the 300ms timeout.
       fireEvent.keyDown(document, { key: 'O' }); fireEvent.keyDown(document, { key: 'L' });
       fireEvent.click(opener); scan('ONE');
       fireEvent.keyDown(document.body, { key: 'Escape' });
-      scan('ON'); expect(legacy).not.toHaveBeenCalled(); expect(lookupProduct).not.toHaveBeenCalled();
-      scan('ONE'); expect(legacy.mock.calls).toEqual([['ONE']]);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(opener).toHaveFocus();
+      search.focus(); expect(search).toHaveFocus();
+      // A short document-target Enter intentionally remains the page's checkout
+      // shortcut. Exercise min3 on the focused search input, which owns text keys.
+      scan('ON', search);
+      expect(search).toHaveFocus();
+      expect(legacy).not.toHaveBeenCalled(); expect(lookupProduct).not.toHaveBeenCalled();
+      expect(useCartStore.getState().items).toEqual([{ product: existing, quantity: 1, discountRate: 0 }]);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      scan('ONE', search); expect(legacy.mock.calls).toEqual([['ONE']]);
+      expect(observedKeys.mock.calls.map(([event]) => event.key)).toEqual(['O', 'N', 'Enter', 'O', 'N', 'E', 'Enter']);
+      expect(observedKeys.mock.calls.every(([event]) => event.target === search)).toBe(true);
+      // ONE is already the single exact SKU in the supplied product list.
+      expect(lookupProduct).not.toHaveBeenCalled();
       expect(useCartStore.getState().items.find(item => item.product.id === 'p1')?.quantity).toBe(1);
       expect(useCartStore.getState().items.find(item => item.product.id === 'existing')?.quantity).toBe(1);
+      expect(search).toHaveFocus();
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument(); expect(posApi.checkout).not.toHaveBeenCalled();
-    } finally { off(); }
+    } finally { off(); time.mockRestore(); search.removeEventListener('keydown', observedKeys); }
+  });
+
+  it('retains the existing document short-Enter checkout shortcut after closing manual evidence', async () => {
+    const { opener } = await setup(); fireEvent.click(opener);
+    fireEvent.click(screen.getByRole('button', { name: '關閉' }));
+    scan('ON');
+    expect(screen.getByRole('dialog', { name: '付款' })).toBeInTheDocument();
+    expect(lookupProduct).not.toHaveBeenCalled(); expect(posApi.checkout).not.toHaveBeenCalled();
+    expect(useCartStore.getState().items).toEqual([{ product: existing, quantity: 1, discountRate: 0 }]);
   });
 
   it.each(['success', 'error'] as const)('discards pre-open slow lookup %s even after the dialog has closed', async outcome => {
