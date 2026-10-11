@@ -77,7 +77,7 @@ export function validateEvidence(output, cases) {
       'period change': ['period-pending', 'period-recovered'],
       'quantity sort': ['sort-pending', 'sort-recovered'],
       'source lifecycle': ['source-loading', 'source-linked'],
-      'source errors': ['source-long', 'source-403', 'source-404', 'source-500', 'source-empty'],
+      'source errors': ['source-long', 'source-null-order', 'source-403', 'source-404', 'source-500', 'source-empty'],
     }[suffix];
     assert.deepEqual(images.map(a => a.name).sort(), required.map(name => `${name}.png`).sort());
     const observations = images.map(image => {
@@ -86,6 +86,14 @@ export function validateEvidence(output, cases) {
       const measure = item.attachments.find(a => a.name === image.name.replace(/\.png$/, '.json'));
       assert.ok(measure);
       const geometry = JSON.parse(assertAttachment(output, measure.path));
+      if (image.name === 'source-null-order.png') {
+        assert.equal(geometry.capturedTarget?.text, '訂單 未編號（order-0）・本批實扣數量 3');
+        const bounds = geometry.capturedTarget.bounds;
+        assert.ok(bounds && bounds.width > 0 && bounds.height > 0);
+        assert.ok(bounds.x >= 0 && bounds.y >= 0);
+        assert.ok(bounds.x + bounds.width <= geometry.viewport.width + 1);
+        assert.ok(bounds.y + bounds.height <= geometry.viewport.height + 1);
+      }
       if (item.title.startsWith('batch-trace ')) {
         assert.equal(geometry.subject, 'batch-trace');
         assert.ok(geometry.dialog.width > 0 && geometry.dialog.height > 0);

@@ -212,3 +212,17 @@ test('original warning and mobile dimensions still decode with their unchanged b
   assert.deepEqual(validateScreenshot(syntheticPng(1440, 900), 'margin 1440: pending and empty'), { width: 1440, height: 900 });
   assert.deepEqual(validateScreenshot(syntheticPng(390, 844), 'batch-trace 390: source errors'), { width: 390, height: 844 });
 });
+
+test('trace evidence rejects missing null-order screenshot stage', () => {
+  const output = fs.mkdtempSync(path.join(os.tmpdir(), 'null-trace-guard-'));
+  try {
+    const title = 'batch-trace 390: source errors';
+    const network = path.join(output, 'network.json');
+    fs.writeFileSync(network, JSON.stringify({ title, syntheticHttp: true, physicalDevice: false,
+      unexpected: [], pageErrors: [], browser: 'synthetic guard fixture' }));
+    const attachments = [{ name: 'network.json', path: network },
+      ...['source-long', 'source-403', 'source-404', 'source-500', 'source-empty']
+        .map(name => ({ name: `${name}.png`, path: path.join(output, `${name}.png`) }))];
+    assert.throws(() => validateEvidence(output, [{ title, duration: 1, attachments }]), /source-null-order/);
+  } finally { fs.rmSync(output, { recursive: true, force: true }); }
+});
