@@ -178,4 +178,72 @@ describe.skipIf(!databaseUrl)('Taipei order sequence (real PostgreSQL)', () => {
     expect(await basePrisma.orderNumberCounter.count({ where: { tenantId: f.tenantId } })).toBe(0);
     expect((await basePrisma.product.findUniqueOrThrow({ where: { id: f.products[0].id } })).stockQuantity).toBe(10);
   });
+
+  it('reads persisted today orders at both Taipei midnight boundaries', async () => {
+    const f = await fixture();
+    const customer = await basePrisma.customer.findFirstOrThrow({ where: { tenantId: f.tenantId } });
+    const instants = [
+      '2026-10-10T15:59:59.999Z', // immediately before start
+      '2026-10-10T16:00:00.000Z', // inclusive start
+      '2026-10-11T15:59:59.999Z', // immediately before end
+      '2026-10-11T16:00:00.000Z', // exclusive end / next day's start
+    ];
+    const rows = [];
+    for (const [index, instant] of instants.entries()) {
+      rows.push(await basePrisma.order.create({ data: {
+        tenantId: f.tenantId, customerId: customer.id, shiftId: f.shift.id,
+        totalAmount: 100, status: index === 2 ? 'refunded' : 'completed',
+        createdAt: new Date(instant),
+        // Historical orders with no businessDate must still be selected by createdAt.
+        items: { create: { productId: f.products[0].id, quantity: 1, unitPrice: 100 } },
+      } }));
+    }
+    const stored = await basePrisma.order.findMany({
+      where: { tenantId: f.tenantId }, orderBy: { createdAt: 'asc' },
+    });
+    expect(stored.map(row => row.createdAt.toISOString())).toEqual(instants);
+    expect(stored.every(row => row.businessDate === null)).toBe(true);
+
+    for (const [instant, expectedIndexes] of [
+      [instants[0], [0]], [instants[1], [2, 1]],
+      [instants[2], [2, 1]], [instants[3], [3]],
+    ] as const) {
+      const readClock = vi.fn(() => new Date(instant));
+      const result = await inTenant(f, () => CheckoutService.getTodayOrders(undefined, readClock));
+      expect(readClock).toHaveBeenCalledTimes(1);
+      expect(result.map(row => row.id)).toEqual(expectedIndexes.map(index => rows[index].id));
+      expect(result.map(row => row.status)).toEqual(expectedIndexes.map(index => rows[index].status));
+      expect(result.every(row => row.items.length === 1)).toBe(true);
+      expect(result[0].items[0].product).toEqual({
+        id: f.products[0].id, name: f.products[0].name, sku: f.products[0].sku,
+      });
+    }
+    expect(await basePrisma.order.findMany({
+      where: { tenantId: f.tenantId }, orderBy: { createdAt: 'asc' },
+    })).toEqual(stored);
+  });
+
+  it('isolates persisted today orders by tenant and optional shift', async () => {
+    const a = await fixture(); const b = await fixture();
+    const secondShift = await basePrisma.shift.create({ data: { tenantId: a.tenantId, staffId: a.shift.staffId } });
+    async function order(f: Fixture, shiftId: string, instant: string) {
+      const customer = await basePrisma.customer.findFirstOrThrow({ where: { tenantId: f.tenantId } });
+      return basePrisma.order.create({ data: {
+        tenantId: f.tenantId, customerId: customer.id, shiftId, totalAmount: 0,
+        status: 'pending', createdAt: new Date(instant),
+      } });
+    }
+    const first = await order(a, a.shift.id, '2026-10-10T16:00:00.000Z');
+    const second = await order(a, secondShift.id, '2026-10-10T16:00:00.001Z');
+    const foreign = await order(b, b.shift.id, '2026-10-10T16:00:00.002Z');
+    const readClock = () => new Date('2026-10-10T16:30:00.000Z');
+    const read = (f: Fixture, shiftId?: string) => inTenant(f, () => CheckoutService.getTodayOrders(shiftId, readClock));
+    expect((await read(a)).map(row => row.id)).toEqual([second.id, first.id]);
+    expect((await read(a, a.shift.id)).map(row => row.id)).toEqual([first.id]);
+    expect((await read(a, secondShift.id)).map(row => row.id)).toEqual([second.id]);
+    expect(await read(a, b.shift.id)).toEqual([]);
+    expect((await read(b)).map(row => row.id)).toEqual([foreign.id]);
+    expect(await read(b, a.shift.id)).toEqual([]);
+  });
+
 });
