@@ -1,9 +1,13 @@
+// @vitest-environment node
 import { beforeEach, expect, it, vi } from 'vitest';
 import { withNativeContext } from '../../e2e/category-native/native-context';
 
 // Resource/API regression only; these doubles do not establish native visibility.
 const state = vi.hoisted(() => ({ scenario: 'success', calls: [] as string[] }));
-vi.mock('node:fs/promises', () => ({ readFile: vi.fn(async () => '12345\n/devtools/browser/unit-id\n') }));
+vi.mock('node:fs/promises', () => {
+  const fs = { readFile: vi.fn(async () => '12345\n/devtools/browser/unit-id\n') };
+  return { ...fs, default: fs }; // Support Vite's CJS default-import interop as well as named imports.
+});
 vi.mock('@playwright/test', async () => {
   const { expect: check } = await import('vitest');
   const assertion = Object.assign((value: unknown) => check(value), {
@@ -12,7 +16,7 @@ vi.mock('@playwright/test', async () => {
   const context = { addInitScript: async (script: () => void) => {
     state.calls.push('block-service-workers'); check(script.toString()).toContain('ServiceWorkerContainer');
   } };
-  return { expect: assertion, chromium: {
+  const api = { expect: assertion, chromium: {
     launchServer: async (options: unknown) => {
       check(options).toEqual({ channel: 'chrome', headless: false, chromiumSandbox: true,
         args: ['--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0'] });
@@ -36,6 +40,7 @@ vi.mock('@playwright/test', async () => {
       };
     },
   } };
+  return { ...api, default: api };
 });
 
 beforeEach(() => { state.scenario = 'success'; state.calls = []; });

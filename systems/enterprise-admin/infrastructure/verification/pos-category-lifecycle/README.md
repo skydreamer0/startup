@@ -56,6 +56,29 @@ property, event, timer or query state is synthesized. The Xvfb display remains
 inherit the run nonce for the existing quiescence checks. This is virtual-display
 browser evidence, not physical device evidence.
 
+### First submitted-head CI and follow-up
+
+[Run 38134833617](https://github.com/skydreamer0/startup/actions/runs/38134833617)
+for `821cf93e4f1d679e05ed94c4933e7e8ee75c8840` is **FAIL**. The category
+artifact `11700757382` records genuine trusted hidden/visible pairs and wall-clock
+waits of 61003 / 61013 / 61002 ms at 1366 / 1024 / 390 px. All seven cases failed
+at the final network guard because default-context Chrome fetched the existing
+index.html manifest twice; this is no longer the original visibility timeout.
+Downstream stock remained skipped. The separate POS unit job failed collection
+of the new mock suite (missing fs/promises default export), while 427 existing
+unit cases passed; later build/types in that job were skipped.
+
+The follow-up pins `/manifest.json` and only its three declared icons to the exact
+existing source bytes/MIME/hash in `category-native/static-assets.mjs`. Only
+same-origin GET without query/hash/credentials is accepted, redirects/retries
+are disabled and every actual response is verified and ledgered. Other JSON,
+icons, methods and origins remain rejected. At least the manifest must appear
+in each receipt; unrequested icons are not claimed as browser coverage.
+The pure Node ownership suite now explicitly selects Node rather than JSDOM and
+supplies both named/default mock exports. Local Vitest 4.1.11 runs all 20 ownership
+and static-contract cases successfully; this is synthetic/unit evidence, not a
+replacement for the next exact-head native run. Historical failures are retained.
+
 Draft verification: a supplemental typecheck with available TypeScript and
 Playwright 1.62.1 types passes (not locked 1.63/Node22 validation). Six synthetic
 resource-ownership scenarios pass; the corresponding authored Vitest regressions

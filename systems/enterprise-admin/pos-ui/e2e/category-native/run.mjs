@@ -1,3 +1,4 @@
+import { assertCategoryStaticSources, assertCategoryStaticEvidence } from './static-assets.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -37,7 +38,7 @@ async function main() {
       assert.equal(git('ls-files', '--others', '--ignored', '--exclude-standard', '--', `systems/enterprise-admin/${directory}/.env*`), '');
       assert.equal(fs.existsSync(path.join(app, '..', directory, '.env')), false);
     }
-    assertBrandSources(app);
+    assertBrandSources(app); assertCategoryStaticSources(app);
   };
   assertSource();
   const container = process.env.SKU_QA_CONTAINER, networkName = process.env.SKU_QA_NETWORK;
@@ -111,6 +112,7 @@ async function main() {
     const ledgers = files.filter(file => file.endsWith('/network.json')).map(file => read(path.join('tests', file)));
     assert.deepEqual(ledgers.map(row => row.test).sort(), [...expectedCases].sort()); ledgers.forEach(row => assert.equal(row.nonce, nonce));
     const api = read('api-ledger.json'), database = read('database-receipt.json');
+    ledgers.forEach(row => assertCategoryStaticEvidence(row.verifiedStatic));
     const networkReads = assertNetwork(ledgers, api); const databaseProof = assertDatabase(database, api);
     const captures = files.filter(file => file.endsWith('.png')).map(file => {
       const stage = path.basename(file, '.png');
