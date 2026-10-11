@@ -1,0 +1,319 @@
+{
+  "startedAt": "2026-10-11T08:08:59.986Z",
+  "authorization": "Explicit 11-candidate cleanup approval; fresh remote and local/worktree/unpushed guards required per branch.",
+  "bundle": {
+    "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\approved-branch-cleanup-recovery.bundle",
+    "sha256": "47840cb36ffa45e2703f660ff0dd4ec1e711cf513d66374fd384ab9ba0d029d7",
+    "verified": true,
+    "selfContained": true
+  },
+  "preserved": [
+    {
+      "ref": "refs/heads/backup/batch-audit-20261009-edb1bc3",
+      "sha": "ed13c5939026bde044bdcd68072d793d5d46de8f"
+    },
+    {
+      "ref": "refs/heads/backup/local-runbook-20261009-6a34eb8",
+      "sha": "8f2b30e7df69c28adf810fd01cc505beb441dbf7"
+    },
+    {
+      "ref": "refs/heads/backup/order-sequence-20261009-5995400",
+      "sha": "5decf4db4e13d28a6f99ecde238c157a84934659"
+    },
+    {
+      "ref": "refs/heads/backup/sku-acceptance-20261009-cc9d1fb",
+      "sha": "d324646ba40031505dd4bffa54e986023c588994"
+    },
+    {
+      "ref": "refs/heads/chore/issue30-today-orders-native-20261011",
+      "sha": "013d3713e1611db9e533fddff3ca32f60e138da1"
+    },
+    {
+      "ref": "refs/heads/chore/pos-category-visibility-probe-20261010",
+      "sha": "64247eb50964df976460809786479e413a1fcece"
+    },
+    {
+      "ref": "refs/heads/feat/pr107-115-acceptance-20261011",
+      "sha": "270275a6fa2d7067149134af519128cf98a3455d"
+    },
+    {
+      "ref": "refs/heads/feat/released-prs-acceptance-20261011",
+      "sha": "1f1c7daef34d7959e6ecf5f30b6dbeb773dfc91b"
+    },
+    {
+      "ref": "refs/heads/fix/issue30-pos-taipei-today-20261011",
+      "sha": "2881f6399101a583c1eb41300064f5631eba2a93"
+    },
+    {
+      "ref": "refs/heads/fix/issue31-clear-confirmation-20261011",
+      "sha": "cc01fd18e0e387912a21f8055bd5c6f594fcf41c"
+    },
+    {
+      "ref": "refs/heads/fix/issue31-today-orders-midnight-cache-20261011",
+      "sha": "947e5a5d5b07562c2dd6baa72519d443e2ba740c"
+    },
+    {
+      "ref": "refs/heads/fix/order-total-precision-20261011",
+      "sha": "7043b2438f2c7387caf4e88799bda42dc03b7482"
+    },
+    {
+      "ref": "refs/heads/fix/pos-category-native-context-20261010",
+      "sha": "a8a248dc5b46dd24487a9b742a6c50606c3c3063"
+    },
+    {
+      "ref": "refs/heads/fix/split-payment-totals-20261010",
+      "sha": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64"
+    },
+    {
+      "ref": "refs/heads/master",
+      "sha": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665"
+    }
+  ],
+  "rows": [
+    {
+      "number": 71,
+      "branch": "feat/49-pos-category-api",
+      "head": "dea04ead6d750a306175794f5280cc3cab4c6a18",
+      "mergeSha": "f50fcde93744aef655981999ea2a911e4374bba5",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr71",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 101,
+      "branch": "feat/flow-capsule-brand-20261010",
+      "head": "c792aa615154f67a0983f7ec14f93de1dd095f8a",
+      "mergeSha": "d5dcc6c22e3bd78d8efc68f120a8546ae615534a",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr101",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 103,
+      "branch": "fix/pos-category-lifecycle-acceptance-20261010",
+      "head": "78c802ee7e2a01dc869bc757e6448bab1d32b99a",
+      "mergeSha": "19e900a5590ea2c5b961b7e06e4bad0c4ac677db",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr103",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 104,
+      "branch": "fix/issue-30-checkout-abort-retry",
+      "head": "fe34e19f96d93e0a02bc59b58ad506e9e55e6f66",
+      "mergeSha": "ee362f025270c12e3325894dc343e0bd5aa58050",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr104",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 105,
+      "branch": "fix/pos-held-draft-context-20261010",
+      "head": "9d6398a84c40d0b86632e51fd4b8b6835828c9f1",
+      "mergeSha": "b1d434a5ae1dc8b2817e30ab0c55cf38a5b80275",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr105",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 106,
+      "branch": "feat/batch-source-trace-20261010",
+      "head": "b017fed1c86b228614a4328e9dbf4ed51b50d176",
+      "mergeSha": "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr106",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 107,
+      "branch": "fix/batch-trace-null-order-number",
+      "head": "1b93f45ef5ee5f15974862a4fe61261d50dad6e1",
+      "mergeSha": "42bd00d0ca833cd452d76f1e51dd1b7ecb847f82",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr107",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 108,
+      "branch": "test/batch-trace-null-browser-20261010",
+      "head": "7500af3ac984f3886db54bdb175f9eeab2ec67ae",
+      "mergeSha": "20b422e4a121b71e59b594bc64bc0ab4bfd6dd58",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr108",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 110,
+      "branch": "test/general-order-native-trace-20261010",
+      "head": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+      "mergeSha": "130340682f6d51dec900842ec0f62f8d13568e1a",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr110",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 112,
+      "branch": "feat/product-batch-navigation-20261011",
+      "head": "d856456b901f9adea602b5ba3a6a109aa3e42279",
+      "mergeSha": "40c3d752ef64ddabb8c06613b57b791a5e53d8ab",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": null,
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr112",
+      "remoteDeleted": true,
+      "localDeleted": false,
+      "remoteAbsenceVerified": true
+    },
+    {
+      "number": 117,
+      "branch": "test/checkout-precommit-ipc-20261011",
+      "head": "8123bd7f5ef3b2bf0d42fa94a611ed613b0b3f5e",
+      "mergeSha": "8385bb4c96e299d913061b2d8b7083e785b0aa8b",
+      "masterAtGuard": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "freshGuardsPass": true,
+      "openDependencies": [],
+      "localHead": "8123bd7f5ef3b2bf0d42fa94a611ed613b0b3f5e",
+      "activeWorktree": false,
+      "unpublishedLocalChanges": false,
+      "recoveryRef": "refs/recovery/cleanup-20261011/pr117",
+      "remoteDeleted": true,
+      "localDeleted": true,
+      "remoteAbsenceVerified": true,
+      "localAbsenceVerified": true
+    }
+  ],
+  "autoDeleteBranchesChanged": false,
+  "hpkTouched": false,
+  "completedAt": "2026-10-11T08:13:42.997Z",
+  "preservedRefsPresent": true,
+  "remoteRefsAfter": [
+    {
+      "ref": "refs/heads/backup/batch-audit-20261009-edb1bc3",
+      "sha": "ed13c5939026bde044bdcd68072d793d5d46de8f"
+    },
+    {
+      "ref": "refs/heads/backup/local-runbook-20261009-6a34eb8",
+      "sha": "8f2b30e7df69c28adf810fd01cc505beb441dbf7"
+    },
+    {
+      "ref": "refs/heads/backup/order-sequence-20261009-5995400",
+      "sha": "5decf4db4e13d28a6f99ecde238c157a84934659"
+    },
+    {
+      "ref": "refs/heads/backup/sku-acceptance-20261009-cc9d1fb",
+      "sha": "d324646ba40031505dd4bffa54e986023c588994"
+    },
+    {
+      "ref": "refs/heads/chore/issue30-today-orders-native-20261011",
+      "sha": "013d3713e1611db9e533fddff3ca32f60e138da1"
+    },
+    {
+      "ref": "refs/heads/chore/pos-category-visibility-probe-20261010",
+      "sha": "64247eb50964df976460809786479e413a1fcece"
+    },
+    {
+      "ref": "refs/heads/feat/pr107-115-acceptance-20261011",
+      "sha": "270275a6fa2d7067149134af519128cf98a3455d"
+    },
+    {
+      "ref": "refs/heads/feat/released-prs-acceptance-20261011",
+      "sha": "1f1c7daef34d7959e6ecf5f30b6dbeb773dfc91b"
+    },
+    {
+      "ref": "refs/heads/fix/issue30-pos-taipei-today-20261011",
+      "sha": "2881f6399101a583c1eb41300064f5631eba2a93"
+    },
+    {
+      "ref": "refs/heads/fix/issue31-clear-confirmation-20261011",
+      "sha": "cc01fd18e0e387912a21f8055bd5c6f594fcf41c"
+    },
+    {
+      "ref": "refs/heads/fix/issue31-today-orders-midnight-cache-20261011",
+      "sha": "947e5a5d5b07562c2dd6baa72519d443e2ba740c"
+    },
+    {
+      "ref": "refs/heads/fix/order-total-precision-20261011",
+      "sha": "7043b2438f2c7387caf4e88799bda42dc03b7482"
+    },
+    {
+      "ref": "refs/heads/fix/pos-category-native-context-20261010",
+      "sha": "a8a248dc5b46dd24487a9b742a6c50606c3c3063"
+    },
+    {
+      "ref": "refs/heads/fix/split-payment-totals-20261010",
+      "sha": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64"
+    },
+    {
+      "ref": "refs/heads/master",
+      "sha": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665"
+    }
+  ],
+  "remoteDeletedCount": 11,
+  "localDeletedCount": 1
+}

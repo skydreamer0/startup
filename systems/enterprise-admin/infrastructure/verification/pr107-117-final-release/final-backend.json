@@ -1,0 +1,61 @@
+{
+  "summary": {
+    "numPassedTests": 372,
+    "numPendingTests": 81,
+    "numFailedTests": 0,
+    "numTotalTests": 453
+  },
+  "source": {
+    "head": "a9f4e29522d2d241fb59211b58577294e3f26b02",
+    "tree": "316791c407fe4ca3cc472a4681768d7df1ec2020"
+  },
+  "runtime": {
+    "postgres": "postgres (PostgreSQL) 16.3",
+    "node": "v22.22.3",
+    "platform": "win32",
+    "syntheticOnly": true,
+    "ambientDatabaseUrlUsed": false,
+    "adapter": "exe paths, scrubbed Windows required env, canonical path equivalence, Windows process handle and TCP cleanup"
+  },
+  "process": {
+    "exitCode": 0
+  },
+  "finalCounts": {
+    "accounting_sync_logs": 0,
+    "audit_logs": 7,
+    "checkout_commands": 0,
+    "customer_tags": 2,
+    "customers": 4,
+    "daily_settlements": 0,
+    "expenses": 0,
+    "interactions": 2,
+    "inventory_transactions": 2,
+    "message_broadcasts": 0,
+    "order_items": 2,
+    "order_number_counters": 0,
+    "order_payments": 0,
+    "orders": 1,
+    "permissions": 34,
+    "product_batch_changes": 0,
+    "product_batches": 4,
+    "product_categories": 2,
+    "products": 4,
+    "role_permissions": 48,
+    "roles": 2,
+    "sale_batch_allocations": 0,
+    "shifts": 0,
+    "suppliers": 2,
+    "tags": 2,
+    "tenants": 1,
+    "user_roles": 1,
+    "users": 2
+  },
+  "cleanup": {
+    "ownedDatabaseAbsent": true,
+    "postgresStopped": true,
+    "ownedDirectoryAbsent": true,
+    "tcpClosed": true,
+    "adapterRemoved": true
+  },
+  "scope": "Full backend on final integration in a new exclusively owned synthetic cluster; skipped tests stay skipped. Seed records reported as actual counts before owned DROP."
+}

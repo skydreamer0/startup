@@ -1,0 +1,1747 @@
+[
+  {
+    "number": 107,
+    "head": "a6b137bf92ce5c7cc300a5c3f1468c237d869048",
+    "tree": "809b93aea9ca0b98dda062da7a9dd1514a24d31f",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 2648
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 30,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "batch source read contract validates and projects the real existing envelope without requiring money or receipt notes",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract accepts general-order allocations whose order number is null",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched envelope instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched batch instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched tenant instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched receipt instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched allocation instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched count instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched missing instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched duplicates instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched date instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched orderNumber instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows actual receipt and allocation identities with Taipei dates and no financial claims",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows a general-order allocation without an order number instead of failing the trace",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP states unknown historical provenance for successful empty arrays",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP discloses the 100-row cap and actual total without inventing older rows",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 403 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 404 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 500 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps network separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps malformed separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP makes a loading close available and aborts an unmounted read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP ignores late old-batch results after selecting a different batch",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP hides a prior success when refresh fails and recovers without writes or duplicate pending retry",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not query for missing read permission or unresolved auth",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP separates user-scoped results while another reader request is pending",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP names and focuses the modal, contains Tab and handles native Escape cancellation",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP closes and forgets the trace selection after authentication A/B/A",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not expose detail values from a mismatched tenant response",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP opens from the filtered real batch page and closing preserves filter and returns focus",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 108,
+    "head": "063d085b853f3ce1df56adf62644ce38c904dfd9",
+    "tree": "a3e78f7167f142403b120f64902fb43b72474c7a",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 2463
+      },
+      {
+        "name": "windows-controls",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 628
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 30,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "batch source read contract validates and projects the real existing envelope without requiring money or receipt notes",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract accepts general-order allocations whose order number is null",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched envelope instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched batch instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched tenant instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched receipt instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched allocation instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched count instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched missing instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched duplicates instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched date instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched orderNumber instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows actual receipt and allocation identities with Taipei dates and no financial claims",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows a general-order allocation without an order number instead of failing the trace",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP states unknown historical provenance for successful empty arrays",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP discloses the 100-row cap and actual total without inventing older rows",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 403 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 404 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 500 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps network separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps malformed separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP makes a loading close available and aborts an unmounted read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP ignores late old-batch results after selecting a different batch",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP hides a prior success when refresh fails and recovers without writes or duplicate pending retry",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not query for missing read permission or unresolved auth",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP separates user-scoped results while another reader request is pending",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP names and focuses the modal, contains Tab and handles native Escape cancellation",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP closes and forgets the trace selection after authentication A/B/A",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not expose detail values from a mismatched tenant response",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP opens from the filtered real batch page and closing preserves filter and returns focus",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 110,
+    "head": "fb992450daaa9ade3c57d7d86a47ecbdebd275ff",
+    "tree": "f51907de3959b64eee012b65daeef92590798de9",
+    "results": [
+      {
+        "name": "guards",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 199
+      }
+    ],
+    "reports": []
+  },
+  {
+    "number": 112,
+    "head": "3773aae6ee9c75a58947cf9d25b647bf29b5f1a0",
+    "tree": "05820cc2ced503ab3ab22e6756b116df15bc5362",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 4402
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 112,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "batch source read contract validates and projects the real existing envelope without requiring money or receipt notes",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract accepts general-order allocations whose order number is null",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched envelope instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched batch instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched tenant instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched receipt instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched allocation instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched count instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched missing instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched duplicates instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched date instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched orderNumber instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows actual receipt and allocation identities with Taipei dates and no financial claims",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows a general-order allocation without an order number instead of failing the trace",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP states unknown historical provenance for successful empty arrays",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP discloses the 100-row cap and actual total without inventing older rows",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 403 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 404 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 500 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps network separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps malformed separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP makes a loading close available and aborts an unmounted read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP ignores late old-batch results after selecting a different batch",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP hides a prior success when refresh fails and recovers without writes or duplicate pending retry",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not query for missing read permission or unresolved auth",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP separates user-scoped results while another reader request is pending",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP names and focuses the modal, contains Tab and handles native Escape cancellation",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP closes and forgets the trace selection after authentication A/B/A",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not expose detail values from a mismatched tenant response",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP opens from the filtered real batch page and closing preserves filter and returns focus",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list defers hidden catalog and supplier reads on direct batch URLs until returning",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps cached list reads paused during batch invalidation and resumes them on Back",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps failed batch reads independent from the deferred catalog and supplier reads",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list reads the selected product only and returns to the original filter, page and opener",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list Back closes the read view and Forward reopens the same product without resetting the list",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list a direct/reloaded product URL returns locally with its saved filter and page",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list an old product response cannot replace a newer selection",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list returning while a read is pending aborts it and never reopens the view",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps 403 distinct from empty and retries without writes",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps 404 distinct from empty and retries without writes",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps 500 distinct from empty and retries without writes",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list shows a successful empty result without inventing stock",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list does not retain another identity’s cached result or a late response",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list same-identity permission restoration refetches before exposing old rows",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list a failed background refetch hides the old result until explicit retry succeeds",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page 0 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page -1 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page 1e3 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page NaN to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page 9007199254740992 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract accepts the current API envelope and preserves the product identity",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) allows the full toolbar and pagination to wrap without changing their controls",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) overrides the real late clipping rule only for the product table",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) names the horizontal scroll region and includes it in keyboard navigation",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) leaves the existing Add Product form and its overlay behavior unchanged",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) leaves the existing Edit form and its overlay behavior unchanged",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) keeps import modal styles and every local rule inside the product page scope",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client has an exact typed page and unwraps the real envelope once, retaining nullable relations",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows page two and the last-page boundary with the complete catalog total",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client resets to page one when the low-stock filter changes and shows filtered total",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows 403 instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows 500 instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows offline instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows request failure instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client hides cached results during refetch and keeps a refetch failure unavailable until retry confirms it",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client recovers to the new last page once when the total shrinks instead of remaining beyond the end",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client distinguishes a pending request from a confirmed empty page and disables both boundaries",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client keeps the selected filter when two deferred responses finish in reverse order",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client handles rapid next/previous without presenting cached first-page data or the late second page as current",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client recovers to page one when all products disappear without a request loop",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client lets existing BatchList collect product options across real client envelopes without posting a receipt",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client preserves the open product draft and current supplier through product refetch failure and retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers unwraps a real success envelope to Supplier[] at the client boundary",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers returns a genuine successful empty supplier array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client 403 failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client 500 failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client offline failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client request failure failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the returned supplier in new and existing product options",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the returned supplier in the supplier table",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through 403 and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through 500 and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through offline and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through request failure and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier 403 error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier 500 error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier offline error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier request failure error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers distinguishes products loading from successful empty",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers distinguishes suppliers loading from successful empty",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through 403 and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through 500 and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through offline and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through request failure and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier 403 error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier 500 error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier offline error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier request failure error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps and saves the existing supplier when the successful list is empty",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers preserves the current selection and edited draft through a failed background refetch and retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers does not turn a failed products refetch into successful-empty state",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers does not turn a failed suppliers refetch into successful-empty state",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers retains cached supplier rows with an explicit failed-refresh state",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 111,
+    "head": "31605d39f4ddb027a387a1a2bf1717ffc10b3998",
+    "tree": "93fd8f24888184e8df30227b93126bddc2ab9f18",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 757
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 20,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "split-payment readers (mocked persistence) daily settlement reads the stored 60 cash + 40 card rather than the primary method",
+            "status": "passed"
+          },
+          {
+            "title": "shift report reads the same stored split and expected cash intake",
+            "status": "passed"
+          },
+          {
+            "title": "daily keeps its original paid cohort and non-completed classification",
+            "status": "passed"
+          },
+          {
+            "title": "shift preserves its existing refund arithmetic without treating it as accepted policy",
+            "status": "passed"
+          },
+          {
+            "title": "daily groups TRANSFER and unknown methods into its unchanged other bucket",
+            "status": "passed"
+          },
+          {
+            "title": "daily combines stored TRANSFER0.1 and OTHER0.2 before the numeric API boundary",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation counts order totals once and uses split rows regardless of primary method or row order",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds repeated methods and keeps every stored method without reallocation",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation uses the explicit primary-method fallback only when completed orders have no rows",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for refunded until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for pending until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for paid until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for shipped until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for cancelled until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation does not invent a fallback for a persisted zero row or normalize inconsistent payment amounts",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation supports an empty cohort and does not mutate the facts",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation treats unusual stored methods as data, not inherited object properties",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds stored Decimal 0.1 and 0.2 in the same method without binary intermediate drift",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation aggregates repeated same-method rows across orders while keeping order totals unchanged",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation keeps fallback classification and ignores out-of-scope status payment rows",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 113,
+    "head": "1a75524686c1b764d5db4648017f425afcb7152a",
+    "tree": "0ddb061aec78e4ef07fe50dcfc36e6b0beedbc97",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 747
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 33,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "split-payment readers (mocked persistence) daily settlement reads the stored 60 cash + 40 card rather than the primary method",
+            "status": "passed"
+          },
+          {
+            "title": "shift report reads the same stored split and expected cash intake",
+            "status": "passed"
+          },
+          {
+            "title": "daily keeps its original paid cohort and non-completed classification",
+            "status": "passed"
+          },
+          {
+            "title": "shift preserves its existing refund arithmetic without treating it as accepted policy",
+            "status": "passed"
+          },
+          {
+            "title": "daily groups TRANSFER and unknown methods into its unchanged other bucket",
+            "status": "passed"
+          },
+          {
+            "title": "daily combines stored TRANSFER0.1 and OTHER0.2 before the numeric API boundary",
+            "status": "passed"
+          },
+          {
+            "title": "daily adds separate persisted 0.1 and 0.2 order totals to numeric 0.3",
+            "status": "passed"
+          },
+          {
+            "title": "shift adds completed order totals precisely while leaving its refund and net formulas intact",
+            "status": "passed"
+          },
+          {
+            "title": "empty daily and shift cohorts retain numeric zero totals and counts",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation counts order totals once and uses split rows regardless of primary method or row order",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds repeated methods and keeps every stored method without reallocation",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation uses the explicit primary-method fallback only when completed orders have no rows",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for refunded until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for pending until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for paid until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for shipped until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for cancelled until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation does not invent a fallback for a persisted zero row or normalize inconsistent payment amounts",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation supports an empty cohort and does not mutate the facts",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation treats unusual stored methods as data, not inherited object properties",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds stored Decimal 0.1 and 0.2 in the same method without binary intermediate drift",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation aggregates order totals and repeated same-method rows across orders without binary intermediate drift",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds Decimal order totals before the numeric response boundary",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds number order totals before the numeric response boundary",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds mixed order totals before the numeric response boundary",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves negative stored facts without introducing rounding or refund policy",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves signed cancellation without introducing rounding or refund policy",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves zero amounts without introducing rounding or refund policy",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves four-place stored precision without introducing rounding or refund policy",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves unrounded fractional values without introducing rounding or refund policy",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation retains Number conversion limits rather than promising an exact decimal API",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation keeps order totals independent from zero or inconsistent stored payment rows",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation keeps fallback classification and ignores out-of-scope status payment rows",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 114,
+    "head": "1b9eb4d18a0cdf27dd283d4f70d074ec6df6a1ea",
+    "tree": "545b105ab28a95ace0633e8f31757d37e4c49c47",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 874
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-10T15:59:59.999Z into the existing half-open calendar",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-10T16:00:00.000Z into the existing half-open calendar",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-11T15:59:59.999Z into the existing half-open calendar",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-11T16:00:00.000Z into the existing half-open calendar",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window returns the same bounded orders under host TZ=UTC",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window returns the same bounded orders under host TZ=Asia/Taipei",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window uses the real-time default clock when the controller supplies only shiftId",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window fails closed without tenant context before reading the clock or orders",
+            "status": "passed"
+          },
+          {
+            "title": "CheckoutService.getTodayOrders — Taipei midnight read window propagates a read failure rather than returning an empty successful list",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 116,
+    "head": "a9f4e29522d2d241fb59211b58577294e3f26b02",
+    "tree": "316791c407fe4ca3cc472a4681768d7df1ec2020",
+    "results": [
+      {
+        "name": "midnight-UTC",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 5711
+      },
+      {
+        "name": "midnight-Asia-Taipei",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 9024
+      },
+      {
+        "name": "midnight-America-Los_Angeles",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 5717
+      },
+      {
+        "name": "types",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 2612
+      },
+      {
+        "name": "build",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 2105
+      }
+    ],
+    "reports": [
+      {
+        "file": "midnight-America-Los_Angeles.json",
+        "passed": 49,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) refreshes an open modal at Taipei year rollover while its 10-second cache is fresh",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) does not reuse yesterday when closed just before midnight and reopened within staleTime",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on visibilitychange after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on focus after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on pageshow after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rejects an old-day success resolving across midnight even before the rollover timer runs",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) keeps yesterday hidden on new-day failure, distinguishes error from empty, and retries",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) isolates late results when scope changes to tenant-b:user-b / shift-a, including return to the original scope",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) isolates late results when scope changes to tenant-a:user-a / shift-b, including return to the original scope",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) cleans up timers/listeners on close and does not cache a late response",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) preserves held A, active B, customer/payment/revision and a frozen intent through rollover",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) does not poll the API during the same day and preserves search/refund interaction",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refetches confirmed checkout stock and invalidates every same-scope search/category cache only",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) removes a sold-out product using the server response, without estimating stock locally",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after unknown transport",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after rejected checkout",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after conflicting command",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes stock only after the frozen command is confirmed by query",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes stock only after the frozen command is confirmed by replay",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps UNKNOWN lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps mismatched hash lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps known conflict lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes a late confirmed sale without clearing a newer cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not load cached tenant stock or fetch products before authenticated context is known",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or clear a replacement pending intent when an older command returns",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) ignores an old tenant checkout success after reauthentication without refreshing the new tenant",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes successful refund stock and orders without adding inventory or touching a pending checkout",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {\"response\":{\"status\":400}}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {\"response\":{\"status\":409}}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) marks only the old tenant refund cache stale without refetching through a new login",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) warns on stock refetch failure after confirmed checkout without undoing success, and supports retry",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) warns on stock refetch failure after confirmed refund without undoing success, and supports retry",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) keeps every category after search, empty results and repeated category selections",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) keeps All usable while categories load and distinguishes an empty category list",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) shows failed initial load separately from empty or stale data and retries without clearing search",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) distinguishes forbidden access from an empty list or temporary failure",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old product response after a newer category selection without altering the cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 403, including an empty snapshot: [ { id: 'pain', name: '止痛用品' }, …(2) ]",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 500, including an empty snapshot: [ { id: 'pain', name: '止痛用品' }, …(2) ]",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 403, including an empty snapshot: []",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 500, including an empty snapshot: []",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) uses a scope-specific category cache and ignores another tenant category list",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) does not fetch categories or show a cached tenant list before authenticated context is known",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old category success after reauthentication on the same query client",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old category failure after reauthentication on the same query client",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) recovers a failed category refresh with one pending retry while preserving search, selection and the cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS scanner page wiring (hook mocked; hook safety tested separately) blocks background scans while payment or order lookup is open and restores the flag after cancel",
+            "status": "passed"
+          },
+          {
+            "title": "POS scanner page wiring (hook mocked; hook safety tested separately) renders hook-owned lookup feedback and explicit candidate selection without page-level cart mutation",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "midnight-Asia-Taipei.json",
+        "passed": 49,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) refreshes an open modal at Taipei year rollover while its 10-second cache is fresh",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) does not reuse yesterday when closed just before midnight and reopened within staleTime",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on visibilitychange after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on focus after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on pageshow after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rejects an old-day success resolving across midnight even before the rollover timer runs",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) keeps yesterday hidden on new-day failure, distinguishes error from empty, and retries",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) isolates late results when scope changes to tenant-b:user-b / shift-a, including return to the original scope",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) isolates late results when scope changes to tenant-a:user-a / shift-b, including return to the original scope",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) cleans up timers/listeners on close and does not cache a late response",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) preserves held A, active B, customer/payment/revision and a frozen intent through rollover",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) does not poll the API during the same day and preserves search/refund interaction",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refetches confirmed checkout stock and invalidates every same-scope search/category cache only",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) removes a sold-out product using the server response, without estimating stock locally",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after unknown transport",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after rejected checkout",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after conflicting command",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes stock only after the frozen command is confirmed by query",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes stock only after the frozen command is confirmed by replay",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps UNKNOWN lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps mismatched hash lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps known conflict lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes a late confirmed sale without clearing a newer cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not load cached tenant stock or fetch products before authenticated context is known",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or clear a replacement pending intent when an older command returns",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) ignores an old tenant checkout success after reauthentication without refreshing the new tenant",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes successful refund stock and orders without adding inventory or touching a pending checkout",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {\"response\":{\"status\":400}}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {\"response\":{\"status\":409}}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) marks only the old tenant refund cache stale without refetching through a new login",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) warns on stock refetch failure after confirmed checkout without undoing success, and supports retry",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) warns on stock refetch failure after confirmed refund without undoing success, and supports retry",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) keeps every category after search, empty results and repeated category selections",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) keeps All usable while categories load and distinguishes an empty category list",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) shows failed initial load separately from empty or stale data and retries without clearing search",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) distinguishes forbidden access from an empty list or temporary failure",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old product response after a newer category selection without altering the cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 403, including an empty snapshot: [ { id: 'pain', name: '止痛用品' }, …(2) ]",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 500, including an empty snapshot: [ { id: 'pain', name: '止痛用品' }, …(2) ]",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 403, including an empty snapshot: []",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 500, including an empty snapshot: []",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) uses a scope-specific category cache and ignores another tenant category list",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) does not fetch categories or show a cached tenant list before authenticated context is known",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old category success after reauthentication on the same query client",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old category failure after reauthentication on the same query client",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) recovers a failed category refresh with one pending retry while preserving search, selection and the cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS scanner page wiring (hook mocked; hook safety tested separately) blocks background scans while payment or order lookup is open and restores the flag after cancel",
+            "status": "passed"
+          },
+          {
+            "title": "POS scanner page wiring (hook mocked; hook safety tested separately) renders hook-owned lookup feedback and explicit candidate selection without page-level cart mutation",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "midnight-UTC.json",
+        "passed": 49,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) refreshes an open modal at Taipei year rollover while its 10-second cache is fresh",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) does not reuse yesterday when closed just before midnight and reopened within staleTime",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on visibilitychange after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on focus after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rechecks the day on pageshow after suspended timers",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) rejects an old-day success resolving across midnight even before the rollover timer runs",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) keeps yesterday hidden on new-day failure, distinguishes error from empty, and retries",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) isolates late results when scope changes to tenant-b:user-b / shift-a, including return to the original scope",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) isolates late results when scope changes to tenant-a:user-a / shift-b, including return to the original scope",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) cleans up timers/listeners on close and does not cache a late response",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) preserves held A, active B, customer/payment/revision and a frozen intent through rollover",
+            "status": "passed"
+          },
+          {
+            "title": "today orders cache at Asia/Taipei midnight (synthetic API, real QueryClient) does not poll the API during the same day and preserves search/refund interaction",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refetches confirmed checkout stock and invalidates every same-scope search/category cache only",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) removes a sold-out product using the server response, without estimating stock locally",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after unknown transport",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after rejected checkout",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim success after conflicting command",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes stock only after the frozen command is confirmed by query",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes stock only after the frozen command is confirmed by replay",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps UNKNOWN lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps mismatched hash lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) keeps known conflict lookup frozen without refreshing inventory",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes a late confirmed sale without clearing a newer cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not load cached tenant stock or fetch products before authenticated context is known",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or clear a replacement pending intent when an older command returns",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) ignores an old tenant checkout success after reauthentication without refreshing the new tenant",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) refreshes successful refund stock and orders without adding inventory or touching a pending checkout",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {\"response\":{\"status\":400}}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) does not refresh or claim a failed refund succeeded: {\"response\":{\"status\":409}}",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) marks only the old tenant refund cache stale without refetching through a new login",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) warns on stock refetch failure after confirmed checkout without undoing success, and supports retry",
+            "status": "passed"
+          },
+          {
+            "title": "POS inventory refresh after confirmed mutations (synthetic API, real query cache) warns on stock refetch failure after confirmed refund without undoing success, and supports retry",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) keeps every category after search, empty results and repeated category selections",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) keeps All usable while categories load and distinguishes an empty category list",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) shows failed initial load separately from empty or stale data and retries without clearing search",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) distinguishes forbidden access from an empty list or temporary failure",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old product response after a newer category selection without altering the cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 403, including an empty snapshot: [ { id: 'pain', name: '止痛用品' }, …(2) ]",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 500, including an empty snapshot: [ { id: 'pain', name: '止痛用品' }, …(2) ]",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 403, including an empty snapshot: []",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) marks cached category data as stale after 500, including an empty snapshot: []",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) uses a scope-specific category cache and ignores another tenant category list",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) does not fetch categories or show a cached tenant list before authenticated context is known",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old category success after reauthentication on the same query client",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) ignores a slow old category failure after reauthentication on the same query client",
+            "status": "passed"
+          },
+          {
+            "title": "POS independent category navigation (synthetic API, real query cache) recovers a failed category refresh with one pending retry while preserving search, selection and the cart",
+            "status": "passed"
+          },
+          {
+            "title": "POS scanner page wiring (hook mocked; hook safety tested separately) blocks background scans while payment or order lookup is open and restores the flag after cancel",
+            "status": "passed"
+          },
+          {
+            "title": "POS scanner page wiring (hook mocked; hook safety tested separately) renders hook-owned lookup feedback and explicit candidate selection without page-level cart mutation",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,813 @@
+[
+  {
+    "number": 107,
+    "sourceHead": "1b93f45ef5ee5f15974862a4fe61261d50dad6e1",
+    "sourceTree": "2220fe94205404df953eb72247224bed963889eb",
+    "base": "8385bb4c96e299d913061b2d8b7083e785b0aa8b",
+    "candidate": "a6b137bf92ce5c7cc300a5c3f1468c237d869048",
+    "tree": "809b93aea9ca0b98dda062da7a9dd1514a24d31f",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+        "blob": "b0ecf75a5aa1b14c9c8f8ce6c2d5462522d01a68",
+        "bytes": 15590,
+        "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+        "blob": "5e5ca4fe2e32edf40ac78247fc67166d31cb4baa",
+        "bytes": 3834,
+        "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+        "blob": "995a7e16718e47cc172d1615df042e6f42e4d4d5",
+        "bytes": 7191,
+        "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx"
+    ],
+    "canonicalPRDiffSha256": "4fed7a05fcc5b36a78f13c631c5914fdf939094346f1b42164c9df9999553414",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.422Z",
+      "originalReceiptSha256": "44320efd1b2019a2264735dc5b280c22167e5dcfe99d195ad68a7707a8b2cc96",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr107-before-merge.bundle",
+      "sha256": "6360027308c10dd57067ae4c319d5df1fb925caa7bff60e903f6e558246dd8f5"
+    }
+  },
+  {
+    "number": 108,
+    "sourceHead": "7500af3ac984f3886db54bdb175f9eeab2ec67ae",
+    "sourceTree": "230593349461b23e89b3e4f1762c1fbb9b223392",
+    "base": "42bd00d0ca833cd452d76f1e51dd1b7ecb847f82",
+    "candidate": "063d085b853f3ce1df56adf62644ce38c904dfd9",
+    "tree": "a3e78f7167f142403b120f64902fb43b72474c7a",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+        "blob": "b0ecf75a5aa1b14c9c8f8ce6c2d5462522d01a68",
+        "bytes": 15590,
+        "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+        "blob": "5e5ca4fe2e32edf40ac78247fc67166d31cb4baa",
+        "bytes": 3834,
+        "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+        "blob": "995a7e16718e47cc172d1615df042e6f42e4d4d5",
+        "bytes": 7191,
+        "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+        "blob": "3bf4498f142cee7d4ca627971748080e4d085fa5",
+        "bytes": 8347,
+        "sha256": "b1a97b94f9a5a1074d4656fbc058e59f48c80fb411cd5b7fef6663a5bfb57491"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+        "blob": "9162a36185253565cfc9b18a3148c75304fc418b",
+        "bytes": 8111,
+        "sha256": "58385802a608d3b413f540b38a1bff8966050451f4e05b36a9dc5d4f41630bd5"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+        "blob": "3728f10400cc9fe1f75ef7420fdc9e26c54782df",
+        "bytes": 12850,
+        "sha256": "86cef95605cac5d6f0474ddc78118b70b506f3d5a5c8a918e55482a614948225"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+        "blob": "c54c7f93ebfe3799a46c0541857858b51e87a113",
+        "bytes": 12776,
+        "sha256": "d647ab1b8d95f68b08ca42d887112c06e6d28118b36a6632d2f07893d52c65f6"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs",
+        "blob": "431d8905495dd531ed44ea189cd75eabb36878fe",
+        "bytes": 14944,
+        "sha256": "a33ec2800c15401d1d02666c032807194481e1c66d3210126906f5030a3eb299"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+      "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs"
+    ],
+    "canonicalPRDiffSha256": "5b1920b3e7a145707a58844a4e155f7ae3cc0c445b9cebe092c725de902997fa",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.497Z",
+      "originalReceiptSha256": "8855d0068b95564af9d95a91307f4f8adec01db9620bbd47121437fd19a28620",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr108-before-merge.bundle",
+      "sha256": "a7e774e79ecf7ddb974ec9041419ba39471738d484f5800d2860a7efa3df3ebd"
+    }
+  },
+  {
+    "number": 110,
+    "sourceHead": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+    "sourceTree": "b7562defd76bb883d6b0a068db784ccebb85da2e",
+    "base": "20b422e4a121b71e59b594bc64bc0ab4bfd6dd58",
+    "candidate": "fb992450daaa9ade3c57d7d86a47ecbdebd275ff",
+    "tree": "f51907de3959b64eee012b65daeef92590798de9",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-local.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-owned.py",
+      "systems/enterprise-admin/infrastructure/verification/general-order-trace/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+        "blob": "b0ecf75a5aa1b14c9c8f8ce6c2d5462522d01a68",
+        "bytes": 15590,
+        "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+        "blob": "5e5ca4fe2e32edf40ac78247fc67166d31cb4baa",
+        "bytes": 3834,
+        "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+        "blob": "995a7e16718e47cc172d1615df042e6f42e4d4d5",
+        "bytes": 7191,
+        "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts",
+        "blob": "aba04bc86b1d7982b5536bc7f3bd94e6531505a7",
+        "bytes": 2766,
+        "sha256": "c8ea7544a72f9b1df7f45a543d4c0f0dd7dcc232b7ae6482c673e502de923993"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts",
+        "blob": "79187e227b16d0b9eef37bce05c7a4400cfa579b",
+        "bytes": 1583,
+        "sha256": "428d79bd6a2d4b2380571af5ed49923ddcfe3efb4bdb2a92d7fa18c2c845a608"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-local.ts",
+        "blob": "c6783b1176f233586d73bdf6832abca1dd2b1cd3",
+        "bytes": 12945,
+        "sha256": "b9b56da4d45425bfb6e31f27bc7dc5cc6d34fb971f15ef2920be663e2385b59f"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-owned.py",
+        "blob": "a679ff7649389c59a5b667865c3922d29cb0df7d",
+        "bytes": 7406,
+        "sha256": "60ea4a4f51e79d81e5354d0c659c232f8c8862536c2b701663e91803209de7e2"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+        "blob": "3bf4498f142cee7d4ca627971748080e4d085fa5",
+        "bytes": 8347,
+        "sha256": "b1a97b94f9a5a1074d4656fbc058e59f48c80fb411cd5b7fef6663a5bfb57491"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/general-order-trace/README.md",
+        "blob": "e37ee12376064d73f3b796a5cc63e2024c370d90",
+        "bytes": 5168,
+        "sha256": "172c6ab4ab4b87a7ef0cdffc9652a099a14899ec22b762a3c04cf574b65d7e67"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+        "blob": "9162a36185253565cfc9b18a3148c75304fc418b",
+        "bytes": 8111,
+        "sha256": "58385802a608d3b413f540b38a1bff8966050451f4e05b36a9dc5d4f41630bd5"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+        "blob": "3728f10400cc9fe1f75ef7420fdc9e26c54782df",
+        "bytes": 12850,
+        "sha256": "86cef95605cac5d6f0474ddc78118b70b506f3d5a5c8a918e55482a614948225"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+        "blob": "c54c7f93ebfe3799a46c0541857858b51e87a113",
+        "bytes": 12776,
+        "sha256": "d647ab1b8d95f68b08ca42d887112c06e6d28118b36a6632d2f07893d52c65f6"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs",
+        "blob": "431d8905495dd531ed44ea189cd75eabb36878fe",
+        "bytes": 14944,
+        "sha256": "a33ec2800c15401d1d02666c032807194481e1c66d3210126906f5030a3eb299"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-local.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-owned.py",
+      "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+      "systems/enterprise-admin/infrastructure/verification/general-order-trace/README.md",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs"
+    ],
+    "canonicalPRDiffSha256": "566395ba0d7599c86254bcb87cbcc8ef97c39adb1da3dc239f42c4a06a617315",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.573Z",
+      "originalReceiptSha256": "5fd60526f5cb80ea84f11d509f59583efddd75d5becf875090b42d3ef269696b",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr110-before-merge.bundle",
+      "sha256": "a096dde4b273356dace3d6acde96349ba5b526500282f6df38e4b3f92f0d4cb6"
+    }
+  },
+  {
+    "number": 112,
+    "sourceHead": "d856456b901f9adea602b5ba3a6a109aa3e42279",
+    "sourceTree": "e1741483b0a08257b46adacc52d1757bb85b05dc",
+    "base": "130340682f6d51dec900842ec0f62f8d13568e1a",
+    "candidate": "3773aae6ee9c75a58947cf9d25b647bf29b5f1a0",
+    "tree": "05820cc2ced503ab3ab22e6756b116df15bc5362",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/ROADMAP.md",
+      "systems/enterprise-admin/admin-ui/MODULE.md",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/productBatches.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductBatchesView.tsx",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.css",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+      "systems/enterprise-admin/infrastructure/verification/product-batch-navigation/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/ROADMAP.md",
+        "blob": "f5d69c61432d3701ba66c988caf9d18b21a38b1a",
+        "bytes": 26632,
+        "sha256": "63348a80c7832aeae96a5ffcd194bcbaceac3b3443899a5c9bd7c22516dee593"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+        "blob": "f747497a2ecee6602175867563a4d69b81aa4e71",
+        "bytes": 9144,
+        "sha256": "a4bf2b2e9eed9861bb6fc0d002cc8357960eb71ac21c131267e5358772e5fad8"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx",
+        "blob": "d4353e250db0138630ef82e4c543f46cbf23be7a",
+        "bytes": 17640,
+        "sha256": "f2a484b971be03bab0b024aa4ff4e71b37692b005be86d92427e85906721bf7a"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx",
+        "blob": "422752558f02935911c3515b5b55cbaf01752797",
+        "bytes": 7816,
+        "sha256": "a1d4c4e78a22cde18bb07862701e32f72458f68239d9ba5a7e225d121b630977"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+        "blob": "540a63d5b7d8b94cd98e3bfe37db32f273dfa630",
+        "bytes": 18338,
+        "sha256": "dfb4ebdf0253a99615e40b29887e99560a21f1317ec5816f80a26433255f4aab"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+        "blob": "51a0055eb9fbbad916fb07150a285cacfb19292c",
+        "bytes": 15492,
+        "sha256": "dead53f9c6ad57bcd8c002a200ef57188fba8c42b6c812853d5973803e934f76"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/productBatches.ts",
+        "blob": "0d0fb8864dd87dd5b16436c0579aa5664b0bbc84",
+        "bytes": 2280,
+        "sha256": "874c5e666c02962d100b6b2be1377fce22b1e1a618ea61747c46c223ef18de4d"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductBatchesView.tsx",
+        "blob": "b010f031b11e8f8e251740559c3ae521a6672147",
+        "bytes": 3975,
+        "sha256": "3a5c4641c8f8ba4d3cb21d8bb8e05600634576941a060cdad22806517fa600c5"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.css",
+        "blob": "78eb8c2a2d3e5a4fe72e7feee5ed6e3c90a15154",
+        "bytes": 1922,
+        "sha256": "72409905eab349d58d91c5ad59d09a45a13155691a6ffa98638d671c4284581a"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+        "blob": "c4b52485bb5b99fb1f6bb0154ce4b6d58d092019",
+        "bytes": 22659,
+        "sha256": "356be1ef29f63f6be749c53060be7df7fa44640d437e8a4f69ff77a4fb6c0dfc"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/product-batch-navigation/README.md",
+        "blob": "678fe7b61d90223340ceec31403593da9e3e7583",
+        "bytes": 3816,
+        "sha256": "3fa0056a2eb371b9209c0e300af24c54474ffc4281045dd8189c79d40d5f313a"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/ROADMAP.md",
+      "systems/enterprise-admin/admin-ui/MODULE.md",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/productBatches.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductBatchesView.tsx",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.css",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+      "systems/enterprise-admin/infrastructure/verification/product-batch-navigation/README.md"
+    ],
+    "canonicalPRDiffSha256": "93f8a7be768bb2478a491463e082f39aa3674ec66cc7b378b6ab5e2a29701ac8",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.653Z",
+      "originalReceiptSha256": "9b6a21c19cc199ac1d3106481f6b7f852f1e0ab5956c9c6445165ea384c2ded2",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr112-before-merge.bundle",
+      "sha256": "df6ec61ad8519b97537245ae59e721ebb8268b83ee94e413285a3f879a944d45"
+    }
+  },
+  {
+    "number": 111,
+    "sourceHead": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64",
+    "sourceTree": "68959e0dbd985caeccf90a119fd8bd51cd7c7817",
+    "base": "40c3d752ef64ddabb8c06613b57b791a5e53d8ab",
+    "candidate": "31605d39f4ddb027a387a1a2bf1717ffc10b3998",
+    "tree": "93fd8f24888184e8df30227b93126bddc2ab9f18",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/backend/MODULE.md",
+      "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-guards.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-owned.py",
+      "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/backend/MODULE.md",
+        "blob": "cdd48069210b73a6ce729a3999f48fdb65c258cc",
+        "bytes": 15113,
+        "sha256": "05be50f8518a8ac1be02ba33eb56d0b938121795b8dce03f8dc60f750598e385"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts",
+        "blob": "c32c263d11a326d1459f56c97fd32f3422ff59a6",
+        "bytes": 2768,
+        "sha256": "d1879364c3de426fc10e07d987dcdffe6f5f8fb641ad76af94c8016b52121f92"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-guards.ts",
+        "blob": "9636dd5938b121ccb2ae831340eb2642681e7aef",
+        "bytes": 1583,
+        "sha256": "8aa50b09885ccd5540d6d6c48db78443cffcbbc1d1fd1dadc7e3fd1d3c94d50b"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+        "blob": "770729423b1300638a9a9c1e6f1d6f48a9e64402",
+        "bytes": 16906,
+        "sha256": "32f9daca8f84be9afa14d63978495a8e2e428bfccd392a828b7bf2d17010d092"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-owned.py",
+        "blob": "ff06331a1e109449531c8152287f57e2090a322e",
+        "bytes": 7392,
+        "sha256": "39264c83a7f77e2212ee26309dfadec3bcd15cc822fa6f57399b2374f706c837"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+        "blob": "ebb10a998329928b0178113ce45b968e36f4d51f",
+        "bytes": 5024,
+        "sha256": "03c6daae5631b43b8552d5dbbf6453d6c7b7abcc0712582a05595c60e0009cdb"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+        "blob": "fa82bbb3e17a53b40b5611628a82ce9f89084abc",
+        "bytes": 3984,
+        "sha256": "13301ac0f066c4ff523d0da2c23136c946bcd789e8b94100b19d08aa00f70423"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+        "blob": "1b203f5f5b182a91a50d4854ef21f698df2ca70a",
+        "bytes": 1577,
+        "sha256": "ac1964a46e8033c99a0dd60afaa7af7d30596022ebed9a7e699266b04f5b87cf"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+        "blob": "05714e2c102945758c2d099cf0509248f8d898a5",
+        "bytes": 4545,
+        "sha256": "fc0b80d15f162cc846540b4716d7e275c49f04b70b9b3be589c6cb197a80bcf0"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+        "blob": "270461afbbdc1d89f9badda0a3e547c4ea97ccf3",
+        "bytes": 4700,
+        "sha256": "3c993c6e433f20c504d8ac7b79a64b5e84b7c7e57316a88a4349ee3061ac53b7"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md",
+        "blob": "696d5510ef0d7497ab04f291e21db3035ea8db68",
+        "bytes": 7282,
+        "sha256": "683704e4cd7b485cae7e213c0ebf2aa8451cbb56ee9ea51a4f702d878b5cfe9f"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/backend/MODULE.md",
+      "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-guards.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-owned.py",
+      "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md"
+    ],
+    "canonicalPRDiffSha256": "9292fd1df57172171cd1e9ecffcc857bbf164d376e432643cff566131eda91a1",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.737Z",
+      "originalReceiptSha256": "1b5b6c5409a49766b87b39b87c00bb4acd4a58ffb99062859e4a9010d25f5f4b",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr111-before-merge.bundle",
+      "sha256": "32d5852c0bfbecae9a7e2617fb5ce1ce864aeb7bb77b456396b07d5fc34d9752"
+    }
+  },
+  {
+    "number": 113,
+    "sourceHead": "7043b2438f2c7387caf4e88799bda42dc03b7482",
+    "sourceTree": "0ddb061aec78e4ef07fe50dcfc36e6b0beedbc97",
+    "base": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+    "candidate": "1a75524686c1b764d5db4648017f425afcb7152a",
+    "tree": "0ddb061aec78e4ef07fe50dcfc36e6b0beedbc97",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+      "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+        "blob": "9b1fdb0ab6aaeb13d1d7c86698e12bd0b7c61800",
+        "bytes": 18926,
+        "sha256": "45f0ff3a0bdc0912bec0e1d2b337e5b994ab7ce3db2ce188d29f412bf8e6e41d"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+        "blob": "5accad2292fdccb8585b6b16b313b98a50a249e4",
+        "bytes": 7178,
+        "sha256": "99ac4adcb228e4e8592246a7eca5316af284acf05bc77cac1b39b550dfb8c6f6"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+        "blob": "a2c48d0e42c338108ea21ed7ccef59176c9fb48e",
+        "bytes": 6031,
+        "sha256": "6276733a80cad6635ebced48342c34f0b634efef9806acc28933d0290bbed6e7"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+        "blob": "c69e60907251dfe90717bf2a60891f18592aaa4f",
+        "bytes": 1628,
+        "sha256": "05ee4674ee7b2cd2307cebbc74c8a2ff161435130d0b960306246868d29ea7ab"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md",
+        "blob": "4e200d0fbc2597cbe1b893659853dd60657769fc",
+        "bytes": 11563,
+        "sha256": "a8804b4abc0e2b903918d64b3f32983e6fbf8fa76865d7cc9161a49230822075"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+      "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md"
+    ],
+    "canonicalPRDiffSha256": "097a89d8b3cccb1e488701854899f1a74b1344037b09c1a433ecbe8bdea4d3a2",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.820Z",
+      "originalReceiptSha256": "2934a4a08f564d9a2f0231cd8395f22f44c3c2d3080b0ae6dd19e53a992c23a1",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr113-before-merge.bundle",
+      "sha256": "91bee7e2f2e88335df4e7193b570ecdd30d6d184d527af7f26270cbc14266cc6"
+    },
+    "reconciliation": {
+      "number": 113,
+      "originalHead": "dfdf2654705e69e9c6d46dd691381c53f6dcf27b",
+      "sourceHead": "7043b2438f2c7387caf4e88799bda42dc03b7482",
+      "tree": "0ddb061aec78e4ef07fe50dcfc36e6b0beedbc97",
+      "base": "427bb8ec1c12f0e0a9619f005a4b99bfae9f3665",
+      "branch": "fix/order-total-precision-20261011",
+      "conflicts": [
+        "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+        "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+        "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+        "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+        "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md"
+      ],
+      "changed": [
+        "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+        "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+        "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+        "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+        "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md"
+      ],
+      "reviewedChildBytesPreserved": true,
+      "historyRewritten": false,
+      "bundleSha256": "79bd6766ccadb36acaff7941cd7ec083e43d247618d8ecc52155566ed217c73b",
+      "published": true,
+      "remoteHeadVerified": true,
+      "verifiedAt": "2026-10-11T08:06:54.512Z"
+    }
+  },
+  {
+    "number": 114,
+    "sourceHead": "2881f6399101a583c1eb41300064f5631eba2a93",
+    "sourceTree": "22682dcb4fc17bd668c5a14986c1d3add84c638c",
+    "base": "b29cbe0a22d900cf2543caea92b51fd9e59db094",
+    "candidate": "1b9eb4d18a0cdf27dd283d4f70d074ec6df6a1ea",
+    "tree": "545b105ab28a95ace0633e8f31757d37e4c49c47",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+      "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+        "blob": "b258776dd7256335a6bb3d7e3faef0c96b4e5e7e",
+        "bytes": 5161,
+        "sha256": "09324f1fab9bfe2d3fd39e1cd9fdb6b6facce41650f1af9a1542743524a2930f"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+        "blob": "63814fd9fe8933ae050bd8a342066e669547ede6",
+        "bytes": 16080,
+        "sha256": "42cd25ebc981905638fb4753e49c13d4b5866a1e6939f1756b9f0a65af055c2e"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md",
+        "blob": "16915fe07cc3e9c4bfbfc4fdc1f390151555de63",
+        "bytes": 2181,
+        "sha256": "9c1a7b48a45d1cc79a9be455934c9444ac5978057391fa1634a5b0018bd43039"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+      "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md"
+    ],
+    "canonicalPRDiffSha256": "8535238f1314b9162db3b882f8c059859a3e77d2ca19c13876065324f12a71f1",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.916Z",
+      "originalReceiptSha256": "8d8707d3eaa491de98cc797cc05692e14e8e0f3fa3c99b58afdff72ba5a76e08",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr114-before-merge.bundle",
+      "sha256": "64d0b569d6e5ab1bd9362b59b3485fca3dad9fd4f413e6e3600bc87dc0f73697"
+    }
+  },
+  {
+    "number": 115,
+    "sourceHead": "013d3713e1611db9e533fddff3ca32f60e138da1",
+    "sourceTree": "17a1312e34043237ca745e9ecbf3333eff492797",
+    "base": "b56ad9b12672c40dbc8396917cc1a9e4206c3aa8",
+    "candidate": "bfdcf3eea35270becf1fe11ae7ab179360853c37",
+    "tree": "b05c99daad849de20964b5e7ed1b2debc29212d1",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/backend/scripts/order-sequence-ci.mjs",
+      "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders/native-postgres.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/backend/scripts/order-sequence-ci.mjs",
+        "blob": "54416c556aa80a41227338cdc3e1cb770c04898f",
+        "bytes": 15906,
+        "sha256": "e05a61ba16a294d30510c857134ddd8aef969c7f608c7c4932c4859b74bd616d"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+        "blob": "4e9a43602c3e115200c101bb290f89f10c547399",
+        "bytes": 14800,
+        "sha256": "30378b1d240275497c06c0f0951aeabb1e23acfa4034e171023812039e6cdb16"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+        "blob": "b258776dd7256335a6bb3d7e3faef0c96b4e5e7e",
+        "bytes": 5161,
+        "sha256": "09324f1fab9bfe2d3fd39e1cd9fdb6b6facce41650f1af9a1542743524a2930f"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+        "blob": "63814fd9fe8933ae050bd8a342066e669547ede6",
+        "bytes": 16080,
+        "sha256": "42cd25ebc981905638fb4753e49c13d4b5866a1e6939f1756b9f0a65af055c2e"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md",
+        "blob": "16915fe07cc3e9c4bfbfc4fdc1f390151555de63",
+        "bytes": 2181,
+        "sha256": "9c1a7b48a45d1cc79a9be455934c9444ac5978057391fa1634a5b0018bd43039"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders/native-postgres.md",
+        "blob": "ed24475f0c0aa663def0ff0023d2c28d29e03c89",
+        "bytes": 2651,
+        "sha256": "dab8b7e2288b86859f7b94bcedfa99f38da5a5d143232095ac684886c1ac216c"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/backend/scripts/order-sequence-ci.mjs",
+      "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+      "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+      "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md",
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders/native-postgres.md"
+    ],
+    "canonicalPRDiffSha256": "50fd6cdc26f42780e79c6f751b6cd89e5a2d8ed9f173b5d2eb2f63c4a683ebed",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Historical two-dot base-to-source comparison retained as recorded; includes reverse master differences and is not the GitHub PR delta",
+    "diffClarification": {
+      "at": "2026-10-11T08:23:38.993Z",
+      "originalReceiptSha256": "34fe373b0364f904fa795850995b49f373662660c26af1eff8c29c222cfaadd6",
+      "sourceAndCandidateUnchanged": true
+    },
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr115-before-merge.bundle",
+      "sha256": "601260c397b412d17f34abc97a29c3cfb090783a0a387e97506693fe6dd8aaaf"
+    }
+  },
+  {
+    "number": 116,
+    "sourceHead": "947e5a5d5b07562c2dd6baa72519d443e2ba740c",
+    "sourceTree": "d54eb745c004156683b57b02ba27cc6ab2ef4700",
+    "base": "bcc216e62877094470bebe9692c0a09439e4d071",
+    "candidate": "a9f4e29522d2d241fb59211b58577294e3f26b02",
+    "tree": "316791c407fe4ca3cc472a4681768d7df1ec2020",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders-midnight-cache/README.md",
+      "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.midnight.test.tsx",
+      "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx",
+      "systems/enterprise-admin/pos-ui/src/components/OrderLookupModal.tsx",
+      "systems/enterprise-admin/pos-ui/src/hooks/useTodayOrders.ts"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+        "blob": "b258776dd7256335a6bb3d7e3faef0c96b4e5e7e",
+        "bytes": 5161,
+        "sha256": "09324f1fab9bfe2d3fd39e1cd9fdb6b6facce41650f1af9a1542743524a2930f"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+        "blob": "63814fd9fe8933ae050bd8a342066e669547ede6",
+        "bytes": 16080,
+        "sha256": "42cd25ebc981905638fb4753e49c13d4b5866a1e6939f1756b9f0a65af055c2e"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders-midnight-cache/README.md",
+        "blob": "9863182c74207c2f2b0a4f71638e08a5de6225a5",
+        "bytes": 3318,
+        "sha256": "2001899c03bfb35f2f10577b4619f30bc6a63b38f03a7df43373733a14ca4e47"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md",
+        "blob": "16915fe07cc3e9c4bfbfc4fdc1f390151555de63",
+        "bytes": 2181,
+        "sha256": "9c1a7b48a45d1cc79a9be455934c9444ac5978057391fa1634a5b0018bd43039"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.midnight.test.tsx",
+        "blob": "3e6821f59a6a360f3e3fea394f218127d3fbed8f",
+        "bytes": 10671,
+        "sha256": "145418794d184624e8b3314660ea6dad1dc3e79ed35bad6391e6ac1bac256d0a"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx",
+        "blob": "934051ce3db7dd4ecd537acc97e92fa8f1dd662e",
+        "bytes": 40057,
+        "sha256": "0f2b6678b9142a127865cf8a95195c1853a473a33abf0bb3c4f421f28f32f957"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/components/OrderLookupModal.tsx",
+        "blob": "d2ef594b1ebd7b3baca7d354d2251d6406852958",
+        "bytes": 6515,
+        "sha256": "da4c6bbb00fed7346968d9b8979ef9f5b41bd21a8ce9c91276561ed257d09d3a"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/hooks/useTodayOrders.ts",
+        "blob": "eac195a2baf584c4eaf270cb4c9c244a1c2c8405",
+        "bytes": 2630,
+        "sha256": "a1aece9b39e49569cddc8486107fd4756a63d77fa7284d2259e13a121f0aad0b"
+      }
+    ],
+    "canonicalPRFiles": [
+      "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+      "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders-midnight-cache/README.md",
+      "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md",
+      "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.midnight.test.tsx",
+      "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx",
+      "systems/enterprise-admin/pos-ui/src/components/OrderLookupModal.tsx",
+      "systems/enterprise-admin/pos-ui/src/hooks/useTodayOrders.ts"
+    ],
+    "canonicalPRDiffSha256": "f26fcbe5fa8e35fac8e95e428d0c451b1815b5b4ca9c92ef6fd8e13bac7d6c3a",
+    "canonicalMatchesCapturedPRFiles": true,
+    "fullPRDiffSemantics": "Canonical three-dot current-master to submitted-source PR comparison",
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr116-before-merge.bundle",
+      "sha256": "40af7bbbf5460c335c2441d3b6e9b41ecf37869275dae242dfcf20cf26e1a94a"
+    }
+  }
+]
