@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-10-11T08:38:53.514Z",
+  "observedAt": "2026-10-11T08:42:04.278Z",
   "master": "dff3f71afc4f3d92a580bca6d667c21cb28d6c23",
   "tree": "316791c407fe4ca3cc472a4681768d7df1ec2020",
   "rows": [
@@ -897,12 +897,41 @@
       "tree": "316791c407fe4ca3cc472a4681768d7df1ec2020",
       "runs": [
         {
+          "id": 38125294523,
+          "name": "Push on master",
+          "event": "dynamic",
+          "head": "dff3f71afc4f3d92a580bca6d667c21cb28d6c23",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38125294523",
+          "jobs": [
+            {
+              "name": "Analyze (python)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (actions)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (javascript-typescript)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        },
+        {
           "id": 38125294527,
           "name": "CI/CD Pipeline",
           "event": "push",
           "head": "dff3f71afc4f3d92a580bca6d667c21cb28d6c23",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "failure",
           "url": "https://github.com/skydreamer0/startup/actions/runs/38125294527",
           "jobs": [
             {
@@ -943,9 +972,11 @@
             },
             {
               "name": "Exact SKU PostgreSQL and current POS browser acceptance",
-              "status": "in_progress",
-              "conclusion": null,
-              "failedSteps": []
+              "status": "completed",
+              "conclusion": "failure",
+              "failedSteps": [
+                "Stable POS categories through real API and owned PostgreSQL"
+              ]
             },
             {
               "name": "Exact-head POS dialog Chrome acceptance",
@@ -955,35 +986,6 @@
             },
             {
               "name": "Order sequence PostgreSQL acceptance",
-              "status": "completed",
-              "conclusion": "success",
-              "failedSteps": []
-            }
-          ]
-        },
-        {
-          "id": 38125294523,
-          "name": "Push on master",
-          "event": "dynamic",
-          "head": "dff3f71afc4f3d92a580bca6d667c21cb28d6c23",
-          "status": "completed",
-          "conclusion": "success",
-          "url": "https://github.com/skydreamer0/startup/actions/runs/38125294523",
-          "jobs": [
-            {
-              "name": "Analyze (python)",
-              "status": "completed",
-              "conclusion": "success",
-              "failedSteps": []
-            },
-            {
-              "name": "Analyze (actions)",
-              "status": "completed",
-              "conclusion": "success",
-              "failedSteps": []
-            },
-            {
-              "name": "Analyze (javascript-typescript)",
               "status": "completed",
               "conclusion": "success",
               "failedSteps": []

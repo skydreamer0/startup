@@ -3,9 +3,14 @@
   "rawEvidenceRetainedLocally": true,
   "files": [
     {
-      "path": "automatic-outcomes-complete.json",
+      "path": "automatic-outcomes-complete-first.json",
       "bytes": 32429,
       "sha256": "8dbba34a48c871f4e5db2f0bf11972e94afed9596240eedbd66b30aea5f6e19c"
+    },
+    {
+      "path": "automatic-outcomes-complete.json",
+      "bytes": 32528,
+      "sha256": "c5733c77033a1baca6217725fa488d5ab1ec82d5d3ba2a279d20c8b5567c38b1"
     },
     {
       "path": "automatic-outcomes-final.json",
@@ -21,6 +26,11 @@
       "path": "cleanup-result.json",
       "bytes": 11227,
       "sha256": "236f7df3eee75498f03c86105fe218a5e538479baa87c28ed36342e079227a73"
+    },
+    {
+      "path": "final-context-validation.json",
+      "bytes": 278,
+      "sha256": "8b298de013815be169754aa43465d2551f09846e320ce544593c5b4a8db11031"
     },
     {
       "path": "final-record-updates.json",
