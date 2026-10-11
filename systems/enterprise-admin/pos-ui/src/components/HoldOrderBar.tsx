@@ -1,33 +1,66 @@
 import { useState } from 'react';
 import { useCartStore, HeldCart } from '../store/cartStore';
 import { PosToastMessage } from './PosToast';
+import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 
 interface Props {
   onFeedback: (msg: PosToastMessage) => void;
 }
 
 export default function HoldOrderBar({ onFeedback }: Props) {
-  const { items, heldCarts, holdCurrentCart, recallHeldCart, deleteHeldCart } = useCartStore();
+  const heldCarts = useCartStore((state) => state.heldCarts);
   const [expanded, setExpanded] = useState(false);
 
+  function canEdit() {
+    // Read live state at activation, including transitions before React rerenders.
+    if (useCheckoutRecoveryStore.getState().pending) {
+      onFeedback({ type: 'warning', message: '結帳結果尚待確認，暫時無法變更掛單' });
+      return false;
+    }
+    return true;
+  }
+
   function handleHold() {
-    if (items.length === 0) {
+    if (!canEdit()) return;
+    const before = useCartStore.getState();
+    if (before.items.length === 0) {
       onFeedback({ type: 'info', message: '購物車是空的，無法掛單' });
       return;
     }
-    holdCurrentCart();
-    onFeedback({ type: 'success', message: '已掛單，購物車已清空' });
+    before.holdCurrentCart();
+    if (useCartStore.getState().draftRevision !== before.draftRevision) {
+      onFeedback({ type: 'success', message: '已掛單，購物車已清空' });
+    }
+  }
+
+  function currentHeldCart(cart: HeldCart) {
+    if (!canEdit()) return null;
+    const current = useCartStore.getState().heldCarts.find((held) => held.id === cart.id);
+    if (current !== cart) {
+      onFeedback({ type: 'info', message: '掛單已變更，請重新選擇' });
+      return null;
+    }
+    return current;
   }
 
   function handleRecall(cart: HeldCart) {
-    recallHeldCart(cart.id);
-    setExpanded(false);
-    onFeedback({ type: 'success', message: `已叫回「${cart.label}」` });
+    const current = currentHeldCart(cart);
+    if (!current) return;
+    const before = useCartStore.getState();
+    before.recallHeldCart(current.id);
+    if (useCartStore.getState().draftRevision !== before.draftRevision) {
+      setExpanded(false);
+      onFeedback({ type: 'success', message: `已叫回「${current.label}」` });
+    }
   }
 
   function handleDelete(cart: HeldCart) {
-    deleteHeldCart(cart.id);
-    onFeedback({ type: 'info', message: `已刪除「${cart.label}」` });
+    const current = currentHeldCart(cart);
+    if (!current) return;
+    useCartStore.getState().deleteHeldCart(current.id);
+    if (!useCartStore.getState().heldCarts.some((held) => held.id === current.id)) {
+      onFeedback({ type: 'info', message: `已刪除「${current.label}」` });
+    }
   }
 
   return (
