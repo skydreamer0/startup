@@ -114,3 +114,22 @@ minimum and all CRC/chunk/decompression checks. Wrong widths/heights, unknown
 scenario names and truncated images are negative-tested. Application code,
 workflow, fixtures and browser actions are unchanged. A new exact-head CI result
 and independent PNG review are required.
+
+### Null order-number browser supplement (execution pending)
+
+The existing two Chrome journeys now cover the nullable order number returned
+for general orders, without changing the application or adding a CI job:
+- 1366×768: the 100-of-132 response includes a null-number allocation alongside
+  numbered allocations; the receipt and both labels must survive the obsolete
+  response, and no load-error alert may appear.
+- 390×844: refresh from a numbered allocation to a mixed null/numbered response,
+  verify `未編號（order-0）` and retained receipt, refresh back to one numbered
+  allocation and require the null label to disappear, then retain the original
+  failed-refresh checks. `source-null-order` adds an eighth trace capture with
+  the fallback paragraph scrolled fully into view; its text and viewport bounds
+  are required alongside the existing geometry, font, network and PNG guards.
+
+These are synthetic HTTP fixtures, not real backend/PostgreSQL general orders.
+Browser execution and independent screenshot review remain pending until the
+exact checkpoint head runs through the existing official Chrome CI harness.
+The unrelated category native-visibility failure remains an open gate.
