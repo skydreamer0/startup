@@ -18,7 +18,7 @@ async function fixture() {
   } });
   const batch = await basePrisma.productBatch.create({ data: {
     tenantId, productId: product.id, batchNumber: 'ORIGINAL-LOT', expiryDate: new Date('2099-01-01'),
-    status: 'RELEASED', quantity: 7, costPrice: 40,
+    status: 'RELEASED', quantity: 7, costPrice: 35,
   } });
   return { tenantId, product, batch, customer };
 }
@@ -67,11 +67,16 @@ describe('Reviewed master-data import (real PostgreSQL)', () => {
     const sale = await inTenant(f, () => OrderService.createOrder({ customerId: f.customer.id, items: [{ productId: f.product.id, quantity: 4 }] }));
     const allocations = await basePrisma.saleBatchAllocation.findMany({ where: { orderId: sale.id } });
     const movements = await basePrisma.inventoryTransaction.findMany({ where: { referenceId: sale.id } });
+    const batchBeforeImport = await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } });
     expect(await inTenant(f, () => ExcelService.importProducts(buffer, preview.previewToken))).toMatchObject({ updated: 1, errors: [] });
     const product = await basePrisma.product.findUniqueOrThrow({ where: { id: f.product.id } });
     expect(product.name).toBe('Approved metadata');
     expect(product.stockQuantity).toBe(3);
-    expect((await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } })).quantity).toBe(3);
+    const batchAfterImport = await basePrisma.productBatch.findUniqueOrThrow({ where: { id: f.batch.id } });
+    expect(batchAfterImport.quantity).toBe(3);
+    expect(batchAfterImport.status).toBe(batchBeforeImport.status);
+    expect(batchAfterImport.expiryDate).toEqual(batchBeforeImport.expiryDate);
+    expect(batchAfterImport.costPrice).toEqual(batchBeforeImport.costPrice);
     expect(await basePrisma.saleBatchAllocation.findMany({ where: { orderId: sale.id } })).toEqual(allocations);
     expect(await basePrisma.inventoryTransaction.findMany({ where: { referenceId: sale.id } })).toEqual(movements);
   });
