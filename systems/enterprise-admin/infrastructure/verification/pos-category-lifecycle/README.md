@@ -77,3 +77,34 @@ cross-terminal freshness, actual DB outages and production deployment remain out
 this slice. Existing confirmed stock/refund evidence from #102 is retained by the
 unchanged stock runner. No merge, manual deploy, permission or production DB action
 is authorized by this acceptance result.
+
+## Native default-context correction (acceptance pending)
+
+The controlled blank-page diagnostic at commit
+`64247eb50964df976460809786479e413a1fcece`, run
+[38066915930](https://github.com/skydreamer0/startup/actions/runs/38066915930),
+independently demonstrated that disabling focus emulation from another CDP
+session does not release the original session's visible-capture ownership.
+This supports a mechanism; it does not inspect the failed historical Playwright
+session or complete application acceptance. The earlier successor's first-sample
+focus failure is retained, not relabelled as a pass.
+
+The test-only correction launches a fresh owned official Chrome profile per case
+and attaches with the public Playwright 1.63 `noDefaults: true` option using the
+existing default context. It does not set an unsupported launch/newContext flag
+or alter private clients. HTTP/WS restrictions and synthetic authentication are
+installed before app navigation; service-worker registration is explicitly
+blocked through the public init-script API, with unexpected-worker detection.
+
+All original seven cases, 46 stage captures, real 61-second stale interval,
+refetch-error/recovery, retained cart/search/category, API/DB correlation and
+cleanup gates remain required. Added receipts require hidden state before and
+after the real wait, trusted native visibility transitions and seven distinct
+profiles with clean process exit and profile removal. CDP disconnect alone is
+not accepted as external browser shutdown. Forced process cleanup is safe recovery
+but fails native acceptance. The outer coordinator removes only the run-owned
+hidden profile root after process quiescence, including interrupted cases.
+
+Exact-head Chrome → API → isolated PostgreSQL execution and independent raw/PNG
+review are pending for this correction. #49/#103 and full POS acceptance remain
+open; #107/#108, product source, production data and deployment are unaffected.

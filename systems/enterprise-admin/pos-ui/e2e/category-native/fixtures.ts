@@ -3,6 +3,7 @@ import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { allowedRead, assertFonts, origin, emptyCase } from './contract.mjs';
+import { openNativeCase } from './native-browser.mjs';
 import { brandRequest, assertBrandResponse } from '../dialog-acceptance/brand-assets.mjs';
 export type Product = { id: string; sku: string; name: string; categoryId: string; stockQuantity: number };
 export type Bootstrap = { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string; nonce: string; empty: { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string } };
@@ -14,9 +15,15 @@ const fonts = new Set([
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap',
 ]);
-declare global { interface Window { __categoryKeys: { key: string; trusted: boolean }[] } }
-export const test = base.extend<{ guard: Guard }>({
-  guard: [async ({ page, context, browser }, use, info) => {
+declare global { interface Window { __categoryKeys: { key: string; trusted: boolean }[]; __categoryVisibility: { state: DocumentVisibilityState; trusted: boolean; epochMs: number }[] } }
+export const test = base.extend<{ guard: Guard; nativeCase: Awaited<ReturnType<typeof openNativeCase>> }>({
+  nativeCase: [async ({ playwright }, use, info) => {
+    const native = await openNativeCase(playwright.chromium, info.outputPath('native-browser'), process.env, info.title);
+    try { await use(native); } finally { await native.close(); }
+  }, { timeout: 150_000 }],
+  context: async ({ nativeCase }, use) => { await use(nativeCase.context); },
+  page: async ({ nativeCase }, use) => { await use(nativeCase.context.pages()[0]); },
+  guard: [async ({ page, context, nativeCase }, use, info) => {
     const allBootstrap: Bootstrap = JSON.parse(readFileSync(join(process.env.CATEGORY_UI_OUTPUT!, '.bootstrap.json'), 'utf8'));
     const bootstrap = info.title === emptyCase ? { ...allBootstrap, ...allBootstrap.empty } : allBootstrap;
     expect(bootstrap.nonce).toBe(process.env.CATEGORY_UI_NONCE);
@@ -27,6 +34,8 @@ export const test = base.extend<{ guard: Guard }>({
     await context.addInitScript(({ token, appOrigin }) => {
       if (location.origin === appOrigin) localStorage.setItem('pos_accessToken', token);
       window.__categoryKeys = [];
+      window.__categoryVisibility = [];
+      document.addEventListener('visibilitychange', event => window.__categoryVisibility.push({ state: document.visibilityState, trusted: event.isTrusted, epochMs: Date.now() }));
       document.addEventListener('keydown', event => window.__categoryKeys.push({ key: event.key, trusted: event.isTrusted }), true);
     }, { token: bootstrap.accessToken, appOrigin: origin });
     await context.routeWebSocket('**/*', socket => { guard.unexpected.push(`WebSocket ${socket.url()}`); void socket.close(); });
@@ -72,7 +81,7 @@ export const test = base.extend<{ guard: Guard }>({
       await context.close(); await Promise.all(pending);
       mkdirSync(info.outputDir, { recursive: true });
       writeFileSync(info.outputPath('network.json'), JSON.stringify({ test: info.title, nonce: bootstrap.nonce,
-        viewport: page.viewportSize(), headed: true, display: process.env.DISPLAY, browserVersion: browser.version(), contextClosed, keys,
+        viewport: page.viewportSize(), headed: true, display: process.env.DISPLAY, browserVersion: nativeCase.receipt.browserVersion, contextClosed, keys,
         requests: guard.requests, responses: guard.responses, verifiedBrand: guard.verifiedBrand, unexpected: guard.unexpected, pageErrors: guard.pageErrors }, null, 2) + '\n');
       expect(contextClosed).toBe(true); expect(guard.unexpected).toEqual([]); expect(guard.pageErrors).toEqual([]);
     }

@@ -175,3 +175,21 @@ See `../infrastructure/verification/checkout-command/http-restart/README.md`.
 - Do not read admin UI unless the task involves shared behavior or shared components.
 - Do not change backend assumptions without checking the API spec and relevant backend module.
 - Do not infer POS roadmap completion from UI files; read `../ROADMAP.md` first.
+
+### Native category context ownership (#49/#103)
+
+`e2e/category-native/native-browser.mjs` owns a fresh headed official Chrome
+154 profile/process for each of the seven category cases. The supported
+Playwright 1.63 `connectOverCDP({ noDefaults: true })` uses only its existing
+default context, avoiding automatic focus emulation; it is not a new-context
+option. The public init-script service-worker registration block, HTTP/WS guards,
+per-case profile isolation and explicit process cleanup replace the applicable
+ordinary-context setup. No private Playwright client is modified.
+
+Lifecycle evidence retains the real 61-second hidden interval, confirms hidden
+state after the wait, and requires trusted hidden/visible transitions. Per-case
+browser receipts and profile/process cleanup are required alongside all existing
+seven cases, 46 stage captures, API correlation and isolated DB receipts.
+The independently verified blank-page diagnostic supports the Chromium
+session-ownership mechanism, not the exact internal state of the earlier failed
+Playwright run. This fixture change remains pending exact-head native acceptance.

@@ -11,8 +11,9 @@ async function metadata(pid) {
   const fields = text.slice(text.lastIndexOf(')') + 2).split(' ');
   return { pid: Number(pid), uid, state: fields[0], startTime: fields[19] };
 }
-export async function createRunScope(nonce) {
+export async function createRunScope(nonce, caseNonce) {
   requireNonce(nonce);
+  if (caseNonce !== undefined) requireNonce(caseNonce);
   assert.equal(process.platform, 'linux');
   const baseline = [];
   // Call before passing this newly generated nonce to ANY child. No environment
@@ -24,9 +25,9 @@ export async function createRunScope(nonce) {
       if (value.uid === process.getuid()) baseline.push(Object.freeze(value));
     } catch (error) { if (!vanished(error)) throw error; }
   }
-  return Object.freeze({ nonce, baseline: Object.freeze(baseline), capturedAt: new Date().toISOString() });
+  return Object.freeze({ nonce, ...(caseNonce ? { caseNonce } : {}), baseline: Object.freeze(baseline), capturedAt: new Date().toISOString() });
 }
-const requireScope = scope => { requireNonce(scope.nonce); assert.ok(Array.isArray(scope.baseline)); };
+const requireScope = scope => { requireNonce(scope.nonce); if (scope.caseNonce !== undefined) requireNonce(scope.caseNonce); assert.ok(Array.isArray(scope.baseline)); };
 export const isBaselineIdentity = (candidate, scope) => scope.baseline.some(previous =>
   previous.pid === candidate.pid && previous.uid === candidate.uid && previous.startTime === candidate.startTime);
 export async function readRunIdentity(pid, scope, expected = null, readers = {}) {
@@ -44,7 +45,9 @@ export async function readRunIdentity(pid, scope, expected = null, readers = {})
     if (!expected && isBaselineIdentity(before, scope)) return null;
     // Never read baseline processes' environments, or retain/print any other
     // environment entries. New/reused unreadable identities still fail closed.
-    const owns = (await readEnvironment(pid)).split('\0').includes(`CATEGORY_UI_NONCE=${scope.nonce}`);
+    const markers = (await readEnvironment(pid)).split('\0');
+    const owns = markers.includes(`CATEGORY_UI_NONCE=${scope.nonce}`)
+      && (scope.caseNonce === undefined || markers.includes(`CATEGORY_BROWSER_CASE_NONCE=${scope.caseNonce}`));
     const after = await readMetadata(pid);
     if (before.startTime !== after.startTime || before.uid !== after.uid) {
       throw new Error('Process identity changed while inspecting ownership');
@@ -82,7 +85,7 @@ export async function cleanupRunProcesses(scope, options = {}) {
   const inspect = options.inspect ?? findRunProcesses;
   const send = options.send ?? ((candidate, signal) => signalRunProcess(candidate, scope, signal));
   const sleep = options.sleep ?? delay;
-  const receipt = { nonce: scope.nonce, baselineCount: scope.baseline.length, baselineCapturedAt: scope.capturedAt,
+  const receipt = { nonce: scope.nonce, ...(scope.caseNonce ? { caseNonce: scope.caseNonce } : {}), baselineCount: scope.baseline.length, baselineCapturedAt: scope.capturedAt,
     discovered: [], signals: [], quiescent: false };
   const seen = new Set();
   for (let attempt = 0; attempt < 50; attempt++) {
