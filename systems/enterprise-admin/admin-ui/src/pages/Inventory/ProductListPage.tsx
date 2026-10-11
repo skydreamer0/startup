@@ -254,9 +254,6 @@ export default function ProductListPage() {
             {showImport && (
                 <ImportProductsModal
                     onClose={() => setShowImport(false)}
-                    onSuccess={() => {
-                        queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
-                    }}
                 />
             )}
 

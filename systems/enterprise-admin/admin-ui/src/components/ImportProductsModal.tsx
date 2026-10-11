@@ -1,27 +1,62 @@
-import { useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { excelApi, ImportPreview, ImportSummary } from '../api/excel';
+import './ImportProductsModal.css';
 
 interface ImportProductsModalProps {
     onClose: () => void;
-    onSuccess: () => void;
+    onSuccess?: () => void;
 }
 
 type ApiError = {
     response?: { data?: { error?: { message?: string } } };
 };
 
+function importSessionIdentity(): string | null {
+    // Refresh ownership survives access-token renewal, but not a new login.
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) return `refresh:${refreshToken}`;
+    const accessToken = localStorage.getItem('accessToken');
+    return accessToken ? `access:${accessToken}` : null;
+}
+
 export default function ImportProductsModal({ onClose, onSuccess }: ImportProductsModalProps) {
+    const queryClient = useQueryClient();
     const [file, setFile] = useState<File | null>(null);
     const [reviewed, setReviewed] = useState<{ file: File; summary: ImportPreview } | null>(null);
     const preview = reviewed?.file === file ? reviewed.summary : null;
     const [confirmResult, setConfirmResult] = useState<ImportSummary | null>(null);
+    const titleId = useId();
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const mounted = useRef(false);
+    // React Query's pending render is asynchronous; guard same-tick actions too.
+    const requestPending = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const acceptedFiles = useRef<FileList | null>(null);
+
+    useLayoutEffect(() => {
+        mounted.current = true;
+        const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        const dialog = dialogRef.current;
+        fileInputRef.current?.focus();
+        return () => {
+            mounted.current = false;
+            // Never take focus back from a newer dialog/navigation.
+            if (opener?.isConnected && (dialog?.contains(document.activeElement) || document.activeElement === document.body)) {
+                opener.focus();
+            }
+        };
+    }, []);
 
     const previewMutation = useMutation({
         mutationFn: (f: File) => excelApi.previewImportProducts(f),
-        onSuccess: (data, reviewedFile) => setReviewed({ file: reviewedFile, summary: data }),
+        onSuccess: (data, reviewedFile) => {
+            if (mounted.current) setReviewed({ file: reviewedFile, summary: data });
+        },
+        onSettled: () => { requestPending.current = false; },
         onError: (err: unknown) => {
+            if (!mounted.current) return;
             const msg = (err as ApiError).response?.data?.error?.message
                 ?? (err instanceof Error ? err.message : 'Preview failed');
             alert(msg);
@@ -29,12 +64,24 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
     });
 
     const confirmMutation = useMutation({
-        mutationFn: (input: { file: File; previewToken: string }) => excelApi.confirmImportProducts(input.file, input.previewToken),
+        onSettled: () => { requestPending.current = false; },
+        mutationFn: async (input: { file: File; previewToken: string }) => {
+            const session = importSessionIdentity();
+            const result = await excelApi.confirmImportProducts(input.file, input.previewToken);
+            // A confirmed write remains real after this dialog unmounts. Refresh
+            // the original session's catalog without touching detached UI.
+            if (session !== null && session === importSessionIdentity()) {
+                void queryClient.invalidateQueries({ queryKey: ['inventory', 'products'] });
+            }
+            return result;
+        },
         onSuccess: (data) => {
+            if (!mounted.current) return;
             setConfirmResult(data);
-            onSuccess();
+            onSuccess?.();
         },
         onError: (err: unknown) => {
+            if (!mounted.current) return;
             setReviewed(null);
             const msg = (err as ApiError).response?.data?.error?.message
                 ?? (err instanceof Error ? err.message : 'Import failed');
@@ -44,43 +91,101 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
 
     const busy = previewMutation.isPending || confirmMutation.isPending;
 
+    useLayoutEffect(() => {
+        // Pending controls are disabled; the dialog remains a keyboard target.
+        if (document.activeElement === dialogRef.current && !busy && !requestPending.current) {
+            (fileInputRef.current ?? dialogRef.current?.querySelector<HTMLButtonElement>('button'))?.focus();
+        }
+    });
+
+    function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            handleClose();
+        }
+        if (e.key !== 'Tab') return;
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const controls = Array.from(dialog.querySelectorAll<HTMLElement>('input:not(:disabled), button:not(:disabled)'));
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (!first) {
+            e.preventDefault();
+            dialog.focus();
+        } else if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && (document.activeElement === last || document.activeElement === dialog)) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const f = e.target.files?.[0] ?? null;
+        if (requestPending.current || busy) {
+            // Native selection changes FileList before dispatching change.
+            // Keep the visible chooser paired with the retained request file.
+            if (acceptedFiles.current) e.currentTarget.files = acceptedFiles.current;
+            else e.currentTarget.value = '';
+            return;
+        }
+        acceptedFiles.current = e.currentTarget.files;
+        const f = acceptedFiles.current?.[0] ?? null;
         setFile(f);
         setReviewed(null);
         setConfirmResult(null);
     }
 
     function handlePreview() {
+        if (!mounted.current || requestPending.current || busy) return;
         if (!file) {
             alert('Please choose an .xlsx file first.');
             return;
         }
+        requestPending.current = true;
+        dialogRef.current?.focus();
         previewMutation.mutate(file);
     }
 
     function handleConfirm() {
-        if (!file || !preview || busy) return;
+        if (!mounted.current || !file || !preview?.previewToken || requestPending.current || busy) return;
+        requestPending.current = true;
+        dialogRef.current?.focus();
         confirmMutation.mutate({ file, previewToken: preview.previewToken });
     }
 
     function handleClose() {
-        if (busy) return;
+        if (!mounted.current || requestPending.current || busy) return;
         setFile(null);
         setReviewed(null);
         setConfirmResult(null);
+        acceptedFiles.current = null;
         if (fileInputRef.current) fileInputRef.current.value = '';
         onClose();
     }
 
-    return (
-        <div className="modal-overlay" onClick={handleClose}>
+    return createPortal(
+        <div
+            className="import-products-overlay"
+            onMouseDown={(event) => {
+                // A pending backdrop click must not move focus out of the trap.
+                if (event.target === event.currentTarget) event.preventDefault();
+            }}
+            onClick={handleClose}
+        >
             <div
-                className="modal-content card"
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                aria-busy={busy}
+                tabIndex={-1}
+                onKeyDown={handleKeyDown}
+                className="import-products-dialog card"
                 onClick={(e) => e.stopPropagation()}
-                style={{ maxWidth: '720px', width: '90%' }}
             >
-                <h2 className="modal-title">Import Products from Excel</h2>
+                <h2 id={titleId} className="modal-title">Import Products from Excel</h2>
 
                 {!confirmResult && (
                     <div className="input-group">
@@ -159,7 +264,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                             type="button"
                             className="btn btn-primary"
                             onClick={handlePreview}
-                            disabled={!file || previewMutation.isPending}
+                            disabled={!file || busy}
                         >
                             {previewMutation.isPending ? 'Previewing...' : 'Preview'}
                         </button>
@@ -176,6 +281,7 @@ export default function ImportProductsModal({ onClose, onSuccess }: ImportProduc
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }
