@@ -145,7 +145,7 @@ describe('product → product-scoped batches → original product list', () => {
         expect(screen.getByRole('heading', { name: '商品批次' })).toHaveFocus();
         fireEvent.click(screen.getByRole('button', { name: '返回商品清單' }));
         expect(await screen.findByRole('combobox', { name: 'Inventory filter' })).toHaveValue('true');
-        expect(screen.getByText('Page 2 of 3')).toBeInTheDocument();
+        expect(await screen.findByText('Page 2 of 3')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: '查看 商品 product-a 的批次' })).toHaveFocus();
         expect(screen.getByLabelText('Current URL')).toHaveTextContent('/inventory?page=2&lowStock=true');
     });
