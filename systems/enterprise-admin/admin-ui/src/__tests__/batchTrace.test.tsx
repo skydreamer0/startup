@@ -55,7 +55,12 @@ describe('batch source read contract', () => {
         expect(result.saleAllocations[0].order.orderNumber).toBe('SYN-ORDER-0');
         expect(result.totalAllocations).toBe(1);
     });
-    it.each(['envelope', 'batch', 'tenant', 'receipt', 'allocation', 'count', 'missing', 'duplicates', 'date'])('rejects malformed or mismatched %s instead of showing empty history', kind => {
+    it('accepts general-order allocations whose order number is null', () => {
+        const input = wire();
+        (input.data.saleAllocations[0].order as { orderNumber: string | null }).orderNumber = null;
+        expect(parseBatchTrace(input, batch.id, batch.tenantId).saleAllocations[0].order).toEqual({ id: 'order-0', orderNumber: null });
+    });
+    it.each(['envelope', 'batch', 'tenant', 'receipt', 'allocation', 'count', 'missing', 'duplicates', 'date', 'orderNumber'])('rejects malformed or mismatched %s instead of showing empty history', kind => {
         const input = wire();
         if (kind === 'envelope') input.success = false;
         if (kind === 'batch') input.data.id = 'another-batch';
@@ -66,6 +71,7 @@ describe('batch source read contract', () => {
         if (kind === 'missing') input.data.saleAllocations = [];
         if (kind === 'duplicates') input.data.receiptMovements.push(input.data.receiptMovements[0]);
         if (kind === 'date') input.data.saleAllocations[0].createdAt = 'not-a-date';
+        if (kind === 'orderNumber') input.data.saleAllocations[0].order.orderNumber = '';
         expect(() => parseBatchTrace(input, batch.id, batch.tenantId)).toThrow('格式不符');
     });
 });
@@ -79,6 +85,13 @@ describe('batch source dialog through real read client and synthetic HTTP', () =
         expect(screen.getByText(/筆數不是訂單數/)).toBeVisible();
         expect(screen.getByText(/不能據此重建完整歷史/)).toBeVisible();
         expect(http.get).toHaveBeenCalledWith('/product-batches/batch-a', { signal: expect.any(AbortSignal) }); noWrites();
+    });
+    it('shows a general-order allocation without an order number instead of failing the trace', async () => {
+        const input = wire();
+        (input.data.saleAllocations[0].order as { orderNumber: string | null }).orderNumber = null;
+        http.get.mockResolvedValue({ data: input }); setup();
+        expect(await screen.findByText('訂單 未編號（order-0）・本批實扣數量 3')).toBeVisible();
+        expect(screen.getByText(/進貨紀錄：receipt-a/)).toBeVisible(); noWrites();
     });
     it('states unknown historical provenance for successful empty arrays', async () => {
         const input = wire(batch, 0); input.data.receiptMovements = [];

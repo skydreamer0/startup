@@ -77,7 +77,7 @@ export default function BatchTraceDialog({ batch, onClose }: { batch: ProductBat
                     {trace.data.totalAllocations > trace.data.saleAllocations.length && <p className="batch-message" role="status">僅顯示最近 100 筆，並非完整售出歷史；本頁不提供更早紀錄。</p>}
                     {trace.data.saleAllocations.length === 0 ? <p>目前沒有已連結的售出分攤；舊單可能未能追溯，不代表從未售出。</p>
                         : <ol className="batch-trace-records">{trace.data.saleAllocations.map(allocation => <li key={allocation.id}>
-                            <p>訂單 {allocation.order.orderNumber}・本批實扣數量 {allocation.quantity.toLocaleString()}</p>
+                            <p>訂單 {allocation.order.orderNumber ?? `未編號（${allocation.order.id}）`}・本批實扣數量 {allocation.quantity.toLocaleString()}</p>
                             <p>{dateTime(allocation.createdAt)}・出庫時效期 {dateOnly(allocation.expiryDateAtSale)}</p>
                             <p className="batch-help">訂單識別：{allocation.order.id}<br />訂單明細：{allocation.orderItemId}<br />出庫紀錄：{allocation.movementId}</p>
                         </li>)}</ol>}

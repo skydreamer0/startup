@@ -13,7 +13,7 @@ export interface BatchTrace {
         orderItemId: string;
         createdAt: string;
         expiryDateAtSale: string;
-        order: { id: string; orderNumber: string };
+        order: { id: string; orderNumber: string | null };
     }[];
     totalAllocations: number;
 }
@@ -44,7 +44,8 @@ export function parseBatchTrace(value: unknown, batchId: string, tenantId: strin
         if (!record(row) || !string(row.id) || row.batchId !== batchId || row.tenantId !== tenantId
             || !integer(row.quantity) || row.quantity === 0 || !string(row.movementId) || !string(row.orderItemId)
             || !date(row.createdAt) || !date(row.expiryDateAtSale) || !record(row.order)
-            || !string(row.order.id) || row.orderId !== row.order.id || !string(row.order.orderNumber)) return invalid();
+            || !string(row.order.id) || row.orderId !== row.order.id
+            || (row.order.orderNumber !== null && !string(row.order.orderNumber))) return invalid();
         return { id: row.id, quantity: row.quantity, movementId: row.movementId, orderItemId: row.orderItemId,
             createdAt: row.createdAt, expiryDateAtSale: row.expiryDateAtSale, order: { id: row.order.id, orderNumber: row.order.orderNumber } };
     });
