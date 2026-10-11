@@ -1,0 +1,37 @@
+{
+  "scope": "In-memory TypeScript noEmit; no execution, DB or source edits",
+  "typescript": "5.9.3",
+  "baseline": [],
+  "proposal": [
+    {
+      "file": "C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "code": 2554,
+      "line": 55,
+      "message": "Expected 0-1 arguments, but got 2."
+    },
+    {
+      "file": "C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "code": 2554,
+      "line": 72,
+      "message": "Expected 0-1 arguments, but got 2."
+    },
+    {
+      "file": "C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "code": 18047,
+      "line": 74,
+      "message": "'child.stdout' is possibly 'null'."
+    },
+    {
+      "file": "C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "code": 18047,
+      "line": 75,
+      "message": "'child.stderr' is possibly 'null'."
+    },
+    {
+      "file": "C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "code": 18047,
+      "line": 84,
+      "message": "'child.stdin' is possibly 'null'."
+    }
+  ]
+}

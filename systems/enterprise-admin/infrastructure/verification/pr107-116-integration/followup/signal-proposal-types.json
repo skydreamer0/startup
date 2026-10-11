@@ -1,0 +1,7 @@
+{
+  "scope": "In-memory TypeScript noEmit; no execution, DB or source edits",
+  "typescript": "5.9.3",
+  "patchSha256": "2cc8134d55f72973cb7f1a1181af925c80a9433c0e783f7e723d388a43c1e475",
+  "baseline": [],
+  "proposal": []
+}

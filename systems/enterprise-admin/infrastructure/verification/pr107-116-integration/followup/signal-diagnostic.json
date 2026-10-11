@@ -1,0 +1,44 @@
+{
+  "scope": "DB-free owned child-process reporting only; no checkout rollback/replay acceptance",
+  "node": "v22.22.3",
+  "uv": "1.51.0",
+  "platform": "win32",
+  "cases": [
+    {
+      "name": "self-SIGKILL",
+      "pid": 36764,
+      "code": 1,
+      "signal": null,
+      "stdout": "AT_KILL\n",
+      "stderr": "",
+      "ready": false,
+      "killReturned": null,
+      "forcedCleanup": false,
+      "closeObserved": true
+    },
+    {
+      "name": "ordinary-exit-1",
+      "pid": 97272,
+      "code": 1,
+      "signal": null,
+      "stdout": "EXIT_HANDLER\n",
+      "stderr": "",
+      "ready": false,
+      "killReturned": null,
+      "forcedCleanup": false,
+      "closeObserved": true
+    },
+    {
+      "name": "parent-owned-SIGKILL-after-IPC-barrier",
+      "pid": 87628,
+      "code": null,
+      "signal": "SIGKILL",
+      "stdout": "",
+      "stderr": "",
+      "ready": true,
+      "killReturned": true,
+      "forcedCleanup": false,
+      "closeObserved": true
+    }
+  ]
+}

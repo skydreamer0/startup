@@ -1,0 +1,71 @@
+{
+  "readAt": "2026-10-11T06:38:28.430Z",
+  "expectedMaster": "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4",
+  "master": "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4",
+  "originalHead": "a8de423346cbff2b015832dccbf47ac6808335de",
+  "originalStatus": "",
+  "prs": [
+    {
+      "baseRefName": "fix/issue30-pos-taipei-today-20261011",
+      "headRefOid": "947e5a5d5b07562c2dd6baa72519d443e2ba740c",
+      "isDraft": true,
+      "number": 116
+    },
+    {
+      "baseRefName": "fix/issue30-pos-taipei-today-20261011",
+      "headRefOid": "013d3713e1611db9e533fddff3ca32f60e138da1",
+      "isDraft": true,
+      "number": 115
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "2881f6399101a583c1eb41300064f5631eba2a93",
+      "isDraft": true,
+      "number": 114
+    },
+    {
+      "baseRefName": "fix/split-payment-totals-20261010",
+      "headRefOid": "dfdf2654705e69e9c6d46dd691381c53f6dcf27b",
+      "isDraft": true,
+      "number": 113
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "d856456b901f9adea602b5ba3a6a109aa3e42279",
+      "isDraft": true,
+      "number": 112
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64",
+      "isDraft": true,
+      "number": 111
+    },
+    {
+      "baseRefName": "test/batch-trace-null-browser-20261010",
+      "headRefOid": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+      "isDraft": true,
+      "number": 110
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "a8a248dc5b46dd24487a9b742a6c50606c3c3063",
+      "isDraft": true,
+      "number": 109
+    },
+    {
+      "baseRefName": "fix/batch-trace-null-order-number",
+      "headRefOid": "7500af3ac984f3886db54bdb175f9eeab2ec67ae",
+      "isDraft": true,
+      "number": 108
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "1b93f45ef5ee5f15974862a4fe61261d50dad6e1",
+      "isDraft": false,
+      "number": 107
+    }
+  ],
+  "differences": [],
+  "localRuntimeChanges": []
+}

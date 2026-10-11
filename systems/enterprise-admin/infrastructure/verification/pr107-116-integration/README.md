@@ -163,3 +163,7 @@ Remote report directory also includes PR head/file manifests, exact-head exits,
 native cases and cleanup receipts, browser receipt, the backend failure summary,
 and SHA256 hashes for all retained local evidence files. Raw synthetic snapshots
 and logs remain on PC4070; they are not uploaded with this report.
+
+Follow-up diagnosis: [Windows signal reporting and PR109 minimum dependencies](followup/README.md).
+Its separately reviewed two-file source patch is unapplied. Its recommended order
+keeps PR109 held separately; failed CI and all remaining gates remain unchanged.

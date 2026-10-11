@@ -1,0 +1,225 @@
+{
+  "master": "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4",
+  "source109": "a8a248dc5b46dd24487a9b742a6c50606c3c3063",
+  "prs": [
+    {
+      "pr": 107,
+      "head": "1b93f45ef5ee5f15974862a4fe61261d50dad6e1",
+      "branch": "fix/batch-trace-null-order-number",
+      "base": "master",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 108,
+      "head": "7500af3ac984f3886db54bdb175f9eeab2ec67ae",
+      "branch": "test/batch-trace-null-browser-20261010",
+      "base": "fix/batch-trace-null-order-number",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 109,
+      "head": "a8a248dc5b46dd24487a9b742a6c50606c3c3063",
+      "branch": "fix/pos-category-native-context-20261010",
+      "base": "master",
+      "includes109Head": true,
+      "changed109Files": [
+        "systems/enterprise-admin/infrastructure/verification/pos-category-lifecycle/README.md",
+        "systems/enterprise-admin/pos-ui/MODULE.md",
+        "systems/enterprise-admin/pos-ui/e2e/category-native.config.mts",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/fixtures.ts",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/lifecycle.spec.ts",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/native-browser.mjs",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/native-browser.test.mjs",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/owned-run.mjs",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/owned-run.test.mjs",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/run.mjs",
+        "systems/enterprise-admin/pos-ui/e2e/category-native/run.test.mjs"
+      ],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 110,
+      "head": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+      "branch": "test/general-order-native-trace-20261010",
+      "base": "test/batch-trace-null-browser-20261010",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 111,
+      "head": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64",
+      "branch": "fix/split-payment-totals-20261010",
+      "base": "master",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 112,
+      "head": "d856456b901f9adea602b5ba3a6a109aa3e42279",
+      "branch": "feat/product-batch-navigation-20261011",
+      "base": "master",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 113,
+      "head": "dfdf2654705e69e9c6d46dd691381c53f6dcf27b",
+      "branch": "fix/order-total-precision-20261011",
+      "base": "fix/split-payment-totals-20261010",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 114,
+      "head": "2881f6399101a583c1eb41300064f5631eba2a93",
+      "branch": "fix/issue30-pos-taipei-today-20261011",
+      "base": "master",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 115,
+      "head": "013d3713e1611db9e533fddff3ca32f60e138da1",
+      "branch": "chore/issue30-today-orders-native-20261011",
+      "base": "fix/issue30-pos-taipei-today-20261011",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "pr": 116,
+      "head": "947e5a5d5b07562c2dd6baa72519d443e2ba740c",
+      "branch": "fix/issue31-today-orders-midnight-cache-20261011",
+      "base": "fix/issue30-pos-taipei-today-20261011",
+      "includes109Head": false,
+      "changed109Files": [],
+      "checkoutWorker": {
+        "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts": {
+          "baselineBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "headBlob": "e217712032573227fe6c83766460bfe445b651d1",
+          "unchanged": true
+        },
+        "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts": {
+          "baselineBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "headBlob": "200a984bcdbc309ab778253880f0d05a6a7a6e15",
+          "unchanged": true
+        }
+      }
+    }
+  ],
+  "workflowHasJobNeeds": false,
+  "workflowChangedBy109": false,
+  "categoryToStockIsSequentialStepGate": true,
+  "sharedCoordinatorExportsUnchanged": true,
+  "exportsSha256": "a207244d7a02bad76cb2b86e96824531214b0c48abe8b2965b7a54703358a814",
+  "staticOnly": true,
+  "scope": "Frozen-head Git ancestry/file identity and CI dependency analysis; no gate waiver/native stock pass"
+}
