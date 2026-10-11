@@ -562,3 +562,5 @@ export interface PaginatedList<T> {
   page: number;
   pageSize: number;
 }
+
+export type { ScanSource, ScanObservation, ScanResultV1 } from './scan';

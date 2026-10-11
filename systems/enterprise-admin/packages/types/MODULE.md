@@ -56,3 +56,9 @@ npm run typecheck
 
 - Do not duplicate shared types in app-specific modules when the type belongs here.
 - Do not change API-facing type meaning without checking the API spec.
+
+### Local scan evidence
+
+`src/scan.ts` exports versioned `ScanResultV1` through the existing package. This
+is local acquisition evidence, not an API/DB contract or product match. Unknown
+bytes/symbology/GS1 remain explicit. See ADR-022 for literal and route semantics.

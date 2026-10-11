@@ -37,11 +37,32 @@ export default function CategoryNav({ categories, selectedId, onSelect }: Props)
     if (!nav) return;
     revealCurrent(nav);
     if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(() => revealCurrent(nav));
+    let active = true;
+    const observer = new ResizeObserver(() => { if (active) revealCurrent(nav); });
     observer.observe(nav);
     const selected = nav.querySelector<HTMLButtonElement>('[aria-pressed="true"]');
     if (selected) observer.observe(selected);
-    return () => observer.disconnect();
+    let focused: HTMLButtonElement | null = null;
+    const observeFocused = (target: EventTarget | null) => {
+      const next = target instanceof HTMLButtonElement && nav.contains(target) ? target : null;
+      if (next === focused) return;
+      if (focused && focused !== selected) observer.unobserve(focused);
+      focused = next;
+      if (focused && focused !== selected) observer.observe(focused);
+    };
+    // A late font can resize only the unselected button that currently owns focus.
+    // focusout's relatedTarget is used because activeElement can still be the old button.
+    const onFocusIn = (event: FocusEvent) => observeFocused(event.target);
+    const onFocusOut = (event: FocusEvent) => observeFocused(event.relatedTarget);
+    nav.addEventListener('focusin', onFocusIn);
+    nav.addEventListener('focusout', onFocusOut);
+    observeFocused(document.activeElement);
+    return () => {
+      active = false;
+      nav.removeEventListener('focusin', onFocusIn);
+      nav.removeEventListener('focusout', onFocusOut);
+      observer.disconnect();
+    };
   }, [selectedId, categories]);
 
   return (

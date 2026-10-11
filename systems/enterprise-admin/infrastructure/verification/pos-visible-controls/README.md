@@ -88,3 +88,50 @@ browser zoom, software keyboard, touch hardware, screen reader and whole-POS
 responsive acceptance are NOT RUN here. Existing SKU narrow/short-cart coverage
 is a regression gate, not proof of every recommendation/cart combination. Wider
 #31/#49 and G0–G7 remain open. Draft only; no merge or deployment authorized.
+## Focused-label font resize follow-up (2026-10-11)
+
+The review found a real gap in the original `fd43ad527a571890edc6f414f7c418287a9856d1`
+source: a late font can widen only the focused, unselected category while the
+selected button and navigation strip keep their sizes. The previous observer did
+not watch that focused button, so no reveal callback was delivered for its resize.
+
+The correction observes the focused category alongside the selected category and
+strip. Native `focusin`/`focusout` events transfer that observation; `relatedTarget`
+avoids relying on a temporarily old `activeElement` during blur. The selected
+button stays observed. Effect cleanup removes both listeners, disconnects the
+observer and makes already-queued callbacks inert. Scrolling still only changes
+the strip's `scrollLeft`; selection, focus and vertical scrolling are not changed.
+
+Four new canonical component regressions cover an unselected-only width change,
+focus/blur transfer including null/external destinations, StrictMode/rerender and
+cleanup, and the existing focus fallback without ResizeObserver. These are
+authored tests; they have not run in the complete locked React/JSDOM environment
+locally. Syntax transpilation is not their execution or semantic typecheck.
+
+This follow-up is based on the exact union of the original PR head and master
+`cb013740e21b34236b13b4bcf57e96017aa4831c`: pre-fix union tree
+`fdf79a6178604982b405a59e55194197ba9cd516`, 953 leaf entries. The nine PR paths and
+23 intervening master paths were disjoint, and the entire path/mode/type/blob
+union was independently checked. Existing import ownership, import batch
+metadata and scan evidence changes are retained without modification.
+
+Local checks use Node 24.19.0 rather than the project's canonical Node 22:
+- PASS: existing pure geometry Vitest 4.1.11 suite, 7/7.
+- PASS: supplemental strict production/helper typecheck using available mapped
+  dependency types, context validation and whitespace checks.
+- PASS in an instrumented source-flow model: 10 groups, including 25,000 geometry
+  combinations and six resize/focus/lifecycle groups. The original source fails
+  five of these groups; the corrected source passes all ten. This model runs the
+  transpiled production source with simulated effects, elements and resize
+  delivery. It is not React, JSDOM, CSS layout or actual web-font loading.
+- BLOCKED: attempted supplemental React/JSDOM harness startup lacked complete
+  installed dependencies (`@csstools/css-color-parser` after resolving an
+  initially missing `lru-cache`). No passing component result is claimed.
+- NOT RUN for the correction: complete locked component/full POS/build suite,
+  fresh GitHub CI, real delayed-font browser acceptance, or physical-device tests.
+
+The original head's passing CI and visual acceptance remain historical
+evidence for that exact source. They do not validate this new correction or the
+new combined tree. Current-head CI and independent correction review are separate
+gates. Broader device/Safari/zoom/touch/screen-reader and production acceptance
+remain open. No merge or production deployment is included in this follow-up.

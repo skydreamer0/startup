@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { StrictMode } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CategoryNav from '../components/CategoryNav';
@@ -7,6 +8,21 @@ const categories = [
   { id: 'pain', name: 'Pain Relief' },
   { id: 'cold', name: 'Cold Care' },
 ];
+
+function mockCategoryResizes() {
+  const instances: TrackingObserver[] = [];
+  class TrackingObserver implements ResizeObserver {
+    readonly observed = new Set<Element>();
+    constructor(private readonly callback: ResizeObserverCallback) { instances.push(this); }
+    observe = vi.fn((target: Element) => { this.observed.add(target); });
+    unobserve = vi.fn((target: Element) => { this.observed.delete(target); });
+    disconnect = vi.fn(() => { this.observed.clear(); });
+    resize(target: Element) { if (this.observed.has(target)) this.callback([], this); }
+    deliverQueuedCallback() { this.callback([], this); }
+  }
+  vi.stubGlobal('ResizeObserver', TrackingObserver);
+  return instances;
+}
 
 describe('CategoryNav', () => {
   it('renders an all-category button before real categories', () => {
@@ -158,4 +174,107 @@ it('does not steal search focus or vertical scroll when categories refresh', () 
   expect(nav.scrollTop).toBe(7);
   expect(window.scrollY).toBe(beforeY);
   expect(search).toHaveFocus();
+});
+
+it('reveals a focused unselected label when only that label grows after font loading', () => {
+  const observers = mockCategoryResizes();
+  const onSelect = vi.fn();
+  const view = render(<CategoryNav categories={categories} selectedId={null} onSelect={onSelect} />);
+  try {
+    const nav = screen.getByRole('navigation', { name: '商品分類' });
+    const selected = screen.getByRole('button', { name: '全部' });
+    const focused = screen.getByRole('button', { name: 'Cold Care' });
+    Object.defineProperty(nav, 'clientWidth', { configurable: true, value: 390 });
+    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 100, 390, 68));
+    vi.spyOn(focused, 'getBoundingClientRect').mockReturnValue(new DOMRect(253, 114, 133, 44));
+    focused.focus();
+    expect(nav.scrollLeft).toBe(0);
+    expect(observers[0].observed).toEqual(new Set([nav, selected, focused]));
+    nav.scrollTop = 7;
+    const pageY = window.scrollY;
+    // Neither the Chinese selected label nor the strip changes size.
+    vi.mocked(focused.getBoundingClientRect).mockReturnValue(new DOMRect(253, 114, 152, 44));
+    observers[0].resize(focused);
+    expect(nav.scrollLeft).toBe(19);
+    expect(nav.scrollTop).toBe(7);
+    expect(window.scrollY).toBe(pageY);
+    expect(focused).toHaveFocus();
+    expect(focused).toHaveAttribute('aria-pressed', 'false');
+    expect(selected).toHaveAttribute('aria-pressed', 'true');
+    expect(onSelect).not.toHaveBeenCalled();
+  } finally { view.unmount(); vi.unstubAllGlobals(); }
+});
+
+it('transfers focused observation on focus and blur while retaining the selected button', () => {
+  const observers = mockCategoryResizes();
+  const view = render(<><input aria-label="搜尋" /><CategoryNav categories={categories} selectedId={null} onSelect={vi.fn()} /></>);
+  try {
+    const nav = screen.getByRole('navigation', { name: '商品分類' });
+    const selected = screen.getByRole('button', { name: '全部' });
+    const cold = screen.getByRole('button', { name: 'Cold Care' });
+    const pain = screen.getByRole('button', { name: 'Pain Relief' });
+    cold.focus();
+    pain.focus();
+    expect(observers[0].observed).toEqual(new Set([nav, selected, pain]));
+    expect(observers[0].unobserve).toHaveBeenCalledWith(cold);
+    selected.focus();
+    expect(observers[0].observed).toEqual(new Set([nav, selected]));
+    cold.focus();
+    screen.getByRole('textbox', { name: '搜尋' }).focus();
+    expect(observers[0].observed).toEqual(new Set([nav, selected]));
+    expect(observers[0].unobserve).not.toHaveBeenCalledWith(selected);
+    cold.focus();
+    cold.blur(); // A null relatedTarget also releases the former focused button.
+    expect(observers[0].observed).toEqual(new Set([nav, selected]));
+  } finally { view.unmount(); vi.unstubAllGlobals(); }
+});
+
+it('rebinds focused observation after rerender and removes listeners and queued work on cleanup', () => {
+  const observers = mockCategoryResizes();
+  const view = render(<StrictMode><CategoryNav categories={categories} selectedId="pain" onSelect={vi.fn()} /></StrictMode>);
+  try {
+    const nav = screen.getByRole('navigation', { name: '商品分類' });
+    const focused = screen.getByRole('button', { name: 'Cold Care' });
+    Object.defineProperty(nav, 'clientWidth', { configurable: true, value: 390 });
+    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 100, 390, 68));
+    vi.spyOn(focused, 'getBoundingClientRect').mockReturnValue(new DOMRect(253, 114, 133, 44));
+    focused.focus();
+    const old = observers[observers.length - 1];
+    view.rerender(<StrictMode><CategoryNav categories={[...categories]} selectedId={null} onSelect={vi.fn()} /></StrictMode>);
+    const current = observers[observers.length - 1];
+    expect(current).not.toBe(old);
+    expect(old.disconnect).toHaveBeenCalledOnce();
+    expect(current.observed.has(focused)).toBe(true);
+    vi.mocked(focused.getBoundingClientRect).mockReturnValue(new DOMRect(253, 114, 152, 44));
+    old.deliverQueuedCallback();
+    expect(nav.scrollLeft).toBe(0);
+    current.resize(focused);
+    expect(nav.scrollLeft).toBe(19);
+    view.unmount();
+    nav.scrollLeft = 0;
+    const observeCalls = current.observe.mock.calls.length;
+    focused.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    focused.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: focused }));
+    current.deliverQueuedCallback();
+    expect(current.observe).toHaveBeenCalledTimes(observeCalls);
+    expect(current.observed.size).toBe(0);
+    expect(current.disconnect).toHaveBeenCalledOnce();
+    expect(nav.scrollLeft).toBe(0);
+    expect(observers.every(observer => observer.disconnect.mock.calls.length === 1)).toBe(true);
+  } finally { view.unmount(); vi.unstubAllGlobals(); }
+});
+
+it('keeps focus scrolling available when ResizeObserver is unavailable', () => {
+  vi.stubGlobal('ResizeObserver', undefined);
+  const view = render(<CategoryNav categories={categories} selectedId={null} onSelect={vi.fn()} />);
+  try {
+    const nav = screen.getByRole('navigation', { name: '商品分類' });
+    const focused = screen.getByRole('button', { name: 'Cold Care' });
+    Object.defineProperty(nav, 'clientWidth', { configurable: true, value: 390 });
+    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 100, 390, 68));
+    vi.spyOn(focused, 'getBoundingClientRect').mockReturnValue(new DOMRect(253, 114, 152, 44));
+    focused.focus();
+    expect(nav.scrollLeft).toBe(19);
+    expect(focused).toHaveFocus();
+  } finally { view.unmount(); vi.unstubAllGlobals(); }
 });
