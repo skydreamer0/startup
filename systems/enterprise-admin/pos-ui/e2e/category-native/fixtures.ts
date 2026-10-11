@@ -1,8 +1,9 @@
-import { test as base, expect, type Page, type TestInfo, type Request } from '@playwright/test';
+import { test as base, expect, type Page, type TestInfo, type Request, type BrowserContext } from '@playwright/test';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { allowedRead, assertFonts, origin, emptyCase } from './contract.mjs';
+import { withNativeContext, assertNativeFocus } from './native-context';
 import { brandRequest, assertBrandResponse } from '../dialog-acceptance/brand-assets.mjs';
 export type Product = { id: string; sku: string; name: string; categoryId: string; stockQuantity: number };
 export type Bootstrap = { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string; nonce: string; empty: { tenantId: string; userId: string; shiftId: string; categories: { id: string; name: string }[]; products: Product[]; accessToken: string } };
@@ -15,8 +16,19 @@ const fonts = new Set([
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap',
 ]);
 declare global { interface Window { __categoryKeys: { key: string; trusted: boolean }[] } }
-export const test = base.extend<{ guard: Guard }>({
-  guard: [async ({ page, context, browser }, use, info) => {
+export const test = base.extend<{ guard: Guard; nativeBrowser: { context: BrowserContext; close: () => Promise<void> } }>({
+  nativeBrowser: async ({}, use, info) => {
+    await withNativeContext(async (context, close) => {
+      const receipt = await assertNativeFocus(context);
+      mkdirSync(info.outputDir, { recursive: true });
+      writeFileSync(info.outputPath('native-focus-preflight.json'), JSON.stringify({ test: info.title, nonce: process.env.CATEGORY_UI_NONCE, ...receipt }, null, 2) + '\n');
+      await use({ context, close });
+    });
+  },
+  context: async ({ nativeBrowser }, use) => { await use(nativeBrowser.context); },
+  page: async ({ context }, use) => { await use(context.pages()[0]); },
+  guard: [async ({ page, context, nativeBrowser }, use, info) => {
+    const browser = context.browser()!;
     const allBootstrap: Bootstrap = JSON.parse(readFileSync(join(process.env.CATEGORY_UI_OUTPUT!, '.bootstrap.json'), 'utf8'));
     const bootstrap = info.title === emptyCase ? { ...allBootstrap, ...allBootstrap.empty } : allBootstrap;
     expect(bootstrap.nonce).toBe(process.env.CATEGORY_UI_NONCE);
@@ -24,6 +36,8 @@ export const test = base.extend<{ guard: Guard }>({
     const ids = new WeakMap<Request, RequestRow>(); const pending: Promise<void>[] = [];
     const observe = (page: Page) => page.on('pageerror', error => guard.pageErrors.push(error.message));
     context.pages().forEach(observe); context.on('page', observe);
+    context.on('serviceworker', worker => guard.unexpected.push(`ServiceWorker ${worker.url()}`));
+    expect(context.serviceWorkers()).toEqual([]);
     await context.addInitScript(({ token, appOrigin }) => {
       if (location.origin === appOrigin) localStorage.setItem('pos_accessToken', token);
       window.__categoryKeys = [];
@@ -69,7 +83,9 @@ export const test = base.extend<{ guard: Guard }>({
       const keys = page.isClosed() ? [] : await page.evaluate(() => window.__categoryKeys);
       await Promise.all(pending);
       let contextClosed = false; context.once('close', () => { contextClosed = true; });
-      await context.close(); await Promise.all(pending);
+      await nativeBrowser.close();
+      await expect.poll(() => contextClosed, { timeout: 5_000 }).toBe(true);
+      await Promise.all(pending);
       mkdirSync(info.outputDir, { recursive: true });
       writeFileSync(info.outputPath('network.json'), JSON.stringify({ test: info.title, nonce: bootstrap.nonce,
         viewport: page.viewportSize(), headed: true, display: process.env.DISPLAY, browserVersion: browser.version(), contextClosed, keys,
@@ -124,3 +140,4 @@ export async function assertReachable(page: Page, button: ReturnType<Page['getBy
   expect(result.centerInViewport).toBe(true); expect(result.hit).toBe(true);
   return result;
 }
+

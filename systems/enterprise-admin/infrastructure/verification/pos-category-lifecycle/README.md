@@ -29,19 +29,42 @@ without fake timers, application hooks or cache mutation.
 Use only the ordinary GitHub-hosted SKU job and its fresh, exclusive PostgreSQL15
 service. The original environment, source, service/network/empty-schema guards,
 Chrome sandbox, installed CJK fonts and process quiescence requirements remain.
-Playwright enables focus emulation for each Chromium page by default, keeping its
-visibility state active even after tab switching. Before stale expiry the spec
-disables that override (`Emulation.setFocusEmulationEnabled`, `enabled: false`),
-then requires and records Chrome's actual hidden/visible tab transitions. This
-restores browser state; no visibility event or document property is synthesized.
-The fixture uses headed Chrome and the already-installed `xvfb-run` to create a fresh
-1920x1080 local virtual display with TCP disabled, rejects ambient DISPLAY and passes
-the run nonce to all child processes. The same cleanup must remove Xvfb as well as
-Chrome/Playwright. Browser ledgers require headed=true and a local numeric display;
-the spec requires actual hidden/visible transitions. No custom Chrome launch flags,
-sandbox changes or shared CI changes. This follows
-[Playwright's headed Linux CI guidance](https://playwright.dev/docs/ci#running-headed)
-and is virtual-display browser evidence, not physical device evidence.
+Issue #123 corrects the former `newCDPSession().send(false)` workaround. Chrome
+keeps a session-owned capturer when Playwright enables focus emulation; disabling
+it from a fresh session does not release the original session's capturer.
+See [Chromium EmulationHandler](https://github.com/chromium/chromium/blob/main/content/browser/devtools/protocol/emulation_handler.cc)
+and [Playwright noDefaults](https://playwright.dev/docs/api/class-browsertype#browser-type-connect-over-cdp-option-no-defaults).
+
+`native-context.ts` uses Playwright's public `launchServer` with headed official
+Chrome and chromiumSandbox=true, so Playwright owns process/profile cleanup and
+its standard launch flags. An ephemeral loopback CDP port is used only within this
+owned test process. The second, public `connectOverCDP({noDefaults:true})` attaches
+to the default context without installing focus emulation; newContext would not
+honor this option and must not be used. Each test owns a fresh browser/profile.
+The default-context fixture explicitly retains service-worker registration blocking,
+all-page HTTP/WebSocket guards, nonce correlation and rejection of unexpected workers.
+The actual owned browser server closes before the network receipt is accepted;
+merely disconnecting a CDP client is insufficient cleanup.
+
+Before the category API/DB fixture, a standalone about:blank preflight verifies
+same-window tabs and trusted hidden/visible events on a fresh run-owned Xvfb.
+It is driver evidence only. Each of the seven cases repeats this prerequisite.
+The lifecycle cases retain real 61000ms expiry and additionally require exactly
+one trusted hidden/visible pair with at least 61000ms between events. No document
+property, event, timer or query state is synthesized. The Xvfb display remains
+1920x1080, TCP-disabled and fresh; ambient DISPLAY is rejected and all children
+inherit the run nonce for the existing quiescence checks. This is virtual-display
+browser evidence, not physical device evidence.
+
+Draft verification: a supplemental typecheck with available TypeScript and
+Playwright 1.62.1 types passes (not locked 1.63/Node22 validation). Six synthetic
+resource-ownership scenarios pass; the corresponding authored Vitest regressions
+await canonical CI. These do not exercise Chrome. Local official Chrome/Xvfb and canonical Node22/pnpm runtime
+are unavailable. Native preflight, three 61-second journeys, API/PG acceptance and
+exact-head CI are NOT RUN locally. Historical master/PR120–122 category 4 PASS /
+3 FAIL and downstream stock skips remain failures/missing acceptance until a new
+exact-head run is independently verified. No HOLD #109 rerun or deployment.
+
 Do not invent CI environment values or use an ambient/Preview/Production URL.
 The existing job owns service creation/migrations; this fixture only creates and
 removes its generated UUID tenants/users/shifts/categories/products. Complete
@@ -77,3 +100,4 @@ cross-terminal freshness, actual DB outages and production deployment remain out
 this slice. Existing confirmed stock/refund evidence from #102 is retained by the
 unchanged stock runner. No merge, manual deploy, permission or production DB action
 is authorized by this acceptance result.
+
