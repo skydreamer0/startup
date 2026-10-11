@@ -16,12 +16,12 @@ const backend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const root = path.resolve(backend, '../../..');
 const nativeFile = 'src/__tests__/order-sequence.integration.test.ts';
 export const suites = {
-  native: { file: nativeFile, count: 9 },
+  native: { file: nativeFile, count: 11 },
   command: { file: 'src/__tests__/checkout-command.integration.test.ts', count: 21 },
   stock: { file: 'src/__tests__/stock-contention.integration.test.ts', count: 38 },
   mock: { file: 'src/__tests__/pos.checkout.test.ts', count: 5 },
 };
-export const nativeCases = ['allocates distinct numbers to simultaneous different commands on different stock', 'separates simultaneous commands on opposite sides of Taipei midnight', 'reads the numbering date after earlier stock work instead of freezing arrival time', 'replays the immutable number after midnight and changed price and closed shift', 'rolls back a claimed number and all sale effects on late failure', 'allows 99999 once then explicitly rejects overflow without rollback gaps or wrapping', 'isolates counters and permits the same printed number in different tenants', 'database uniqueness rejects another order with the same tenant and number', 'fresh FEFO checks reject an expiring batch after the injected clock crosses midnight'];
+export const nativeCases = ['allocates distinct numbers to simultaneous different commands on different stock', 'separates simultaneous commands on opposite sides of Taipei midnight', 'reads the numbering date after earlier stock work instead of freezing arrival time', 'replays the immutable number after midnight and changed price and closed shift', 'rolls back a claimed number and all sale effects on late failure', 'allows 99999 once then explicitly rejects overflow without rollback gaps or wrapping', 'isolates counters and permits the same printed number in different tenants', 'database uniqueness rejects another order with the same tenant and number', 'fresh FEFO checks reject an expiring batch after the injected clock crosses midnight', 'reads persisted today orders at both Taipei midnight boundaries', 'isolates persisted today orders by tenant and optional shift'];
 
 export function assertConnection(env) {
   // Narrower harness guard: no ambient URL, parameters, password, or alternate DB.
@@ -171,7 +171,7 @@ async function main(mode) {
     for (const [kind, suite] of Object.entries(suites)) assert.equal(tests[kind].length, suite.count);
     for (const name of ['migration-duplicate.json', 'migration-upgrade.json', 'migration-cleanup.json', 'integration-migrations.json', 'integration-migrations-cleanup.json']) assert.equal(read(name).status, 'passed');
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: 9 sequence + 21 command + 38 stock + 5 mock; upgrade checks; fixture rows zero; owned DB removed');
+    console.log('Acceptance passed: 11 native (9 sequence + 2 today-orders) + 21 command + 38 stock + 5 mock; upgrade checks; fixture rows zero; owned DB removed');
     return;
   }
 
