@@ -1,3 +1,6 @@
+import type { ScanResultV1 } from '@pharmasaas/types';
+import { captureKeyboardScan } from './scanInput';
+
 // Keep the existing decoder: gaps > 300ms reset the buffer; Enter emits
 // trimmed codes with at least three characters. Sequence events only describe
 // input ownership so consumers can defer effects while input is unfinished.
@@ -7,6 +10,7 @@ let lastKeyTime = 0;
 
 type BarcodeCallback = (code: string) => void;
 const subscribers = new Set<BarcodeCallback>();
+const scanResultSubscribers = new Set<(result: ScanResultV1) => void>();
 
 export interface BarcodeSequenceEvent {
   kind: 'started' | 'completed' | 'cancelled';
@@ -62,6 +66,7 @@ function handleKeydown(e: KeyboardEvent) {
   lastKeyTime = now;
 
   if (e.key === 'Enter') {
+    const literal = buffer;
     const code = buffer.trim();
     buffer = '';
     // Mark a completed scan as consumed before page-wide Enter shortcuts run.
@@ -69,6 +74,8 @@ function handleKeydown(e: KeyboardEvent) {
     endSequence(code.length >= 3 ? 'completed' : 'cancelled');
     if (code.length >= 3) {
       subscribers.forEach((cb) => cb(code));
+      // Opt-in evidence stream; never connected to the legacy cart hook.
+      scanResultSubscribers.forEach((cb) => cb(captureKeyboardScan(literal)));
     }
     return;
   }
@@ -102,4 +109,12 @@ export function stopBarcodeListener() {
 export function onBarcode(cb: BarcodeCallback): () => void {
   subscribers.add(cb);
   return () => subscribers.delete(cb);
+}
+
+/** Opt-in capture evidence using the unchanged Enter/300ms/min3 gate.
+ * Manual text is returned by captureManualScan and never emitted here.
+ */
+export function onScanResult(cb: (result: ScanResultV1) => void): () => void {
+  scanResultSubscribers.add(cb);
+  return () => scanResultSubscribers.delete(cb);
 }

@@ -175,3 +175,13 @@ See `../infrastructure/verification/checkout-command/http-restart/README.md`.
 - Do not read admin UI unless the task involves shared behavior or shared components.
 - Do not change backend assumptions without checking the API spec and relevant backend module.
 - Do not infer POS roadmap completion from UI files; read `../ROADMAP.md` first.
+
+### Opt-in scan evidence (M0-A first slice)
+
+`src/services/scanInput.ts` contains pure keyboard/manual text adapters using
+`ScanResultV1` from `@pharmasaas/types`. `barcodeService.onScanResult` emits the
+pre-trim keyboard buffer only at the existing accepted Enter gate; `onBarcode`
+and the cart hook still receive their original trimmed string. No UI, lookup,
+cart or inventory consumer subscribes to the new stream. USB means the keyboard
+route, not verified hardware; unknown bytes/symbology/FNC1 are not inferred.
+Manual capture returns evidence only, without dispatch. See ADR-022.

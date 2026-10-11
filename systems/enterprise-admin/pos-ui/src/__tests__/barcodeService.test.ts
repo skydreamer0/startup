@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  onBarcode, onBarcodeSequence, getBarcodeInputSequence, startBarcodeListener, stopBarcodeListener,
+  onBarcode, onScanResult, onBarcodeSequence, getBarcodeInputSequence, startBarcodeListener, stopBarcodeListener,
 } from '../services/barcodeService';
 
 function press(key: string) {
@@ -216,4 +216,47 @@ describe('barcodeService', () => {
     ]);
     unsubscribe();
   });
+  it('publishes untrimmed keyboard evidence separately from the unchanged legacy string', () => {
+    const legacy = vi.fn(); const results = vi.fn();
+    const unsubscribe = onBarcode(legacy); const unsubscribeResult = onScanResult(results);
+    try {
+      startBarcodeListener();
+      for (const key of '  001aB  ') press(key);
+      press('Enter');
+      expect(legacy.mock.calls).toEqual([['001aB']]);
+      expect(results).toHaveBeenCalledOnce();
+      expect(results.mock.calls[0][0]).toMatchObject({
+        contractVersion: 1, literal: '  001aB  ', source: 'usb',
+        bytes: { status: 'unknown' }, symbology: { status: 'unknown' },
+        gs1: { status: 'unknown' }, evidence: { hardwareVerified: false },
+      });
+    } finally { unsubscribe(); unsubscribeResult(); }
+  });
+
+  it('uses the same min3, 300ms, Enter, stop and unsubscribe gates for evidence', () => {
+    const results = vi.fn(); const unsubscribe = onScanResult(results);
+    try {
+      startBarcodeListener();
+      for (const key of ' AB ') press(key);
+      press('Enter');
+      expect(results).not.toHaveBeenCalled();
+      for (const key of 'OLD') press(key);
+      vi.advanceTimersByTime(301);
+      press('Enter');
+      expect(results).not.toHaveBeenCalled();
+      for (const key of '001') { press(key); vi.advanceTimersByTime(300); }
+      expect(results).not.toHaveBeenCalled();
+      press('Enter');
+      expect(results.mock.calls.map(([result]) => result.literal)).toEqual(['001']);
+      stopBarcodeListener();
+      for (const key of 'OFF') press(key);
+      press('Enter');
+      startBarcodeListener();
+      unsubscribe();
+      for (const key of 'END') press(key);
+      press('Enter');
+      expect(results).toHaveBeenCalledOnce();
+    } finally { unsubscribe(); }
+  });
+
 });
