@@ -1,65 +1,26 @@
-# PC4070 approved handoff retries, 2026-10-11
+# Scoped POS release checkpoint — 2026-10-11
 
-User approved one restart of each previously canceled handoff, sequentially:
-first #109 readiness, then scoped #118/#119 acceptance, local test deployment
-and only the affected POS service deployment. #109 merging is not authorized.
-No Production/Preview database, credentials upload, security changes or held
-stock-browser rerun is authorized. Existing integration and other worktrees stay
-untouched. The original 10-PR release evidence remains immutable on its own branch.
+This text-only checkpoint contains repository commit/check metadata and aggregate synthetic test outcomes. Local receipts, screenshots, logs, test payloads, machine paths and deployment process details are not exported. The full evidence archive remains local pending explicit export approval.
 
-## Exact starting subjects
+## Accepted source and merges
 
-Remote master: dff3f71afc4f3d92a580bca6d667c21cb28d6c23;
-tree 316791c407fe4ca3cc472a4681768d7df1ec2020.
+- PR118 original source cc01fd18e0e387912a21f8055bd5c6f594fcf41c had two reproduced same-batch confirmation regressions. Corrected source acb4661d9f62d2442b2999ac514ee0be31e6b84b, tree 832ec0464b6c25a775f9c9a275b00b5c298d3895, retained the original three-file scope. Complete remote file readback and independent source review were verified.
+- PR119 unchanged source 8c66aa180faa98e0b0aa2a8a00a2cc2d4934b453, tree 3969f20863b52ae91e666560ad9434d9a1b3319b, retained its three-file scope; complete readback and independent source review were verified.
+- Authorized squash order118 then119. PR118 merge 296b120b00599e816776df9a0310dac641495106, parent dff3f71afc4f3d92a580bca6d667c21cb28d6c23; PR119 merge b2d4d477ece4de9468ea0861a12dec00121cb10c, parent 296b120b00599e816776df9a0310dac641495106.
+- Final master b2d4d477ece4de9468ea0861a12dec00121cb10c, tree c143d4e078f64e40012d74bde3b871f7d934454a, equals reviewed combined candidate6573b6dab8daddb0c2032954d8f12f2ce9e448f6. Exactly six scoped files changed over previous masterdff3f71afc4f3d92a580bca6d667c21cb28d6c23; prior releases remain present.
 
-- #109 a8a248dc5b46dd24487a9b742a6c50606c3c3063;
-  tree 701c622087a591f7f7ff310010143769769d8a3c; 11 complete changed files.
-- #118 cc01fd18e0e387912a21f8055bd5c6f594fcf41c;
-  tree 269a708be34fdec979e841084ce69eeb1cc11afe; 3 complete changed files.
-- #119 8c66aa180faa98e0b0aa2a8a00a2cc2d4934b453;
-  tree 3969f20863b52ae91e666560ad9434d9a1b3319b; 3 complete changed files.
+## Actual checks and acceptance
 
-Each complete changed remote Git blob was read back and compared byte-for-byte
-with the fetched subject. Full three-dot diffs, current comments/reviews and
-check receipts are retained locally. No unread review is labeled passing.
+- Source118 POS CI:17 focused and409 full tests PASS. Source119:18 focused and410 full PASS. Types/build and the four core/security checks PASS at both exact source heads. Devin completion remains unverified.
+- Shared category/current-browser CI remains FAIL (expected hidden, received visible); downstream stock steps SKIPPED. No overall CI PASS claim.
+- Current-master integration:73 focused and427 full POS tests PASS, zero failures/skips; types/build PASS.
+- Independently inspected built-browser run5: five defined editable/frozen journeys PASS, including1366/1024 editable views and pending/unknown/conflict. Native disabled controls and frozen intent preservation were verified with synthetic local HTTP. Prior attempts1–4 remain historical FAIL. No real API/DB or physical-device acceptance is claimed.
+- Final-master pipeline: https://github.com/skydreamer0/startup/actions/runs/38129243209 — still pending/in progress at publication; source checks do not transfer to final-master jobs. CodeQL checks on final master completed successfully.
 
-## #109 bounded native readiness result: FAIL
+## Held scope and cleanup
 
-Attempt 1 began 2026-10-11 approximately 09:02 UTC. Sandboxed official Chrome
-self-terminated in Crashpad before exposing CDP, so no assertions ran. Its own
-stalled coordinator was stopped after unique ownership was checked; no Chrome
-process retained that exact owned profile, and the profile was removed.
+PR109 remains OPEN/unmerged at a8a248dc5b46dd24487a9b742a6c50606c3c3063. The bounded Windows native probe failed to reach a valid visible state; original seven cases,46 captures and three genuine61-second hidden intervals were not run. No same held cloud job was rerun manually. PR120 and121 remain independent and were not integrated.
 
-Attempt 2 started 09:03:46.633 UTC and ended 09:03:53.411 UTC. Fresh official
-Windows Chrome 155.0.8059.40, Playwright 1.63.0, connectOverCDP(noDefaults:true)
-and the existing default context loaded an owned loopback HTML page, without
-viewport/focus emulation. document.visibilityState began hidden and remained
-hidden after bringToFront; the 5-second visible-state assertion failed.
+Only merged118/119 source branches were deleted, after remote head/merge and no-child-dependency checks plus a verified complete-history recovery bundle. Recoverable local source/candidate refs remain. Original user and previous acceptance worktrees are preserved.
 
-Attempt 3 started 09:04:35.424 UTC and ended 09:04:42.135 UTC. It additionally
-identified the actual target/window and restored native normal window bounds.
-Actual command-line arguments contained no headless or sandbox/security bypass.
-The tab still remained hidden and the same bounded assertion failed. Cleanup
-for both usable probes verified normal Chrome exit (code 0, no signal), no owned
-Chrome processes, removed profile and closed owned HTTP server. No further retry.
-
-These are Windows mechanism diagnostics, not the canonical pinned Linux Chrome
-154.0.8037.97/Xvfb acceptance. No real 61-second interval occurred. The seven
-original application cases, all 46 captures, three hidden intervals, trusted
-event/cart/search/selection and correlated API/PostgreSQL ledgers remain NOT RUN.
-No API or database was started and no cloud or stock-browser job was rerun.
-Assertions were not weakened, no events were synthesized and #109 is unmerged.
-
-## #118/#119 and deployment: IN PROGRESS
-
-Fresh exact-head receipts show all four required CI checks and applicable security
-checks passed. The recurring category-browser job failed on each source; it is
-retained as FAIL, not waived or relabeled. Independent review and latest-master
-local acceptance are pending at this checkpoint.
-
-ADR-011 and Compose define a separately deployable pos-ui nginx container built
-with VITE_BASE=/pos/. The repository CI only builds images and does not identify
-a deployment destination. Local Docker inventory stalled; its uniquely identified
-read-only CLI was stopped. Port 80 is owned by httpd.exe, not an identified POS
-service. The actual target has been requested; no destination is guessed and no
-deployment action has happened.
+A new local development POS frontend was deployed and its actual login-screen rendering smoke passed. Backend is unconfigured; login/transactions/full-stack/production deployment remain unverified. No backend/database, security setting, unrelated service or HPK worktree was changed.
