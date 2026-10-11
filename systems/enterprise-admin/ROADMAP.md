@@ -15,6 +15,14 @@ Status reconciled on **2026-10-08** against merged master [`dfe6b3bf`](https://g
 
 ### Single-Pharmacy Reliability And Delivery
 
+- Draft M0-A first slice (2026-10-11, #37): shared versioned scan evidence plus
+  pure keyboard/manual adapters and opt-in pre-trim keyboard results. Legacy
+  POS string/300ms/Enter/min3 behavior remains unchanged; no new cart consumer.
+  Local runtime tests/types/build are NOT RUN (checkout lacks dependencies).
+  GitHub CI and independent review are pending. Camera/image decoding, manual UI,
+  true USB hardware/FNC1, offline CPU performance, M0-B/C and G0–G7 remain pending.
+  See ADR-022; this does not complete M0-A or any parent checkbox.
+
 The engineering entry point is [#37](https://github.com/skydreamer0/startup/issues/37). It retains the complete acceptance criteria and consolidated receipt, outflow, evidence/OCR, printing, and deployment work from #32–#36. Consolidation is not completion.
 
 - [ ] **PHARM-29**: [#29 — inventory authority and batch traceability](https://github.com/skydreamer0/startup/issues/29). Sale allocations, refund-only registration, reviewed metadata import and initial batch receipts have verified slices. Physical returns, bins, reversal/rebuild, reconciliation and full acceptance remain pending.
