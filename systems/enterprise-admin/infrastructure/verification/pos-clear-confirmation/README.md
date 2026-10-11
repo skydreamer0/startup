@@ -53,6 +53,21 @@ GitHub CI must execute the exact submitted head. Keep any unrelated existing
 category-browser failure, skipped downstream stock acceptance and device gaps
 separate; do not restart the held PR #109 work to validate this slice.
 
+### First submitted-head CI result
+
+For head `c64ad2268456c73d1e63272e3970270d9f385ad8`, the original raw log of
+[POS UI job 114419123679](https://github.com/skydreamer0/startup/actions/runs/38122218656/job/114419123679)
+was read directly. Node 22 and the locked install succeeded; the new suite passed
+15/15 and the full POS component suite passed 38 files / 395 tests. Strict
+TypeScript then failed with TS2345 because this test's synthetic checkout payload
+omitted required `shiftId`. Docker build and subsequent recovery/browser steps
+were skipped; those are not passes.
+
+The follow-up adds only `shiftId: 'synthetic-shift'` to the synthetic fixture;
+runtime `CartPanel.tsx` is unchanged. This preserves the first failure rather
+than relabeling it. Results above belong to the first head; the corrected head
+requires its own CI result and cannot inherit a build pass.
+
 ## Reproduction
 
 With the repository's normal frontend pnpm workspace installation available,

@@ -43,7 +43,7 @@ function clickClear() {
 function freezeCheckout(status: PendingCheckout['status']) {
   const recovery = useCheckoutRecoveryStore.getState();
   recovery.prepare({
-    commandId: 'synthetic-command',
+    commandId: 'synthetic-command', shiftId: 'synthetic-shift',
     cartItems: [{ productId: productA.id, quantity: 1, discountRate: 0 }],
     paymentMethod: 'CASH', orderDiscountAmount: 0,
   }, useCartStore.getState());
