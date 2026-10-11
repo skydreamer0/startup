@@ -1,0 +1,57 @@
+{
+  "source": {
+    "head": "9ce542d03737bbca835c41606079b29138cf1759",
+    "tree": "c4db4834bb832146ca928f2af4a6dfb7e1a62269",
+    "node": "v22.22.3"
+  },
+  "checks": [
+    {
+      "name": "pos-midnight-UTC",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 5343
+    },
+    {
+      "name": "pos-midnight-Asia-Taipei",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 5674
+    },
+    {
+      "name": "pos-midnight-America-Los_Angeles",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 5438
+    },
+    {
+      "name": "backend-full-tests",
+      "exitCode": 1,
+      "signal": null,
+      "elapsedMs": 79635
+    },
+    {
+      "name": "admin-ui-full-tests",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 6167
+    },
+    {
+      "name": "pos-ui-full-tests",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 10586
+    },
+    {
+      "name": "pos-types",
+      "exitCode": 2,
+      "signal": null,
+      "elapsedMs": 2932
+    },
+    {
+      "name": "pos-build",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 2158
+    }
+  ]
+}

@@ -1,0 +1,1406 @@
+{
+  "testedCodeHead": "af485491b592740e0ea77836961127a51063b09b",
+  "scope": "Local immutable evidence file hashes; raw evidence retained on PC4070. No new acceptance claim.",
+  "files": [
+    {
+      "path": "admin-browser/receipt.json",
+      "bytes": 468,
+      "sha256": "e34422368751346922fc074e287419c0ed83f3d2ac2fd8fd50195bc9950deb0c"
+    },
+    {
+      "path": "admin-browser-2/navigation-1366.png",
+      "bytes": 49843,
+      "sha256": "57644555d2d346c6b332dbfacb1b1ce46003e4b231f22e12a689371806c32112"
+    },
+    {
+      "path": "admin-browser-2/receipt.json",
+      "bytes": 8324,
+      "sha256": "9934f2c9d7a1b9d87b6f5e466c6f419661415db6faf08da0c390365249021e1b"
+    },
+    {
+      "path": "admin-browser-3/navigation-1024.png",
+      "bytes": 40092,
+      "sha256": "2987082e04ceae4fdf4612fa1d6f0c0dea2f2fd73550888ac584f2b18576fa47"
+    },
+    {
+      "path": "admin-browser-3/navigation-1366.png",
+      "bytes": 49843,
+      "sha256": "57644555d2d346c6b332dbfacb1b1ce46003e4b231f22e12a689371806c32112"
+    },
+    {
+      "path": "admin-browser-3/navigation-390.png",
+      "bytes": 32716,
+      "sha256": "5f927aadde908e607bce89fabae91c2d898736c9d487063fdfde747c7090963d"
+    },
+    {
+      "path": "admin-browser-3/nullable-trace-1024.png",
+      "bytes": 48510,
+      "sha256": "c6904f70d0b4edd1566f25d89468dbe12bf01467c783179284072d9b5d808082"
+    },
+    {
+      "path": "admin-browser-3/nullable-trace-1366.png",
+      "bytes": 58717,
+      "sha256": "7f3d4c28aed617846bb111e20e1018b8d52f463fef38a32888c9bcc8ad59b15a"
+    },
+    {
+      "path": "admin-browser-3/nullable-trace-390.png",
+      "bytes": 21560,
+      "sha256": "ccd9c04d89f2b7d32e196e76e028004d78aedb12543ca48553b71d73bc079378"
+    },
+    {
+      "path": "admin-browser-3/receipt.json",
+      "bytes": 7329,
+      "sha256": "4ee826b77fa09974968d3077a1cf608438fd7a70dcf4d30ea770addad257cf88"
+    },
+    {
+      "path": "exact-snapshots/pr107-tests.json",
+      "bytes": 12247,
+      "sha256": "f4d8bd1b30e24cfdcf974d87fc1a8cae84c55e10a9d56d13f2e5e9893343d467"
+    },
+    {
+      "path": "exact-snapshots/pr107-tests.log",
+      "bytes": 113,
+      "sha256": "34d0d0f0285c4b870d1773a1303c5e436b411d2362e7294144433819e1a96fcc"
+    },
+    {
+      "path": "exact-snapshots/pr108-controls.log",
+      "bytes": 1976,
+      "sha256": "1f6a77f11d1d94c1eef4ba63268f1e3ef8274e2005869165abd8fec88e255e7e"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/acceptance.json",
+      "bytes": 1671,
+      "sha256": "bf82ec1b3ea5d9e15e41ac83738a5b648fc6c62d09184dcfbebf9c434bc0f196"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/acceptance.log",
+      "bytes": 1043,
+      "sha256": "92af47a5480d3df44dd1684ea18640b67f2fd7703b990106cfc7983be44b5035"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/adapter-delta.json",
+      "bytes": 402,
+      "sha256": "21188be4ebf8601d3fc2e3ac1659f6e222d0fc1af7bb51553ceb488baa417edf"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/capped-trace.json",
+      "bytes": 151752,
+      "sha256": "4f6e413f3546177d3c973111cd46ed2106f221944036de63d40f6af0b5e430d6"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/cases.json",
+      "bytes": 948,
+      "sha256": "75777596c097978a373999953c72c5d42c8f80a0e3c8af91c4afc5dab380b874"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/connectivity.json",
+      "bytes": 420,
+      "sha256": "ae76fe5c8eedbafa6ad01d9b972c7ccd008e51eddc7c528fa44a435fae44e8d1"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/empty-database.json",
+      "bytes": 1018,
+      "sha256": "48afd050428ff8ccd48706415c85fd7e8a9d0e9f0b00d64ccbdd439f776d5c1a"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/final-snapshot.json",
+      "bytes": 337061,
+      "sha256": "e25111abc7c764583c940cf45c08e9cdd9cd51fbbed592fb8157969fe0bccf61"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/http-exchanges.json",
+      "bytes": 255226,
+      "sha256": "03022406c14624987223fd6638a6b8293b74b9d52bfec9e96e40f09bb3fc3808"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/initdb.log",
+      "bytes": 832,
+      "sha256": "af856cf2383f11b2bc57f2ce8a0f13dc2c22c002488922665281d7cd492c8dd7"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/migrations.log",
+      "bytes": 2098,
+      "sha256": "057f10adcfc76cf5b66d4ecb1eead811050f4df1a0ccf6d5068880a180c88386"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/mixed-trace.json",
+      "bytes": 32521,
+      "sha256": "dccf421d4147085bbbbe5c663081283991f53398c8b99306f08c3a62df6cff71"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/ownership.json",
+      "bytes": 516,
+      "sha256": "f7e2d9494fb16160f2710062084cf4ea41c36032ca9bd8c239de3381c656b205"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/postgres.log",
+      "bytes": 1699,
+      "sha256": "1ef49e07cbf87271c46d3cba7b2e12625fd235cb3c05e26e73c1e49fbce8ab45"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/source-hashes.json",
+      "bytes": 133127,
+      "sha256": "28d609d2042e4d9826378de855041f58c7f0d83189280a318b3871e90c152d35"
+    },
+    {
+      "path": "exact-snapshots/pr110-native/suite-process.json",
+      "bytes": 21,
+      "sha256": "2c3265f2c8bbea5b81766f695a9df10dc49ae21d5e4c841fcfafacea2bd7cf99"
+    },
+    {
+      "path": "exact-snapshots/pr110-native.log",
+      "bytes": 199,
+      "sha256": "dacb02c8879c6e7021880ca4ef25d3552fce1d411d181403b2ffce3db9f53298"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/acceptance.json",
+      "bytes": 2008,
+      "sha256": "e6dd3e51932bc09997b460d14a1165442bce27d4edb6cbf37c4d165d21e647b9"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/acceptance.log",
+      "bytes": 1916,
+      "sha256": "6827739f599b51c1b3907bb8b59efa202c5b3cc69100b705f79a13416acda84e"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/adapter-delta.json",
+      "bytes": 396,
+      "sha256": "39b2f157705178b80bc057ea1e7c29fa7930f1d34aa0836297452a4dc693ac63"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/cases.json",
+      "bytes": 1414,
+      "sha256": "75ff53aeb4d8b11c9d6de7edda09642450f555bd03f9e3fa68066a700cc6adcf"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/connectivity.json",
+      "bytes": 420,
+      "sha256": "d7d35cab12a84f0ef1e2832d4ca6cd39d6f60cd21a63f40d047e0eb118ef33e9"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/decimal-other-group.json",
+      "bytes": 1291,
+      "sha256": "9d1c251dd2d84ca180a9aa3b0ba6854e4c6094359b9ceee67f616e18e30c85e7"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/decimal-same-method.json",
+      "bytes": 1262,
+      "sha256": "959f48671fe7548fea8148d464dababe67889fb4098c6c78594b98f60455630e"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/empty-database.json",
+      "bytes": 1018,
+      "sha256": "68470b92facc6477a86b3b779ba94bb13543d4fc5e9a134d1dbbca092d60efe8"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/final-snapshot.json",
+      "bytes": 42318,
+      "sha256": "9100ffe65f02d975c83ba28ad11b650b12a1b1b765dd95464d1881e1f87da8e6"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/http-exchanges.json",
+      "bytes": 30691,
+      "sha256": "3d283a965a5001d0fb98e009b634fff300277c9b91df507f32d087e16cb3ed4f"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/initdb.log",
+      "bytes": 832,
+      "sha256": "4b3312ac3b1aab880d30b6abb8dfb18b8588e211693462438ae1814e4c2d5893"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/migrations.log",
+      "bytes": 2098,
+      "sha256": "5765303ebc4e93025f568c0ae1e2df30725e56a88b6a7a84752b0650cf4b5ed7"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/ownership.json",
+      "bytes": 516,
+      "sha256": "22f94da6ce376f6e0ab5b615bc75a0072916e998d712ad9602695c2b6c030ab5"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/postgres.log",
+      "bytes": 1705,
+      "sha256": "730baa3d4d9f72bf97308096fe67df79a27c0ebb45489d5c74be1947d48621b4"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/source-hashes.json",
+      "bytes": 133553,
+      "sha256": "8a583eac090207d297c81992a90c485a5450146bbfcc452db3db74bea18cb8af"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/split-60-40.json",
+      "bytes": 1259,
+      "sha256": "252503a14a30204438b39f4b9e50df652e00d626a47a65db872ffa0004556807"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/suite-process.json",
+      "bytes": 21,
+      "sha256": "2c3265f2c8bbea5b81766f695a9df10dc49ae21d5e4c841fcfafacea2bd7cf99"
+    },
+    {
+      "path": "exact-snapshots/pr111-native/unchanged-refund-limit.json",
+      "bytes": 626,
+      "sha256": "d2261af758abc5478c4ff9288b44588aff1f83bdc6e1867289b787106d30f68d"
+    },
+    {
+      "path": "exact-snapshots/pr111-native.log",
+      "bytes": 193,
+      "sha256": "eedc87f91d04ea48993220f637e9bde1961c29e6214b630f3e7863e87e90dea8"
+    },
+    {
+      "path": "exact-snapshots/pr111-tests.json",
+      "bytes": 7792,
+      "sha256": "a8b6877e913447787039bc69dc4222325c4a077c758273caba234ac967a74905"
+    },
+    {
+      "path": "exact-snapshots/pr111-tests.log",
+      "bytes": 113,
+      "sha256": "581b7c68d0567438d1cb89ed33630f00ca0079aab14fe61c278e95d4f16765fa"
+    },
+    {
+      "path": "exact-snapshots/pr112-tests.json",
+      "bytes": 32457,
+      "sha256": "72c5f57dab9efc22c4199fc09567e3144e22a4b2b08a229b4e9c133065616f78"
+    },
+    {
+      "path": "exact-snapshots/pr112-tests.log",
+      "bytes": 113,
+      "sha256": "e46ca3fd38de9ef9fafcb27b76d0893f3258c072507f1a1d71d7fe0aba098423"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/acceptance.json",
+      "bytes": 2156,
+      "sha256": "1386f8a799be6868a67414c7b31e5ebc12f0fcabf6593b874b3b492fe81570b3"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/acceptance.log",
+      "bytes": 1916,
+      "sha256": "6827739f599b51c1b3907bb8b59efa202c5b3cc69100b705f79a13416acda84e"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/adapter-delta.json",
+      "bytes": 396,
+      "sha256": "0d49b9b648288bfbc5f64f11c7aa49bbfdc5428708e54d0f5e45cb7f48bc724e"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/cases.json",
+      "bytes": 1554,
+      "sha256": "ab765cb9748eb9d5414b38dfe0e1f4a474b6330ac69c60bbf1a5a606328f7bee"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/connectivity.json",
+      "bytes": 420,
+      "sha256": "ac11a5157c383f3954cc23d6723ce0c031369fe8123ad2c5af21e650fbd41f11"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/decimal-cross-order.json",
+      "bytes": 112128,
+      "sha256": "3368dcf390dccb6d849958d06e7abb9f731784f7c444c212124f3ec3c8c98c86"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/decimal-other-group.json",
+      "bytes": 1291,
+      "sha256": "0c4f0a60db7d51bb36f0a9f885bb7947e2053c5d0107695c98ec099acbf2a6e9"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/decimal-same-method.json",
+      "bytes": 1262,
+      "sha256": "dc176bd70e6dbecf6f2bdfe97b6c2ef071e0e1fedbdf63a618f67afc95bda68e"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/empty-database.json",
+      "bytes": 1018,
+      "sha256": "9acf1bf5bc999d9f190aceee6a0dac63560b3c1f3b7644aea4765ee4b8ee50c5"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/final-snapshot.json",
+      "bytes": 51665,
+      "sha256": "8b5c06dd0299e7b036a2b99224bc08dca060ca114f24b2c6bc8f3e5821b1a200"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/http-exchanges.json",
+      "bytes": 35249,
+      "sha256": "5835e9a6e1470bab4454da2a70ee10c1eb6747b99fa42e166658a8b0699f723a"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/initdb.log",
+      "bytes": 832,
+      "sha256": "7493bb5ed9335f0023b814964efdf387460c3e5c67b1e26c1ff191fac4093e87"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/migrations.log",
+      "bytes": 2098,
+      "sha256": "66cce77eff4d18dfc1babdbd16340711f067d06f16898bdbb1c40abde45f850a"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/ownership.json",
+      "bytes": 516,
+      "sha256": "7d525dcca052f129b8d5b73061db2ee4b7cd2cc76a5d4c9c475fe0a358b90e23"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/postgres.log",
+      "bytes": 1692,
+      "sha256": "5240b3b56119f6ac90201f6007e65b54e0f8320e75cc7c1a5571969e92578499"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/source-hashes.json",
+      "bytes": 133553,
+      "sha256": "3b6e3387bf164fc8d0c0fbf26828e36dac4251c0da317d898733b6256f4ea255"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/split-60-40.json",
+      "bytes": 1259,
+      "sha256": "698104fca29b1fff3ae28025d94ceecd4ede00d1c6427972951e38678b423373"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/suite-process.json",
+      "bytes": 21,
+      "sha256": "2c3265f2c8bbea5b81766f695a9df10dc49ae21d5e4c841fcfafacea2bd7cf99"
+    },
+    {
+      "path": "exact-snapshots/pr113-native/unchanged-refund-limit.json",
+      "bytes": 626,
+      "sha256": "384e7054131df2860de0fc407f42c1837a34247a4f100dff7a819b1db1b42aea"
+    },
+    {
+      "path": "exact-snapshots/pr113-native.log",
+      "bytes": 193,
+      "sha256": "8186121c9af10d252826590c2b0b0c0debc849185d699f08bcf90bbe9db42ef1"
+    },
+    {
+      "path": "exact-snapshots/pr113-tests.json",
+      "bytes": 12225,
+      "sha256": "56eadacc1197ec85d93926f60a69e9f4b7a1ed9988e1460ea9bdeb68e93d9084"
+    },
+    {
+      "path": "exact-snapshots/pr113-tests.log",
+      "bytes": 113,
+      "sha256": "600e1f557a20ef97838c8fe9978056121779eec0ce92c3778b28e25b52bda8f9"
+    },
+    {
+      "path": "exact-snapshots/pr114-tests.json",
+      "bytes": 4300,
+      "sha256": "71d4ae6e1c13ab03ccfa97bc324f3ea006f88f2c534f8007946339ebedf09ba9"
+    },
+    {
+      "path": "exact-snapshots/pr114-tests.log",
+      "bytes": 113,
+      "sha256": "2458f4dbe56de074600ac63cbe25fd18fbaa1cdbf2de586b7a5769e437a22d65"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/acceptance.log",
+      "bytes": 128,
+      "sha256": "a5b6bda8bc1a5bba1da72c968f1cdb8390b19c52a741daae1042ce1c80852c70"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/final-counts.json",
+      "bytes": 638,
+      "sha256": "b4c58e673da56c8f16d88b56ab8496c03490b2cb48bce770e8e2a5645d5f0ee7"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/initdb.log",
+      "bytes": 832,
+      "sha256": "23a8b79ee05877439e86194909966f4e303fe47e6c215983c3a0359a3c03351b"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/migrations.log",
+      "bytes": 2078,
+      "sha256": "541677a3921d7c9cbc29fc65e5200e8df93831357451a3a45e45f654d6685539"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/native-report.json",
+      "bytes": 4749,
+      "sha256": "d1c5964aca3aaf2f782281d2ff90b133da6c5efd24534b8655e5869e626d82dd"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/ownership.json",
+      "bytes": 496,
+      "sha256": "fae2bbc9c80a4720f5f1e137f5c140eae854d497029fb5faca244b000a01c1dc"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/postgres.log",
+      "bytes": 2686,
+      "sha256": "388b1e7ab1442473e5c8fabb19094e5ba68811ea9391c15fd7ae5b4099dcb48e"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/source-hashes.json",
+      "bytes": 132845,
+      "sha256": "9e3f889e8afb7f201b15ecd528efddfb053511df91584123643ee81ee6ad7fd4"
+    },
+    {
+      "path": "exact-snapshots/pr115-native/suite-process.json",
+      "bytes": 21,
+      "sha256": "2c3265f2c8bbea5b81766f695a9df10dc49ae21d5e4c841fcfafacea2bd7cf99"
+    },
+    {
+      "path": "exact-snapshots/pr115-native.log",
+      "bytes": 188,
+      "sha256": "4f0bd067c26a5de6516a2d6a5eb29cba6f7a378d3e0c7c99e4ff5c76f8641c4c"
+    },
+    {
+      "path": "exact-snapshots/pr116-tests.json",
+      "bytes": 23264,
+      "sha256": "f9c72b9a00398c7195a11d51b88b85a58ff209994ebc172eaa104106fb8595f7"
+    },
+    {
+      "path": "exact-snapshots/pr116-tests.log",
+      "bytes": 113,
+      "sha256": "213b9a23e52e77639e857e7d7b401f97ce84893441f1a0f8c263c2ee5a89dd0f"
+    },
+    {
+      "path": "exact-snapshots/pr116-types.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "exact-snapshots/restored.json",
+      "bytes": 122,
+      "sha256": "3702140e57b7e9c72c4cf0d2ae2a78a1a864b852742d887999c782281605e1fe"
+    },
+    {
+      "path": "exact-snapshots/results.json",
+      "bytes": 2670,
+      "sha256": "ec7148a51d37f4e5a5743ad768fe89e9c87f37c115fdb73064982a9cc7b0ac8c"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/acceptance.log",
+      "bytes": 131,
+      "sha256": "b4abe2bdfe12049f718332ef89fe7f37403e5cf14bc5da25875d6cc8c4c082cf"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/initdb.log",
+      "bytes": 839,
+      "sha256": "da57366e0372e7c0f16cc5e0017a69418f5188a512909f89d4a13961d6ea9875"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/migrations.log",
+      "bytes": 2103,
+      "sha256": "b4df44c7f3c077fd988037c23060ff37139be2fedc646df34b58641982357122"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/native-report.json",
+      "bytes": 170586,
+      "sha256": "65fc44fa57e3c039222bc9d1fe137a610844585d11664081872ada1175e669d8"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/ownership.json",
+      "bytes": 525,
+      "sha256": "323312f909b98f1a385dfc937ed35db948db329fd2d41453cbb3a3bcba8f36fc"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/postgres.log",
+      "bytes": 12435,
+      "sha256": "8cb8e4df528b2ca8228b7e88a16d407476ba8512623ec530398ed8dc116fd2e8"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/seed.log",
+      "bytes": 507,
+      "sha256": "299fbc32bd0b0ff535ef5b1332a961ffc5b5fcc4454d59436cae307be161d753"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/source-hashes.json",
+      "bytes": 136143,
+      "sha256": "f830d0c197858536fdf1afee9ff44b6ab925dfefd722b8d1fd8842aa46ac3c4a"
+    },
+    {
+      "path": "integrated-backend-owned-full-1/suite-process.json",
+      "bytes": 21,
+      "sha256": "34be0b6510f051149591d2934713f8a01714d50d299e9a2c8baed5f22d975860"
+    },
+    {
+      "path": "integrated-general-trace-native-1/acceptance.json",
+      "bytes": 1671,
+      "sha256": "2a25099d5ef51da780d74a58c71e5917e94a043e48d736c2a7df52b9eaf0a78f"
+    },
+    {
+      "path": "integrated-general-trace-native-1/acceptance.log",
+      "bytes": 1043,
+      "sha256": "92af47a5480d3df44dd1684ea18640b67f2fd7703b990106cfc7983be44b5035"
+    },
+    {
+      "path": "integrated-general-trace-native-1/adapter-delta.json",
+      "bytes": 402,
+      "sha256": "21188be4ebf8601d3fc2e3ac1659f6e222d0fc1af7bb51553ceb488baa417edf"
+    },
+    {
+      "path": "integrated-general-trace-native-1/capped-trace.json",
+      "bytes": 151752,
+      "sha256": "665cb9ba2d1eea5141bc533a3f0a822a7a87b40ffd7433c3aa97734b48edf2d9"
+    },
+    {
+      "path": "integrated-general-trace-native-1/cases.json",
+      "bytes": 948,
+      "sha256": "75777596c097978a373999953c72c5d42c8f80a0e3c8af91c4afc5dab380b874"
+    },
+    {
+      "path": "integrated-general-trace-native-1/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "integrated-general-trace-native-1/connectivity.json",
+      "bytes": 425,
+      "sha256": "3bb9836a26168cd808015b4d73ae383cbcf1dc6e5b647ab75fb9471ddd34f628"
+    },
+    {
+      "path": "integrated-general-trace-native-1/empty-database.json",
+      "bytes": 1023,
+      "sha256": "257c8a6501a41907fa286e87ebfc887b449d29dbbb62084b8efd0c0934a8f528"
+    },
+    {
+      "path": "integrated-general-trace-native-1/final-snapshot.json",
+      "bytes": 337063,
+      "sha256": "1f2d24586d3ef4073b8fd24ea11bc534e9b0a16c44f08269df9883e50d4e9053"
+    },
+    {
+      "path": "integrated-general-trace-native-1/http-exchanges.json",
+      "bytes": 255226,
+      "sha256": "12da7b0b3cfefce66543490f41ee0a7f44133eddfd69d983a8887c2d4a7913b0"
+    },
+    {
+      "path": "integrated-general-trace-native-1/initdb.log",
+      "bytes": 843,
+      "sha256": "98568a21224378b3e10a29f6b9e93583576ea08c71638a9c06a5c1b742ce565b"
+    },
+    {
+      "path": "integrated-general-trace-native-1/migrations.log",
+      "bytes": 2098,
+      "sha256": "be6b04833f402641b9b02cf702a409a1cc90a062d3ef7b7c9b5d02df0a4fd20c"
+    },
+    {
+      "path": "integrated-general-trace-native-1/mixed-trace.json",
+      "bytes": 32503,
+      "sha256": "2ddc17050a7ae1db2d452f68f93d80c1d3ccc2693ed39e17a0e61f2c6d94be37"
+    },
+    {
+      "path": "integrated-general-trace-native-1/ownership.json",
+      "bytes": 524,
+      "sha256": "a75b7690ddd8166728e5e542672ef3d574fa658c64cf458d5fe49f64c77d6769"
+    },
+    {
+      "path": "integrated-general-trace-native-1/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "integrated-general-trace-native-1/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "integrated-general-trace-native-1/postgres.log",
+      "bytes": 1691,
+      "sha256": "7b42032dc7c141c6595103dc7287f4587ca08b99c979b56ddac0b277bf85536c"
+    },
+    {
+      "path": "integrated-general-trace-native-1/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "integrated-general-trace-native-1/source-hashes.json",
+      "bytes": 135679,
+      "sha256": "ffaf73a395e06e32aa101eeac4cd4e040ef0065da74a8aaa58a626a6c34fbfa2"
+    },
+    {
+      "path": "integrated-general-trace-native-1/suite-process.json",
+      "bytes": 21,
+      "sha256": "2c3265f2c8bbea5b81766f695a9df10dc49ae21d5e4c841fcfafacea2bd7cf99"
+    },
+    {
+      "path": "integrated-sequence-native-1/acceptance.log",
+      "bytes": 128,
+      "sha256": "1b3f9b0270144ff0df2f5165470e24d2d8381812c0450066f4b3ae26f5b782f0"
+    },
+    {
+      "path": "integrated-sequence-native-1/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "integrated-sequence-native-1/final-counts.json",
+      "bytes": 638,
+      "sha256": "b4c58e673da56c8f16d88b56ab8496c03490b2cb48bce770e8e2a5645d5f0ee7"
+    },
+    {
+      "path": "integrated-sequence-native-1/initdb.log",
+      "bytes": 832,
+      "sha256": "6ef14d588efc47c7ded95d51ad282bef977492620d3baa0db194824080ec5075"
+    },
+    {
+      "path": "integrated-sequence-native-1/migrations.log",
+      "bytes": 2078,
+      "sha256": "541677a3921d7c9cbc29fc65e5200e8df93831357451a3a45e45f654d6685539"
+    },
+    {
+      "path": "integrated-sequence-native-1/native-report.json",
+      "bytes": 4752,
+      "sha256": "47628c6cc7b4ff1dfedb41035dc764592f4d85a4b95881cd7937394144616612"
+    },
+    {
+      "path": "integrated-sequence-native-1/ownership.json",
+      "bytes": 494,
+      "sha256": "c01eba5897e21b2adaf107d677f85513c32c4355875a435c0ed37fa743d28ec8"
+    },
+    {
+      "path": "integrated-sequence-native-1/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "integrated-sequence-native-1/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "integrated-sequence-native-1/postgres.log",
+      "bytes": 2694,
+      "sha256": "0dd5082e2c95d54f230a76da410396ef61623f0a7722d64b28338c19023987d3"
+    },
+    {
+      "path": "integrated-sequence-native-1/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "integrated-sequence-native-1/source-hashes.json",
+      "bytes": 135679,
+      "sha256": "ffaf73a395e06e32aa101eeac4cd4e040ef0065da74a8aaa58a626a6c34fbfa2"
+    },
+    {
+      "path": "integrated-sequence-native-1/suite-process.json",
+      "bytes": 21,
+      "sha256": "2c3265f2c8bbea5b81766f695a9df10dc49ae21d5e4c841fcfafacea2bd7cf99"
+    },
+    {
+      "path": "integrated-split-native-1/initdb.log",
+      "bytes": 1078,
+      "sha256": "3e40299b089a21f37a554b89a557a09bc3467d8a7b4182a59995bd28f65284d4"
+    },
+    {
+      "path": "integrated-split-native-1/pg-start.log",
+      "bytes": 83,
+      "sha256": "3bd2f79447c7c0949c049f83a657872f69b4f2a9a005f3056c9d12358d958ef2"
+    },
+    {
+      "path": "integrated-split-native-1/postgres.log",
+      "bytes": 1181,
+      "sha256": "b3a2a080a007dbf813cd382e8271c7356c221a615aadca50af55210260531f29"
+    },
+    {
+      "path": "integrated-split-native-1/recovery-cleanup.json",
+      "bytes": 202,
+      "sha256": "d9c5f359624c865441ad2fbe28aae0e59f354d53434e6868ab85499b025ffba7"
+    },
+    {
+      "path": "integrated-split-native-1/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "integrated-split-native-1/source-hashes.json",
+      "bytes": 135679,
+      "sha256": "99fb44ae92cdf493d51d85e9a649844773c70927d259f090e39dd0955f6bb3d6"
+    },
+    {
+      "path": "integrated-split-native-2/acceptance.json",
+      "bytes": 2156,
+      "sha256": "83d1c840da851cac5e3421d28845ed4ae9a38d53d3bb030988cbf2bd8fc07eec"
+    },
+    {
+      "path": "integrated-split-native-2/acceptance.log",
+      "bytes": 1929,
+      "sha256": "a2e91d86c2db21c66395dc4e59c0db85a1a0988b8a4dce120d7629d453cf58c1"
+    },
+    {
+      "path": "integrated-split-native-2/adapter-delta.json",
+      "bytes": 396,
+      "sha256": "0d49b9b648288bfbc5f64f11c7aa49bbfdc5428708e54d0f5e45cb7f48bc724e"
+    },
+    {
+      "path": "integrated-split-native-2/cases.json",
+      "bytes": 1554,
+      "sha256": "ab765cb9748eb9d5414b38dfe0e1f4a474b6330ac69c60bbf1a5a606328f7bee"
+    },
+    {
+      "path": "integrated-split-native-2/cleanup.json",
+      "bytes": 145,
+      "sha256": "75f94075540a9167d5ebbe59423718e2a09661c2e07ec77cf3e619051e3254fe"
+    },
+    {
+      "path": "integrated-split-native-2/connectivity.json",
+      "bytes": 417,
+      "sha256": "dcbd8b018e5799a2186489709dc4fcf1fb973716b2beb7943c2e314c9df8b4fc"
+    },
+    {
+      "path": "integrated-split-native-2/decimal-cross-order.json",
+      "bytes": 112110,
+      "sha256": "64d1b36cb6fddb4b5897b7733e2a4211da0d14a38dd9b6c24cce6fc97f486686"
+    },
+    {
+      "path": "integrated-split-native-2/decimal-other-group.json",
+      "bytes": 1291,
+      "sha256": "d7eb0fa93ab0d6d6b01adc97eaaf73ea54b01efa15b6f8e01e75feed2c979d1e"
+    },
+    {
+      "path": "integrated-split-native-2/decimal-same-method.json",
+      "bytes": 1262,
+      "sha256": "b5c7c21134751bf576dad232621a9ac7f5cde88d52d808a9c46024ac15dc4bd1"
+    },
+    {
+      "path": "integrated-split-native-2/empty-database.json",
+      "bytes": 1015,
+      "sha256": "867e27e0fe27520df92fee36b5effe78520423c0686e8a9e75f09d92b6b4f754"
+    },
+    {
+      "path": "integrated-split-native-2/final-snapshot.json",
+      "bytes": 51656,
+      "sha256": "f4966fffc95f64d5f4a46c8123f88463aa0d59d16ede55d7172bbc0112cf83a6"
+    },
+    {
+      "path": "integrated-split-native-2/http-exchanges.json",
+      "bytes": 35249,
+      "sha256": "c59abe81642983ea22ff41bd3745c0ad484b58c5f8c587f7244cef86925eb433"
+    },
+    {
+      "path": "integrated-split-native-2/initdb.log",
+      "bytes": 826,
+      "sha256": "8a01b58050f4acf927926eeae1e67be4d501e8280f5ee78181490cf37833d6f3"
+    },
+    {
+      "path": "integrated-split-native-2/migrations.log",
+      "bytes": 2966,
+      "sha256": "627694ede26f4192f7e8ac8b3fd2ede86a91c265b1d390c43ab0211791378960"
+    },
+    {
+      "path": "integrated-split-native-2/ownership.json",
+      "bytes": 508,
+      "sha256": "3ca0f35cde9caa7c3ffbc1a23badf68fb42cddf14adfb6b35be885915dbdfb63"
+    },
+    {
+      "path": "integrated-split-native-2/pg-start.log",
+      "bytes": 41,
+      "sha256": "bae45d6962aa79fe34cef3d93884f5e3cc83c18fe0359347485c127cc1de4571"
+    },
+    {
+      "path": "integrated-split-native-2/pg-stop.log",
+      "bytes": 41,
+      "sha256": "1cf9ecb6d8b156f9df475bd9a7ad7c0f7bc1e12816bc0364aab88967d3191eed"
+    },
+    {
+      "path": "integrated-split-native-2/postgres.log",
+      "bytes": 1687,
+      "sha256": "a6fe4ad8463e80fd524f82da54a5da5545ecd06fc09964554523016234f43756"
+    },
+    {
+      "path": "integrated-split-native-2/runtime.json",
+      "bytes": 283,
+      "sha256": "11970dfc1a7c7c5dfc4a707aad319d41fbffcffb2ad2d87b69d1ad3bb6ae4956"
+    },
+    {
+      "path": "integrated-split-native-2/source-hashes.json",
+      "bytes": 135679,
+      "sha256": "ffaf73a395e06e32aa101eeac4cd4e040ef0065da74a8aaa58a626a6c34fbfa2"
+    },
+    {
+      "path": "integrated-split-native-2/split-60-40.json",
+      "bytes": 1259,
+      "sha256": "77ef84c50262f0d48d3bfb970351027b5d7d6a8f64cb795868f13c1e673c34e2"
+    },
+    {
+      "path": "integrated-split-native-2/suite-process.json",
+      "bytes": 21,
+      "sha256": "2c3265f2c8bbea5b81766f695a9df10dc49ae21d5e4c841fcfafacea2bd7cf99"
+    },
+    {
+      "path": "integrated-split-native-2/unchanged-refund-limit.json",
+      "bytes": 626,
+      "sha256": "d6fb1cd92017de89f90d53590d429532abc194a2a67ef8c55f414e4f8711e85d"
+    },
+    {
+      "path": "package-checks/admin-ui-full-tests.json",
+      "bytes": 69832,
+      "sha256": "e35fd7222ddde5b6b3aa6db9ca564b1f689fbfe351926482e1e68a1dd639e618"
+    },
+    {
+      "path": "package-checks/admin-ui-full-tests.log",
+      "bytes": 120,
+      "sha256": "83ac3553635e3572ab39b1c04c355f8306b05bfa23cb9e0729881afda485020b"
+    },
+    {
+      "path": "package-checks/backend-full-tests.json",
+      "bytes": 289556,
+      "sha256": "4ae8c529dacf58e4ee1574a09bc8486fbc3e307dae9fb6c379c364e46e90688a"
+    },
+    {
+      "path": "package-checks/backend-full-tests.log",
+      "bytes": 119,
+      "sha256": "6b8f9d97186c76dbeb3fe5659fda40aa86dc451566463b8aff75ed245b7006cb"
+    },
+    {
+      "path": "package-checks/pos-build.log",
+      "bytes": 771,
+      "sha256": "332a0ba634eecd05f765d9e7005aa56ab29594aa85848cda03a11089d7e51c7f"
+    },
+    {
+      "path": "package-checks/pos-midnight-America-Los_Angeles.json",
+      "bytes": 23273,
+      "sha256": "faa92e71a947fb0d2a73ac1320a327085633c6267a1fe5bc0ad97456590a3132"
+    },
+    {
+      "path": "package-checks/pos-midnight-America-Los_Angeles.log",
+      "bytes": 133,
+      "sha256": "8bda61b5b03c36dceaff93879f13cbab589f00be87f3082171b3ec269d0fb7ab"
+    },
+    {
+      "path": "package-checks/pos-midnight-Asia-Taipei.json",
+      "bytes": 23266,
+      "sha256": "18bda1990de18a9c48a9da302242cd9a6301952b95c8a04472cc09803b845806"
+    },
+    {
+      "path": "package-checks/pos-midnight-Asia-Taipei.log",
+      "bytes": 125,
+      "sha256": "053bda6726fd2c5ec83ddad24835828d73cf5e623f9aaad39f25b5bcd4b70e1d"
+    },
+    {
+      "path": "package-checks/pos-midnight-UTC.json",
+      "bytes": 23252,
+      "sha256": "cc147f5c09c1b6cfe9ab320d9e108436a41ae9219683d49256b4621514999a20"
+    },
+    {
+      "path": "package-checks/pos-midnight-UTC.log",
+      "bytes": 117,
+      "sha256": "c8cd33a7a48427627b6adba334562efb4d2268f5b1c9bfcd07872451114583eb"
+    },
+    {
+      "path": "package-checks/pos-types.log",
+      "bytes": 325,
+      "sha256": "63783f4c148e78eebf5c5cc9d7503304b1074be92717666d9369e3d3d42d34b3"
+    },
+    {
+      "path": "package-checks/pos-ui-full-tests.json",
+      "bytes": 137789,
+      "sha256": "a58654eefca5bc10564e146548f95a59f0fbaf21dcaa24ada33a872593118202"
+    },
+    {
+      "path": "package-checks/pos-ui-full-tests.log",
+      "bytes": 4449,
+      "sha256": "94a0ee2e6fa9e9aee77e2d2077057cb74b36c6f67b57d8a3638d211a5e399e5d"
+    },
+    {
+      "path": "package-checks/results.json",
+      "bytes": 1104,
+      "sha256": "e5fe2a85915638708879fce0f0071785019316d460d924e26ffa3ac0db8c6bdb"
+    },
+    {
+      "path": "pr-107.json",
+      "bytes": 9895,
+      "sha256": "95f669bdc11f165839c45f27cbbc3431f26bd78d8b905f6ebab7c852f7cdc026"
+    },
+    {
+      "path": "pr-108.json",
+      "bytes": 13103,
+      "sha256": "95dfe68c1b43b9516e7a3f3cb41a772b17b92598c63941be69ff5fb7b8a664b2"
+    },
+    {
+      "path": "pr-109.json",
+      "bytes": 13527,
+      "sha256": "a7ef4686a40c56ee507e49eed4041fb5402b484e1b99f3efb02a74c0499c8e77"
+    },
+    {
+      "path": "pr-110.json",
+      "bytes": 12181,
+      "sha256": "464f0b84ec3bc2b32ced11e53873b6de20af382ff9458c6877788f85a329c841"
+    },
+    {
+      "path": "pr-111.json",
+      "bytes": 12631,
+      "sha256": "fd7e02e3873de083ed3d93b0a636ac7f84f9ce37d417af2175c6436f5d83ad6a"
+    },
+    {
+      "path": "pr-112.json",
+      "bytes": 13702,
+      "sha256": "7a63ef9c6ec9e90c1e756ec57bca747808683b3736d760638d81aebdab6030c3"
+    },
+    {
+      "path": "pr-113.json",
+      "bytes": 14830,
+      "sha256": "9cfcbd7012a43a3b2ac2b1590176774d491737aa2a1fe0dee3d7934eebab03cc"
+    },
+    {
+      "path": "pr-114.json",
+      "bytes": 8221,
+      "sha256": "93cf3f2575a87b1a30313d2a17ce60e777e8996d6c190074cb9ab92d9359bdcc"
+    },
+    {
+      "path": "pr-115.json",
+      "bytes": 9142,
+      "sha256": "6610822cc1e478691bbacd28483b5d90fddd9c9d38d9c92aa2b39d0996fbfda7"
+    },
+    {
+      "path": "pr-116.json",
+      "bytes": 8687,
+      "sha256": "b86df954ddad25de0ee5b57eb27aa4b6dd3e1ee4e61d094e264067cd41ae62c2"
+    },
+    {
+      "path": "pr-heads.bundle",
+      "bytes": 97019,
+      "sha256": "073c22c2da481d350aa7f41214df95dc4838a0e81ba8109c2d4e5359a41457ff"
+    },
+    {
+      "path": "pr116-final-checks.json",
+      "bytes": 4649,
+      "sha256": "597087f9920820810f47dcb74facd1b3f21f66432d7319eea1321eb839a41093"
+    },
+    {
+      "path": "remote-readback/107/systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+      "bytes": 15590,
+      "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+    },
+    {
+      "path": "remote-readback/107/systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+      "bytes": 3834,
+      "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+    },
+    {
+      "path": "remote-readback/107/systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+      "bytes": 7191,
+      "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+    },
+    {
+      "path": "remote-readback/108/systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+      "bytes": 8347,
+      "sha256": "b1a97b94f9a5a1074d4656fbc058e59f48c80fb411cd5b7fef6663a5bfb57491"
+    },
+    {
+      "path": "remote-readback/108/systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+      "bytes": 8111,
+      "sha256": "58385802a608d3b413f540b38a1bff8966050451f4e05b36a9dc5d4f41630bd5"
+    },
+    {
+      "path": "remote-readback/108/systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+      "bytes": 12850,
+      "sha256": "86cef95605cac5d6f0474ddc78118b70b506f3d5a5c8a918e55482a614948225"
+    },
+    {
+      "path": "remote-readback/108/systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+      "bytes": 12776,
+      "sha256": "d647ab1b8d95f68b08ca42d887112c06e6d28118b36a6632d2f07893d52c65f6"
+    },
+    {
+      "path": "remote-readback/108/systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs",
+      "bytes": 14944,
+      "sha256": "a33ec2800c15401d1d02666c032807194481e1c66d3210126906f5030a3eb299"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/infrastructure/verification/pos-category-lifecycle/README.md",
+      "bytes": 7373,
+      "sha256": "4b691856740419b0e5c4e00eb8c0152a514b84073549afe04f7b04450f3f9819"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/fixtures.ts",
+      "bytes": 10394,
+      "sha256": "c62867c0e46272c1edffcc83bf41434f654bd9c1c95d634722fc69c4b56f21d9"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/lifecycle.spec.ts",
+      "bytes": 9372,
+      "sha256": "37de44b5f6d36fec504b5fe66612d49211439e44d90332dfb0a8c93b2ee5cc32"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/native-browser.mjs",
+      "bytes": 8977,
+      "sha256": "9c8e3e304a115b115d6c8c817abba8d7110c2e177c4242060534b54540a1ba76"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/native-browser.test.mjs",
+      "bytes": 3165,
+      "sha256": "eedb72872121bc145641c32d5a5101b50bd3bb4364501099086fc66834d05a32"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/owned-run.mjs",
+      "bytes": 5865,
+      "sha256": "be59877e050ceb7bbd506802fdf2bffdc5de80537fcd2b7a8b03fb556ff000a7"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/owned-run.test.mjs",
+      "bytes": 6240,
+      "sha256": "e56190de9db7ccb69f44cfb8a0870ec375faf854114881ed7bb5690a295a92db"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/run.mjs",
+      "bytes": 14498,
+      "sha256": "81e7a2a121c91b9162fbfe255fb13c1ca42ce841268ad91a884df2f0559b9692"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native/run.test.mjs",
+      "bytes": 13353,
+      "sha256": "920028b44f5060de0106e990af7bca3fa533ba4f5b1b0d8180bf35da209175fd"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/e2e/category-native.config.mts",
+      "bytes": 1104,
+      "sha256": "34d426c9a861cd2df3cc52406b3f87b389c70a2eb84d7d130345dc75047cae40"
+    },
+    {
+      "path": "remote-readback/109/systems/enterprise-admin/pos-ui/MODULE.md",
+      "bytes": 12814,
+      "sha256": "7295f9be77c7b397a344942381a7220c3f90880220670b8b119279b43aca1ca7"
+    },
+    {
+      "path": "remote-readback/110/systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts",
+      "bytes": 2766,
+      "sha256": "c8ea7544a72f9b1df7f45a543d4c0f0dd7dcc232b7ae6482c673e502de923993"
+    },
+    {
+      "path": "remote-readback/110/systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts",
+      "bytes": 1583,
+      "sha256": "428d79bd6a2d4b2380571af5ed49923ddcfe3efb4bdb2a92d7fa18c2c845a608"
+    },
+    {
+      "path": "remote-readback/110/systems/enterprise-admin/backend/scripts/general-order-trace-local.ts",
+      "bytes": 12945,
+      "sha256": "b9b56da4d45425bfb6e31f27bc7dc5cc6d34fb971f15ef2920be663e2385b59f"
+    },
+    {
+      "path": "remote-readback/110/systems/enterprise-admin/backend/scripts/general-order-trace-owned.py",
+      "bytes": 7406,
+      "sha256": "60ea4a4f51e79d81e5354d0c659c232f8c8862536c2b701663e91803209de7e2"
+    },
+    {
+      "path": "remote-readback/110/systems/enterprise-admin/infrastructure/verification/general-order-trace/README.md",
+      "bytes": 5168,
+      "sha256": "172c6ab4ab4b87a7ef0cdffc9652a099a14899ec22b762a3c04cf574b65d7e67"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/MODULE.md",
+      "bytes": 15113,
+      "sha256": "05be50f8518a8ac1be02ba33eb56d0b938121795b8dce03f8dc60f750598e385"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts",
+      "bytes": 2768,
+      "sha256": "d1879364c3de426fc10e07d987dcdffe6f5f8fb641ad76af94c8016b52121f92"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/scripts/split-payment-guards.ts",
+      "bytes": 1583,
+      "sha256": "8aa50b09885ccd5540d6d6c48db78443cffcbbc1d1fd1dadc7e3fd1d3c94d50b"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+      "bytes": 16906,
+      "sha256": "32f9daca8f84be9afa14d63978495a8e2e428bfccd392a828b7bf2d17010d092"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/scripts/split-payment-owned.py",
+      "bytes": 7392,
+      "sha256": "39264c83a7f77e2212ee26309dfadec3bcd15cc822fa6f57399b2374f706c837"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+      "bytes": 5024,
+      "sha256": "03c6daae5631b43b8552d5dbbf6453d6c7b7abcc0712582a05595c60e0009cdb"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+      "bytes": 3984,
+      "sha256": "13301ac0f066c4ff523d0da2c23136c946bcd789e8b94100b19d08aa00f70423"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "bytes": 1577,
+      "sha256": "ac1964a46e8033c99a0dd60afaa7af7d30596022ebed9a7e699266b04f5b87cf"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "bytes": 4545,
+      "sha256": "fc0b80d15f162cc846540b4716d7e275c49f04b70b9b3be589c6cb197a80bcf0"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "bytes": 4700,
+      "sha256": "3c993c6e433f20c504d8ac7b79a64b5e84b7c7e57316a88a4349ee3061ac53b7"
+    },
+    {
+      "path": "remote-readback/111/systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md",
+      "bytes": 7282,
+      "sha256": "683704e4cd7b485cae7e213c0ebf2aa8451cbb56ee9ea51a4f702d878b5cfe9f"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/MODULE.md",
+      "bytes": 9144,
+      "sha256": "a4bf2b2e9eed9861bb6fc0d002cc8357960eb71ac21c131267e5358772e5fad8"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx",
+      "bytes": 17640,
+      "sha256": "f2a484b971be03bab0b024aa4ff4e71b37692b005be86d92427e85906721bf7a"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx",
+      "bytes": 7816,
+      "sha256": "a1d4c4e78a22cde18bb07862701e32f72458f68239d9ba5a7e225d121b630977"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+      "bytes": 18338,
+      "sha256": "dfb4ebdf0253a99615e40b29887e99560a21f1317ec5816f80a26433255f4aab"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+      "bytes": 15492,
+      "sha256": "dead53f9c6ad57bcd8c002a200ef57188fba8c42b6c812853d5973803e934f76"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/api/productBatches.ts",
+      "bytes": 2280,
+      "sha256": "874c5e666c02962d100b6b2be1377fce22b1e1a618ea61747c46c223ef18de4d"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductBatchesView.tsx",
+      "bytes": 3975,
+      "sha256": "3a5c4641c8f8ba4d3cb21d8bb8e05600634576941a060cdad22806517fa600c5"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.css",
+      "bytes": 1922,
+      "sha256": "72409905eab349d58d91c5ad59d09a45a13155691a6ffa98638d671c4284581a"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+      "bytes": 22659,
+      "sha256": "356be1ef29f63f6be749c53060be7df7fa44640d437e8a4f69ff77a4fb6c0dfc"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/infrastructure/verification/product-batch-navigation/README.md",
+      "bytes": 3816,
+      "sha256": "3fa0056a2eb371b9209c0e300af24c54474ffc4281045dd8189c79d40d5f313a"
+    },
+    {
+      "path": "remote-readback/112/systems/enterprise-admin/ROADMAP.md",
+      "bytes": 26632,
+      "sha256": "63348a80c7832aeae96a5ffcd194bcbaceac3b3443899a5c9bd7c22516dee593"
+    },
+    {
+      "path": "remote-readback/113/systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+      "bytes": 18926,
+      "sha256": "45f0ff3a0bdc0912bec0e1d2b337e5b994ab7ce3db2ce188d29f412bf8e6e41d"
+    },
+    {
+      "path": "remote-readback/113/systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+      "bytes": 7178,
+      "sha256": "99ac4adcb228e4e8592246a7eca5316af284acf05bc77cac1b39b550dfb8c6f6"
+    },
+    {
+      "path": "remote-readback/113/systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+      "bytes": 6031,
+      "sha256": "6276733a80cad6635ebced48342c34f0b634efef9806acc28933d0290bbed6e7"
+    },
+    {
+      "path": "remote-readback/113/systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "bytes": 1628,
+      "sha256": "05ee4674ee7b2cd2307cebbc74c8a2ff161435130d0b960306246868d29ea7ab"
+    },
+    {
+      "path": "remote-readback/113/systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md",
+      "bytes": 11563,
+      "sha256": "a8804b4abc0e2b903918d64b3f32983e6fbf8fa76865d7cc9161a49230822075"
+    },
+    {
+      "path": "remote-readback/114/systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+      "bytes": 5161,
+      "sha256": "09324f1fab9bfe2d3fd39e1cd9fdb6b6facce41650f1af9a1542743524a2930f"
+    },
+    {
+      "path": "remote-readback/114/systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "bytes": 16080,
+      "sha256": "42cd25ebc981905638fb4753e49c13d4b5866a1e6939f1756b9f0a65af055c2e"
+    },
+    {
+      "path": "remote-readback/114/systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md",
+      "bytes": 2181,
+      "sha256": "9c1a7b48a45d1cc79a9be455934c9444ac5978057391fa1634a5b0018bd43039"
+    },
+    {
+      "path": "remote-readback/115/systems/enterprise-admin/backend/scripts/order-sequence-ci.mjs",
+      "bytes": 15906,
+      "sha256": "e05a61ba16a294d30510c857134ddd8aef969c7f608c7c4932c4859b74bd616d"
+    },
+    {
+      "path": "remote-readback/115/systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+      "bytes": 14800,
+      "sha256": "30378b1d240275497c06c0f0951aeabb1e23acfa4034e171023812039e6cdb16"
+    },
+    {
+      "path": "remote-readback/115/systems/enterprise-admin/infrastructure/verification/pos-today-orders/native-postgres.md",
+      "bytes": 2651,
+      "sha256": "dab8b7e2288b86859f7b94bcedfa99f38da5a5d143232095ac684886c1ac216c"
+    },
+    {
+      "path": "remote-readback/116/systems/enterprise-admin/infrastructure/verification/pos-today-orders-midnight-cache/README.md",
+      "bytes": 3318,
+      "sha256": "2001899c03bfb35f2f10577b4619f30bc6a63b38f03a7df43373733a14ca4e47"
+    },
+    {
+      "path": "remote-readback/116/systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.midnight.test.tsx",
+      "bytes": 10671,
+      "sha256": "145418794d184624e8b3314660ea6dad1dc3e79ed35bad6391e6ac1bac256d0a"
+    },
+    {
+      "path": "remote-readback/116/systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx",
+      "bytes": 40057,
+      "sha256": "0f2b6678b9142a127865cf8a95195c1853a473a33abf0bb3c4f421f28f32f957"
+    },
+    {
+      "path": "remote-readback/116/systems/enterprise-admin/pos-ui/src/components/OrderLookupModal.tsx",
+      "bytes": 6515,
+      "sha256": "da4c6bbb00fed7346968d9b8979ef9f5b41bd21a8ce9c91276561ed257d09d3a"
+    },
+    {
+      "path": "remote-readback/116/systems/enterprise-admin/pos-ui/src/hooks/useTodayOrders.ts",
+      "bytes": 2630,
+      "sha256": "a1aece9b39e49569cddc8486107fd4756a63d77fa7284d2259e13a121f0aad0b"
+    },
+    {
+      "path": "remote-readback/integration.json",
+      "bytes": 206,
+      "sha256": "109a553aa0a96b30204f9de117b2d59c607e78ad752f19254ed00b108be20a30"
+    },
+    {
+      "path": "remote-readback/manifest.json",
+      "bytes": 33773,
+      "sha256": "af32b0ada660fef9480962561faf02ec1dd1e9cec66b0b9feb8e99eab6bf23dc"
+    },
+    {
+      "path": "windows-native-visibility/case-1366.json",
+      "bytes": 893,
+      "sha256": "b26cac98b4d631afe5187620b3627208ca6d34fc0d8c35de4c0b2f0b7edcd42e"
+    },
+    {
+      "path": "windows-native-visibility/chrome-1366.log",
+      "bytes": 835,
+      "sha256": "ed1a1993983bbe498d39d9416a60fea9266b30e3dee08840438b13f25044d200"
+    },
+    {
+      "path": "windows-native-visibility-2/case-1366.json",
+      "bytes": 940,
+      "sha256": "0b5c44e8267eeff31e4b0123e836bcdfb2cc4b58415c53dd5cd0946bc4b5d94b"
+    },
+    {
+      "path": "windows-native-visibility-2/chrome-1366.log",
+      "bytes": 758,
+      "sha256": "9e6a6373a3461a7740ef67532fd993c5a48379dac235b64225fdefb16fd88ddb"
+    },
+    {
+      "path": "windows-native-visibility-3/case-1366.json",
+      "bytes": 1113,
+      "sha256": "8a1d5adecddb7b6df2bead25195e8c39419d7a34b9043727414103e652ea6311"
+    },
+    {
+      "path": "windows-native-visibility-3/chrome-1366.log",
+      "bytes": 684,
+      "sha256": "022e0999dc01239ca785cd49b2cb477741202f65fc09155e19013d179cb6f96a"
+    }
+  ]
+}

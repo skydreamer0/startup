@@ -1,0 +1,16 @@
+{
+  "sourceHead": "9ce542d03737bbca835c41606079b29138cf1759",
+  "success": false,
+  "passed": 371,
+  "failed": 1,
+  "skipped": 81,
+  "failures": [
+    {
+      "file": "C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "test": "Checkout command recovery (real PostgreSQL) rolls back after a real process crash before commit and recovers in a new process",
+      "messages": [
+        "AssertionError: expected null to be 'SIGKILL' // Object.is equality\n    at C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts:221:69\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/User/Documents/Codex/2026-10-11/task-4/startup-acceptance/systems/enterprise-admin/backend/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+      ]
+    }
+  ]
+}

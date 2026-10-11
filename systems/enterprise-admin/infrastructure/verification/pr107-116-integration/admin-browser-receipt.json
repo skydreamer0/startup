@@ -1,0 +1,226 @@
+{
+  "head": "af485491b592740e0ea77836961127a51063b09b",
+  "scope": "Actual built Admin UI + sandboxed Windows headless Chrome + synthetic HTTP boundary; no native visibility/API/DB/device claim",
+  "cases": [
+    {
+      "width": 1366,
+      "checks": [
+        "row navigation, heading focus, existing page/filter, lazy hidden lists",
+        "return restores filter/page and opener focus",
+        "browser Forward and reload preserve selection",
+        "403 distinct from empty; manual retry",
+        "null and numbered trace rendered; Escape restores focus"
+      ],
+      "reads": [
+        "/auth/me",
+        "/tenants/me/plan",
+        "/inventory/products?lowStock=true&page=2",
+        "/inventory/suppliers",
+        "/product-batches?productId=synthetic-product",
+        "/inventory/products?lowStock=true&page=2",
+        "/product-batches?productId=synthetic-product",
+        "/auth/me",
+        "/product-batches?productId=synthetic-product",
+        "/tenants/me/plan",
+        "/auth/me",
+        "/product-batches?productId=synthetic-product",
+        "/tenants/me/plan",
+        "/product-batches?productId=synthetic-product",
+        "/auth/me",
+        "/product-batches",
+        "/inventory/products?page=1",
+        "/tenants/me/plan",
+        "/product-batches/synthetic-batch"
+      ],
+      "unexpected": [],
+      "errors": [],
+      "status": "passed",
+      "heading": {
+        "text": "商品批次",
+        "codepoints": [
+          21830,
+          21697,
+          25209,
+          27425
+        ],
+        "box": {
+          "x": 300,
+          "y": 32,
+          "width": 894,
+          "height": 31.1875,
+          "top": 32,
+          "right": 1194,
+          "bottom": 63.1875,
+          "left": 300
+        }
+      },
+      "contextClosed": true
+    },
+    {
+      "width": 1024,
+      "checks": [
+        "row navigation, heading focus, existing page/filter, lazy hidden lists",
+        "return restores filter/page and opener focus",
+        "browser Forward and reload preserve selection",
+        "403 distinct from empty; manual retry",
+        "null and numbered trace rendered; Escape restores focus"
+      ],
+      "reads": [
+        "/auth/me",
+        "/tenants/me/plan",
+        "/inventory/products?lowStock=true&page=2",
+        "/inventory/suppliers",
+        "/product-batches?productId=synthetic-product",
+        "/inventory/products?lowStock=true&page=2",
+        "/product-batches?productId=synthetic-product",
+        "/auth/me",
+        "/product-batches?productId=synthetic-product",
+        "/tenants/me/plan",
+        "/auth/me",
+        "/product-batches?productId=synthetic-product",
+        "/tenants/me/plan",
+        "/product-batches?productId=synthetic-product",
+        "/auth/me",
+        "/product-batches",
+        "/inventory/products?page=1",
+        "/tenants/me/plan",
+        "/product-batches/synthetic-batch"
+      ],
+      "unexpected": [],
+      "errors": [],
+      "status": "passed",
+      "heading": {
+        "text": "商品批次",
+        "codepoints": [
+          21830,
+          21697,
+          25209,
+          27425
+        ],
+        "box": {
+          "x": 112,
+          "y": 32,
+          "width": 740,
+          "height": 31.1875,
+          "top": 32,
+          "right": 852,
+          "bottom": 63.1875,
+          "left": 112
+        }
+      },
+      "contextClosed": true
+    },
+    {
+      "width": 390,
+      "checks": [
+        "row navigation, heading focus, existing page/filter, lazy hidden lists",
+        "return restores filter/page and opener focus",
+        "browser Forward and reload preserve selection",
+        "403 distinct from empty; manual retry",
+        "null and numbered trace rendered; Escape restores focus"
+      ],
+      "reads": [
+        "/auth/me",
+        "/tenants/me/plan",
+        "/inventory/products?lowStock=true&page=2",
+        "/inventory/suppliers",
+        "/product-batches?productId=synthetic-product",
+        "/inventory/products?lowStock=true&page=2",
+        "/product-batches?productId=synthetic-product",
+        "/auth/me",
+        "/product-batches?productId=synthetic-product",
+        "/tenants/me/plan",
+        "/auth/me",
+        "/product-batches?productId=synthetic-product",
+        "/tenants/me/plan",
+        "/product-batches?productId=synthetic-product",
+        "/auth/me",
+        "/product-batches",
+        "/inventory/products?page=1",
+        "/tenants/me/plan",
+        "/product-batches/synthetic-batch"
+      ],
+      "unexpected": [],
+      "errors": [],
+      "status": "passed",
+      "heading": {
+        "text": "商品批次",
+        "codepoints": [
+          21830,
+          21697,
+          25209,
+          27425
+        ],
+        "box": {
+          "x": 112,
+          "y": 32,
+          "width": 238,
+          "height": 31.1875,
+          "top": 32,
+          "right": 350,
+          "bottom": 63.1875,
+          "left": 112
+        }
+      },
+      "contextClosed": true
+    }
+  ],
+  "cleanup": {
+    "browserDisconnected": true,
+    "temporaryProfileRemoved": true,
+    "serverClosed": true
+  },
+  "chrome": "155.0.8059.40",
+  "arguments": [
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "--disable-field-trial-config",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-back-forward-cache",
+    "--disable-breakpad",
+    "--disable-client-side-phishing-detection",
+    "--disable-component-extensions-with-background-pages",
+    "--disable-component-update",
+    "--no-default-browser-check",
+    "--disable-default-apps",
+    "--disable-dev-shm-usage",
+    "--disable-edgeupdater",
+    "--disable-extensions",
+    "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+    "--enable-features=CDPScreenshotNewSurface",
+    "--allow-pre-commit-input",
+    "--disable-hang-monitor",
+    "--disable-ipc-flooding-protection",
+    "--disable-popup-blocking",
+    "--disable-prompt-on-repost",
+    "--disable-renderer-backgrounding",
+    "--disable-updater-scheduler",
+    "--force-color-profile=srgb",
+    "--metrics-recording-only",
+    "--no-first-run",
+    "--password-store=basic",
+    "--use-mock-keychain",
+    "--no-service-autorun",
+    "--export-tagged-pdf",
+    "--disable-search-engine-choice-screen",
+    "--unsafely-disable-devtools-self-xss-warnings",
+    "--edge-skip-compat-layer-relaunch",
+    "--disable-infobars",
+    "--disable-search-engine-choice-screen",
+    "--disable-sync",
+    "--enable-unsafe-swiftshader",
+    "--headless",
+    "--hide-scrollbars",
+    "--mute-audio",
+    "--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4",
+    "--enable-automation",
+    "--user-data-dir=C:\\Users\\User\\AppData\\Local\\Temp\\playwright_chromiumdev_profile-NQB7jc",
+    "--remote-debugging-pipe",
+    "--no-startup-window",
+    "--noerrdialogs",
+    "--flag-switches-begin",
+    "--flag-switches-end",
+    "--enable-unsafe-swiftshader"
+  ]
+}

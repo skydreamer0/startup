@@ -1,0 +1,894 @@
+[
+  {
+    "pr": 107,
+    "head": "1b93f45ef5ee5f15974862a4fe61261d50dad6e1",
+    "tree": "2220fe94205404df953eb72247224bed963889eb",
+    "parents": [
+      "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4"
+    ],
+    "base": "master",
+    "branch": "fix/batch-trace-null-order-number",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+        "blob": "b0ecf75a5aa1b14c9c8f8ce6c2d5462522d01a68",
+        "bytes": 15590,
+        "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+        "blob": "5e5ca4fe2e32edf40ac78247fc67166d31cb4baa",
+        "bytes": 3834,
+        "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+        "blob": "995a7e16718e47cc172d1615df042e6f42e4d4d5",
+        "bytes": 7191,
+        "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38056931220/job/114227219268"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38056931220/job/114227219241"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38056931220/job/114227219266"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38056931220/job/114227219194"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-10T13:50:11Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38056931220/job/114227219089",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-10T13:45:15Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/107"
+  },
+  {
+    "pr": 108,
+    "head": "7500af3ac984f3886db54bdb175f9eeab2ec67ae",
+    "tree": "230593349461b23e89b3e4f1762c1fbb9b223392",
+    "parents": [
+      "1b93f45ef5ee5f15974862a4fe61261d50dad6e1"
+    ],
+    "base": "fix/batch-trace-null-order-number",
+    "branch": "test/batch-trace-null-browser-20261010",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+        "blob": "3bf4498f142cee7d4ca627971748080e4d085fa5",
+        "bytes": 8347,
+        "sha256": "b1a97b94f9a5a1074d4656fbc058e59f48c80fb411cd5b7fef6663a5bfb57491"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+        "blob": "9162a36185253565cfc9b18a3148c75304fc418b",
+        "bytes": 8111,
+        "sha256": "58385802a608d3b413f540b38a1bff8966050451f4e05b36a9dc5d4f41630bd5"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+        "blob": "3728f10400cc9fe1f75ef7420fdc9e26c54782df",
+        "bytes": 12850,
+        "sha256": "86cef95605cac5d6f0474ddc78118b70b506f3d5a5c8a918e55482a614948225"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+        "blob": "c54c7f93ebfe3799a46c0541857858b51e87a113",
+        "bytes": 12776,
+        "sha256": "d647ab1b8d95f68b08ca42d887112c06e6d28118b36a6632d2f07893d52c65f6"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs",
+        "blob": "431d8905495dd531ed44ea189cd75eabb36878fe",
+        "bytes": 14944,
+        "sha256": "a33ec2800c15401d1d02666c032807194481e1c66d3210126906f5030a3eb299"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38065523455/job/114252253847"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38065523455/job/114252253853"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38065523455/job/114252253747"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38065523455/job/114252253900"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-10T15:59:32Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38065523455/job/114252253936",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-10T15:54:50Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/108"
+  },
+  {
+    "pr": 109,
+    "head": "a8a248dc5b46dd24487a9b742a6c50606c3c3063",
+    "tree": "701c622087a591f7f7ff310010143769769d8a3c",
+    "parents": [
+      "c0195f6af6c6b39827676e7713bd1145c0857918"
+    ],
+    "base": "master",
+    "branch": "fix/pos-category-native-context-20261010",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-category-lifecycle/README.md",
+        "blob": "d151aed70f6b86cfd8a931fd13258f46cbdc32e5",
+        "bytes": 7373,
+        "sha256": "4b691856740419b0e5c4e00eb8c0152a514b84073549afe04f7b04450f3f9819"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/MODULE.md",
+        "blob": "d49017da497741713465175c0bbfa27ec63f4000",
+        "bytes": 12814,
+        "sha256": "7295f9be77c7b397a344942381a7220c3f90880220670b8b119279b43aca1ca7"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native.config.mts",
+        "blob": "450315a0625f5574d80c73b0539cf0f8b6b9606d",
+        "bytes": 1104,
+        "sha256": "34d426c9a861cd2df3cc52406b3f87b389c70a2eb84d7d130345dc75047cae40"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/fixtures.ts",
+        "blob": "983bbe23d8c486200d1108a5a968315b35329eb6",
+        "bytes": 10394,
+        "sha256": "c62867c0e46272c1edffcc83bf41434f654bd9c1c95d634722fc69c4b56f21d9"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/lifecycle.spec.ts",
+        "blob": "3a3e0efb7c0f102abb63f720530288a27220a6fb",
+        "bytes": 9372,
+        "sha256": "37de44b5f6d36fec504b5fe66612d49211439e44d90332dfb0a8c93b2ee5cc32"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/native-browser.mjs",
+        "blob": "f17b02aaf0791f273d36b0298eb9e2a59150e14f",
+        "bytes": 8977,
+        "sha256": "9c8e3e304a115b115d6c8c817abba8d7110c2e177c4242060534b54540a1ba76"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/native-browser.test.mjs",
+        "blob": "494cf2ef8862d64b0f2dde003634a450543577eb",
+        "bytes": 3165,
+        "sha256": "eedb72872121bc145641c32d5a5101b50bd3bb4364501099086fc66834d05a32"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/owned-run.mjs",
+        "blob": "92439387293da50ee30ec41a293dcfc621860822",
+        "bytes": 5865,
+        "sha256": "be59877e050ceb7bbd506802fdf2bffdc5de80537fcd2b7a8b03fb556ff000a7"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/owned-run.test.mjs",
+        "blob": "8b79d124e68831b88af32ab45784496ba70bede9",
+        "bytes": 6240,
+        "sha256": "e56190de9db7ccb69f44cfb8a0870ec375faf854114881ed7bb5690a295a92db"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/run.mjs",
+        "blob": "a9c6909a36d7ca3a6c02a539864c9b3ba4d5683e",
+        "bytes": 14498,
+        "sha256": "81e7a2a121c91b9162fbfe255fb13c1ca42ce841268ad91a884df2f0559b9692"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/category-native/run.test.mjs",
+        "blob": "61ad0f067b0e8ea0e0320a3aa5585ecf8412bbfe",
+        "bytes": 13353,
+        "sha256": "920028b44f5060de0106e990af7bca3fa533ba4f5b1b0d8180bf35da209175fd"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38068343726/job/114391149901"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38068343726/job/114391150554"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38068343726/job/114391133353"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38068343726/job/114391149112"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-11T04:48:51Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38068343726/job/114391132803",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-11T04:45:57Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/109"
+  },
+  {
+    "pr": 110,
+    "head": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+    "tree": "b7562defd76bb883d6b0a068db784ccebb85da2e",
+    "parents": [
+      "7500af3ac984f3886db54bdb175f9eeab2ec67ae"
+    ],
+    "base": "test/batch-trace-null-browser-20261010",
+    "branch": "test/general-order-native-trace-20261010",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts",
+        "blob": "aba04bc86b1d7982b5536bc7f3bd94e6531505a7",
+        "bytes": 2766,
+        "sha256": "c8ea7544a72f9b1df7f45a543d4c0f0dd7dcc232b7ae6482c673e502de923993"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts",
+        "blob": "79187e227b16d0b9eef37bce05c7a4400cfa579b",
+        "bytes": 1583,
+        "sha256": "428d79bd6a2d4b2380571af5ed49923ddcfe3efb4bdb2a92d7fa18c2c845a608"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-local.ts",
+        "blob": "c6783b1176f233586d73bdf6832abca1dd2b1cd3",
+        "bytes": 12945,
+        "sha256": "b9b56da4d45425bfb6e31f27bc7dc5cc6d34fb971f15ef2920be663e2385b59f"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-owned.py",
+        "blob": "a679ff7649389c59a5b667865c3922d29cb0df7d",
+        "bytes": 7406,
+        "sha256": "60ea4a4f51e79d81e5354d0c659c232f8c8862536c2b701663e91803209de7e2"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/general-order-trace/README.md",
+        "blob": "e37ee12376064d73f3b796a5cc63e2024c370d90",
+        "bytes": 5168,
+        "sha256": "172c6ab4ab4b87a7ef0cdffc9652a099a14899ec22b762a3c04cf574b65d7e67"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38073073561/job/114274315025"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38073073561/job/114274315087"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38073073561/job/114274315156"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38073073561/job/114274314957"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-10T17:50:25Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38073073561/job/114274315060",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-10T17:46:02Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/110"
+  },
+  {
+    "pr": 111,
+    "head": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64",
+    "tree": "68959e0dbd985caeccf90a119fd8bd51cd7c7817",
+    "parents": [
+      "ecd21a22cbac45ceca5b3edff81cbf1efd00bf62"
+    ],
+    "base": "master",
+    "branch": "fix/split-payment-totals-20261010",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/backend/MODULE.md",
+        "blob": "cdd48069210b73a6ce729a3999f48fdb65c258cc",
+        "bytes": 15113,
+        "sha256": "05be50f8518a8ac1be02ba33eb56d0b938121795b8dce03f8dc60f750598e385"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts",
+        "blob": "c32c263d11a326d1459f56c97fd32f3422ff59a6",
+        "bytes": 2768,
+        "sha256": "d1879364c3de426fc10e07d987dcdffe6f5f8fb641ad76af94c8016b52121f92"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-guards.ts",
+        "blob": "9636dd5938b121ccb2ae831340eb2642681e7aef",
+        "bytes": 1583,
+        "sha256": "8aa50b09885ccd5540d6d6c48db78443cffcbbc1d1fd1dadc7e3fd1d3c94d50b"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+        "blob": "770729423b1300638a9a9c1e6f1d6f48a9e64402",
+        "bytes": 16906,
+        "sha256": "32f9daca8f84be9afa14d63978495a8e2e428bfccd392a828b7bf2d17010d092"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-owned.py",
+        "blob": "ff06331a1e109449531c8152287f57e2090a322e",
+        "bytes": 7392,
+        "sha256": "39264c83a7f77e2212ee26309dfadec3bcd15cc822fa6f57399b2374f706c837"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+        "blob": "ebb10a998329928b0178113ce45b968e36f4d51f",
+        "bytes": 5024,
+        "sha256": "03c6daae5631b43b8552d5dbbf6453d6c7b7abcc0712582a05595c60e0009cdb"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+        "blob": "fa82bbb3e17a53b40b5611628a82ce9f89084abc",
+        "bytes": 3984,
+        "sha256": "13301ac0f066c4ff523d0da2c23136c946bcd789e8b94100b19d08aa00f70423"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+        "blob": "1b203f5f5b182a91a50d4854ef21f698df2ca70a",
+        "bytes": 1577,
+        "sha256": "ac1964a46e8033c99a0dd60afaa7af7d30596022ebed9a7e699266b04f5b87cf"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+        "blob": "05714e2c102945758c2d099cf0509248f8d898a5",
+        "bytes": 4545,
+        "sha256": "fc0b80d15f162cc846540b4716d7e275c49f04b70b9b3be589c6cb197a80bcf0"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+        "blob": "270461afbbdc1d89f9badda0a3e547c4ea97ccf3",
+        "bytes": 4700,
+        "sha256": "3c993c6e433f20c504d8ac7b79a64b5e84b7c7e57316a88a4349ee3061ac53b7"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md",
+        "blob": "696d5510ef0d7497ab04f291e21db3035ea8db68",
+        "bytes": 7282,
+        "sha256": "683704e4cd7b485cae7e213c0ebf2aa8451cbb56ee9ea51a4f702d878b5cfe9f"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38076667539/job/114284974003"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38076667539/job/114284974146"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38076667539/job/114284974170"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38076667539/job/114284974108"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-10T18:44:17Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38076667539/job/114284974158",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-10T18:39:37Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/111"
+  },
+  {
+    "pr": 112,
+    "head": "d856456b901f9adea602b5ba3a6a109aa3e42279",
+    "tree": "e1741483b0a08257b46adacc52d1757bb85b05dc",
+    "parents": [
+      "d360ca77977485a6b4d896128ba131586fc730d7"
+    ],
+    "base": "master",
+    "branch": "feat/product-batch-navigation-20261011",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/ROADMAP.md",
+        "blob": "f5d69c61432d3701ba66c988caf9d18b21a38b1a",
+        "bytes": 26632,
+        "sha256": "63348a80c7832aeae96a5ffcd194bcbaceac3b3443899a5c9bd7c22516dee593"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+        "blob": "f747497a2ecee6602175867563a4d69b81aa4e71",
+        "bytes": 9144,
+        "sha256": "a4bf2b2e9eed9861bb6fc0d002cc8357960eb71ac21c131267e5358772e5fad8"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx",
+        "blob": "d4353e250db0138630ef82e4c543f46cbf23be7a",
+        "bytes": 17640,
+        "sha256": "f2a484b971be03bab0b024aa4ff4e71b37692b005be86d92427e85906721bf7a"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx",
+        "blob": "422752558f02935911c3515b5b55cbaf01752797",
+        "bytes": 7816,
+        "sha256": "a1d4c4e78a22cde18bb07862701e32f72458f68239d9ba5a7e225d121b630977"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+        "blob": "540a63d5b7d8b94cd98e3bfe37db32f273dfa630",
+        "bytes": 18338,
+        "sha256": "dfb4ebdf0253a99615e40b29887e99560a21f1317ec5816f80a26433255f4aab"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+        "blob": "51a0055eb9fbbad916fb07150a285cacfb19292c",
+        "bytes": 15492,
+        "sha256": "dead53f9c6ad57bcd8c002a200ef57188fba8c42b6c812853d5973803e934f76"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/productBatches.ts",
+        "blob": "0d0fb8864dd87dd5b16436c0579aa5664b0bbc84",
+        "bytes": 2280,
+        "sha256": "874c5e666c02962d100b6b2be1377fce22b1e1a618ea61747c46c223ef18de4d"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductBatchesView.tsx",
+        "blob": "b010f031b11e8f8e251740559c3ae521a6672147",
+        "bytes": 3975,
+        "sha256": "3a5c4641c8f8ba4d3cb21d8bb8e05600634576941a060cdad22806517fa600c5"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.css",
+        "blob": "78eb8c2a2d3e5a4fe72e7feee5ed6e3c90a15154",
+        "bytes": 1922,
+        "sha256": "72409905eab349d58d91c5ad59d09a45a13155691a6ffa98638d671c4284581a"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+        "blob": "c4b52485bb5b99fb1f6bb0154ce4b6d58d092019",
+        "bytes": 22659,
+        "sha256": "356be1ef29f63f6be749c53060be7df7fa44640d437e8a4f69ff77a4fb6c0dfc"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/product-batch-navigation/README.md",
+        "blob": "678fe7b61d90223340ceec31403593da9e3e7583",
+        "bytes": 3816,
+        "sha256": "3fa0056a2eb371b9209c0e300af24c54474ffc4281045dd8189c79d40d5f313a"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38111477758/job/114387786396"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38111477758/job/114387786382"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38111477758/job/114387786317"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38111477758/job/114387786391"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-11T04:29:18Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38111477758/job/114387786230",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-11T04:24:27Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/112"
+  },
+  {
+    "pr": 113,
+    "head": "dfdf2654705e69e9c6d46dd691381c53f6dcf27b",
+    "tree": "2c7e128fe7326ff6822cf804b886da8150b409a8",
+    "parents": [
+      "81b924784be8832b2545fb5a5fb2477770372f27"
+    ],
+    "base": "fix/split-payment-totals-20261010",
+    "branch": "fix/order-total-precision-20261011",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+        "blob": "9b1fdb0ab6aaeb13d1d7c86698e12bd0b7c61800",
+        "bytes": 18926,
+        "sha256": "45f0ff3a0bdc0912bec0e1d2b337e5b994ab7ce3db2ce188d29f412bf8e6e41d"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+        "blob": "5accad2292fdccb8585b6b16b313b98a50a249e4",
+        "bytes": 7178,
+        "sha256": "99ac4adcb228e4e8592246a7eca5316af284acf05bc77cac1b39b550dfb8c6f6"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+        "blob": "a2c48d0e42c338108ea21ed7ccef59176c9fb48e",
+        "bytes": 6031,
+        "sha256": "6276733a80cad6635ebced48342c34f0b634efef9806acc28933d0290bbed6e7"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+        "blob": "c69e60907251dfe90717bf2a60891f18592aaa4f",
+        "bytes": 1628,
+        "sha256": "05ee4674ee7b2cd2307cebbc74c8a2ff161435130d0b960306246868d29ea7ab"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md",
+        "blob": "4e200d0fbc2597cbe1b893659853dd60657769fc",
+        "bytes": 11563,
+        "sha256": "a8804b4abc0e2b903918d64b3f32983e6fbf8fa76865d7cc9161a49230822075"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38112686469/job/114391339851"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38112686469/job/114391339854"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38112686469/job/114391339886"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38112686469/job/114391339852"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-11T04:51:38Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38112686469/job/114391339802",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-11T04:47:18Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/113"
+  },
+  {
+    "pr": 114,
+    "head": "2881f6399101a583c1eb41300064f5631eba2a93",
+    "tree": "22682dcb4fc17bd668c5a14986c1d3add84c638c",
+    "parents": [
+      "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4"
+    ],
+    "base": "master",
+    "branch": "fix/issue30-pos-taipei-today-20261011",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts",
+        "blob": "b258776dd7256335a6bb3d7e3faef0c96b4e5e7e",
+        "bytes": 5161,
+        "sha256": "09324f1fab9bfe2d3fd39e1cd9fdb6b6facce41650f1af9a1542743524a2930f"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+        "blob": "63814fd9fe8933ae050bd8a342066e669547ede6",
+        "bytes": 16080,
+        "sha256": "42cd25ebc981905638fb4753e49c13d4b5866a1e6939f1756b9f0a65af055c2e"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders/README.md",
+        "blob": "16915fe07cc3e9c4bfbfc4fdc1f390151555de63",
+        "bytes": 2181,
+        "sha256": "9c1a7b48a45d1cc79a9be455934c9444ac5978057391fa1634a5b0018bd43039"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38113422259/job/114393482655"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38113422259/job/114393482874"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38113422259/job/114393482845"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38113422259/job/114393482805"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-11T05:05:48Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38113422259/job/114393482798",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-11T05:01:04Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/114"
+  },
+  {
+    "pr": 115,
+    "head": "013d3713e1611db9e533fddff3ca32f60e138da1",
+    "tree": "17a1312e34043237ca745e9ecbf3333eff492797",
+    "parents": [
+      "2881f6399101a583c1eb41300064f5631eba2a93"
+    ],
+    "base": "fix/issue30-pos-taipei-today-20261011",
+    "branch": "chore/issue30-today-orders-native-20261011",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/backend/scripts/order-sequence-ci.mjs",
+        "blob": "54416c556aa80a41227338cdc3e1cb770c04898f",
+        "bytes": 15906,
+        "sha256": "e05a61ba16a294d30510c857134ddd8aef969c7f608c7c4932c4859b74bd616d"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+        "blob": "4e9a43602c3e115200c101bb290f89f10c547399",
+        "bytes": 14800,
+        "sha256": "30378b1d240275497c06c0f0951aeabb1e23acfa4034e171023812039e6cdb16"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders/native-postgres.md",
+        "blob": "ed24475f0c0aa663def0ff0023d2c28d29e03c89",
+        "bytes": 2651,
+        "sha256": "dab8b7e2288b86859f7b94bcedfa99f38da5a5d143232095ac684886c1ac216c"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38114407958/job/114396329303"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38114407958/job/114396329298"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38114407958/job/114396329277"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38114407958/job/114396329297"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-11T05:23:57Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38114407958/job/114396329156",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-11T05:19:26Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/115"
+  },
+  {
+    "pr": 116,
+    "head": "947e5a5d5b07562c2dd6baa72519d443e2ba740c",
+    "tree": "d54eb745c004156683b57b02ba27cc6ab2ef4700",
+    "parents": [
+      "be06d13a67012e7a0a9c6989587a2ca53db953ec"
+    ],
+    "base": "fix/issue30-pos-taipei-today-20261011",
+    "branch": "fix/issue31-today-orders-midnight-cache-20261011",
+    "files": [
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/pos-today-orders-midnight-cache/README.md",
+        "blob": "9863182c74207c2f2b0a4f71638e08a5de6225a5",
+        "bytes": 3318,
+        "sha256": "2001899c03bfb35f2f10577b4619f30bc6a63b38f03a7df43373733a14ca4e47"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.midnight.test.tsx",
+        "blob": "3e6821f59a6a360f3e3fea394f218127d3fbed8f",
+        "bytes": 10671,
+        "sha256": "145418794d184624e8b3314660ea6dad1dc3e79ed35bad6391e6ac1bac256d0a"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx",
+        "blob": "934051ce3db7dd4ecd537acc97e92fa8f1dd662e",
+        "bytes": 40057,
+        "sha256": "0f2b6678b9142a127865cf8a95195c1853a473a33abf0bb3c4f421f28f32f957"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/components/OrderLookupModal.tsx",
+        "blob": "d2ef594b1ebd7b3baca7d354d2251d6406852958",
+        "bytes": 6515,
+        "sha256": "da4c6bbb00fed7346968d9b8979ef9f5b41bd21a8ce9c91276561ed257d09d3a"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/src/hooks/useTodayOrders.ts",
+        "blob": "eac195a2baf584c4eaf270cb4c9c244a1c2c8405",
+        "bytes": 2630,
+        "sha256": "a1aece9b39e49569cddc8486107fd4756a63d77fa7284d2259e13a121f0aad0b"
+      }
+    ],
+    "coreChecks": [
+      {
+        "name": "Agent Context Validation",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38117083681/job/114404010081"
+      },
+      {
+        "name": "Backend CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38117083681/job/114404009912"
+      },
+      {
+        "name": "Admin UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38117083681/job/114404010010"
+      },
+      {
+        "name": "POS UI CI",
+        "result": "SUCCESS",
+        "status": "COMPLETED",
+        "url": "https://github.com/skydreamer0/startup/actions/runs/38117083681/job/114404010189"
+      }
+    ],
+    "failed": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-11T06:13:06Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/skydreamer0/startup/actions/runs/38117083681/job/114404010151",
+        "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+        "startedAt": "2026-10-11T06:08:30Z",
+        "status": "COMPLETED",
+        "workflowName": "CI/CD Pipeline"
+      }
+    ],
+    "reviews": [],
+    "url": "https://github.com/skydreamer0/startup/pull/116"
+  }
+]

@@ -1,0 +1,658 @@
+[
+  {
+    "evidencePath": "exact-snapshots/pr110-native",
+    "sourceHead": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+    "sourceTree": "b7562defd76bb883d6b0a068db784ccebb85da2e",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "acceptance.json": {
+      "status": "passed",
+      "sourceHead": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+      "cases": [
+        {
+          "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+          "status": "passed"
+        },
+        {
+          "name": "actual receipt API creates batch and persisted IN source",
+          "status": "passed"
+        },
+        {
+          "name": "actual general order API persists null number and durable allocation",
+          "status": "passed"
+        },
+        {
+          "name": "real POS numbered order coexists with general-order null in batch HTTP payload",
+          "status": "passed"
+        },
+        {
+          "name": "order HTTP readback returns the same real batch allocation",
+          "status": "passed"
+        },
+        {
+          "name": "tenant/RBAC/unauthenticated/missing reads reject without data changes",
+          "status": "passed"
+        },
+        {
+          "name": "actual 132 allocations return exactly latest 100 with full count and preserved receipt",
+          "status": "passed"
+        },
+        {
+          "name": "fresh database client preserves null/order/receipt links after HTTP reads",
+          "status": "passed"
+        }
+      ],
+      "httpExchanges": 142,
+      "fixtures": {
+        "tenantIds": [
+          "55e3b4da-eb0b-4f6f-8fb0-af0873aa199f",
+          "9eabfd97-2635-4f48-b030-03989b2bdf48"
+        ],
+        "productId": "75a830ce-add0-48f0-837d-2c2d8850e94a",
+        "batchId": "cecc49df-f461-4d6a-9e6f-77e83c39bcc4",
+        "generalId": "90e1675e-7095-4ddf-a741-8efec964a541",
+        "posId": "5f41adae-ec75-4e99-ac6d-cfda7b1a9e80"
+      },
+      "limits": [
+        "No browser/UI/device acceptance",
+        "No full business gates",
+        "No production data or deployment",
+        "Cleanup is a separate owner-runner receipt"
+      ]
+    },
+    "cases.json": [
+      {
+        "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+        "status": "passed"
+      },
+      {
+        "name": "actual receipt API creates batch and persisted IN source",
+        "status": "passed"
+      },
+      {
+        "name": "actual general order API persists null number and durable allocation",
+        "status": "passed"
+      },
+      {
+        "name": "real POS numbered order coexists with general-order null in batch HTTP payload",
+        "status": "passed"
+      },
+      {
+        "name": "order HTTP readback returns the same real batch allocation",
+        "status": "passed"
+      },
+      {
+        "name": "tenant/RBAC/unauthenticated/missing reads reject without data changes",
+        "status": "passed"
+      },
+      {
+        "name": "actual 132 allocations return exactly latest 100 with full count and preserved receipt",
+        "status": "passed"
+      },
+      {
+        "name": "fresh database client preserves null/order/receipt links after HTTP reads",
+        "status": "passed"
+      }
+    ],
+    "adapter-delta.json": {
+      "original": "systems\\enterprise-admin\\backend\\scripts\\general-order-trace-local.ts",
+      "originalSha256": "b9b56da4d45425bfb6e31f27bc7dc5cc6d34fb971f15ef2920be663e2385b59f",
+      "executedSha256": "ae9e0ad85b741a8f384d1dab2fc4a162b424a791f5ffdfb7107a990266271b4a",
+      "replacement": "normalize PG Windows directory slash style before unchanged exact identity comparison; no assertion removed"
+    },
+    "suite-process.json": {
+      "exitCode": 0
+    }
+  },
+  {
+    "evidencePath": "exact-snapshots/pr111-native",
+    "sourceHead": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64",
+    "sourceTree": "68959e0dbd985caeccf90a119fd8bd51cd7c7817",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "acceptance.json": {
+      "status": "passed",
+      "sourceHead": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64",
+      "cases": [
+        {
+          "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+          "status": "passed"
+        },
+        {
+          "name": "actual receipt API establishes synthetic stock for split checkouts",
+          "status": "passed"
+        },
+        {
+          "name": "100 = cash 60 + card 40 reconciles persisted payments and both real HTTP readers",
+          "status": "passed"
+        },
+        {
+          "name": "reversed payment order and CARD primary still reconcile; same-command retry adds no facts",
+          "status": "passed"
+        },
+        {
+          "name": "cash/card/LINE_PAY/TRANSFER/OTHER and repeated rows sum once per stored method",
+          "status": "passed"
+        },
+        {
+          "name": "legacy completed order without payment rows retains primary-method fallback",
+          "status": "passed"
+        },
+        {
+          "name": "refund and non-completed cohorts preserve pre-patch output; this is NOT accepted refund policy",
+          "status": "passed"
+        },
+        {
+          "name": "tenant-scoped payment rows exclude a synthetic foreign relation without reader writes",
+          "status": "passed"
+        },
+        {
+          "name": "both readers reject cross-tenant, missing, unauthenticated and unauthorized requests without writes",
+          "status": "passed"
+        },
+        {
+          "name": "stored TRANSFER0.1 + OTHER0.2 combines to numeric daily otherAmount0.3",
+          "status": "passed"
+        },
+        {
+          "name": "stored Decimal cash0.1 + cash0.2 returns numeric0.3 from both HTTP readers",
+          "status": "passed"
+        }
+      ],
+      "httpExchanges": 36,
+      "limits": [
+        "Only completed-order split-payment classification is corrected",
+        "Refund status/filter/arithmetic intentionally unchanged and not approved policy",
+        "Only persisted-payment grouping precision; no writer/rounding/overflow/refund/cost/date policy acceptance",
+        "No browser/UI/device/production/full business gates",
+        "Cleanup is a separate receipt"
+      ]
+    },
+    "cases.json": [
+      {
+        "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+        "status": "passed"
+      },
+      {
+        "name": "actual receipt API establishes synthetic stock for split checkouts",
+        "status": "passed"
+      },
+      {
+        "name": "100 = cash 60 + card 40 reconciles persisted payments and both real HTTP readers",
+        "status": "passed"
+      },
+      {
+        "name": "reversed payment order and CARD primary still reconcile; same-command retry adds no facts",
+        "status": "passed"
+      },
+      {
+        "name": "cash/card/LINE_PAY/TRANSFER/OTHER and repeated rows sum once per stored method",
+        "status": "passed"
+      },
+      {
+        "name": "legacy completed order without payment rows retains primary-method fallback",
+        "status": "passed"
+      },
+      {
+        "name": "refund and non-completed cohorts preserve pre-patch output; this is NOT accepted refund policy",
+        "status": "passed"
+      },
+      {
+        "name": "tenant-scoped payment rows exclude a synthetic foreign relation without reader writes",
+        "status": "passed"
+      },
+      {
+        "name": "both readers reject cross-tenant, missing, unauthenticated and unauthorized requests without writes",
+        "status": "passed"
+      },
+      {
+        "name": "stored TRANSFER0.1 + OTHER0.2 combines to numeric daily otherAmount0.3",
+        "status": "passed"
+      },
+      {
+        "name": "stored Decimal cash0.1 + cash0.2 returns numeric0.3 from both HTTP readers",
+        "status": "passed"
+      }
+    ],
+    "adapter-delta.json": {
+      "original": "systems\\enterprise-admin\\backend\\scripts\\split-payment-local.ts",
+      "originalSha256": "32f9daca8f84be9afa14d63978495a8e2e428bfccd392a828b7bf2d17010d092",
+      "executedSha256": "5285dd65fa364ea30dc4daa833b53302b691b478fc340fbcf9bbb207076ad0c7",
+      "replacement": "normalize PG Windows directory slash style before unchanged exact identity comparison; no assertion removed"
+    },
+    "suite-process.json": {
+      "exitCode": 0
+    }
+  },
+  {
+    "evidencePath": "exact-snapshots/pr113-native",
+    "sourceHead": "dfdf2654705e69e9c6d46dd691381c53f6dcf27b",
+    "sourceTree": "2c7e128fe7326ff6822cf804b886da8150b409a8",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "acceptance.json": {
+      "status": "passed",
+      "sourceHead": "dfdf2654705e69e9c6d46dd691381c53f6dcf27b",
+      "cases": [
+        {
+          "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+          "status": "passed"
+        },
+        {
+          "name": "actual receipt API establishes synthetic stock for split checkouts",
+          "status": "passed"
+        },
+        {
+          "name": "100 = cash 60 + card 40 reconciles persisted payments and both real HTTP readers",
+          "status": "passed"
+        },
+        {
+          "name": "reversed payment order and CARD primary still reconcile; same-command retry adds no facts",
+          "status": "passed"
+        },
+        {
+          "name": "cash/card/LINE_PAY/TRANSFER/OTHER and repeated rows sum once per stored method",
+          "status": "passed"
+        },
+        {
+          "name": "legacy completed order without payment rows retains primary-method fallback",
+          "status": "passed"
+        },
+        {
+          "name": "refund and non-completed cohorts preserve pre-patch output; this is NOT accepted refund policy",
+          "status": "passed"
+        },
+        {
+          "name": "tenant-scoped payment rows exclude a synthetic foreign relation without reader writes",
+          "status": "passed"
+        },
+        {
+          "name": "both readers reject cross-tenant, missing, unauthenticated and unauthorized requests without writes",
+          "status": "passed"
+        },
+        {
+          "name": "stored TRANSFER0.1 + OTHER0.2 combines to numeric daily otherAmount0.3",
+          "status": "passed"
+        },
+        {
+          "name": "stored Decimal cash0.1 + cash0.2 returns numeric0.3 from both HTTP readers",
+          "status": "passed"
+        },
+        {
+          "name": "separate stored orders 0.1 + 0.2 return numeric totalSales and grossSales 0.3 without writes",
+          "status": "passed"
+        }
+      ],
+      "httpExchanges": 40,
+      "limits": [
+        "Only completed-order split-payment classification is corrected",
+        "Refund status/filter/arithmetic intentionally unchanged and not approved policy",
+        "Only persisted-payment grouping precision; no writer/rounding/overflow/refund/cost/date policy acceptance",
+        "No browser/UI/device/production/full business gates",
+        "Cleanup is a separate receipt"
+      ]
+    },
+    "cases.json": [
+      {
+        "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+        "status": "passed"
+      },
+      {
+        "name": "actual receipt API establishes synthetic stock for split checkouts",
+        "status": "passed"
+      },
+      {
+        "name": "100 = cash 60 + card 40 reconciles persisted payments and both real HTTP readers",
+        "status": "passed"
+      },
+      {
+        "name": "reversed payment order and CARD primary still reconcile; same-command retry adds no facts",
+        "status": "passed"
+      },
+      {
+        "name": "cash/card/LINE_PAY/TRANSFER/OTHER and repeated rows sum once per stored method",
+        "status": "passed"
+      },
+      {
+        "name": "legacy completed order without payment rows retains primary-method fallback",
+        "status": "passed"
+      },
+      {
+        "name": "refund and non-completed cohorts preserve pre-patch output; this is NOT accepted refund policy",
+        "status": "passed"
+      },
+      {
+        "name": "tenant-scoped payment rows exclude a synthetic foreign relation without reader writes",
+        "status": "passed"
+      },
+      {
+        "name": "both readers reject cross-tenant, missing, unauthenticated and unauthorized requests without writes",
+        "status": "passed"
+      },
+      {
+        "name": "stored TRANSFER0.1 + OTHER0.2 combines to numeric daily otherAmount0.3",
+        "status": "passed"
+      },
+      {
+        "name": "stored Decimal cash0.1 + cash0.2 returns numeric0.3 from both HTTP readers",
+        "status": "passed"
+      },
+      {
+        "name": "separate stored orders 0.1 + 0.2 return numeric totalSales and grossSales 0.3 without writes",
+        "status": "passed"
+      }
+    ],
+    "adapter-delta.json": {
+      "original": "systems\\enterprise-admin\\backend\\scripts\\split-payment-local.ts",
+      "originalSha256": "45f0ff3a0bdc0912bec0e1d2b337e5b994ab7ce3db2ce188d29f412bf8e6e41d",
+      "executedSha256": "f66cc9c7b4cb99a256272ef861abf9ffad5f2f0351a288341827dba1e359ad4f",
+      "replacement": "normalize PG Windows directory slash style before unchanged exact identity comparison; no assertion removed"
+    },
+    "suite-process.json": {
+      "exitCode": 0
+    }
+  },
+  {
+    "evidencePath": "exact-snapshots/pr115-native",
+    "sourceHead": "013d3713e1611db9e533fddff3ca32f60e138da1",
+    "sourceTree": "17a1312e34043237ca745e9ecbf3333eff492797",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "suite-process.json": {
+      "exitCode": 0
+    }
+  },
+  {
+    "evidencePath": "integrated-backend-owned-full-1",
+    "sourceHead": "9ce542d03737bbca835c41606079b29138cf1759",
+    "sourceTree": "c4db4834bb832146ca928f2af4a6dfb7e1a62269",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "suite-process.json": {
+      "exitCode": 1
+    }
+  },
+  {
+    "evidencePath": "integrated-general-trace-native-1",
+    "sourceHead": "a550797778d639de768eb5a0cfb85520ab69a271",
+    "sourceTree": "e99cc666265667870141a5825968c0e3b6a2b14e",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "acceptance.json": {
+      "status": "passed",
+      "sourceHead": "a550797778d639de768eb5a0cfb85520ab69a271",
+      "cases": [
+        {
+          "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+          "status": "passed"
+        },
+        {
+          "name": "actual receipt API creates batch and persisted IN source",
+          "status": "passed"
+        },
+        {
+          "name": "actual general order API persists null number and durable allocation",
+          "status": "passed"
+        },
+        {
+          "name": "real POS numbered order coexists with general-order null in batch HTTP payload",
+          "status": "passed"
+        },
+        {
+          "name": "order HTTP readback returns the same real batch allocation",
+          "status": "passed"
+        },
+        {
+          "name": "tenant/RBAC/unauthenticated/missing reads reject without data changes",
+          "status": "passed"
+        },
+        {
+          "name": "actual 132 allocations return exactly latest 100 with full count and preserved receipt",
+          "status": "passed"
+        },
+        {
+          "name": "fresh database client preserves null/order/receipt links after HTTP reads",
+          "status": "passed"
+        }
+      ],
+      "httpExchanges": 142,
+      "fixtures": {
+        "tenantIds": [
+          "111bf11e-7432-49ff-ac4d-f21b7975eb55",
+          "51c0f9a7-8b24-4150-a568-d60d50c50746"
+        ],
+        "productId": "76ca59e4-8e81-43da-8b96-651c90ee240e",
+        "batchId": "d53fc557-a267-4fd5-b5f1-cc166ba20622",
+        "generalId": "4a891e5b-afad-463c-adc8-ac4014538991",
+        "posId": "15e86f1e-c590-4aaa-b2b6-cbd139156382"
+      },
+      "limits": [
+        "No browser/UI/device acceptance",
+        "No full business gates",
+        "No production data or deployment",
+        "Cleanup is a separate owner-runner receipt"
+      ]
+    },
+    "cases.json": [
+      {
+        "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+        "status": "passed"
+      },
+      {
+        "name": "actual receipt API creates batch and persisted IN source",
+        "status": "passed"
+      },
+      {
+        "name": "actual general order API persists null number and durable allocation",
+        "status": "passed"
+      },
+      {
+        "name": "real POS numbered order coexists with general-order null in batch HTTP payload",
+        "status": "passed"
+      },
+      {
+        "name": "order HTTP readback returns the same real batch allocation",
+        "status": "passed"
+      },
+      {
+        "name": "tenant/RBAC/unauthenticated/missing reads reject without data changes",
+        "status": "passed"
+      },
+      {
+        "name": "actual 132 allocations return exactly latest 100 with full count and preserved receipt",
+        "status": "passed"
+      },
+      {
+        "name": "fresh database client preserves null/order/receipt links after HTTP reads",
+        "status": "passed"
+      }
+    ],
+    "adapter-delta.json": {
+      "original": "systems\\enterprise-admin\\backend\\scripts\\general-order-trace-local.ts",
+      "originalSha256": "b9b56da4d45425bfb6e31f27bc7dc5cc6d34fb971f15ef2920be663e2385b59f",
+      "executedSha256": "ae9e0ad85b741a8f384d1dab2fc4a162b424a791f5ffdfb7107a990266271b4a",
+      "replacement": "normalize PG Windows directory slash style before unchanged exact identity comparison; no assertion removed"
+    },
+    "suite-process.json": {
+      "exitCode": 0
+    }
+  },
+  {
+    "evidencePath": "integrated-sequence-native-1",
+    "sourceHead": "a550797778d639de768eb5a0cfb85520ab69a271",
+    "sourceTree": "e99cc666265667870141a5825968c0e3b6a2b14e",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "suite-process.json": {
+      "exitCode": 0
+    }
+  },
+  {
+    "evidencePath": "integrated-split-native-2",
+    "sourceHead": "a550797778d639de768eb5a0cfb85520ab69a271",
+    "sourceTree": "e99cc666265667870141a5825968c0e3b6a2b14e",
+    "cleanup": {
+      "ownedDatabaseAbsent": true,
+      "postgresStopped": true,
+      "ownedDirectoryAbsent": true,
+      "tcpClosed": true,
+      "adapterRemoved": true
+    },
+    "acceptance.json": {
+      "status": "passed",
+      "sourceHead": "a550797778d639de768eb5a0cfb85520ab69a271",
+      "cases": [
+        {
+          "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+          "status": "passed"
+        },
+        {
+          "name": "actual receipt API establishes synthetic stock for split checkouts",
+          "status": "passed"
+        },
+        {
+          "name": "100 = cash 60 + card 40 reconciles persisted payments and both real HTTP readers",
+          "status": "passed"
+        },
+        {
+          "name": "reversed payment order and CARD primary still reconcile; same-command retry adds no facts",
+          "status": "passed"
+        },
+        {
+          "name": "cash/card/LINE_PAY/TRANSFER/OTHER and repeated rows sum once per stored method",
+          "status": "passed"
+        },
+        {
+          "name": "legacy completed order without payment rows retains primary-method fallback",
+          "status": "passed"
+        },
+        {
+          "name": "refund and non-completed cohorts preserve pre-patch output; this is NOT accepted refund policy",
+          "status": "passed"
+        },
+        {
+          "name": "tenant-scoped payment rows exclude a synthetic foreign relation without reader writes",
+          "status": "passed"
+        },
+        {
+          "name": "both readers reject cross-tenant, missing, unauthenticated and unauthorized requests without writes",
+          "status": "passed"
+        },
+        {
+          "name": "stored TRANSFER0.1 + OTHER0.2 combines to numeric daily otherAmount0.3",
+          "status": "passed"
+        },
+        {
+          "name": "stored Decimal cash0.1 + cash0.2 returns numeric0.3 from both HTTP readers",
+          "status": "passed"
+        },
+        {
+          "name": "separate stored orders 0.1 + 0.2 return numeric totalSales and grossSales 0.3 without writes",
+          "status": "passed"
+        }
+      ],
+      "httpExchanges": 40,
+      "limits": [
+        "Only completed-order split-payment classification is corrected",
+        "Refund status/filter/arithmetic intentionally unchanged and not approved policy",
+        "Only persisted-payment grouping precision; no writer/rounding/overflow/refund/cost/date policy acceptance",
+        "No browser/UI/device/production/full business gates",
+        "Cleanup is a separate receipt"
+      ]
+    },
+    "cases.json": [
+      {
+        "name": "same-executor HTTP client → unchanged app readiness → owned PostgreSQL",
+        "status": "passed"
+      },
+      {
+        "name": "actual receipt API establishes synthetic stock for split checkouts",
+        "status": "passed"
+      },
+      {
+        "name": "100 = cash 60 + card 40 reconciles persisted payments and both real HTTP readers",
+        "status": "passed"
+      },
+      {
+        "name": "reversed payment order and CARD primary still reconcile; same-command retry adds no facts",
+        "status": "passed"
+      },
+      {
+        "name": "cash/card/LINE_PAY/TRANSFER/OTHER and repeated rows sum once per stored method",
+        "status": "passed"
+      },
+      {
+        "name": "legacy completed order without payment rows retains primary-method fallback",
+        "status": "passed"
+      },
+      {
+        "name": "refund and non-completed cohorts preserve pre-patch output; this is NOT accepted refund policy",
+        "status": "passed"
+      },
+      {
+        "name": "tenant-scoped payment rows exclude a synthetic foreign relation without reader writes",
+        "status": "passed"
+      },
+      {
+        "name": "both readers reject cross-tenant, missing, unauthenticated and unauthorized requests without writes",
+        "status": "passed"
+      },
+      {
+        "name": "stored TRANSFER0.1 + OTHER0.2 combines to numeric daily otherAmount0.3",
+        "status": "passed"
+      },
+      {
+        "name": "stored Decimal cash0.1 + cash0.2 returns numeric0.3 from both HTTP readers",
+        "status": "passed"
+      },
+      {
+        "name": "separate stored orders 0.1 + 0.2 return numeric totalSales and grossSales 0.3 without writes",
+        "status": "passed"
+      }
+    ],
+    "adapter-delta.json": {
+      "original": "systems\\enterprise-admin\\backend\\scripts\\split-payment-local.ts",
+      "originalSha256": "45f0ff3a0bdc0912bec0e1d2b337e5b994ab7ce3db2ce188d29f412bf8e6e41d",
+      "executedSha256": "f66cc9c7b4cb99a256272ef861abf9ffad5f2f0351a288341827dba1e359ad4f",
+      "replacement": "normalize PG Windows directory slash style before unchanged exact identity comparison; no assertion removed"
+    },
+    "suite-process.json": {
+      "exitCode": 0
+    }
+  }
+]
