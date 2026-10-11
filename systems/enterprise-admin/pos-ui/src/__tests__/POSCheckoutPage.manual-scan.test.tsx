@@ -160,7 +160,7 @@ describe('manual scan + real POS page/scanner/cart integration', () => {
     const { opener } = await setup(); fireEvent.click(opener);
     const cart = useCartStore.getState();
     act(() => {
-      useCheckoutRecoveryStore.getState().prepare({ commandId: 'synthetic-command',
+      useCheckoutRecoveryStore.getState().prepare({ commandId: 'synthetic-command', shiftId: 'shift-1',
         cartItems: [{ productId: existing.id, quantity: 1, discountRate: 0 }], paymentMethod: 'CASH', orderDiscountAmount: 0 },
       { items: cart.items, orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1' });
       useCheckoutRecoveryStore.getState().mark('conflict');
