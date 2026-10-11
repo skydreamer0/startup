@@ -8,8 +8,11 @@ existing fields and other methods to `otherAmount`; shift reports retain method
 keys. Repeated methods are added with the existing Prisma.Decimal type. Daily
 settlement passes its final method grouping into the same helper so TRANSFER and
 OTHER are added before conversion, not recombined as Numbers. Each payment group
-converts to Number only at the existing numeric response boundary. Order count
-and sale-total arithmetic remain unchanged and order-derived.
+converts to Number only at the existing numeric response boundary. Order counts
+remain unchanged. Order-derived sale totals also add persisted amounts with
+Prisma.Decimal, then convert once to Number, avoiding intermediate binary drift
+between separate orders (for example, 0.1 + 0.2). No total is derived from or
+normalized to the payment sum.
 An empty payment relation explicitly falls back to the order's primary method
 and total, preserving legacy orders. Existing zero or inconsistent payment rows
 are not repaired, allocated, or replaced with a fabricated residual.
@@ -29,12 +32,49 @@ from silently deciding refund policy. Do not release financial reporting on this
 slice's evidence. Full #30, G1 and the other business/deployment gates remain open.
 
 No schema, writer, refund event, business date, historical cost, rounding, change,
-provider payment, or payment-allocation policy changes. Numeric API fields, Number-based order-total arithmetic and refund formulas remain.
-Only grouping/summing already stored payment amounts uses Decimal. No rounding,
+provider payment, or payment-allocation policy changes. Numeric API fields and
+refund formulas remain. Grouping/summing already stored payment amounts and
+order sale totals uses Decimal. No explicit rounding,
 quantization or residual correction is added. This is not end-to-end exact-money
-or maximum-range/overflow acceptance.
+or maximum-range/overflow acceptance. The existing Decimal implementation has
+finite precision, and the Number response boundary remains lossy for amounts
+beyond Number precision; this patch does not change either contract.
 
-## Verification
+## Order-total precision follow-up (stacked on #111)
+
+This follow-up starts at #111 head `cb39ce50d56ede45a42e8369dff5f0c2f257fe64`
+(tree `68959e0dbd985caeccf90a119fd8bd51cd7c7817`), with master still
+`83a1b15cf156c7b0b409ee96b2fabab67b9c74e4` at author verification. Its only runtime
+change is the helper's order-total accumulator and final Number conversion.
+Payment classification, tenant scopes, cohorts, queries, refund/discount/net/cash
+formulas, writers and schema are unchanged. Net/cash formulas may still produce
+binary drift; compatibility is not refund-policy approval.
+
+- Original-helper negative control with the new tests: 22 passed / 11 failed.
+  Both readers reproduced order-total `0.30000000000000004` while the classified
+  cash sum was `0.3`. The changed helper passes all 33 pure/mocked cases.
+- Backend build, backend and focused-test typechecks, full backend ESLint,
+  context validation and unchanged ownership guards (14/14) passed. Prettier's
+  check fails on the same three source/test files at both the #111 base and this
+  follow-up; no broad formatting-only rewrite is included or claimed as passing.
+- Tests cover separate Decimal/string/number totals, signed cancellation,
+  negative and zero stored facts, four-decimal values, unchanged empty counts,
+  fallback/status classification and inconsistent-payment sums without repair.
+  The pure-only five-decimal and unsafe-integer cases are outside Order's
+  Decimal(12, 4) storage contract: they establish no added quantization and the
+  existing lossy Number boundary, not native storage/range acceptance.
+- Runtime: Node 24.19.0 / npm 11.9.0, standalone backend `npm ci` using the unchanged
+  lockfile. The required Node 22 / npm 11.21.0 environment was not used. No
+  dependency, workflow, browser, database, schema or security setting changes.
+- Fresh native PostgreSQL/HTTP, browser/device, full financial/G1 and exact-head
+  CI acceptance remain open. This checkout has no PostgreSQL installation; no
+  installation or existing-database fallback was attempted. Independent review
+  of this follow-up is separate from #111's historical evidence. Keep Draft.
+- This stacked change depends on #111 and inherits its unresolved acceptance
+  gates, including the reported category lifecycle/browser CI gate. No merge or
+  deployment is authorized by this evidence.
+
+## Historical #111 verification (not rerun by the follow-up)
 
 - Precise mocked-reader RED: daily 100 cash / 0 card; shift opening 200 gave cash
   balance 300 instead of 260 for cash 60 + card 40. Both failures were observed.
@@ -52,7 +92,8 @@ or maximum-range/overflow acceptance.
   return numeric0.3. Each RED ran the original nine cases successfully first and
   failed the added case, then verified all three owned-resource cleanup checks.
   The follow-up also covers repeated methods across orders and fallback/status
-  classification without changing the original order-total calculation.
+  classification. That #111 slice did not change order-total calculation; the
+  separately bounded follow-up above does.
 - Both readers are surrounded by complete application-table snapshots. No row
   changes are allowed. Real receipts and checkout are synthetic fixtures only.
 - The first native attempt passed eight cases then failed because the harness

@@ -18,9 +18,9 @@ export function aggregateOrderPayments(
   paymentGroup: (method: string) => string = (method) => method,
 ) {
   const byMethod = new Map<string, Prisma.Decimal>();
-  let totalSales = 0;
+  let totalSales = new Prisma.Decimal(0);
   for (const order of orders) {
-    totalSales += Number(order.totalAmount);
+    totalSales = totalSales.plus(order.totalAmount);
     const payments = order.status === 'completed' && order.payments.length > 0
       ? order.payments
       : [{ method: order.paymentMethod, amount: order.totalAmount }];
@@ -34,5 +34,5 @@ export function aggregateOrderPayments(
   const paymentBreakdown = Object.fromEntries(
     Array.from(byMethod, ([method, amount]): [string, number] => [method, amount.toNumber()]),
   );
-  return { totalSales, paymentBreakdown };
+  return { totalSales: totalSales.toNumber(), paymentBreakdown };
 }
