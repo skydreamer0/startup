@@ -73,9 +73,16 @@ function handleKeydown(e: KeyboardEvent) {
     if (code.length >= 3) e.preventDefault();
     endSequence(code.length >= 3 ? 'completed' : 'cancelled');
     if (code.length >= 3) {
-      subscribers.forEach((cb) => cb(code));
+      // Isolate observers without logging raw scan data or callback error details.
+      subscribers.forEach((cb) => {
+        try { cb(code); }
+        catch { console.error('barcodeService: legacy subscriber failed'); }
+      });
       // Opt-in evidence stream; never connected to the legacy cart hook.
-      scanResultSubscribers.forEach((cb) => cb(captureKeyboardScan(literal)));
+      scanResultSubscribers.forEach((cb) => {
+        try { cb(captureKeyboardScan(literal)); }
+        catch { console.error('barcodeService: evidence subscriber failed'); }
+      });
     }
     return;
   }

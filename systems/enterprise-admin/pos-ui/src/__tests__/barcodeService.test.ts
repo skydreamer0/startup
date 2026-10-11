@@ -259,4 +259,47 @@ describe('barcodeService', () => {
     } finally { unsubscribe(); }
   });
 
+  it.each(['legacy', 'evidence'] as const)('isolates a throwing %s subscriber and preserves subsequent scans', (broken) => {
+    const calls: string[] = [];
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let shouldThrow = true;
+    const unsubscribers = [
+      onBarcode((code) => {
+        calls.push(`legacy1:${code}`);
+        if (broken === 'legacy' && shouldThrow) throw new Error(`private scan: ${code}`);
+      }),
+      onBarcode((code) => calls.push(`legacy2:${code}`)),
+      onScanResult((result) => {
+        calls.push(`evidence1:${result.literal}`);
+        // Simulate an untyped observer mutating the readonly contract at runtime.
+        Object.assign(result.decoder, { name: 'observer mutation' });
+        Object.assign(result.evidence, { hardwareVerified: true });
+        if (broken === 'evidence' && shouldThrow) throw new Error(`private scan: ${result.literal}`);
+      }),
+      onScanResult((result) => {
+        calls.push(`evidence2:${result.literal}`);
+        expect(result.decoder.name).toBe('keyboard-wedge-text');
+        expect(result.evidence.hardwareVerified).toBe(false);
+      }),
+    ];
+    try {
+      startBarcodeListener();
+      for (const literal of [' ABC ', 'NEXT']) {
+        for (const key of literal) press(key);
+        const enter = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
+        document.dispatchEvent(enter);
+        expect(enter.defaultPrevented).toBe(true);
+        shouldThrow = false;
+      }
+      expect(calls).toEqual([
+        'legacy1:ABC', 'legacy2:ABC', 'evidence1: ABC ', 'evidence2: ABC ',
+        'legacy1:NEXT', 'legacy2:NEXT', 'evidence1:NEXT', 'evidence2:NEXT',
+      ]);
+      expect(error.mock.calls).toEqual([[`barcodeService: ${broken} subscriber failed`]]);
+    } finally {
+      unsubscribers.forEach((unsubscribe) => unsubscribe());
+      error.mockRestore();
+    }
+  });
+
 });
