@@ -11,14 +11,40 @@ import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
+import { importRequestAllowed, readImportRequest, files, assertImportNetwork } from './import-contract.mjs';
 import { cleanupRunProcesses, findRunProcesses, signalRunProcess, createRunScope, readRunIdentity, isBaselineIdentity } from './owned-run.mjs';
 
 const report = () => ({ errors: [], suites: [{ specs: expectedCases.map(title => ({ title, ok: true,
   tests: [{ expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', errors: [], duration: 1, attachments: [] }] }] })) }] });
-test('registry retains original 22 warning cases and adds two read-only trace flows', () => {
-  assert.equal(expectedCases.length, 24); assert.equal(new Set(expectedCases).size, 24);
-  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ')).length, 22);
-  assert.equal(assertReport(report()).length, 24);
+test('registry retains original 24 cases and adds nine bounded import flows', () => {
+  assert.equal(expectedCases.length, 33); assert.equal(new Set(expectedCases).size, 33);
+  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ') && !name.startsWith('import ')).length, 22);
+  assert.equal(assertReport(report()).length, 33);
+});
+test('synthetic import allowance never admits another origin, path, query or method', () => {
+  const origin = 'http://127.0.0.1:4287', target = `${origin}/api/v1/admin/excel/import/products/preview`;
+  assert.equal(importRequestAllowed('POST', target, origin), true);
+  for (const [method, url] of [['GET', target], ['PUT', target], ['POST', `${target}?x=1`],
+    ['POST', target.replace('4287', '4288')], ['POST', target.replace('preview', 'other')],
+    ['POST', 'https://example.invalid/api/v1/admin/excel/import/products/confirm']])
+    assert.equal(importRequestAllowed(method, url, origin), false);
+});
+test('import multipart guard requires only known synthetic bytes and matching fields', async () => {
+  const payload = async (file, token, extra = false) => {
+    const body = new FormData(); body.append('file', new File([file.buffer], file.name));
+    if (token !== undefined) body.append('previewToken', token);
+    if (extra) body.append('unexpected', 'value');
+    const response = new Response(body);
+    return [response.headers.get('content-type'), Buffer.from(await response.arrayBuffer())];
+  };
+  const target = 'http://127.0.0.1:4287/api/v1/admin/excel/import/products/';
+  const entry = await readImportRequest(`${target}confirm`, ...await payload(files[0], 'synthetic-token-a'));
+  assertImportNetwork({ imports: [entry] });
+  for (const [file, token, extra] of [[files[0], undefined, false], [files[0], 'unknown-token', false],
+    [files[0], 'synthetic-token-a', true], [{ ...files[0], buffer: Buffer.from('not synthetic') }, 'synthetic-token-a', false]])
+    await assert.rejects(readImportRequest(`${target}confirm`, ...await payload(file, token, extra)));
+  await assert.rejects(readImportRequest(`${target}preview`, ...await payload(files[0], 'synthetic-token-a')));
+  assert.throws(() => assertImportNetwork({ imports: [{ ...entry, fileSha256: 'wrong' }] }));
 });
 for (const [name, change] of [
   ['missing case', r => r.suites[0].specs.pop()],
@@ -163,7 +189,7 @@ test('locked Playwright loader collects all cases without launching a browser', 
       'test', '--config=e2e/admin-margin-warning/playwright.config.mts', '--list'], {
       cwd: pos, env: childEnvironment(process.env, output, randomUUID()), encoding: 'utf8', timeout: 20000,
     });
-    assert.match(listed, /Total: 24 tests in 2 files/);
+    assert.match(listed, /Total: 33 tests in 3 files/);
     for (const name of expectedCases) assert.ok(listed.includes(name), name);
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
 });

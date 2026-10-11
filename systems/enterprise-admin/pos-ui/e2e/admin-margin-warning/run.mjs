@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { resolveProvenance } from '../ui-evidence/provenance.mjs';
 import { expectedCases } from './cases.mjs';
+import { assertImportNetwork } from './import-contract.mjs';
 import { validatePng, validateTraceDesktopPng } from './png.mjs';
 import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
 import { cleanupRunProcesses, createRunScope } from './owned-run.mjs';
@@ -67,9 +68,15 @@ export function validateEvidence(output, cases) {
     const data = JSON.parse(assertAttachment(output, network.path));
     assert.equal(data.title, item.title); assert.equal(data.syntheticHttp, true); assert.equal(data.physicalDevice, false);
     assert.deepEqual(data.unexpected, []); assert.deepEqual(data.pageErrors, []); assert.ok(data.browser);
+    if (item.title.startsWith('import ')) assertImportNetwork(data);
     const images = item.attachments.filter(a => a.name.endsWith('.png'));
     const suffix = item.title.split(': ')[1];
-    const required = {
+    const required = item.title.startsWith('import ') ? ({
+      'keyboard and idle dismissal': ['import-open'],
+      'preview pending recovery': ['preview-pending', 'preview-recovered'],
+      'confirm pending pairing': ['confirm-pending', 'import-complete'],
+      'confirmation failure reset': ['confirmation-error'],
+    }[suffix] ?? (suffix.startsWith('late ') ? ['late-response-ignored'] : null)) : {
       'pending and empty': ['loading', 'empty'],
       'success and inputs': ['keyboard-open', 'pointer-open', 'closed'],
       'initial error and recovery': ['initial-error', 'error-recovered'],
@@ -102,6 +109,13 @@ export function validateEvidence(output, cases) {
         assert.ok(geometry.scrollWidth <= geometry.clientWidth + 1);
         assert.ok(geometry.targets.length >= 1);
         for (const target of geometry.targets) assert.ok(target.width >= 44 && target.height >= 44);
+      } else if (item.title.startsWith('import ')) {
+        assert.equal(geometry.subject, 'import-dialog');
+        assert.equal(geometry.focusInside, true);
+        assert.equal(geometry.viewport.width, item.title.includes(' 390:') ? 390 : 1440);
+        assert.ok(geometry.dialog.width > 0 && geometry.dialog.height > 0);
+        assert.ok(geometry.dialog.x >= 0 && geometry.dialog.right <= geometry.viewport.width + 1);
+        assert.ok(geometry.scrollWidth <= geometry.clientWidth + 1);
       } else assertCjkFonts(geometry.platformFonts, geometry.detailsOpen);
       return { name: image.name, sha256: createHash('sha256').update(bytes).digest('hex'),
         ...dimensions,
@@ -131,7 +145,7 @@ async function main() {
   fs.mkdirSync(output, { recursive: false });
   const write = (name, value) => fs.writeFileSync(path.join(output, name), JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
   const identity = { ...provenance, nonce: randomUUID(), node: process.version, runId: process.env.GITHUB_RUN_ID,
-    attempt: process.env.GITHUB_RUN_ATTEMPT, scope: 'actual Admin Google Chrome UI with synthetic HTTP; no backend/database',
+    attempt: process.env.GITHUB_RUN_ATTEMPT, scope: 'actual Admin Google Chrome UI with synthetic HTTP; import POSTs fulfilled only in browser routing; no backend/database',
     browserChannel: 'chrome', browserSandbox: true, apiProxy: false, serviceWorkers: 'blocked', webSockets: 'blocked', syntheticAuth: true };
   write('source.json', identity);
   write('source-hashes.json', Object.fromEntries(git('ls-files', '--', ...sourceInputs).split('\n').map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
@@ -160,7 +174,8 @@ async function main() {
     accepted = { ...identity, status: 'passed', cases, phases,
       visualReview: 'PNG pixels require separate independent review; automated checks alone are not full visual acceptance',
       knownLimits: ['Existing initial-error zero/empty fallback is not repaired', 'Whole-report layout overflow is recorded separately',
-        'Google font CSS stubbed; Ubuntu Noto CJK fallback verified by actual Chrome platform glyphs', 'No native page zoom, physical devices, Safari/iPad, screen reader, financial reconciliation, real API or DB acceptance'] };
+        'Google font CSS stubbed; Ubuntu Noto CJK fallback verified by actual Chrome platform glyphs', 'No native page zoom, physical devices, Safari/iPad, screen reader, financial reconciliation, real API or DB acceptance',
+        'Import file chooser uses synthetic byte fixtures through Playwright; not native OS picker or XLSX parser acceptance; import PNGs need visual/CJK review'] };
   } catch (problem) { error = problem; }
   finally {
     try {
@@ -174,7 +189,7 @@ async function main() {
     if (canPublishEvidence(phases, quiescent)) {
       if (!error && accepted) {
         write('accepted.json', accepted);
-        console.log(`Admin read-only browser: ${accepted.cases.length} cases passed. PNG pixels await independent review.`);
+        console.log(`Admin synthetic-HTTP browser: ${accepted.cases.length} cases passed. PNG pixels await independent review.`);
         console.log(JSON.stringify(accepted.cases.map(({ title, observations }) => ({ title, observations }))));
       }
       write('completion.json', { ...identity, phases, status: terminal.status, error: error?.message ?? null });
