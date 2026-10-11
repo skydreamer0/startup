@@ -1,0 +1,2336 @@
+{
+  "createdAt": "2026-10-11T07:00:27.417Z",
+  "draft": {
+    "head": "8123bd7f5ef3b2bf0d42fa94a611ed613b0b3f5e",
+    "tree": "9cbd9e837ca9fa6a2955b8667a9268d30c24c5ff"
+  },
+  "integration": {
+    "head": "f6ae1dd94cb2ac1c824f2e4befe824e787df0e55",
+    "tree": "aa5b4ecc2399aa84ed4069b384057a5e0eba48d7"
+  },
+  "linux": {
+    "source": {
+      "head": "8123bd7f5ef3b2bf0d42fa94a611ed613b0b3f5e",
+      "tree": "9cbd9e837ca9fa6a2955b8667a9268d30c24c5ff",
+      "workflowSha": "88ecbbf387135025d2eef0b732c17a0fa111b0b6",
+      "event": "pull_request",
+      "runId": "38119293085",
+      "attempt": "1",
+      "service": {
+        "container": "964cc262dd121a284e94e51953a5a32210a6718979eea4a1f46dac17bce41e6f",
+        "image": "sha256:319d040b5d68e3e5b98a238f0b5d375b4b4d9c5b3a6a9afb0308a8bcf0de72a5",
+        "network": "github_network_f7cfa4c0e0c547ee8cba80d015897bbc",
+        "bindings": {
+          "5432/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "55436"
+            }
+          ]
+        },
+        "authentication": "trust in disposable service only"
+      },
+      "database": "checkout_order_sequence_ci",
+      "node": "v22.23.3",
+      "parents": [
+        "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4"
+      ]
+    },
+    "exactHeadAndTree": true,
+    "sourceHashesVerified": 19,
+    "workerHashInArtifact": false,
+    "workerBinding": "Exact checkout head/tree; the workflow artifact does not hash the helper separately.",
+    "counts": {
+      "native": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "command": {
+        "passed": 21,
+        "failed": 0,
+        "skipped": 0
+      },
+      "stock": {
+        "passed": 38,
+        "failed": 0,
+        "skipped": 0
+      },
+      "mock": {
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "commandCases": [
+      {
+        "title": "'default payment and Unicode note' matches the backend/browser normalization v1 contract",
+        "status": "passed",
+        "duration": 3.4706320000000233
+      },
+      {
+        "title": "'ordered discounts and split payments' matches the backend/browser normalization v1 contract",
+        "status": "passed",
+        "duration": 0.6443870000000516
+      },
+      {
+        "title": "returns the same original result to concurrent copies of one command with only one sale",
+        "status": "passed",
+        "duration": 128.84759400000007
+      },
+      {
+        "title": "replays the original result before changed shift, price, stock and refund checks",
+        "status": "passed",
+        "duration": 47.593642000000045
+      },
+      {
+        "title": "returns HTTP 409 for a changed committed payload with no additional writes",
+        "status": "passed",
+        "duration": 69.81655299999989
+      },
+      {
+        "title": "normalizes defaults consistently between direct calls and HTTP without merging/reordering lines",
+        "status": "passed",
+        "duration": 53.44153399999959
+      },
+      {
+        "title": "isolates lookup and replay by tenant, using only the existing POS permission",
+        "status": "passed",
+        "duration": 65.46483200000011
+      },
+      {
+        "title": "chooses one committed payload winner for concurrent different payloads on the same key",
+        "status": "passed",
+        "duration": 37.12419
+      },
+      {
+        "title": "allows only one distinct command to buy the last unit",
+        "status": "passed",
+        "duration": 27.72533899999962
+      },
+      {
+        "title": "reports an uncommitted claim as UNKNOWN without mistaking it for failure or confirmation",
+        "status": "passed",
+        "duration": 26.61460999999963
+      },
+      {
+        "title": "rolls back all writes after an injected CheckoutCommand.createMany failure, then reuses the original command",
+        "status": "passed",
+        "duration": 58.28135800000018
+      },
+      {
+        "title": "rolls back all writes after an injected Product.updateMany failure, then reuses the original command",
+        "status": "passed",
+        "duration": 60.1844030000002
+      },
+      {
+        "title": "rolls back all writes after an injected ProductBatch.updateMany failure, then reuses the original command",
+        "status": "passed",
+        "duration": 62.819976000000224
+      },
+      {
+        "title": "rolls back all writes after an injected Order.create failure, then reuses the original command",
+        "status": "passed",
+        "duration": 45.5807249999998
+      },
+      {
+        "title": "rolls back all writes after an injected InventoryTransaction.create failure, then reuses the original command",
+        "status": "passed",
+        "duration": 39.77391400000033
+      },
+      {
+        "title": "rolls back all writes after an injected SaleBatchAllocation.createMany failure, then reuses the original command",
+        "status": "passed",
+        "duration": 41.00823700000001
+      },
+      {
+        "title": "rolls back all writes after an injected CheckoutCommand.updateMany failure, then reuses the original command",
+        "status": "passed",
+        "duration": 38.787210000000414
+      },
+      {
+        "title": "rolls back stock, order/items and command when PostgreSQL rejects a payment record",
+        "status": "passed",
+        "duration": 34.873369999999795
+      },
+      {
+        "title": "rolls back after a real process crash before commit and recovers in a new process",
+        "status": "passed",
+        "duration": 818.9958460000003
+      },
+      {
+        "title": "recovers a committed lost response after the command service process exits and restarts",
+        "status": "passed",
+        "duration": 699.8861179999999
+      },
+      {
+        "title": "enforces tenant/order/result identity constraints in PostgreSQL",
+        "status": "passed",
+        "duration": 38.766859000000295
+      }
+    ],
+    "businessTables": 28,
+    "beforeRowsZero": true,
+    "afterRowsZero": true,
+    "cleanup": {
+      "businessRowsZero": true,
+      "ownedDatabaseAbsent": true,
+      "ownedMigrationSchemaAbsent": true
+    },
+    "syntheticOnly": true,
+    "productionDataUsed": false,
+    "run": {
+      "url": "https://github.com/skydreamer0/startup/actions/runs/38119293085",
+      "head": "8123bd7f5ef3b2bf0d42fa94a611ed613b0b3f5e",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+          "id": 114410506312,
+          "conclusion": "failure",
+          "status": "completed",
+          "failedSteps": [
+            "Stable POS categories through real API and owned PostgreSQL"
+          ]
+        },
+        {
+          "name": "Backend CI",
+          "id": 114410506390,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        },
+        {
+          "name": "Batch audit PostgreSQL acceptance",
+          "id": 114410506432,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        },
+        {
+          "name": "Product pagination PostgreSQL acceptance",
+          "id": 114410506458,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        },
+        {
+          "name": "Agent Context Validation",
+          "id": 114410506481,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        },
+        {
+          "name": "Admin UI CI",
+          "id": 114410506485,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        },
+        {
+          "name": "Exact-head POS dialog Chrome acceptance",
+          "id": 114410506528,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        },
+        {
+          "name": "Order sequence PostgreSQL acceptance",
+          "id": 114410506547,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        },
+        {
+          "name": "POS UI CI",
+          "id": 114410506552,
+          "conclusion": "success",
+          "status": "completed",
+          "failedSteps": []
+        }
+      ]
+    },
+    "backendLogSummary": [],
+    "integratedLinux": "NOT RUN: WSL E_ACCESSDENIED; stopped without retry or access changes."
+  },
+  "windows": {
+    "draft": {
+      "head": "8123bd7f5ef3b2bf0d42fa94a611ed613b0b3f5e",
+      "tree": "9cbd9e837ca9fa6a2955b8667a9268d30c24c5ff",
+      "runtime": {
+        "postgres": "postgres (PostgreSQL) 16.3",
+        "node": "v22.22.3",
+        "platform": "win32",
+        "syntheticOnly": true,
+        "ambientDatabaseUrlUsed": false,
+        "adapter": "exe paths, scrubbed Windows required env, canonical path equivalence, Windows process handle and TCP cleanup"
+      },
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0,
+      "total": 21,
+      "cleanup": {
+        "ownedDatabaseAbsent": true,
+        "postgresStopped": true,
+        "ownedDirectoryAbsent": true,
+        "tcpClosed": true,
+        "adapterRemoved": true
+      },
+      "process": {
+        "exitCode": 0
+      },
+      "cases": [
+        {
+          "title": "Checkout command recovery (real PostgreSQL) 'default payment and Unicode note' matches the backend/browser normalization v1 contract",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) 'ordered discounts and split payments' matches the backend/browser normalization v1 contract",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) returns the same original result to concurrent copies of one command with only one sale",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) replays the original result before changed shift, price, stock and refund checks",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) returns HTTP 409 for a changed committed payload with no additional writes",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) normalizes defaults consistently between direct calls and HTTP without merging/reordering lines",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) isolates lookup and replay by tenant, using only the existing POS permission",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) chooses one committed payload winner for concurrent different payloads on the same key",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) allows only one distinct command to buy the last unit",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) reports an uncommitted claim as UNKNOWN without mistaking it for failure or confirmation",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected CheckoutCommand.createMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected Product.updateMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected ProductBatch.updateMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected Order.create failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected InventoryTransaction.create failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected SaleBatchAllocation.createMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected CheckoutCommand.updateMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back stock, order/items and command when PostgreSQL rejects a payment record",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back after a real process crash before commit and recovers in a new process",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) recovers a committed lost response after the command service process exits and restarts",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) enforces tenant/order/result identity constraints in PostgreSQL",
+          "status": "passed"
+        }
+      ],
+      "before": {
+        "accounting_sync_logs": 0,
+        "audit_logs": 0,
+        "checkout_commands": 0,
+        "customer_tags": 0,
+        "customers": 0,
+        "daily_settlements": 0,
+        "expenses": 0,
+        "interactions": 0,
+        "inventory_transactions": 0,
+        "message_broadcasts": 0,
+        "order_items": 0,
+        "order_number_counters": 0,
+        "order_payments": 0,
+        "orders": 0,
+        "permissions": 0,
+        "product_batch_changes": 0,
+        "product_batches": 0,
+        "product_categories": 0,
+        "products": 0,
+        "role_permissions": 0,
+        "roles": 0,
+        "sale_batch_allocations": 0,
+        "shifts": 0,
+        "suppliers": 0,
+        "tags": 0,
+        "tenants": 0,
+        "user_roles": 0,
+        "users": 0
+      },
+      "after": {
+        "accounting_sync_logs": 0,
+        "audit_logs": 0,
+        "checkout_commands": 0,
+        "customer_tags": 0,
+        "customers": 0,
+        "daily_settlements": 0,
+        "expenses": 0,
+        "interactions": 0,
+        "inventory_transactions": 0,
+        "message_broadcasts": 0,
+        "order_items": 0,
+        "order_number_counters": 0,
+        "order_payments": 0,
+        "orders": 0,
+        "permissions": 0,
+        "product_batch_changes": 0,
+        "product_batches": 0,
+        "product_categories": 0,
+        "products": 0,
+        "role_permissions": 0,
+        "roles": 0,
+        "sale_batch_allocations": 0,
+        "shifts": 0,
+        "suppliers": 0,
+        "tags": 0,
+        "tenants": 0,
+        "user_roles": 0,
+        "users": 0
+      },
+      "files": [
+        {
+          "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+          "sha256": "6fed80cf143bfa298f624d086fdd78583362f2b307c170c88ff577fc9ec6de8c"
+        },
+        {
+          "path": "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts",
+          "sha256": "6cf3d2c746ef39ade3616fbbc803574102804cffe9de592f6dbcc7ccfdf58600"
+        }
+      ]
+    },
+    "integration": {
+      "head": "f6ae1dd94cb2ac1c824f2e4befe824e787df0e55",
+      "tree": "aa5b4ecc2399aa84ed4069b384057a5e0eba48d7",
+      "runtime": {
+        "postgres": "postgres (PostgreSQL) 16.3",
+        "node": "v22.22.3",
+        "platform": "win32",
+        "syntheticOnly": true,
+        "ambientDatabaseUrlUsed": false,
+        "adapter": "exe paths, scrubbed Windows required env, canonical path equivalence, Windows process handle and TCP cleanup"
+      },
+      "passed": 372,
+      "failed": 0,
+      "skipped": 81,
+      "total": 453,
+      "cleanup": {
+        "ownedDatabaseAbsent": true,
+        "postgresStopped": true,
+        "ownedDirectoryAbsent": true,
+        "tcpClosed": true,
+        "adapterRemoved": true
+      },
+      "process": {
+        "exitCode": 0
+      },
+      "cases": [
+        {
+          "title": "getProviderForTenant returns MockProvider by default when settings is null",
+          "status": "passed"
+        },
+        {
+          "title": "getProviderForTenant returns MockProvider when tenant is missing",
+          "status": "passed"
+        },
+        {
+          "title": "getProviderForTenant returns MockProvider when settings JSON is malformed",
+          "status": "passed"
+        },
+        {
+          "title": "getProviderForTenant returns QuickBooksProvider when settings.accountingProvider is \"quickbooks\"",
+          "status": "passed"
+        },
+        {
+          "title": "getProviderForTenant returns XeroProvider when settings.accountingProvider is \"xero\"",
+          "status": "passed"
+        },
+        {
+          "title": "getProviderForTenant falls back to MockProvider when accountingProvider value is unknown",
+          "status": "passed"
+        },
+        {
+          "title": "AccountingService.syncOrder writes a synced log row with externalId on success",
+          "status": "passed"
+        },
+        {
+          "title": "AccountingService.syncOrder is idempotent — a second call on an already-synced order skips the provider",
+          "status": "passed"
+        },
+        {
+          "title": "AccountingService.syncOrder records a failure log when the provider is not configured",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation should return empty result when no customers exist",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation should classify a first-time buyer as \"new\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation should classify a customer with R>60 days as \"at_risk\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation should classify a customer with R=31-60 days as \"dormant\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation should classify a frequent recent big-spender as \"vip\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation should classify a customer with R≤30, F≥3, M≥median as \"loyal\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk should return empty array when no repeat customers exist",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk should flag a customer as \"high\" risk when daysSinceLastPurchase > 1.5 × avgInterval",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk should flag a customer as \"low\" risk when within normal repurchase window",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk should sort results with high-risk customers first",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getProductAbcAnalysis should return empty result when no order items exist",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getProductAbcAnalysis should classify products into correct quadrants based on revenue and margin",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getSupplierRanking should rank suppliers by composite score descending",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getSupplierRanking should handle suppliers with no sales",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getSalesHeatmap should return a 168-cell grid (7 days × 24 hours) when no orders exist",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getSalesHeatmap should correctly bucket orders by weekday and hour",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getBonusGateStatus should return gatePass=true when margin ≥ 30% and CCC ≤ 30",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) POST /api/v1/admin/auth/login should login with valid credentials",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) POST /api/v1/admin/auth/login should reject invalid password",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) POST /api/v1/admin/auth/login should reject non-existent email",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) POST /api/v1/admin/auth/login should reject invalid email format (Zod validation)",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) POST /api/v1/admin/auth/refresh should issue a new access token",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) POST /api/v1/admin/auth/refresh should reject invalid refresh token",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) GET /api/v1/admin/auth/me should return user profile with permissions",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) GET /api/v1/admin/auth/me should reject request without token",
+          "status": "passed"
+        },
+        {
+          "title": "Auth API (Integration) POST /api/v1/admin/auth/logout should logout successfully",
+          "status": "passed"
+        },
+        {
+          "title": "Users API (Integration) GET /api/v1/admin/users should return paginated user list",
+          "status": "passed"
+        },
+        {
+          "title": "Users API (Integration) GET /api/v1/admin/users should reject without auth",
+          "status": "passed"
+        },
+        {
+          "title": "Users API (Integration) POST /api/v1/admin/users (Create) should create a new user",
+          "status": "passed"
+        },
+        {
+          "title": "Users API (Integration) POST /api/v1/admin/users (Create) should reject duplicate email",
+          "status": "passed"
+        },
+        {
+          "title": "Roles API (Integration) GET /api/v1/admin/roles should return roles with permissions",
+          "status": "passed"
+        },
+        {
+          "title": "POS Customers API (Integration) POST /api/v1/admin/pos/customers should create a new customer and return PosCustomerLookup shape",
+          "status": "passed"
+        },
+        {
+          "title": "POS Customers API (Integration) POST /api/v1/admin/pos/customers should reject duplicate phone with 409",
+          "status": "passed"
+        },
+        {
+          "title": "POS Customers API (Integration) POST /api/v1/admin/pos/customers should reject missing phone with 400 (Zod validation)",
+          "status": "passed"
+        },
+        {
+          "title": "POS Customers API (Integration) POST /api/v1/admin/pos/customers should reject request without auth token with 401",
+          "status": "passed"
+        },
+        {
+          "title": "404 Handler should return 404 for unknown routes",
+          "status": "passed"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rejects ordinary PATCH of expiry status cost and quantity without mutation",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes requires independent release permission and persists actor before after reason and time",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rejects cross tenant operations history and actor spoofing",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rolls back the batch update when the audit insert fails",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes retains append only history and rejects direct update delete and referenced lot deletion",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rejects expiry extension bypass and keeps corrected quarantined stock unsaleable",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rechecks Taipei midnight after waiting for the actual product row lock",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes serializes concurrent sale and release without invented quantity or movements",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes does not rewrite existing order items allocations or product cost on a batch cost correction",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes requires independent authority reason and a trusted tenant actor for initial release",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rolls back the whole initial receipt when audit persistence fails",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rolls back the whole initial receipt when movement persistence fails",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes does not release expiry-day stock across the Taipei midnight boundary",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes rejects an expiry extension after an actual lock wait crosses Taipei midnight",
+          "status": "skipped"
+        },
+        {
+          "title": "Batch field audit with real PostgreSQL and authenticated routes paginates all history without permitting another tenant cursor",
+          "status": "skipped"
+        },
+        {
+          "title": "ProductBatchChange database contract with real PostgreSQL enforces tenant product batch and actor identity through composite foreign keys",
+          "status": "skipped"
+        },
+        {
+          "title": "ProductBatchChange database contract with real PostgreSQL fails closed without tenant context and scopes audit reads and writes",
+          "status": "skipped"
+        },
+        {
+          "title": "ProductBatchChange database contract with real PostgreSQL rejects malformed snapshots reasons and operation mismatches in PostgreSQL",
+          "status": "skipped"
+        },
+        {
+          "title": "ProductBatchChange database contract with real PostgreSQL preserves initial nonexistence decimal precision and database creation time",
+          "status": "skipped"
+        },
+        {
+          "title": "ProductBatchChange database contract with real PostgreSQL blocks truncate and parent deletion or identity rewrites while retaining history",
+          "status": "skipped"
+        },
+        {
+          "title": "ProductBatchChange database contract with real PostgreSQL rolls back corrections and initial receipt when PostgreSQL itself rejects the audit insert",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout abort retry (native PostgreSQL) retries server SQLSTATE 40001 after all sale writes and replays only one sale",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout abort retry (native PostgreSQL) retries server SQLSTATE 40P01 after all sale writes and replays only one sale",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout abort retry (native PostgreSQL) exhausts server SQLSTATE 40001 at three attempts, rolls back and reuses the same command",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout abort retry (native PostgreSQL) exhausts server SQLSTATE 40P01 at three attempts, rolls back and reuses the same command",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout abort retry (native PostgreSQL) propagates a nonretry server failure after all sale writes and rolls back once",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout abort retry (native PostgreSQL) allows concurrent resends during an aborted attempt with only one committed sale",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout abort retry (native PostgreSQL) retries a real PostgreSQL deadlock victim after late writes without duplicate effects",
+          "status": "skipped"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls retries a confirmed abort and preserves the result",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls retries a confirmed abort and preserves the result",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls retries a confirmed abort and preserves the result",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls retries a confirmed abort and preserves the result",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls stops at three attempts and throws the original last error",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout aborted transaction retry controls propagates nonretry and unknown-outcome errors unchanged",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) 'default payment and Unicode note' matches the backend/browser normalization v1 contract",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) 'ordered discounts and split payments' matches the backend/browser normalization v1 contract",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) returns the same original result to concurrent copies of one command with only one sale",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) replays the original result before changed shift, price, stock and refund checks",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) returns HTTP 409 for a changed committed payload with no additional writes",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) normalizes defaults consistently between direct calls and HTTP without merging/reordering lines",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) isolates lookup and replay by tenant, using only the existing POS permission",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) chooses one committed payload winner for concurrent different payloads on the same key",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) allows only one distinct command to buy the last unit",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) reports an uncommitted claim as UNKNOWN without mistaking it for failure or confirmation",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected CheckoutCommand.createMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected Product.updateMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected ProductBatch.updateMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected Order.create failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected InventoryTransaction.create failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected SaleBatchAllocation.createMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back all writes after an injected CheckoutCommand.updateMany failure, then reuses the original command",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back stock, order/items and command when PostgreSQL rejects a payment record",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) rolls back after a real process crash before commit and recovers in a new process",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) recovers a committed lost response after the command service process exits and restarts",
+          "status": "passed"
+        },
+        {
+          "title": "Checkout command recovery (real PostgreSQL) enforces tenant/order/result identity constraints in PostgreSQL",
+          "status": "passed"
+        },
+        {
+          "title": "CsvService.exportProducts returns product CSV rows with relation labels and safety stock",
+          "status": "passed"
+        },
+        {
+          "title": "CsvService.exportProducts returns only header row when no products exist",
+          "status": "passed"
+        },
+        {
+          "title": "CsvService.exportOrders returns order CSV rows with customer and sales staff names",
+          "status": "passed"
+        },
+        {
+          "title": "CsvService.exportOrders falls back to the shortened order id when order number is missing",
+          "status": "passed"
+        },
+        {
+          "title": "CsvService.exportCustomers returns customer CSV rows",
+          "status": "passed"
+        },
+        {
+          "title": "CsvService.parseProductImportCsv parses valid CSV and returns preview rows",
+          "status": "passed"
+        },
+        {
+          "title": "CsvService.parseProductImportCsv captures validation errors for missing required fields",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) issues a file/normalized revision identity without writing inventory",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) does not overwrite a real sale committed after preview or alter its lot/movement/allocation",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) creates new product metadata at zero stock instead of inventing an opening lot",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) rejects a different file using the old reviewed token before any write",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) rejects missing preview authorization",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) rejects tampered preview authorization",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) rejects an approved preview from another tenant",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) rejects a valid older normalization revision even when file bytes match",
+          "status": "passed"
+        },
+        {
+          "title": "Reviewed master-data import (real PostgreSQL) requires a new preview after expiration",
+          "status": "passed"
+        },
+        {
+          "title": "ExcelService.exportProducts produces a workbook with Products/Suppliers/Categories sheets and snake_case headers",
+          "status": "passed"
+        },
+        {
+          "title": "ExcelService.previewImport categorizes rows as create/update/error without writing to DB",
+          "status": "passed"
+        },
+        {
+          "title": "ExcelService.importProducts upserts rows and returns counts",
+          "status": "passed"
+        },
+        {
+          "title": "ExcelService.importProducts records DB errors per row without aborting the rest",
+          "status": "passed"
+        },
+        {
+          "title": "Public process and dependency probes keeps liveness independent of a broken database",
+          "status": "passed"
+        },
+        {
+          "title": "Public process and dependency probes returns 200 only when dependencies are ready",
+          "status": "passed"
+        },
+        {
+          "title": "Public process and dependency probes returns 503 for MIGRATIONS_PENDING",
+          "status": "passed"
+        },
+        {
+          "title": "Public process and dependency probes returns 503 for MIGRATION_FAILED",
+          "status": "passed"
+        },
+        {
+          "title": "Public process and dependency probes returns 503 for MIGRATION_HISTORY_UNAVAILABLE",
+          "status": "passed"
+        },
+        {
+          "title": "Public process and dependency probes returns 503 for MIGRATION_FILES_UNAVAILABLE",
+          "status": "passed"
+        },
+        {
+          "title": "Public process and dependency probes returns 503 for READINESS_TIMEOUT",
+          "status": "passed"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine returns no invented inventory rows for an empty tenant",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine flags order quantity mismatch even when OUT and its allocation are balanced",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine reports two linked receipt lots, a split sale and unchanged stock after a money-only refund state",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine retains legacy product 9 versus batch 4 as difference 5 and unknown receipt source",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine never calls equal source-less balances historically reconciled",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine includes released, quarantined, blocked, expired and zero-quantity lots in physical totals",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine keeps identical SKUs and malformed legacy links isolated by tenant",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine preaggregates multiple receipts and multiple sales without join multiplication",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine shows zero products, stock without batches, unlinked IN, old OUT and old order items",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine reports missing or excess allocation quantity 1 against OUT and order quantity 2",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine reports missing or excess allocation quantity 3 against OUT and order quantity 2",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine excludes allocations with invalid IN provenance from linked batch evidence",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine excludes allocations with invalid OUT provenance from linked batch evidence",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine retains unsupported types including ADJUSTMENT without assigning a direction",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine reports negative balances and nonpositive legacy movements without hiding them",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine uses exact numeric sums and subtraction beyond signed 32-bit limits",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine keeps every stored row unchanged and report ordering stable across repeated runs",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine enforces READ ONLY at the engine boundary",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine native only: holds one repeatable-read snapshot while another connection commits",
+          "status": "skipped"
+        },
+        {
+          "title": "Inventory provenance exact SQL: NOT RUN: no explicit SQL engine native only: reports actual receipt, two-lot checkout and money-only refund service writes",
+          "status": "skipped"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) posts product, quarantined lot and durable IN movement together",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) rolls back all writes when the lot already exists",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) keeps an actual concurrent receipt and sale conserved",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) rejects product quantity edits rather than restoring sold stock",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) rejects direct lot quantity edits",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) rejects an unbatched positive opening balance while allowing zero-stock metadata",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) rejects overflow without creating a receipt",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) cannot receive another tenant product",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) uses catalogued product permissions for real authenticated batch reads",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) rolls back product and lot when movement persistence fails",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) reads receipt provenance with a new client and rejects an unaudited cost correction",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) preserves receipt-linked lots and enforces tenant links and positive receipt quantities in SQL",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) supports flat product metadata/receipt requests and rejects quantity edits under real auth",
+          "status": "passed"
+        },
+        {
+          "title": "Receipt authority and closed quantity bypasses (real PostgreSQL) imports CSV metadata at zero stock without inventing a lot",
+          "status": "passed"
+        },
+        {
+          "title": "JWT Utilities Access Tokens should sign and verify an access token",
+          "status": "passed"
+        },
+        {
+          "title": "JWT Utilities Access Tokens should reject an invalid access token",
+          "status": "passed"
+        },
+        {
+          "title": "JWT Utilities Access Tokens should reject a refresh token verified as access token",
+          "status": "passed"
+        },
+        {
+          "title": "JWT Utilities Refresh Tokens should sign and verify a refresh token",
+          "status": "passed"
+        },
+        {
+          "title": "JWT Utilities Refresh Tokens should reject an access token verified as refresh token",
+          "status": "passed"
+        },
+        {
+          "title": "LineService.pushMessage throws 503 INTEGRATION_NOT_CONFIGURED when LINE_CHANNEL_ACCESS_TOKEN is unset",
+          "status": "passed"
+        },
+        {
+          "title": "LineService.pushMessage sends a push when customer has a lineUserId",
+          "status": "passed"
+        },
+        {
+          "title": "LineService.pushMessage throws 400 when customer has no lineUserId",
+          "status": "passed"
+        },
+        {
+          "title": "LineService.broadcastToSegment filters customers by VIP segment and writes MessageBroadcast on success",
+          "status": "passed"
+        },
+        {
+          "title": "LineService.broadcastToSegment uses correct where-clause for first_time segment",
+          "status": "passed"
+        },
+        {
+          "title": "LineService.broadcastToSegment records status=failed when segment has no matching LINE users",
+          "status": "passed"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) allocates distinct numbers to simultaneous different commands on different stock",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) separates simultaneous commands on opposite sides of Taipei midnight",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) reads the numbering date after earlier stock work instead of freezing arrival time",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) replays the immutable number after midnight and changed price and closed shift",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) rolls back a claimed number and all sale effects on late failure",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) allows 99999 once then explicitly rejects overflow without rollback gaps or wrapping",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) isolates counters and permits the same printed number in different tenants",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) database uniqueness rejects another order with the same tenant and number",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) fresh FEFO checks reject an expiring batch after the injected clock crosses midnight",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) reads persisted today orders at both Taipei midnight boundaries",
+          "status": "skipped"
+        },
+        {
+          "title": "Taipei order sequence (real PostgreSQL) isolates persisted today orders by tenant and optional shift",
+          "status": "skipped"
+        },
+        {
+          "title": "Password Utilities should hash a password and verify it correctly",
+          "status": "passed"
+        },
+        {
+          "title": "Password Utilities should reject an incorrect password",
+          "status": "passed"
+        },
+        {
+          "title": "Password Utilities should generate different hashes for the same password (salted)",
+          "status": "passed"
+        },
+        {
+          "title": "plan-features helper free plan returns only free features",
+          "status": "passed"
+        },
+        {
+          "title": "plan-features helper starter plan inherits free + adds starter features",
+          "status": "passed"
+        },
+        {
+          "title": "plan-features helper pro plan unlocks all features",
+          "status": "passed"
+        },
+        {
+          "title": "plan-features helper unknown plan name falls back to free",
+          "status": "passed"
+        },
+        {
+          "title": "plan-features helper normalizePlan handles null/undefined/unknown",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='free' need='free' should allow (next)",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='free' need='starter' should block 403",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='free' need='pro' should block 403",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='starter' need='free' should allow (next)",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='starter' need='starter' should allow (next)",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='starter' need='pro' should block 403",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='pro' need='free' should allow (next)",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='pro' need='starter' should allow (next)",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) current='pro' need='pro' should allow (next)",
+          "status": "passed"
+        },
+        {
+          "title": "Plan Middleware — requirePlan() (3×3 matrix) returns 500 when tenant context is missing",
+          "status": "passed"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware isolates concurrent category service reads for same-name categories in different tenants",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware returns ordered id-name-only categories through real JWT tenant and permission middleware",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware keeps empty and zero-stock categories independent of capped or filtered product results",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware returns a successful empty list only for the authenticated tenant without categories",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware rejects missing and invalid authentication without returning category data",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware rejects a real active user token without the existing manage-pos permission",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware rejects a suspended user and a token used against a different tenant header",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware does not leak a prior tenant when authenticated requests alternate A-B-A",
+          "status": "skipped"
+        },
+        {
+          "title": "POS categories with real PostgreSQL and HTTP middleware fails closed when category service has no tenant context",
+          "status": "skipped"
+        },
+        {
+          "title": "exact POS lookup with real PostgreSQL finds the exact zero-stock SKU beyond 100 fuzzy matches and isolates concurrent tenants",
+          "status": "skipped"
+        },
+        {
+          "title": "exact POS lookup with real PostgreSQL does not normalize or fuzzy match 123",
+          "status": "skipped"
+        },
+        {
+          "title": "exact POS lookup with real PostgreSQL does not normalize or fuzzy match 001",
+          "status": "skipped"
+        },
+        {
+          "title": "exact POS lookup with real PostgreSQL does not normalize or fuzzy match a00123-1",
+          "status": "skipped"
+        },
+        {
+          "title": "exact POS lookup with real PostgreSQL does not normalize or fuzzy match  00123",
+          "status": "skipped"
+        },
+        {
+          "title": "GET /pos/categories isolates categories by tenant and returns only id/name independently of product filters",
+          "status": "passed"
+        },
+        {
+          "title": "GET /pos/categories returns an empty successful list for a tenant without categories",
+          "status": "passed"
+        },
+        {
+          "title": "GET /pos/categories requires authentication before querying categories",
+          "status": "passed"
+        },
+        {
+          "title": "GET /pos/categories requires the existing manage:pos permission",
+          "status": "passed"
+        },
+        {
+          "title": "GET /pos/categories does not turn a persistence failure into a successful empty list",
+          "status": "passed"
+        },
+        {
+          "title": "GET /pos/categories fails closed without a tenant context",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.checkout throws 400 when shift is not OPEN",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.checkout throws 400 when product has insufficient stock",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.checkout creates order with correct totalAmount after discount",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.checkout uses shift.staffId when salesStaffId not provided",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.checkout rejects customer IDs outside the current tenant before creating an order",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.createCustomer creates customer and returns POS lookup shape for a new customer",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.createCustomer propagates 409 AppError when duplicate phone exists",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.lookupCustomer looks up a customer by phone within the current tenant and returns POS intelligence signals",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.lookupCustomer marks 90 day inactive customers as at risk",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.lookupCustomer returns null when no customer matches",
+          "status": "passed"
+        },
+        {
+          "title": "POS exact lookup route integration uses the dedicated literal lookup through existing POS permission and tenant scope",
+          "status": "passed"
+        },
+        {
+          "title": "POS exact lookup route integration does not query before authentication",
+          "status": "passed"
+        },
+        {
+          "title": "POS exact lookup route integration does not query without manage:pos",
+          "status": "passed"
+        },
+        {
+          "title": "POS exact lookup route integration validates the lookup query before the controller",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup preserves literal identifier 00123 and never caps or stock-filters the result",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup preserves literal identifier AbC and never caps or stock-filters the result",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup preserves literal identifier  SKU  and never caps or stock-filters the result",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup fails closed without a tenant",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup rejects malformed query {}",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup rejects malformed query {\"code\":\"\"}",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup rejects malformed query {\"code\":[\"123\",\"456\"]}",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup rejects malformed query {\"code\":123}",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup rejects malformed query {\"code\":\"123\",\"tenantId\":\"other\"}",
+          "status": "passed"
+        },
+        {
+          "title": "exact SKU lookup returns the envelope through validated HTTP and forwards lookup errors",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getRecommendations returns up to 3 tenant-scoped replenishment candidates from older in-stock purchases",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getRecommendations returns hot seller recommendations when no customer is selected",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-10T15:59:59.999Z into the existing half-open calendar",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-10T16:00:00.000Z into the existing half-open calendar",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-11T15:59:59.999Z into the existing half-open calendar",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window samples 2026-10-11T16:00:00.000Z into the existing half-open calendar",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window returns the same bounded orders under host TZ=UTC",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window returns the same bounded orders under host TZ=Asia/Taipei",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window uses the real-time default clock when the controller supplies only shiftId",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window fails closed without tenant context before reading the clock or orders",
+          "status": "passed"
+        },
+        {
+          "title": "CheckoutService.getTodayOrders — Taipei midnight read window propagates a read failure rather than returning an empty successful list",
+          "status": "passed"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) filters by each row safetyStock before paging and counts all matches on every page",
+          "status": "skipped"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) retains supplier/category objects and null relations in the existing data shape",
+          "status": "skipped"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) keeps all tenant products and defaults with lowStock=undefined",
+          "status": "skipped"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) keeps all tenant products and defaults with lowStock=false",
+          "status": "skipped"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) uses name then unique ID with reversed same-name insertion and no duplicate or missing rows",
+          "status": "skipped"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) isolates both data and count for concurrent tenant A/B queries",
+          "status": "skipped"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) fails closed without a tenant for lowStock=undefined",
+          "status": "skipped"
+        },
+        {
+          "title": "Product pagination through real tenant-scoped Prisma (PostgreSQL) fails closed without a tenant for lowStock=true",
+          "status": "skipped"
+        },
+        {
+          "title": "RBAC Middleware should call next() when user has the required permission",
+          "status": "passed"
+        },
+        {
+          "title": "RBAC Middleware should return 403 when user lacks the required permission",
+          "status": "passed"
+        },
+        {
+          "title": "RBAC Middleware should return 401 when no user is attached to request",
+          "status": "passed"
+        },
+        {
+          "title": "RBAC Middleware should handle multiple permission checks independently",
+          "status": "passed"
+        },
+        {
+          "title": "createRoutePolicy assembles route middleware in the standard policy order",
+          "status": "passed"
+        },
+        {
+          "title": "createRoutePolicy keeps public route exceptions free of auth and policy middleware",
+          "status": "passed"
+        },
+        {
+          "title": "createRoutePolicy allows nested route policy to reuse an outer auth seam",
+          "status": "passed"
+        },
+        {
+          "title": "split-payment readers (mocked persistence) daily settlement reads the stored 60 cash + 40 card rather than the primary method",
+          "status": "passed"
+        },
+        {
+          "title": "shift report reads the same stored split and expected cash intake",
+          "status": "passed"
+        },
+        {
+          "title": "daily keeps its original paid cohort and non-completed classification",
+          "status": "passed"
+        },
+        {
+          "title": "shift preserves its existing refund arithmetic without treating it as accepted policy",
+          "status": "passed"
+        },
+        {
+          "title": "daily groups TRANSFER and unknown methods into its unchanged other bucket",
+          "status": "passed"
+        },
+        {
+          "title": "daily combines stored TRANSFER0.1 and OTHER0.2 before the numeric API boundary",
+          "status": "passed"
+        },
+        {
+          "title": "daily adds separate persisted 0.1 and 0.2 order totals to numeric 0.3",
+          "status": "passed"
+        },
+        {
+          "title": "shift adds completed order totals precisely while leaving its refund and net formulas intact",
+          "status": "passed"
+        },
+        {
+          "title": "empty daily and shift cohorts retain numeric zero totals and counts",
+          "status": "passed"
+        },
+        {
+          "title": "Startup uses the existing required configuration schema exits nonzero without DATABASE_URL",
+          "status": "passed"
+        },
+        {
+          "title": "Startup uses the existing required configuration schema exits nonzero without JWT_ACCESS_SECRET",
+          "status": "passed"
+        },
+        {
+          "title": "Startup uses the existing required configuration schema exits nonzero without JWT_REFRESH_SECRET",
+          "status": "passed"
+        },
+        {
+          "title": "Startup uses the existing required configuration schema rejects blank DATABASE_URL \"\"",
+          "status": "passed"
+        },
+        {
+          "title": "Startup uses the existing required configuration schema rejects blank DATABASE_URL \"   \"",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) persists an actual two-lot split for POS and reads it through a fresh DB client",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) persists an actual two-lot split for order and reads it through a fresh DB client",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) skips expired, expiry-day, quarantined and blocked batches for POS",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) skips expired, expiry-day, quarantined and blocked batches for order",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rejects QUARANTINE-only stock without leaving any sale writes",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rejects BLOCKED-only stock without leaving any sale writes",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rejects EXPIRED-only stock without leaving any sale writes",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rejects TODAY-only stock without leaving any sale writes",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) stops expiry-day stock at Taipei midnight rather than UTC midnight",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rechecks quarantine eligibility after selection",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rechecks midnight eligibility after selection",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rolls back POS stock, order, movements and the first allocation when the next allocation fails",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) rolls back order stock, order, movements and the first allocation when the next allocation fails",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) defaults unreviewed batches to quarantine and rejects unknown/month-only expiry inputs",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) preserves referenced zero-stock batches and enforces allocation references and positive quantities in PostgreSQL",
+          "status": "passed"
+        },
+        {
+          "title": "FEFO and durable sale allocations (real PostgreSQL) warns before expiry through day 30 and omits zero stock and day 31",
+          "status": "passed"
+        },
+        {
+          "title": "Refund registration does not receive physical stock (real PostgreSQL) keeps product, lot, OUT movements and allocations unchanged after a money-only refund",
+          "status": "passed"
+        },
+        {
+          "title": "Refund registration does not receive physical stock (real PostgreSQL) rejects repeat refunds without adding stock or replacing the first reason and original discount note",
+          "status": "passed"
+        },
+        {
+          "title": "Refund registration does not receive physical stock (real PostgreSQL) allows only one concurrent refund status transition after both read completed",
+          "status": "passed"
+        },
+        {
+          "title": "Refund registration does not receive physical stock (real PostgreSQL) does not fabricate stock receipt or allocations for a historical untraceable order",
+          "status": "passed"
+        },
+        {
+          "title": "Refund registration does not receive physical stock (real PostgreSQL) rejects a refund from another tenant",
+          "status": "passed"
+        },
+        {
+          "title": "Refund registration does not receive physical stock (real PostgreSQL) rejects refunding pending orders without changing stock",
+          "status": "passed"
+        },
+        {
+          "title": "Refund registration does not receive physical stock (real PostgreSQL) rejects refunding cancelled orders without changing stock",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects aggregate duplicate demand in POS without partial writes",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects aggregate duplicate demand in order without partial writes",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) allows only one buyer of the last unit when POS races POS",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) allows only one buyer of the last unit when POS races order",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) shares batch availability between duplicate POS lines while preserving discounts",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rolls back stock, batches and movements when order creation fails",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rolls back product stock when batches cannot cover the sale",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects a batch changed after selection without overwriting its new quantity",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rolls back an earlier product debit if a later product has insufficient stock",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects invalid service-level quantity 0",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects invalid service-level quantity -1",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects invalid service-level quantity 1.5",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects invalid service-level quantity 2147483648",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) rejects a product from another tenant without debiting either tenant",
+          "status": "passed"
+        },
+        {
+          "title": "Sales stock safety (real PostgreSQL) locks multiple products consistently even when carts use opposite order",
+          "status": "passed"
+        },
+        {
+          "title": "tenantPersistence concentrates tenant where and data injection behind one interface",
+          "status": "passed"
+        },
+        {
+          "title": "tenantPersistence fails safe outside a tenant context",
+          "status": "passed"
+        },
+        {
+          "title": "Validate Middleware should pass validation with valid body",
+          "status": "passed"
+        },
+        {
+          "title": "Validate Middleware should return 400 for invalid body",
+          "status": "passed"
+        },
+        {
+          "title": "Validate Middleware should return 400 for missing required fields",
+          "status": "passed"
+        },
+        {
+          "title": "Validate Middleware should pass when no schemas are provided",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation happy path: classifies a first-time buyer as \"new\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation edge case: empty customers returns zero-summary",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation classifies customer with recency > 60 days as \"at_risk\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation classifies customer with recency 31-60 days as \"dormant\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation classifies a high-value frequent recent customer as \"vip\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getRfmSegmentation classifies a recent frequent above-median spender as \"loyal\"",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk happy path: flags a customer as \"high\" risk when days since last purchase > 1.5 ? avg interval",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk edge case: returns empty array when no repeat customers exist",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk flags a customer as \"low\" risk when within normal repurchase window",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk sorts results with high-risk customers first",
+          "status": "passed"
+        },
+        {
+          "title": "CrmAnalyticsService.getChurnRisk skips customers with fewer than 2 recorded orders (cannot compute interval)",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getGrossMarginPct happy path: calculates correct margin percentage",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getGrossMarginPct edge case: returns 0 when no order items exist",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getGrossMarginPct edge case: returns 0 when total revenue is zero",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getAovTwd happy path: calculates AOV correctly",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getAovTwd edge case: returns 0 when no orders exist",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getCacTwd happy path: calculates CAC when marketing spend and new customers exist",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getCacTwd edge case: returns 0 when marketing spend is zero",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getCacTwd returns total spend when new customer count is zero",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getSalesHeatmap edge case: returns 168-cell grid of zeros when no orders exist",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getSalesHeatmap happy path: correctly buckets orders by weekday and hour (Taiwan time +8h)",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getSalesHeatmap grid covers all weekdays 0-6 and hours 0-23",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getKpiSnapshot happy path: bonus_gate_pass=true when margin >= 30% and CCC <= 30",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getKpiSnapshot edge case: bonus_gate_pass=false when gross margin < 30%",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getBonusGateStatus happy path: gatePass=true and estimatedBonusPool > 0 when margin >= 30% and CCC <= 30",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getBonusGateStatus edge case: estimatedBonusPool=0 when gate fails",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getKpiTrend happy path: returns 6 monthly trend points",
+          "status": "passed"
+        },
+        {
+          "title": "OperationsAnalyticsService.getKpiTrend edge case: throws for invalid period string",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getProductAbcAnalysis happy path: classifies products into correct quadrants",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getProductAbcAnalysis edge case: returns empty result when no order items exist",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getProductAbcAnalysis aggregates multiple order items for the same product",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getProductAbcAnalysis products with null category/supplier return null in result",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getSupplierRanking happy path: ranks suppliers by composite score descending",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getSupplierRanking edge case: handles suppliers with no sales",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getSupplierRanking edge case: returns empty array when no suppliers exist",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getSupplierRanking uses default scores (50) for suppliers with null deliveryReliability and defectRate",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getReorderForecast computes tenant-scoped reorder urgency from the last 30 days of completed sales",
+          "status": "passed"
+        },
+        {
+          "title": "ProductAnalyticsService.getReorderForecast returns a bounded forecast list",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation counts order totals once and uses split rows regardless of primary method or row order",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation adds repeated methods and keeps every stored method without reallocation",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation uses the explicit primary-method fallback only when completed orders have no rows",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves old classification for refunded until policy is decided",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves old classification for pending until policy is decided",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves old classification for paid until policy is decided",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves old classification for shipped until policy is decided",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves old classification for cancelled until policy is decided",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation does not invent a fallback for a persisted zero row or normalize inconsistent payment amounts",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation supports an empty cohort and does not mutate the facts",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation treats unusual stored methods as data, not inherited object properties",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation adds stored Decimal 0.1 and 0.2 in the same method without binary intermediate drift",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation aggregates order totals and repeated same-method rows across orders without binary intermediate drift",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation adds Decimal order totals before the numeric response boundary",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation adds number order totals before the numeric response boundary",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation adds mixed order totals before the numeric response boundary",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves negative stored facts without introducing rounding or refund policy",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves signed cancellation without introducing rounding or refund policy",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves zero amounts without introducing rounding or refund policy",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves four-place stored precision without introducing rounding or refund policy",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation preserves unrounded fractional values without introducing rounding or refund policy",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation retains Number conversion limits rather than promising an exact decimal API",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation keeps order totals independent from zero or inconsistent stored payment rows",
+          "status": "passed"
+        },
+        {
+          "title": "persisted order-payment aggregation keeps fallback classification and ignores out-of-scope status payment rows",
+          "status": "passed"
+        },
+        {
+          "title": "Readiness dependency contract accepts every packaged migration successfully applied",
+          "status": "passed"
+        },
+        {
+          "title": "Readiness dependency contract fails closed for an unapplied migration",
+          "status": "passed"
+        },
+        {
+          "title": "Readiness dependency contract does not treat rolled-back history as applied",
+          "status": "passed"
+        },
+        {
+          "title": "Readiness dependency contract allows a successful retry following an explicitly rolled-back attempt",
+          "status": "passed"
+        },
+        {
+          "title": "Readiness dependency contract rejects unfinished migrations even if another row succeeded",
+          "status": "passed"
+        },
+        {
+          "title": "Readiness dependency contract does not expose database errors or credentials",
+          "status": "passed"
+        },
+        {
+          "title": "Readiness dependency contract fails closed when migration history cannot be read",
+          "status": "passed"
+        },
+        {
+          "title": "withTenantContext runs test code inside the default tenant context",
+          "status": "passed"
+        },
+        {
+          "title": "withTenantContext allows tests to override tenant context fields locally",
+          "status": "passed"
+        },
+        {
+          "title": "tenant-scoped model map stays aligned with Prisma models that declare tenantId",
+          "status": "passed"
+        },
+        {
+          "title": "tenant-scoped model map classifies tenant and non-tenant Prisma models for scoped client tests",
+          "status": "passed"
+        },
+        {
+          "title": "CRM API Endpoints should fetch the customer list",
+          "status": "passed"
+        },
+        {
+          "title": "CRM API Endpoints should create a new customer",
+          "status": "passed"
+        },
+        {
+          "title": "Inventory API Endpoints should fetch the supplier list",
+          "status": "passed"
+        },
+        {
+          "title": "Inventory API Endpoints should fetch the product list",
+          "status": "passed"
+        },
+        {
+          "title": "InventoryService product pagination fills the first low-stock page after filtering and reports the full filtered total",
+          "status": "passed"
+        },
+        {
+          "title": "InventoryService product pagination orders equal names by ID across pages regardless of seed order",
+          "status": "passed"
+        },
+        {
+          "title": "InventoryService product pagination keeps the full filtered total on the last and beyond-end pages",
+          "status": "passed"
+        },
+        {
+          "title": "InventoryService product pagination uses the same field comparison for count and rows and retains relations and low-stock flags",
+          "status": "passed"
+        },
+        {
+          "title": "InventoryService product pagination returns all products with lowStock=undefined and keeps defaults",
+          "status": "passed"
+        },
+        {
+          "title": "InventoryService product pagination returns all products with lowStock=false and keeps defaults",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects protected ordinary PATCH fields {\"expiryDate\":\"2099-01-01T00:00:00Z\"}",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects protected ordinary PATCH fields {\"status\":\"RELEASED\"}",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects protected ordinary PATCH fields {\"costPrice\":20}",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects protected ordinary PATCH fields {\"quantity\":1}",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) requires independent permission for release even with ordinary product update permission",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) requires an authenticated actor and ordinary correction permission",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) records tenant/actor/operation/normalized reason and complete before/after without changing quantity",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects cross-tenant batch lookup and inactive/other-tenant actors",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) checks Taipei expiry after a lock wait crosses midnight for STATUS",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) checks Taipei expiry after a lock wait crosses midnight for EXPIRY",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) cannot extend an expired RELEASED lot into saleability or shorten a released lot to today",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) keeps a quarantined corrected lot quarantined and audits cost precisely",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects invalid corrections {\"operation\":\"STATUS\",\"status\":\"QUARANTINE\",\"reason\":\"No change\"}",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects invalid corrections {\"operation\":\"COST\",\"costPrice\":20.12345,\"reason\":\"Precision\"}",
+          "status": "passed"
+        },
+        {
+          "title": "batch audit service and input boundary (mock persistence) rejects invalid corrections {\"operation\":\"COST\",\"costPrice\":22,\"reason\":\"   \"}",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) rejects missing actor or release permission before opening a transaction",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) rejects invalid initial-release reason undefined",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) rejects invalid initial-release reason \"\"",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) rejects invalid initial-release reason \"   \"",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) rejects invalid initial-release reason \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) rejects inactive or foreign actor without posting stock",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) posts stock lot movement and initial audit using one transaction and trusted actor",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) propagates an audit write failure to the caller-owned receipt transaction",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) rechecks expiry after the product lock crosses Taipei midnight",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) keeps ordinary QUARANTINE receipts independent of release authority",
+          "status": "passed"
+        },
+        {
+          "title": "initial receipt release authority (mock persistence) keeps ordinary BLOCKED receipts independent of release authority",
+          "status": "passed"
+        }
+      ],
+      "before": "Fresh empty-schema ownership preflight; then canonical CI migrations and synthetic seeds. No post-seed before-count receipt.",
+      "after": {
+        "accounting_sync_logs": 0,
+        "audit_logs": 7,
+        "checkout_commands": 0,
+        "customer_tags": 2,
+        "customers": 4,
+        "daily_settlements": 0,
+        "expenses": 0,
+        "interactions": 2,
+        "inventory_transactions": 2,
+        "message_broadcasts": 0,
+        "order_items": 2,
+        "order_number_counters": 0,
+        "order_payments": 0,
+        "orders": 1,
+        "permissions": 34,
+        "product_batch_changes": 0,
+        "product_batches": 4,
+        "product_categories": 2,
+        "products": 4,
+        "role_permissions": 48,
+        "roles": 2,
+        "sale_batch_allocations": 0,
+        "shifts": 0,
+        "suppliers": 2,
+        "tags": 2,
+        "tenants": 1,
+        "user_roles": 1,
+        "users": 2
+      },
+      "files": [
+        {
+          "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+          "sha256": "6fed80cf143bfa298f624d086fdd78583362f2b307c170c88ff577fc9ec6de8c"
+        },
+        {
+          "path": "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts",
+          "sha256": "6cf3d2c746ef39ade3616fbbc803574102804cffe9de592f6dbcc7ccfdf58600"
+        }
+      ]
+    }
+  },
+  "historical": {
+    "head": "9ce542d03737bbca835c41606079b29138cf1759",
+    "passed": 371,
+    "failed": 1,
+    "skipped": 81,
+    "status": "FAIL retained; not retroactively changed"
+  },
+  "scope": {
+    "pr109Retried": false,
+    "merges": false,
+    "branchDeletion": false,
+    "productionOrPreviewUsed": false
+  }
+}

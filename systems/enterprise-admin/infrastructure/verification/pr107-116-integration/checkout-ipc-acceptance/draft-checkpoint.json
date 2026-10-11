@@ -1,0 +1,109 @@
+{
+  "readAt": "2026-10-11T07:00:54.360Z",
+  "head": "8123bd7f5ef3b2bf0d42fa94a611ed613b0b3f5e",
+  "tree": "9cbd9e837ca9fa6a2955b8667a9268d30c24c5ff",
+  "parent": "83a1b15cf156c7b0b409ee96b2fabab67b9c74e4",
+  "reviewedPatchSha256": "2cc8134d55f72973cb7f1a1181af925c80a9433c0e783f7e723d388a43c1e475",
+  "files": [
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "blob": "8b3b865b5a0b8ba8470a0b1a7af2aa1629cd9518",
+      "bytes": 20336,
+      "sha256": "6fed80cf143bfa298f624d086fdd78583362f2b307c170c88ff577fc9ec6de8c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/helpers/checkout-command.worker.ts",
+      "blob": "a39dfeb4681a2c363c696e79359513e0aa9bb38e",
+      "bytes": 1781,
+      "sha256": "6cf3d2c746ef39ade3616fbbc803574102804cffe9de592f6dbcc7ccfdf58600"
+    }
+  ],
+  "checks": [
+    {
+      "name": "final-alpine",
+      "result": "SKIPPED",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Agent Context Validation",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Checkout abort retry PostgreSQL acceptance",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Analyze (actions)",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Dependency Review",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Analyze (javascript-typescript)",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Analyze (python)",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Backend CI",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Admin UI CI",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "POS UI CI",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Product pagination PostgreSQL acceptance",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+      "result": "FAILURE",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Batch audit PostgreSQL acceptance",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Order sequence PostgreSQL acceptance",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "Exact-head POS dialog Chrome acceptance",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "CodeQL",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "GitGuardian Security Checks",
+      "result": "SUCCESS",
+      "status": "COMPLETED"
+    }
+  ],
+  "reviews": []
+}

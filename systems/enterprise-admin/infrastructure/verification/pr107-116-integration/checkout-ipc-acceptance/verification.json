@@ -1,0 +1,19 @@
+{
+  "subject": "f6ae1dd94cb2ac1c824f2e4befe824e787df0e55",
+  "changedFileEslintExit": 0,
+  "backendTypeScriptNoEmitExit": 0,
+  "stagedWhitespaceExit": 0,
+  "contextValidator": {
+    "command": "Git Bash scripts/validate-agent-context.sh",
+    "attempts": [
+      { "execution": "sandboxed", "exit": 1, "output": "", "status": "FAIL, no diagnostics" },
+      { "execution": "sandboxed trace", "exit": 1, "output": "", "status": "FAIL, no diagnostics" },
+      { "execution": "approved outside sandbox", "exit": 0, "output": "agent context validation passed.", "status": "PASS" }
+    ]
+  },
+  "wsl": { "status": "NOT RUN", "reason": "E_ACCESSDENIED", "retry": false, "accessChanged": false },
+  "pr109": { "retried": false },
+  "merge": false,
+  "branchDeletion": false,
+  "issueWrite": false
+}
