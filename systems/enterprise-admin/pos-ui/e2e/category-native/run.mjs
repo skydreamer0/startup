@@ -1,3 +1,4 @@
+import { assertCategoryStaticSources, assertCategoryStaticEvidence } from './static-assets.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -37,7 +38,7 @@ async function main() {
       assert.equal(git('ls-files', '--others', '--ignored', '--exclude-standard', '--', `systems/enterprise-admin/${directory}/.env*`), '');
       assert.equal(fs.existsSync(path.join(app, '..', directory, '.env')), false);
     }
-    assertBrandSources(app);
+    assertBrandSources(app); assertCategoryStaticSources(app);
   };
   assertSource();
   const container = process.env.SKU_QA_CONTAINER, networkName = process.env.SKU_QA_NETWORK;
@@ -78,6 +79,13 @@ async function main() {
   const log = fs.openSync(path.join(output, 'raw.log'), 'wx');
   let error = null, accepted = null;
   try {
+    // Fail on the browser prerequisite before starting the category API/DB fixture.
+    phases['native-focus-preflight'] = await runOwnedPhase(owner, 'xvfb-run', [
+      '--auto-servernum', '--server-args=-screen 0 1920x1080x24 -nolisten tcp', process.execPath,
+      path.join(backend, 'node_modules/tsx/dist/cli.mjs'), path.join(app, 'e2e/category-native/focus-preflight.ts'),
+    ], { cwd: app, env, stdio: ['ignore', log, log] }, state, () => cleanupRunProcesses(scope));
+    assert.equal(phases['native-focus-preflight'].exitCode, 0, 'Native focus prerequisite must pass');
+    assert.equal(phases['native-focus-preflight'].signal, null); assert.equal(phases['native-focus-preflight'].error, null);
     const commands = [
       ['browser-types', app, ['node_modules/typescript/bin/tsc', '--project', 'tsconfig.category-native.json']],
       ['fixture-types', backend, ['node_modules/typescript/bin/tsc', '--project', 'tsconfig.category-native.json']],
@@ -90,11 +98,21 @@ async function main() {
       assert.equal(phases[name].exitCode, 0, `${name} must pass`); assert.equal(phases[name].signal, null); assert.equal(phases[name].error, null); assert.equal(owner.cancelled, null);
     }
     assertSource();
+    const driver = read('native-focus-driver.json');
+    assert.equal(driver.nonce, nonce); assert.equal(driver.noDefaults, true); assert.equal(driver.sameWindow, true);
+    assert.deepEqual(driver.events, [{ state: 'hidden', trusted: true }, { state: 'visible', trusted: true }]);
     const cases = assertReport(read('report.json'));
     const files = fs.readdirSync(path.join(output, 'tests'), { recursive: true });
+    const focusPreflights = files.filter(file => file.endsWith('/native-focus-preflight.json')).map(file => read(path.join('tests', file)));
+    assert.deepEqual(focusPreflights.map(row => row.test).sort(), [...expectedCases].sort());
+    for (const row of focusPreflights) {
+      assert.equal(row.nonce, nonce); assert.equal(row.noDefaults, true); assert.equal(row.sameWindow, true);
+      assert.deepEqual(row.events, [{ state: 'hidden', trusted: true }, { state: 'visible', trusted: true }]);
+    }
     const ledgers = files.filter(file => file.endsWith('/network.json')).map(file => read(path.join('tests', file)));
     assert.deepEqual(ledgers.map(row => row.test).sort(), [...expectedCases].sort()); ledgers.forEach(row => assert.equal(row.nonce, nonce));
     const api = read('api-ledger.json'), database = read('database-receipt.json');
+    ledgers.forEach(row => assertCategoryStaticEvidence(row.verifiedStatic));
     const networkReads = assertNetwork(ledgers, api); const databaseProof = assertDatabase(database, api);
     const captures = files.filter(file => file.endsWith('.png')).map(file => {
       const stage = path.basename(file, '.png');
@@ -120,7 +138,9 @@ async function main() {
     assert.deepEqual(lifecycle.map(row => row.test).sort(), [...lifecycleCases].sort());
     for (const row of lifecycle) {
       assert.equal(row.nonce, nonce); assert.equal(row.realStaleWaitMs, 61000); assert.ok(row.realStaleElapsedMs >= 61000);
-      assert.equal(row.focusEmulationDisabled, true); assert.equal(row.backgroundVisibility, 'hidden'); assert.equal(row.foregroundVisibility, 'visible');
+      assert.equal(row.focusEmulationDisabled, true); assert.equal(row.focusMode, 'connectOverCDP noDefaults default context'); assert.equal(row.backgroundVisibility, 'hidden'); assert.equal(row.foregroundVisibility, 'visible');
+      assert.deepEqual(row.visibilityEvents.map(({ state, trusted }) => ({ state, trusted })), [{ state: 'hidden', trusted: true }, { state: 'visible', trusted: true }]);
+      assert.ok(row.visibilityEvents[1].at - row.visibilityEvents[0].at >= 61000);
       assert.deepEqual(row.cartBefore, row.cartAfter); assert.equal(row.search, '合成');
       assert.equal(row.selectedCategory, database.expected.categories[1].id);
       assert.deepEqual(row.latestProductIds, [database.expected.products.find(product => product.sku === 'CATEGORY-ONLY-2').id]);
@@ -150,3 +170,4 @@ async function main() {
   console.log('CATEGORY_NATIVE_ACCEPTED ' + fs.readFileSync(path.join(output, 'accepted.json'), 'utf8'));
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) main().catch(error => { console.error(error); process.exitCode = 1; });
+
