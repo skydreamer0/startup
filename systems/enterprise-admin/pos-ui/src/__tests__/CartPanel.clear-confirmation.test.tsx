@@ -202,4 +202,34 @@ describe('CartPanel clear confirmation belongs to its editable draft', () => {
     expect(onFeedback).toHaveBeenCalledWith({ type: 'info', message: '購物車目前沒有商品' });
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
+
+  it('cannot reuse confirmation when pending is entered and completed before the next render', () => {
+    const { onFeedback } = setup();
+    clickClear();
+    const clearButton = screen.getByRole('button', { name: /清空/ });
+    act(() => {
+      freezeCheckout('pending');
+      useCheckoutRecoveryStore.getState().confirm('synthetic-command');
+      clearButton.click();
+    });
+    expect(useCartStore.getState().items.map((item) => item.product.id)).toEqual([productA.id]);
+    expect(onFeedback).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
+    clickClear();
+    expect(useCartStore.getState().items).toHaveLength(0);
+  });
+
+  it('cannot reuse confirmation after empty/refill and activation before the next render', () => {
+    const { onFeedback } = setup();
+    clickClear();
+    const clearButton = screen.getByRole('button', { name: /清空/ });
+    act(() => {
+      useCartStore.getState().removeItem(productA.id);
+      useCartStore.getState().addItem(productB);
+      clearButton.click();
+    });
+    expect(useCartStore.getState().items.map((item) => item.product.id)).toEqual([productB.id]);
+    expect(onFeedback).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
+    clickClear();
+    expect(useCartStore.getState().items).toHaveLength(0);
+  });
 });

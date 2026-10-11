@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import CartItemComponent from './CartItem';
@@ -26,6 +26,11 @@ export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckou
   const checkoutPending = useCheckoutRecoveryStore((state) => state.pending !== null);
   const totalQty = items.reduce((sum, item) => sum + item.quantity, 0);
   const [clearConfirmation, setClearConfirmation] = useState<ClearConfirmation | null>(null);
+  const clearConfirmationRef = useRef<ClearConfirmation | null>(null);
+  function updateClearConfirmation(value: ClearConfirmation | null) {
+    clearConfirmationRef.current = value;
+    setClearConfirmation(value);
+  }
   const confirmingClear = clearConfirmation !== null
     && clearConfirmation.draftRevision === draftRevision
     && clearConfirmation.draftScope === draftScope
@@ -33,7 +38,9 @@ export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckou
 
   useEffect(() => {
     if (!clearConfirmation) return;
-    const timeout = window.setTimeout(() => setClearConfirmation(null), 3000);
+    const timeout = window.setTimeout(() => {
+      if (clearConfirmationRef.current === clearConfirmation) updateClearConfirmation(null);
+    }, 3000);
     return () => window.clearTimeout(timeout);
   }, [clearConfirmation]);
 
@@ -43,34 +50,35 @@ export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckou
     const unsubscribeCart = useCartStore.subscribe((state, previous) => {
       if (state.draftRevision !== previous.draftRevision
         || state.draftScope !== previous.draftScope || state.items.length === 0) {
-        setClearConfirmation(null);
+        updateClearConfirmation(null);
       }
     });
     const unsubscribeRecovery = useCheckoutRecoveryStore.subscribe((state) => {
-      if (state.pending) setClearConfirmation(null);
+      if (state.pending) updateClearConfirmation(null);
     });
     return () => { unsubscribeCart(); unsubscribeRecovery(); };
   }, []);
 
   function handleClearCart() {
     const cart = useCartStore.getState();
+    const confirmation = clearConfirmationRef.current;
     if (useCheckoutRecoveryStore.getState().pending) {
-      setClearConfirmation(null);
+      updateClearConfirmation(null);
       return;
     }
     if (cart.items.length === 0) {
-      setClearConfirmation(null);
+      updateClearConfirmation(null);
       onFeedback?.({ type: 'info', message: '購物車目前沒有商品' });
       return;
     }
-    if (!clearConfirmation || clearConfirmation.draftRevision !== cart.draftRevision
-      || clearConfirmation.draftScope !== cart.draftScope) {
-      setClearConfirmation({ draftRevision: cart.draftRevision, draftScope: cart.draftScope });
+    if (!confirmation || confirmation.draftRevision !== cart.draftRevision
+      || confirmation.draftScope !== cart.draftScope) {
+      updateClearConfirmation({ draftRevision: cart.draftRevision, draftScope: cart.draftScope });
       onFeedback?.({ type: 'warning', message: '再按一次清空購物車' });
       return;
     }
     cart.clearCart();
-    setClearConfirmation(null);
+    updateClearConfirmation(null);
     onFeedback?.({ type: 'success', message: '購物車已清空' });
   }
 

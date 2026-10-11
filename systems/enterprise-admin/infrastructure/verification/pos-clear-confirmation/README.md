@@ -87,3 +87,23 @@ three frozen statuses, pending/unlocked A/B/A and the empty-cart message.
 
 No store deployment, live transaction, production database or security change
 is part of this work. Draft publication and code review are not release approval.
+
+## PC4070 acceptance correction, 2026-10-11
+
+At original submitted head cc01fd18e0e387912a21f8055bd5c6f594fcf41c,
+the 15 original cases passed in a latest-master candidate. Independent review
+identified a same-batch stale handler: subscription invalidation queued React
+state, while a click before rerender could reuse the old render's confirmation.
+Two new real-store synthetic reproductions failed: pending/confirm/click in one
+batch and remove-last/refill/click in one batch both cleared the cart incorrectly.
+Those original RED results are preserved separately from subsequent checks.
+
+The correction keeps the live confirmation in a component ref and updates it
+synchronously together with displayed React state. Store subscriptions and the
+timer invalidate both; an old timer cannot expire a newly armed confirmation.
+The handler reads that live confirmation before clearing. The two regressions
+also check that the new same-draft confirmation still allows the next clear.
+No cart/recovery store, API, policy, permissions or dependency changes.
+
+Fresh corrected-head and latest-master checks, independent review and scoped
+built-app acceptance are required before release; historical CI is not inherited.
