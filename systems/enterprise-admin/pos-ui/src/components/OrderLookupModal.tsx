@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { posApi, PosOrderSummary } from '../api/pos';
+import { PosOrderSummary } from '../api/pos';
+import { useTodayOrders } from '../hooks/useTodayOrders';
 import { PAYMENT_LABELS, PaymentMethod } from '../constants';
 
 interface Props {
@@ -28,11 +28,7 @@ export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onC
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const { data: orders = [], isLoading } = useQuery({
-    queryKey: ['pos-today-orders', checkoutScope, shiftId],
-    queryFn: () => posApi.getTodayOrders(shiftId).then((r) => r.data.data),
-    staleTime: 10_000,
-  });
+  const { data: orders = [], isPending, isError, isFetching, refetch } = useTodayOrders(checkoutScope, shiftId);
 
   const filtered = orders.filter((o) =>
     !search ||
@@ -60,9 +56,15 @@ export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onC
 
         {/* List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
-          {isLoading && <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>載入中...</div>}
-          {!isLoading && filtered.length === 0 && (
+          {isPending && <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>載入中...</div>}
+          {!isPending && !isError && filtered.length === 0 && (
             <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>今日無訂單紀錄</div>
+          )}
+          {isError && (
+            <div role="alert" style={{ padding: '16px 24px', color: 'var(--danger)', fontSize: 13 }}>
+              今日訂單載入失敗{orders.length > 0 ? '，目前顯示的紀錄可能已過期' : ''}。
+              <button type="button" disabled={isFetching} onClick={() => void refetch()}>重新載入</button>
+            </div>
           )}
           {filtered.map((order) => (
             <div key={order.id} style={{ borderBottom: '1px solid var(--border)' }}>
