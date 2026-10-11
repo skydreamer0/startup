@@ -10,8 +10,15 @@ async function main() {
   if (mode === 'crash-before-commit') {
     const client = new PrismaClient().$extends({ query: { checkoutCommand: { async updateMany({ args, query }) {
       const result = await query(args);
-      process.kill(process.pid, 'SIGKILL');
-      return result;
+      if (result.count !== 1) throw new Error('Expected one precommit command completion');
+      if (!process.send) throw new Error('Crash worker requires its owned parent IPC channel');
+      // Keep the interactive transaction open until the parent kills this exact child.
+      await new Promise<never>((_resolve, reject) => {
+        process.send!({ stage: 'before-commit', commandId: payload.commandId }, (error) => {
+          if (error) reject(error);
+        });
+      });
+      throw new Error('Precommit crash barrier unexpectedly returned');
     } } } });
     Object.assign(globalThis, { prisma: client });
   }

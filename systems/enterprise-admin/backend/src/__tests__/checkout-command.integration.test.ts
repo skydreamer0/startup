@@ -28,6 +28,7 @@ import app from '../app';
 import { signAccessToken } from '../lib/jwt';
 
 const tenants: string[] = [];
+const activeWorkers = new Set<ReturnType<typeof spawn>>();
 async function fixture(quantity = 1) {
   const tenantId = randomUUID();
   await basePrisma.tenant.create({ data: { id: tenantId, name: 'Synthetic command test', slug: tenantId } });
@@ -43,19 +44,44 @@ async function fixture(quantity = 1) {
 type Fixture = Awaited<ReturnType<typeof fixture>>;
 function inTenant<T>(f: Fixture, work: () => T) { return tenantContext.run({ tenantId: f.tenantId, plan: 'pro' }, work); }
 
-function commandProcess(f: Fixture, mode: string): Promise<{ code: number | null; signal: string | null; result?: unknown }> {
+function commandProcess(f: Fixture, mode: string): Promise<{ code: number | null; signal: string | null; result?: unknown; crashCheckpoint: boolean }> {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, ['--import', 'tsx', 'src/__tests__/helpers/checkout-command.worker.ts', mode], { env: process.env, stdio: ['pipe', 'pipe', 'pipe'] });
-    let stdout = ''; let stderr = '';
-    child.stdout.on('data', (data) => { stdout += data.toString(); });
-    child.stderr.on('data', (data) => { stderr += data.toString(); });
-    child.on('error', reject);
+    const child = spawn(process.execPath, ['--import', 'tsx', 'src/__tests__/helpers/checkout-command.worker.ts', mode], { env: process.env, stdio: ['pipe', 'pipe', 'pipe', 'ipc'] });
+    activeWorkers.add(child);
+    let stdout = ''; let stderr = ''; let crashCheckpoint = false;
+    let failure: Error | undefined;
+    const stopWithFailure = (error: Error) => {
+      failure ??= error;
+      try { child.kill('SIGKILL'); } catch { failure = new Error('Owned worker termination failed'); }
+    };
+    // Keep failure pending until close proves quiescence; timeout cannot pass as a crash.
+    const deadline = setTimeout(() => stopWithFailure(new Error('Checkout worker deadline exceeded')), 4000);
+    const closeDeadline = setTimeout(() => {
+      reject(new Error('Owned checkout worker close not observed; fixture cleanup prohibited'));
+    }, 4500);
+    child.on('message', (message) => {
+      if (mode !== 'crash-before-commit' || crashCheckpoint || !message || typeof message !== 'object'
+        || !('stage' in message) || message.stage !== 'before-commit'
+        || !('commandId' in message) || message.commandId !== f.payload.commandId) {
+        stopWithFailure(new Error('Unexpected checkout worker checkpoint'));
+        return;
+      }
+      crashCheckpoint = true;
+      try {
+        if (!child.kill('SIGKILL')) failure = new Error('Owned checkout worker kill was not delivered');
+      } catch (error) { stopWithFailure(error instanceof Error ? error : new Error('Owned checkout worker kill failed')); }
+    });
+    child.stdout!.on('data', (data) => { stdout += data.toString(); });
+    child.stderr!.on('data', (data) => { stderr += data.toString(); });
+    child.on('error', (error) => { failure = error; });
     child.on('close', (code, signal) => {
+      clearTimeout(deadline); clearTimeout(closeDeadline); activeWorkers.delete(child);
+      if (failure) { reject(failure); return; }
       if (code && mode !== 'crash-before-commit') { reject(new Error(stderr)); return; }
       const line = stdout.split('\n').find((line) => line.startsWith('RESULT:'));
-      resolve({ code, signal, result: line ? JSON.parse(line.slice(7)) : undefined });
+      resolve({ code, signal, crashCheckpoint, result: line ? JSON.parse(line.slice(7)) : undefined });
     });
-    child.stdin.end(JSON.stringify({ tenantId: f.tenantId, payload: f.payload }));
+    child.stdin!.end(JSON.stringify({ tenantId: f.tenantId, payload: f.payload }));
   });
 }
 
@@ -71,6 +97,10 @@ async function noSale(f: Fixture, quantity: number) {
 
 afterEach(async () => {
   fault.release(); fault.stage = ''; fault.barrier = false; fault.holdClaim = false;
+  if (activeWorkers.size !== 0) {
+    for (const child of activeWorkers) child.kill('SIGKILL');
+    throw new Error('Owned checkout worker close not proven; refusing fixture deletion');
+  }
   for (const tenantId of tenants.splice(0)) {
     await basePrisma.checkoutCommand.deleteMany({ where: { tenantId } });
     await basePrisma.saleBatchAllocation.deleteMany({ where: { tenantId } });
@@ -218,7 +248,11 @@ describe('Checkout command recovery (real PostgreSQL)', () => {
 
   it('rolls back after a real process crash before commit and recovers in a new process', async () => {
     const f = await fixture();
-    expect((await commandProcess(f, 'crash-before-commit')).signal).toBe('SIGKILL');
+    const crash = await commandProcess(f, 'crash-before-commit');
+    expect(crash.crashCheckpoint).toBe(true);
+    expect(crash.code).toBeNull();
+    expect(crash.signal).toBe('SIGKILL');
+    expect(crash.result).toBeUndefined();
     await noSale(f, 1);
     expect(await inTenant(f, () => CheckoutCommandService.getResult(f.payload.commandId))).toMatchObject({ status: 'UNKNOWN' });
     const replay = await commandProcess(f, 'reply');
