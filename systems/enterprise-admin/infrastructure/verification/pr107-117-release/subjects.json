@@ -1,0 +1,413 @@
+[
+  {
+    "number": 107,
+    "merged": true,
+    "sourceHead": "1b93f45ef5ee5f15974862a4fe61261d50dad6e1",
+    "sourceTree": "2220fe94205404df953eb72247224bed963889eb",
+    "base": "8385bb4c96e299d913061b2d8b7083e785b0aa8b",
+    "candidate": "a6b137bf92ce5c7cc300a5c3f1468c237d869048",
+    "tree": "809b93aea9ca0b98dda062da7a9dd1514a24d31f",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+        "blob": "b0ecf75a5aa1b14c9c8f8ce6c2d5462522d01a68",
+        "bytes": 15590,
+        "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+        "blob": "5e5ca4fe2e32edf40ac78247fc67166d31cb4baa",
+        "bytes": 3834,
+        "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+        "blob": "995a7e16718e47cc172d1615df042e6f42e4d4d5",
+        "bytes": 7191,
+        "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+      }
+    ],
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr107-before-merge.bundle",
+      "sha256": "6360027308c10dd57067ae4c319d5df1fb925caa7bff60e903f6e558246dd8f5"
+    }
+  },
+  {
+    "number": 108,
+    "merged": true,
+    "sourceHead": "7500af3ac984f3886db54bdb175f9eeab2ec67ae",
+    "sourceTree": "230593349461b23e89b3e4f1762c1fbb9b223392",
+    "base": "42bd00d0ca833cd452d76f1e51dd1b7ecb847f82",
+    "candidate": "063d085b853f3ce1df56adf62644ce38c904dfd9",
+    "tree": "a3e78f7167f142403b120f64902fb43b72474c7a",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+      "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+        "blob": "b0ecf75a5aa1b14c9c8f8ce6c2d5462522d01a68",
+        "bytes": 15590,
+        "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+        "blob": "5e5ca4fe2e32edf40ac78247fc67166d31cb4baa",
+        "bytes": 3834,
+        "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+        "blob": "995a7e16718e47cc172d1615df042e6f42e4d4d5",
+        "bytes": 7191,
+        "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+        "blob": "3bf4498f142cee7d4ca627971748080e4d085fa5",
+        "bytes": 8347,
+        "sha256": "b1a97b94f9a5a1074d4656fbc058e59f48c80fb411cd5b7fef6663a5bfb57491"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+        "blob": "9162a36185253565cfc9b18a3148c75304fc418b",
+        "bytes": 8111,
+        "sha256": "58385802a608d3b413f540b38a1bff8966050451f4e05b36a9dc5d4f41630bd5"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+        "blob": "3728f10400cc9fe1f75ef7420fdc9e26c54782df",
+        "bytes": 12850,
+        "sha256": "86cef95605cac5d6f0474ddc78118b70b506f3d5a5c8a918e55482a614948225"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+        "blob": "c54c7f93ebfe3799a46c0541857858b51e87a113",
+        "bytes": 12776,
+        "sha256": "d647ab1b8d95f68b08ca42d887112c06e6d28118b36a6632d2f07893d52c65f6"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs",
+        "blob": "431d8905495dd531ed44ea189cd75eabb36878fe",
+        "bytes": 14944,
+        "sha256": "a33ec2800c15401d1d02666c032807194481e1c66d3210126906f5030a3eb299"
+      }
+    ],
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr108-before-merge.bundle",
+      "sha256": "a7e774e79ecf7ddb974ec9041419ba39471738d484f5800d2860a7efa3df3ebd"
+    }
+  },
+  {
+    "number": 110,
+    "merged": true,
+    "sourceHead": "c977501714b73802c8b85e0cf51011378fe0d3d4",
+    "sourceTree": "b7562defd76bb883d6b0a068db784ccebb85da2e",
+    "base": "20b422e4a121b71e59b594bc64bc0ab4bfd6dd58",
+    "candidate": "fb992450daaa9ade3c57d7d86a47ecbdebd275ff",
+    "tree": "f51907de3959b64eee012b65daeef92590798de9",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-local.ts",
+      "systems/enterprise-admin/backend/scripts/general-order-trace-owned.py",
+      "systems/enterprise-admin/infrastructure/verification/general-order-trace/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx",
+        "blob": "b0ecf75a5aa1b14c9c8f8ce6c2d5462522d01a68",
+        "bytes": 15590,
+        "sha256": "d95c8e4143474caa4f74bac376e8a7880dff929a0285d62e58521df7d561b641"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/batchTrace.ts",
+        "blob": "5e5ca4fe2e32edf40ac78247fc67166d31cb4baa",
+        "bytes": 3834,
+        "sha256": "00766bc330400dcf1c553a07585afe889aa565fda89370daf84f3241bf383081"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchTraceDialog.tsx",
+        "blob": "995a7e16718e47cc172d1615df042e6f42e4d4d5",
+        "bytes": 7191,
+        "sha256": "307b190f54a247d26216dcca953857df6a37018fd24ef48dbb8875e90e9f1647"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts",
+        "blob": "aba04bc86b1d7982b5536bc7f3bd94e6531505a7",
+        "bytes": 2766,
+        "sha256": "c8ea7544a72f9b1df7f45a543d4c0f0dd7dcc232b7ae6482c673e502de923993"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts",
+        "blob": "79187e227b16d0b9eef37bce05c7a4400cfa579b",
+        "bytes": 1583,
+        "sha256": "428d79bd6a2d4b2380571af5ed49923ddcfe3efb4bdb2a92d7fa18c2c845a608"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-local.ts",
+        "blob": "c6783b1176f233586d73bdf6832abca1dd2b1cd3",
+        "bytes": 12945,
+        "sha256": "b9b56da4d45425bfb6e31f27bc7dc5cc6d34fb971f15ef2920be663e2385b59f"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/general-order-trace-owned.py",
+        "blob": "a679ff7649389c59a5b667865c3922d29cb0df7d",
+        "bytes": 7406,
+        "sha256": "60ea4a4f51e79d81e5354d0c659c232f8c8862536c2b701663e91803209de7e2"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/batch-source-trace/README.md",
+        "blob": "3bf4498f142cee7d4ca627971748080e4d085fa5",
+        "bytes": 8347,
+        "sha256": "b1a97b94f9a5a1074d4656fbc058e59f48c80fb411cd5b7fef6663a5bfb57491"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/general-order-trace/README.md",
+        "blob": "e37ee12376064d73f3b796a5cc63e2024c370d90",
+        "bytes": 5168,
+        "sha256": "172c6ab4ab4b87a7ef0cdffc9652a099a14899ec22b762a3c04cf574b65d7e67"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts",
+        "blob": "9162a36185253565cfc9b18a3148c75304fc418b",
+        "bytes": 8111,
+        "sha256": "58385802a608d3b413f540b38a1bff8966050451f4e05b36a9dc5d4f41630bd5"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/fixtures.ts",
+        "blob": "3728f10400cc9fe1f75ef7420fdc9e26c54782df",
+        "bytes": 12850,
+        "sha256": "86cef95605cac5d6f0474ddc78118b70b506f3d5a5c8a918e55482a614948225"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.mjs",
+        "blob": "c54c7f93ebfe3799a46c0541857858b51e87a113",
+        "bytes": 12776,
+        "sha256": "d647ab1b8d95f68b08ca42d887112c06e6d28118b36a6632d2f07893d52c65f6"
+      },
+      {
+        "path": "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs",
+        "blob": "431d8905495dd531ed44ea189cd75eabb36878fe",
+        "bytes": 14944,
+        "sha256": "a33ec2800c15401d1d02666c032807194481e1c66d3210126906f5030a3eb299"
+      }
+    ],
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr110-before-merge.bundle",
+      "sha256": "a096dde4b273356dace3d6acde96349ba5b526500282f6df38e4b3f92f0d4cb6"
+    }
+  },
+  {
+    "number": 112,
+    "merged": true,
+    "sourceHead": "d856456b901f9adea602b5ba3a6a109aa3e42279",
+    "sourceTree": "e1741483b0a08257b46adacc52d1757bb85b05dc",
+    "base": "130340682f6d51dec900842ec0f62f8d13568e1a",
+    "candidate": "3773aae6ee9c75a58947cf9d25b647bf29b5f1a0",
+    "tree": "05820cc2ced503ab3ab22e6756b116df15bc5362",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/ROADMAP.md",
+      "systems/enterprise-admin/admin-ui/MODULE.md",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+      "systems/enterprise-admin/admin-ui/src/api/productBatches.ts",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductBatchesView.tsx",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.css",
+      "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+      "systems/enterprise-admin/infrastructure/verification/product-batch-navigation/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/ROADMAP.md",
+        "blob": "f5d69c61432d3701ba66c988caf9d18b21a38b1a",
+        "bytes": 26632,
+        "sha256": "63348a80c7832aeae96a5ffcd194bcbaceac3b3443899a5c9bd7c22516dee593"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+        "blob": "f747497a2ecee6602175867563a4d69b81aa4e71",
+        "bytes": 9144,
+        "sha256": "a4bf2b2e9eed9861bb6fc0d002cc8357960eb71ac21c131267e5358772e5fad8"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx",
+        "blob": "d4353e250db0138630ef82e4c543f46cbf23be7a",
+        "bytes": 17640,
+        "sha256": "f2a484b971be03bab0b024aa4ff4e71b37692b005be86d92427e85906721bf7a"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx",
+        "blob": "422752558f02935911c3515b5b55cbaf01752797",
+        "bytes": 7816,
+        "sha256": "a1d4c4e78a22cde18bb07862701e32f72458f68239d9ba5a7e225d121b630977"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx",
+        "blob": "540a63d5b7d8b94cd98e3bfe37db32f273dfa630",
+        "bytes": 18338,
+        "sha256": "dfb4ebdf0253a99615e40b29887e99560a21f1317ec5816f80a26433255f4aab"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/__tests__/supplierLists.test.tsx",
+        "blob": "51a0055eb9fbbad916fb07150a285cacfb19292c",
+        "bytes": 15492,
+        "sha256": "dead53f9c6ad57bcd8c002a200ef57188fba8c42b6c812853d5973803e934f76"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/api/productBatches.ts",
+        "blob": "0d0fb8864dd87dd5b16436c0579aa5664b0bbc84",
+        "bytes": 2280,
+        "sha256": "874c5e666c02962d100b6b2be1377fce22b1e1a618ea61747c46c223ef18de4d"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductBatchesView.tsx",
+        "blob": "b010f031b11e8f8e251740559c3ae521a6672147",
+        "bytes": 3975,
+        "sha256": "3a5c4641c8f8ba4d3cb21d8bb8e05600634576941a060cdad22806517fa600c5"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.css",
+        "blob": "78eb8c2a2d3e5a4fe72e7feee5ed6e3c90a15154",
+        "bytes": 1922,
+        "sha256": "72409905eab349d58d91c5ad59d09a45a13155691a6ffa98638d671c4284581a"
+      },
+      {
+        "path": "systems/enterprise-admin/admin-ui/src/pages/Inventory/ProductListPage.tsx",
+        "blob": "c4b52485bb5b99fb1f6bb0154ce4b6d58d092019",
+        "bytes": 22659,
+        "sha256": "356be1ef29f63f6be749c53060be7df7fa44640d437e8a4f69ff77a4fb6c0dfc"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/product-batch-navigation/README.md",
+        "blob": "678fe7b61d90223340ceec31403593da9e3e7583",
+        "bytes": 3816,
+        "sha256": "3fa0056a2eb371b9209c0e300af24c54474ffc4281045dd8189c79d40d5f313a"
+      }
+    ],
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr112-before-merge.bundle",
+      "sha256": "df6ec61ad8519b97537245ae59e721ebb8268b83ee94e413285a3f879a944d45"
+    }
+  },
+  {
+    "number": 111,
+    "merged": false,
+    "sourceHead": "cb39ce50d56ede45a42e8369dff5f0c2f257fe64",
+    "sourceTree": "68959e0dbd985caeccf90a119fd8bd51cd7c7817",
+    "base": "40c3d752ef64ddabb8c06613b57b791a5e53d8ab",
+    "candidate": "31605d39f4ddb027a387a1a2bf1717ffc10b3998",
+    "tree": "93fd8f24888184e8df30227b93126bddc2ab9f18",
+    "actualChangedFiles": [
+      "systems/enterprise-admin/backend/MODULE.md",
+      "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-guards.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+      "systems/enterprise-admin/backend/scripts/split-payment-owned.py",
+      "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+      "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md"
+    ],
+    "fullRemoteFiles": [
+      {
+        "path": "systems/enterprise-admin/backend/MODULE.md",
+        "blob": "cdd48069210b73a6ce729a3999f48fdb65c258cc",
+        "bytes": 15113,
+        "sha256": "05be50f8518a8ac1be02ba33eb56d0b938121795b8dce03f8dc60f750598e385"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts",
+        "blob": "c32c263d11a326d1459f56c97fd32f3422ff59a6",
+        "bytes": 2768,
+        "sha256": "d1879364c3de426fc10e07d987dcdffe6f5f8fb641ad76af94c8016b52121f92"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-guards.ts",
+        "blob": "9636dd5938b121ccb2ae831340eb2642681e7aef",
+        "bytes": 1583,
+        "sha256": "8aa50b09885ccd5540d6d6c48db78443cffcbbc1d1fd1dadc7e3fd1d3c94d50b"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-local.ts",
+        "blob": "770729423b1300638a9a9c1e6f1d6f48a9e64402",
+        "bytes": 16906,
+        "sha256": "32f9daca8f84be9afa14d63978495a8e2e428bfccd392a828b7bf2d17010d092"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/scripts/split-payment-owned.py",
+        "blob": "ff06331a1e109449531c8152287f57e2090a322e",
+        "bytes": 7392,
+        "sha256": "39264c83a7f77e2212ee26309dfadec3bcd15cc822fa6f57399b2374f706c837"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts",
+        "blob": "ebb10a998329928b0178113ce45b968e36f4d51f",
+        "bytes": 5024,
+        "sha256": "03c6daae5631b43b8552d5dbbf6453d6c7b7abcc0712582a05595c60e0009cdb"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts",
+        "blob": "fa82bbb3e17a53b40b5611628a82ce9f89084abc",
+        "bytes": 3984,
+        "sha256": "13301ac0f066c4ff523d0da2c23136c946bcd789e8b94100b19d08aa00f70423"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+        "blob": "1b203f5f5b182a91a50d4854ef21f698df2ca70a",
+        "bytes": 1577,
+        "sha256": "ac1964a46e8033c99a0dd60afaa7af7d30596022ebed9a7e699266b04f5b87cf"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+        "blob": "05714e2c102945758c2d099cf0509248f8d898a5",
+        "bytes": 4545,
+        "sha256": "fc0b80d15f162cc846540b4716d7e275c49f04b70b9b3be589c6cb197a80bcf0"
+      },
+      {
+        "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+        "blob": "270461afbbdc1d89f9badda0a3e547c4ea97ccf3",
+        "bytes": 4700,
+        "sha256": "3c993c6e433f20c504d8ac7b79a64b5e84b7c7e57316a88a4349ee3061ac53b7"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/split-payment-totals/README.md",
+        "blob": "696d5510ef0d7497ab04f291e21db3035ea8db68",
+        "bytes": 7282,
+        "sha256": "683704e4cd7b485cae7e213c0ebf2aa8451cbb56ee9ea51a4f702d878b5cfe9f"
+      }
+    ],
+    "onlyReleasedDelta": true,
+    "held109Excluded": true,
+    "exactChangedBytesMatch": true,
+    "bundle": {
+      "path": "C:\\Users\\User\\Documents\\Codex\\2026-10-11\\task-4\\evidence\\released-batch\\pr111-before-merge.bundle",
+      "sha256": "32d5852c0bfbecae9a7e2617fb5ce1ce864aeb7bb77b456396b07d5fc34d9752"
+    }
+  }
+]

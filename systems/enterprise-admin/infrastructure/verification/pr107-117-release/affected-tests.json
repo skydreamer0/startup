@@ -1,0 +1,882 @@
+[
+  {
+    "number": 107,
+    "head": "a6b137bf92ce5c7cc300a5c3f1468c237d869048",
+    "tree": "809b93aea9ca0b98dda062da7a9dd1514a24d31f",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 2648
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 30,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "batch source read contract validates and projects the real existing envelope without requiring money or receipt notes",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract accepts general-order allocations whose order number is null",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched envelope instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched batch instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched tenant instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched receipt instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched allocation instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched count instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched missing instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched duplicates instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched date instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched orderNumber instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows actual receipt and allocation identities with Taipei dates and no financial claims",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows a general-order allocation without an order number instead of failing the trace",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP states unknown historical provenance for successful empty arrays",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP discloses the 100-row cap and actual total without inventing older rows",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 403 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 404 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 500 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps network separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps malformed separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP makes a loading close available and aborts an unmounted read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP ignores late old-batch results after selecting a different batch",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP hides a prior success when refresh fails and recovers without writes or duplicate pending retry",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not query for missing read permission or unresolved auth",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP separates user-scoped results while another reader request is pending",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP names and focuses the modal, contains Tab and handles native Escape cancellation",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP closes and forgets the trace selection after authentication A/B/A",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not expose detail values from a mismatched tenant response",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP opens from the filtered real batch page and closing preserves filter and returns focus",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 108,
+    "head": "063d085b853f3ce1df56adf62644ce38c904dfd9",
+    "tree": "a3e78f7167f142403b120f64902fb43b72474c7a",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 2463
+      },
+      {
+        "name": "windows-controls",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 628
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 30,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "batch source read contract validates and projects the real existing envelope without requiring money or receipt notes",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract accepts general-order allocations whose order number is null",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched envelope instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched batch instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched tenant instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched receipt instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched allocation instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched count instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched missing instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched duplicates instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched date instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched orderNumber instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows actual receipt and allocation identities with Taipei dates and no financial claims",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows a general-order allocation without an order number instead of failing the trace",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP states unknown historical provenance for successful empty arrays",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP discloses the 100-row cap and actual total without inventing older rows",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 403 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 404 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 500 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps network separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps malformed separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP makes a loading close available and aborts an unmounted read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP ignores late old-batch results after selecting a different batch",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP hides a prior success when refresh fails and recovers without writes or duplicate pending retry",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not query for missing read permission or unresolved auth",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP separates user-scoped results while another reader request is pending",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP names and focuses the modal, contains Tab and handles native Escape cancellation",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP closes and forgets the trace selection after authentication A/B/A",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not expose detail values from a mismatched tenant response",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP opens from the filtered real batch page and closing preserves filter and returns focus",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 110,
+    "head": "fb992450daaa9ade3c57d7d86a47ecbdebd275ff",
+    "tree": "f51907de3959b64eee012b65daeef92590798de9",
+    "results": [
+      {
+        "name": "guards",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 199
+      }
+    ],
+    "reports": []
+  },
+  {
+    "number": 112,
+    "head": "3773aae6ee9c75a58947cf9d25b647bf29b5f1a0",
+    "tree": "05820cc2ced503ab3ab22e6756b116df15bc5362",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 4402
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 112,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "batch source read contract validates and projects the real existing envelope without requiring money or receipt notes",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract accepts general-order allocations whose order number is null",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched envelope instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched batch instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched tenant instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched receipt instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched allocation instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched count instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched missing instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched duplicates instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched date instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source read contract rejects malformed or mismatched orderNumber instead of showing empty history",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows actual receipt and allocation identities with Taipei dates and no financial claims",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP shows a general-order allocation without an order number instead of failing the trace",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP states unknown historical provenance for successful empty arrays",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP discloses the 100-row cap and actual total without inventing older rows",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 403 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 404 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps 500 separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps network separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP keeps malformed separate from empty, hides server details, then retries the same read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP makes a loading close available and aborts an unmounted read",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP ignores late old-batch results after selecting a different batch",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP hides a prior success when refresh fails and recovers without writes or duplicate pending retry",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not query for missing read permission or unresolved auth",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP separates user-scoped results while another reader request is pending",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP names and focuses the modal, contains Tab and handles native Escape cancellation",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP closes and forgets the trace selection after authentication A/B/A",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP does not expose detail values from a mismatched tenant response",
+            "status": "passed"
+          },
+          {
+            "title": "batch source dialog through real read client and synthetic HTTP opens from the filtered real batch page and closing preserves filter and returns focus",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list defers hidden catalog and supplier reads on direct batch URLs until returning",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps cached list reads paused during batch invalidation and resumes them on Back",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps failed batch reads independent from the deferred catalog and supplier reads",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list reads the selected product only and returns to the original filter, page and opener",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list Back closes the read view and Forward reopens the same product without resetting the list",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list a direct/reloaded product URL returns locally with its saved filter and page",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list an old product response cannot replace a newer selection",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list returning while a read is pending aborts it and never reopens the view",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps 403 distinct from empty and retries without writes",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps 404 distinct from empty and retries without writes",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list keeps 500 distinct from empty and retries without writes",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list shows a successful empty result without inventing stock",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list does not retain another identity’s cached result or a late response",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list same-identity permission restoration refetches before exposing old rows",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list a failed background refetch hides the old result until explicit retry succeeds",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page 0 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page -1 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page 1e3 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page NaN to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product → product-scoped batches → original product list bounds malformed page 9007199254740992 to page one",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract accepts the current API envelope and preserves the product identity",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product batch read contract rejects mismatched or malformed rows rather than displaying an empty success",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) allows the full toolbar and pagination to wrap without changing their controls",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) overrides the real late clipping rule only for the product table",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) names the horizontal scroll region and includes it in keyboard navigation",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) leaves the existing Add Product form and its overlay behavior unchanged",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) leaves the existing Edit form and its overlay behavior unchanged",
+            "status": "passed"
+          },
+          {
+            "title": "product page scoped layout contracts (not browser geometry) keeps import modal styles and every local rule inside the product page scope",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client has an exact typed page and unwraps the real envelope once, retaining nullable relations",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows page two and the last-page boundary with the complete catalog total",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client resets to page one when the low-stock filter changes and shows filtered total",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows 403 instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows 500 instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows offline instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client shows request failure instead of an empty catalog and recovers only on a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client hides cached results during refetch and keeps a refetch failure unavailable until retry confirms it",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client recovers to the new last page once when the total shrinks instead of remaining beyond the end",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client distinguishes a pending request from a confirmed empty page and disables both boundaries",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client keeps the selected filter when two deferred responses finish in reverse order",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client handles rapid next/previous without presenting cached first-page data or the late second page as current",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client recovers to page one when all products disappear without a request loop",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client lets existing BatchList collect product options across real client envelopes without posting a receipt",
+            "status": "passed"
+          },
+          {
+            "title": "product list pagination through the real inventory client preserves the open product draft and current supplier through product refetch failure and retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers unwraps a real success envelope to Supplier[] at the client boundary",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers returns a genuine successful empty supplier array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client 403 failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client 500 failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client offline failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers propagates the client request failure failure rather than returning an empty array",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the returned supplier in new and existing product options",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the returned supplier in the supplier table",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through 403 and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through 500 and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through offline and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps the original supplier visible and saved through request failure and a non-submitting retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier 403 error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier 500 error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier offline error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers shows the supplier request failure error and recovers the table on retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers distinguishes products loading from successful empty",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers distinguishes suppliers loading from successful empty",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through 403 and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through 500 and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through offline and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps a valid new-product draft through request failure and retry without choosing the first supplier",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier 403 error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier 500 error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier offline error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers saves the original supplierId while the supplier request failure error remains",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers keeps and saves the existing supplier when the successful list is empty",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers preserves the current selection and edited draft through a failed background refetch and retry",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers does not turn a failed products refetch into successful-empty state",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers does not turn a failed suppliers refetch into successful-empty state",
+            "status": "passed"
+          },
+          {
+            "title": "supplier list contract and consumers retains cached supplier rows with an explicit failed-refresh state",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 111,
+    "head": "31605d39f4ddb027a387a1a2bf1717ffc10b3998",
+    "tree": "93fd8f24888184e8df30227b93126bddc2ab9f18",
+    "results": [
+      {
+        "name": "focused",
+        "exit": 0,
+        "signal": null,
+        "elapsedMs": 757
+      }
+    ],
+    "reports": [
+      {
+        "file": "focused.json",
+        "passed": 20,
+        "failed": 0,
+        "skipped": 0,
+        "cases": [
+          {
+            "title": "split-payment readers (mocked persistence) daily settlement reads the stored 60 cash + 40 card rather than the primary method",
+            "status": "passed"
+          },
+          {
+            "title": "shift report reads the same stored split and expected cash intake",
+            "status": "passed"
+          },
+          {
+            "title": "daily keeps its original paid cohort and non-completed classification",
+            "status": "passed"
+          },
+          {
+            "title": "shift preserves its existing refund arithmetic without treating it as accepted policy",
+            "status": "passed"
+          },
+          {
+            "title": "daily groups TRANSFER and unknown methods into its unchanged other bucket",
+            "status": "passed"
+          },
+          {
+            "title": "daily combines stored TRANSFER0.1 and OTHER0.2 before the numeric API boundary",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation counts order totals once and uses split rows regardless of primary method or row order",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds repeated methods and keeps every stored method without reallocation",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation uses the explicit primary-method fallback only when completed orders have no rows",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for refunded until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for pending until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for paid until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for shipped until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation preserves old classification for cancelled until policy is decided",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation does not invent a fallback for a persisted zero row or normalize inconsistent payment amounts",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation supports an empty cohort and does not mutate the facts",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation treats unusual stored methods as data, not inherited object properties",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation adds stored Decimal 0.1 and 0.2 in the same method without binary intermediate drift",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation aggregates repeated same-method rows across orders while keeping order totals unchanged",
+            "status": "passed"
+          },
+          {
+            "title": "persisted order-payment aggregation keeps fallback classification and ignores out-of-scope status payment rows",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  }
+]

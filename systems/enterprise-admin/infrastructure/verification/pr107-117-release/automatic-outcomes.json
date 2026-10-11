@@ -1,0 +1,489 @@
+{
+  "observedAt": "2026-10-11T07:40:40.640Z",
+  "master": "40c3d752ef64ddabb8c06613b57b791a5e53d8ab",
+  "tree": "05820cc2ced503ab3ab22e6756b116df15bc5362",
+  "rows": [
+    {
+      "number": 117,
+      "mergeSha": "8385bb4c96e299d913061b2d8b7083e785b0aa8b",
+      "tree": "9cbd9e837ca9fa6a2955b8667a9268d30c24c5ff",
+      "runs": [
+        {
+          "id": 38120970379,
+          "name": "CI/CD Pipeline",
+          "event": "push",
+          "head": "8385bb4c96e299d913061b2d8b7083e785b0aa8b",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38120970379",
+          "jobs": [
+            {
+              "name": "Batch audit PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Agent Context Validation",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Exact-head POS dialog Chrome acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "POS UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Product pagination PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Admin UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Order sequence PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Backend CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+              "status": "completed",
+              "conclusion": "failure",
+              "failedSteps": [
+                "Stable POS categories through real API and owned PostgreSQL"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 38120970355,
+          "name": "Push on master",
+          "event": "dynamic",
+          "head": "8385bb4c96e299d913061b2d8b7083e785b0aa8b",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38120970355",
+          "jobs": [
+            {
+              "name": "Analyze (actions)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (python)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (javascript-typescript)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        }
+      ],
+      "deployments": [],
+      "productionDeploymentVerified": false
+    },
+    {
+      "number": 107,
+      "mergeSha": "42bd00d0ca833cd452d76f1e51dd1b7ecb847f82",
+      "tree": "809b93aea9ca0b98dda062da7a9dd1514a24d31f",
+      "runs": [
+        {
+          "id": 38121271184,
+          "name": "Push on master",
+          "event": "dynamic",
+          "head": "42bd00d0ca833cd452d76f1e51dd1b7ecb847f82",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121271184",
+          "jobs": [
+            {
+              "name": "Analyze (python)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (javascript-typescript)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (actions)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        },
+        {
+          "id": 38121271102,
+          "name": "CI/CD Pipeline",
+          "event": "push",
+          "head": "42bd00d0ca833cd452d76f1e51dd1b7ecb847f82",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121271102",
+          "jobs": [
+            {
+              "name": "Product pagination PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Batch audit PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+              "status": "completed",
+              "conclusion": "failure",
+              "failedSteps": [
+                "Stable POS categories through real API and owned PostgreSQL"
+              ]
+            },
+            {
+              "name": "Admin UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Agent Context Validation",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Backend CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Order sequence PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "POS UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Exact-head POS dialog Chrome acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        }
+      ],
+      "deployments": [],
+      "productionDeploymentVerified": false
+    },
+    {
+      "number": 108,
+      "mergeSha": "20b422e4a121b71e59b594bc64bc0ab4bfd6dd58",
+      "tree": "a3e78f7167f142403b120f64902fb43b72474c7a",
+      "runs": [
+        {
+          "id": 38121407686,
+          "name": "Push on master",
+          "event": "dynamic",
+          "head": "20b422e4a121b71e59b594bc64bc0ab4bfd6dd58",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121407686",
+          "jobs": [
+            {
+              "name": "Analyze (python)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (javascript-typescript)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (actions)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        },
+        {
+          "id": 38121407513,
+          "name": "CI/CD Pipeline",
+          "event": "push",
+          "head": "20b422e4a121b71e59b594bc64bc0ab4bfd6dd58",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121407513",
+          "jobs": [
+            {
+              "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+              "status": "completed",
+              "conclusion": "failure",
+              "failedSteps": [
+                "Stable POS categories through real API and owned PostgreSQL"
+              ]
+            },
+            {
+              "name": "Order sequence PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "POS UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Backend CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Product pagination PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Batch audit PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Exact-head POS dialog Chrome acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Agent Context Validation",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Admin UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        }
+      ],
+      "deployments": [],
+      "productionDeploymentVerified": false
+    },
+    {
+      "number": 110,
+      "mergeSha": "130340682f6d51dec900842ec0f62f8d13568e1a",
+      "tree": "f51907de3959b64eee012b65daeef92590798de9",
+      "runs": [
+        {
+          "id": 38121605463,
+          "name": "CI/CD Pipeline",
+          "event": "push",
+          "head": "130340682f6d51dec900842ec0f62f8d13568e1a",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121605463",
+          "jobs": []
+        },
+        {
+          "id": 38121605443,
+          "name": "Push on master",
+          "event": "dynamic",
+          "head": "130340682f6d51dec900842ec0f62f8d13568e1a",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121605443",
+          "jobs": [
+            {
+              "name": "Analyze (python)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (javascript-typescript)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (actions)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        }
+      ],
+      "deployments": [],
+      "productionDeploymentVerified": false
+    },
+    {
+      "number": 112,
+      "mergeSha": "40c3d752ef64ddabb8c06613b57b791a5e53d8ab",
+      "tree": "05820cc2ced503ab3ab22e6756b116df15bc5362",
+      "runs": [
+        {
+          "id": 38121702249,
+          "name": "Push on master",
+          "event": "dynamic",
+          "head": "40c3d752ef64ddabb8c06613b57b791a5e53d8ab",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121702249",
+          "jobs": [
+            {
+              "name": "Analyze (actions)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (python)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Analyze (javascript-typescript)",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        },
+        {
+          "id": 38121702301,
+          "name": "CI/CD Pipeline",
+          "event": "push",
+          "head": "40c3d752ef64ddabb8c06613b57b791a5e53d8ab",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/skydreamer0/startup/actions/runs/38121702301",
+          "jobs": [
+            {
+              "name": "Backend CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+              "status": "completed",
+              "conclusion": "failure",
+              "failedSteps": [
+                "Stable POS categories through real API and owned PostgreSQL"
+              ]
+            },
+            {
+              "name": "Order sequence PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Agent Context Validation",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Exact-head POS dialog Chrome acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Batch audit PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Admin UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "Product pagination PostgreSQL acceptance",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            },
+            {
+              "name": "POS UI CI",
+              "status": "completed",
+              "conclusion": "success",
+              "failedSteps": []
+            }
+          ]
+        }
+      ],
+      "deployments": [],
+      "productionDeploymentVerified": false
+    }
+  ],
+  "held109": {
+    "head": "a8a248dc5b46dd24487a9b742a6c50606c3c3063",
+    "state": "open",
+    "draft": true,
+    "retried": false
+  },
+  "pause": {
+    "reason": "Automatic master CI for110 cancelled while pending under shared concurrency; further merges paused under stop-on-cancellation instruction.",
+    "run": 38121605463,
+    "rerun": false
+  },
+  "manualDeployment": false,
+  "productionOrPreviewDatabaseUsed": false,
+  "branchDeletion": false
+}
