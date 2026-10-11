@@ -70,3 +70,15 @@
     gap: 12px;
     margin-top: 16px;
 }
+
+.inventory-product-page .product-batches-button {
+    min-width: 44px;
+    min-height: 44px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.inventory-product-page.product-batches-view h2,
+.inventory-product-page.product-batches-view p {
+    overflow-wrap: anywhere;
+}

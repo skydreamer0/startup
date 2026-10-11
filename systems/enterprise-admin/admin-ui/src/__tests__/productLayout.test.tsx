@@ -1,3 +1,4 @@
+import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -25,7 +26,7 @@ let stylesheet: HTMLStyleElement;
 function setup() {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     clients.push(client);
-    return render(<QueryClientProvider client={client}><ProductListPage /></QueryClientProvider>);
+    return render(<MemoryRouter><QueryClientProvider client={client}><ProductListPage /></QueryClientProvider></MemoryRouter>);
 }
 
 beforeEach(() => {
