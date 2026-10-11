@@ -24,7 +24,7 @@ export const test = base.extend<{ fixture: Fixture }>({
     context.pages().forEach(observe); context.on('page', observe);
     await context.addInitScript(() => {
       window.__uiEvidenceKeys = [];
-      document.addEventListener('keydown', event => window.__uiEvidenceKeys.push({ key: event.key, at: Date.now(), trusted: event.isTrusted }), true);
+      window.addEventListener('keydown', event => window.__uiEvidenceKeys.push({ key: event.key, at: Date.now(), trusted: event.isTrusted }), true);
     });
     await context.routeWebSocket('**/*', socket => { fixture.unexpected.push(`WebSocket ${socket.url()}`); void socket.close(); });
     let loginUsed = false;
@@ -101,6 +101,7 @@ export async function screenshot(page: Page, info: TestInfo, name: string) {
   await captureScreenshot(page, info, name);
   // Inspect real product/dialog text, never the synthetic screenshot badge.
   const candidates = [
+    '.manual-scan-dialog h2',
     '[data-pos-modal="admin-pin"] [role="dialog"] h3',
     '[data-pos-modal="split-payment"]:not([inert]) [role="dialog"] h3',
     '#payment-title',
