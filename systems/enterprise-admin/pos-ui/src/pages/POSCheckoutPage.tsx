@@ -6,6 +6,8 @@ import { posApi, PosStaff, PosOrderSummary } from '../api/pos';
 import { useCartStore } from '../store/cartStore';
 import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import CategoryNav from '../components/CategoryNav';
+import ManualScanDialog from '../components/ManualScanDialog';
+import ImageScanDialog from '../components/ImageScanDialog';
 import ProductGrid from '../components/ProductGrid';
 import CartPanel from '../components/CartPanel';
 import StaffSwitchModal from '../components/StaffSwitchModal';
@@ -49,6 +51,8 @@ export default function POSCheckoutPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [barcodeCandidates, setBarcodeCandidates] = useState<BarcodeCandidateSelection | null>(null);
   const [barcodeLookupStatus, setBarcodeLookupStatus] = useState<BarcodeLookupStatus>(null);
+  const [showManualScan, setShowManualScan] = useState(false);
+  const [showImageScan, setShowImageScan] = useState(false);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSplitModal, setShowSplitModal] = useState(false);
@@ -148,7 +152,7 @@ export default function POSCheckoutPage() {
 
   const scannerBlocked = !contextReady || !shift.activeShift || showStaffModal || showPaymentModal
     || showSplitModal || showOrderLookup || showShiftReport || !!checkoutResult
-    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget;
+    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget || showManualScan || showImageScan;
   const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast, setBarcodeCandidates, {
     blocked: scannerBlocked,
     onStatus: setBarcodeLookupStatus,
@@ -222,7 +226,7 @@ export default function POSCheckoutPage() {
   }
 
   const handleKeydown = useCallback((event: KeyboardEvent) => {
-    if (pending) return;
+    if (pending || showManualScan || showImageScan) return;
     if (event.defaultPrevented) return;
     // Backstop modal ownership even if a removed control/backdrop lost focus.
     if ((showPaymentModal || showSplitModal || adminPinPending) && event.key !== 'Escape') {
@@ -288,7 +292,7 @@ export default function POSCheckoutPage() {
         }
         break;
     }
-  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading]);
+  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading, showManualScan, showImageScan]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -370,6 +374,8 @@ export default function POSCheckoutPage() {
           placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
           className="pos-search-input"
         />
+        <button type="button" className="pos-topbar-action" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
+        <button type="button" className="pos-topbar-action" disabled={scannerBlocked && !showImageScan} onClick={event => { event.currentTarget.focus(); setShowImageScan(true); }}>圖片掃碼</button>
         <CustomerLookupPanel
           selectedCustomer={selectedCustomer}
           onSelect={setCustomer}
@@ -451,6 +457,8 @@ export default function POSCheckoutPage() {
       </div>
       </fieldset>
 
+      {showManualScan && <ManualScanDialog onClose={() => setShowManualScan(false)} />}
+      {showImageScan && <ImageScanDialog onClose={() => setShowImageScan(false)} />}
       {showStaffModal && (
         <StaffSwitchModal
           staffList={staffList}

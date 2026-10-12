@@ -110,6 +110,17 @@ describe('useBarcodeScanner', () => {
     expect(lookupProduct).not.toHaveBeenCalled();
   });
 
+  it('drops partial sequences on both blocked boundaries and accepts the next complete scan', () => {
+    const view = render(<Harness />);
+    fireEvent.keyDown(document, { key: 'O' }); fireEvent.keyDown(document, { key: 'L' });
+    view.rerender(<Harness blocked />);
+    fireEvent.keyDown(document, { key: 'D' }); fireEvent.keyDown(document, { key: 'X' });
+    view.rerender(<Harness />);
+    scan('PAN');
+    expect(lookupProduct).not.toHaveBeenCalled();
+    expect(useCartStore.getState().items.map(item => [item.product.id, item.quantity])).toEqual([['p1', 1]]);
+  });
+
   it('permanently invalidates a lookup when a modal opens then cancels', async () => {
     const lookup = deferredLookup();
     lookupProduct.mockReturnValue(lookup.promise);

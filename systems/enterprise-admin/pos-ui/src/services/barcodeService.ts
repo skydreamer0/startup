@@ -104,6 +104,14 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
+// An explicit workspace/modal boundary cancels unfinished input only.
+// Keep listener subscriptions and the Enter/300ms/min3 decoding gate unchanged.
+export function cancelBarcodeInput() {
+  buffer = '';
+  lastKeyTime = 0;
+  endSequence('cancelled');
+}
+
 export function startBarcodeListener() {
   document.addEventListener('keydown', handleKeydown);
 }

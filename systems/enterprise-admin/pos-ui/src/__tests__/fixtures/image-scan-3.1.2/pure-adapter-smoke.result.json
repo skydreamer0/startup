@@ -1,0 +1,11 @@
+{
+  "scope": "Dependency-free pure imageScanResult adapter smoke only",
+  "node": "v22.22.0",
+  "result": "PASS",
+  "checks": 19,
+  "wasmExecuted": false,
+  "vitestExecuted": false,
+  "typesChecked": false,
+  "browserExecuted": false,
+  "sameEngineBarcodeFixturesExecuted": false
+}

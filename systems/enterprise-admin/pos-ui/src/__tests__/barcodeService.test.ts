@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  onBarcode, onScanResult, onBarcodeSequence, getBarcodeInputSequence, startBarcodeListener, stopBarcodeListener,
+  onBarcode, onScanResult, onBarcodeSequence, getBarcodeInputSequence, startBarcodeListener, stopBarcodeListener, cancelBarcodeInput,
 } from '../services/barcodeService';
 
 function press(key: string) {
@@ -61,6 +61,22 @@ describe('barcodeService', () => {
     press('C'); press('Enter');
     expect(listener).not.toHaveBeenCalled();
     unsubscribe(); target.remove();
+  });
+
+  it('cancels partial input at an explicit boundary without changing subscriptions or decoding gates', () => {
+    const legacy = vi.fn(), results = vi.fn(), sequences = vi.fn();
+    const off = [onBarcode(legacy), onScanResult(results), onBarcodeSequence(sequences)];
+    try {
+      startBarcodeListener();
+      press('O'); press('L'); press('D'); cancelBarcodeInput(); cancelBarcodeInput();
+      expect(sequences.mock.calls.map(([event]) => event.kind)).toEqual(['started', 'cancelled']);
+      press('0'); press('1'); press('Enter'); expect(legacy).not.toHaveBeenCalled();
+      for (const key of '001aB') { press(key); vi.advanceTimersByTime(300); }
+      press('Enter'); expect(legacy.mock.calls).toEqual([['001aB']]);
+      expect(results.mock.calls[0][0].literal).toBe('001aB');
+      press('O'); press('L'); press('D'); vi.advanceTimersByTime(301); press('Enter');
+      expect(legacy).toHaveBeenCalledOnce();
+    } finally { off.forEach(unsubscribe => unsubscribe()); }
   });
 
   it('emits a barcode when rapid characters are followed by Enter', () => {

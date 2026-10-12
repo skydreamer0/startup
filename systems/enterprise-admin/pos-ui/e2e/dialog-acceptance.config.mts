@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 if (!process.env.DIALOG_UI_OUTPUT) throw new Error('Use the owned exact-head runner');
 const output = process.env.DIALOG_UI_OUTPUT;
 export default defineConfig({
-  testDir: './dialog-acceptance', testMatch: 'dialog.spec.ts',
+  testDir: './dialog-acceptance', testMatch: ['dialog.spec.ts', 'manual.spec.ts'],
   outputDir: resolve(output, 'tests'), fullyParallel: false, workers: 1,
   retries: 0, forbidOnly: true, timeout: 30_000, expect: { timeout: 5_000 },
   reporter: [['list'], ['json', { outputFile: resolve(output, 'report.json') }]],
