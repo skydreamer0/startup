@@ -1,0 +1,569 @@
+{
+  "schema_version": "pharmacy-ocr-synthetic-evaluation/v1",
+  "provenance": {
+    "source": "hand_authored_synthetic",
+    "contains_personal_data": false,
+    "engine_executed": false
+  },
+  "rows": [
+    {
+      "row_id": "clean",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN1"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品甲 10mg"
+          ],
+          "review_required": false,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "Lot-001"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2027-04-30"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "10"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "粒"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "strength-20",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN000002"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品甲 10mg"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "Lot-0O2"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2027-04-30"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "10"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "盒"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "leading-zero",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "00SYN003"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品乙"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "ABC-001"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2028-02-29"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "01.0"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "粒"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "width",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "ＳＹＮ００４"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品 ＋"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "ＬＯＴ－０１"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2027-12-01"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "10"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "盒"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "month-only",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN000005"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品丙"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "M-001"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2027-04-30"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "12"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "盒"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "date-order",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN000006"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品丁"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "D-001"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2027-03-04"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "2"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "瓶"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "invalid-calendar",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN000007"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品戊"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "I-001"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "1"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "瓶"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "partly-unreadable",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN000009"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品庚"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "INVENTED-001"
+          ],
+          "review_required": true
+        },
+        "expiry": {
+          "state": "missing",
+          "values": [],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "4"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "missing",
+          "values": [],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "all-absent",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN999999"
+          ],
+          "review_required": true
+        },
+        "product_name": {
+          "state": "missing",
+          "values": [],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "missing",
+          "values": [],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "missing",
+          "values": [],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "missing",
+          "values": [],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "missing",
+          "values": [],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "all-ambiguous",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN00001"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品辛 10mg"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "LO01"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2027-03-04"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "1"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "盒"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "row_id": "unexpected-row",
+      "fields": {
+        "nhi_code": {
+          "state": "candidate",
+          "values": [
+            "SYN000001"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "product_name": {
+          "state": "candidate",
+          "values": [
+            "合成測試品甲 10mg"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "lot": {
+          "state": "candidate",
+          "values": [
+            "Lot-0O1"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "expiry": {
+          "state": "candidate",
+          "values": [
+            "2027-04-30"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "quantity": {
+          "state": "candidate",
+          "values": [
+            "10"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        },
+        "unit": {
+          "state": "candidate",
+          "values": [
+            "盒"
+          ],
+          "review_required": true,
+          "confidence": 1.0
+        }
+      }
+    }
+  ]
+}
