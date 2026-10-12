@@ -33,7 +33,7 @@ and manual dispatch. It currently has nine jobs:
 
 | Job | Coverage and important limits |
 | --- | --- |
-| Agent Context Validation | Context links/tracking and canonical dependency-lock boundaries. |
+| Agent Context Validation | Context links/tracking, canonical dependency-lock boundaries, and the Python-standard-library synthetic OCR evaluator contract (unit tests, control/negative CLI exit checks, and repeat-byte determinism). No OCR engine or real-image accuracy. |
 | Backend CI | npm audit, Prisma generation, lint/build, final Docker image and migration CLI, PostgreSQL migrations/seed/tests, and isolated final-Alpine readiness acceptance with cleanup evidence. Individual tests may still mock dependencies; a PostgreSQL service alone does not prove every feature has native DB coverage. |
 | Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin margin/ranking warning browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
 | POS UI CI | Unit/component tests, build/type-check, Docker image, real HTTP restart/lost-response recovery with isolated PostgreSQL, and fixed-subject scanner/supplier Chromium evidence. The fixed subjects are historical versions, not the current UI. |
@@ -42,6 +42,17 @@ and manual dispatch. It currently has nine jobs:
 | Batch audit PostgreSQL acceptance | Exact-head append-only batch audit cases and schema contracts, with owned fixture evidence. |
 | Order sequence PostgreSQL acceptance | Exact-head numbering, legacy-upgrade, and checkout regression cases with owned DB cleanup. |
 | Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 14 split/PIN/ordinary-payment native-input cases, locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. |
+
+The OCR step runs `python3 -I scripts/ocr-evaluation/verify.py` against the existing
+job checkout (the PR merge commit on pull requests), using the runner's installed
+Python 3.10+ and synthetic text fixtures only. The verifier runs the unit suite,
+requires control `PASS` / exit 0 and negative `FAIL` / exit 1, and rejects unexpected
+exit codes, failing/empty/skipped tests or nondeterministic CLI output. Its own
+nonzero exit fails the job; no `continue-on-error` or unconditional success wrapper
+is used. The summary is printed to the CI log; detailed files under
+`$RUNNER_TEMP/ocr-evaluation` are temporary, not uploaded artifacts. This does not
+run an OCR model, validate real images or close Issue #37's business acceptance
+gates. See `scripts/ocr-evaluation/README.md` at repository root for the contract.
 
 The four core check names in `AGENTS.md` are the existing required-check baseline,
 not an exhaustive inventory of CI coverage. Review all current jobs and applicable
