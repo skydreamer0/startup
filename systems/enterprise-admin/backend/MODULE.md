@@ -164,9 +164,13 @@ ADR-020 and ADR-021 before changing audit semantics. This model is registered in
 `src/lib/tenant-scoped-models.ts`; it has no update/delete API. INITIAL_RELEASE uses
 `{exists:false}` before and a full released snapshot after in the receipt transaction.
 `BatchAuditService` continues product-lock-first correction and post-wait Taipei date
-checks. The dedicated ordinary-CI PG15 job runs the original 15 native cases and six
-`batch-change-schema.integration.test.ts` contract cases on the exact source head,
-requires zero skips, and drops only its preflight-proven empty owned synthetic DB.
+checks. The dedicated ordinary-CI PG15 job runs the original 15 native cases, six
+`batch-change-schema.integration.test.ts` contract cases, then both
+`inventory-metadata-invariance.integration.test.ts` cases on the exact source head.
+The metadata cases exercise existing-SKU CSV skip and product name/cost updates
+after real receipt/sale/audit fixtures. All 23 named cases must pass with zero
+skips; the runner records each report, source hashes and retained fixture counts,
+then drops only its preflight-proven empty owned synthetic DB.
 Append-only fixture rows remain until that DROP. Handoff and result provenance live
 in `../infrastructure/verification/product-batch-change-integration.md`. UI receipt
 reason/browser, store roles and independent review remain separate gates.
