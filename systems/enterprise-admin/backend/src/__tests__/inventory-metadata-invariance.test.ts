@@ -30,6 +30,7 @@ vi.mock('../config/env', () => ({ env: {
 } }));
 
 import inventoryRoutes from '../modules/inventory/inventory.routes';
+import { defaultRateLimit } from '../middleware/rate-limit.middleware';
 import { setTenantContext } from '../middleware/tenant.middleware';
 import { errorMiddleware } from '../middleware/error.middleware';
 import { signAccessToken } from '../lib/jwt';
@@ -37,6 +38,7 @@ import { requireTenantId } from '../lib/tenant.context';
 
 const app = express();
 app.use(express.json());
+app.use(defaultRateLimit);
 app.use(setTenantContext);
 app.use('/inventory', inventoryRoutes);
 app.use(errorMiddleware);

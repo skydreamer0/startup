@@ -8,6 +8,7 @@ import { signAccessToken } from '../lib/jwt';
 import inventoryRoutes from '../modules/inventory/inventory.routes';
 import { ProductBatchService } from '../modules/product-batches/product-batches.service';
 import { OrderService } from '../modules/orders/order.service';
+import { defaultRateLimit } from '../middleware/rate-limit.middleware';
 import { setTenantContext } from '../middleware/tenant.middleware';
 import { errorMiddleware } from '../middleware/error.middleware';
 
@@ -25,6 +26,7 @@ if (databaseUrl) {
 }
 const app = express();
 app.use(express.json());
+app.use(defaultRateLimit);
 app.use(setTenantContext);
 app.use('/inventory', inventoryRoutes);
 app.use(errorMiddleware);
