@@ -1,0 +1,515 @@
+{
+  "schema_version": "pharmacy-ocr-synthetic-evaluation/v1",
+  "provenance": {
+    "source": "hand_authored_synthetic",
+    "contains_personal_data": false,
+    "engine_executed": false
+  },
+  "rows": [
+    {
+      "row_id": "clean",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "clean",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "SYN000001"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品甲 10mg"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "Lot-0O1"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "2027-04-30"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "10"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "盒"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "strength-20",
+      "source": {
+        "document_id": "synthetic-document-B",
+        "page": 1,
+        "region": "strength-20",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "SYN000002"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品甲 20mg"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "Lot-0O2"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "2027-04-30"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "10"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "盒"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "leading-zero",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "leading-zero",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "00SYN003"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品乙"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "abc-001"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "2028-02-29"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "01.0"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "粒"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "width",
+      "source": {
+        "document_id": "synthetic-document-B",
+        "page": 1,
+        "region": "width",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "ＳＹＮ００４"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品 ＋"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "ＬＯＴ－０１"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "2027-12-01"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "１０"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "盒"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "month-only",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "month-only",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "SYN000005"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品丙"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "M-001"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "2027-04"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "12"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "盒"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "date-order",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "date-order",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "SYN000006"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品丁"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "D-001"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "03/04/2027"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "2"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "瓶"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "invalid-calendar",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "invalid-calendar",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "SYN000007"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品戊"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "I-001"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "2027-02-30"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "1"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "瓶"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "roc-year",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "roc-year",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "SYN000008"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品己"
+          ]
+        },
+        "lot": {
+          "state": "known",
+          "values": [
+            "R-001"
+          ]
+        },
+        "expiry": {
+          "state": "known",
+          "values": [
+            "116/04/30"
+          ]
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "3"
+          ]
+        },
+        "unit": {
+          "state": "known",
+          "values": [
+            "盒"
+          ]
+        }
+      }
+    },
+    {
+      "row_id": "partly-unreadable",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "partly-unreadable",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "known",
+          "values": [
+            "SYN000009"
+          ]
+        },
+        "product_name": {
+          "state": "known",
+          "values": [
+            "合成測試品庚"
+          ]
+        },
+        "lot": {
+          "state": "unreadable",
+          "values": []
+        },
+        "expiry": {
+          "state": "unreadable",
+          "values": []
+        },
+        "quantity": {
+          "state": "known",
+          "values": [
+            "4"
+          ]
+        },
+        "unit": {
+          "state": "absent",
+          "values": []
+        }
+      }
+    },
+    {
+      "row_id": "all-absent",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "all-absent",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "absent",
+          "values": []
+        },
+        "product_name": {
+          "state": "absent",
+          "values": []
+        },
+        "lot": {
+          "state": "absent",
+          "values": []
+        },
+        "expiry": {
+          "state": "absent",
+          "values": []
+        },
+        "quantity": {
+          "state": "absent",
+          "values": []
+        },
+        "unit": {
+          "state": "absent",
+          "values": []
+        }
+      }
+    },
+    {
+      "row_id": "all-ambiguous",
+      "source": {
+        "document_id": "synthetic-document-A",
+        "page": 1,
+        "region": "all-ambiguous",
+        "split": "synthetic_contract_only"
+      },
+      "fields": {
+        "nhi_code": {
+          "state": "ambiguous",
+          "values": [
+            "SYN00001",
+            "SYN000O1"
+          ]
+        },
+        "product_name": {
+          "state": "ambiguous",
+          "values": [
+            "合成測試品辛 10mg",
+            "合成測試品辛 20mg"
+          ]
+        },
+        "lot": {
+          "state": "ambiguous",
+          "values": [
+            "LO01",
+            "L001"
+          ]
+        },
+        "expiry": {
+          "state": "ambiguous",
+          "values": [
+            "2027-03-04",
+            "2027-04-03"
+          ]
+        },
+        "quantity": {
+          "state": "ambiguous",
+          "values": [
+            "1",
+            "7"
+          ]
+        },
+        "unit": {
+          "state": "ambiguous",
+          "values": [
+            "盒",
+            "粒"
+          ]
+        }
+      }
+    }
+  ]
+}
