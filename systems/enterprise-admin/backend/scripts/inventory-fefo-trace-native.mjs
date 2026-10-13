@@ -54,7 +54,7 @@ export async function main() {
   const networkName = `fefo-net-${nonce}`;
   const sourceDir = path.join(output, 'source');
   mkdirSync(sourceDir);
-  git('archive', '--format=tar', '-o', path.join(output, 'source.tar'), source.sourceHead);
+  git('archive', '--format=tar', '-o', path.join(output, 'source.tar'), source.sourceHead, 'systems/enterprise-admin/backend');
   run('tar', ['-xf', path.join(output, 'source.tar'), '-C', sourceDir]);
   const backend = path.join(sourceDir, 'systems/enterprise-admin/backend');
   const databaseUrl = `postgresql://test@127.0.0.1:5432/${database}`;
@@ -82,7 +82,7 @@ export async function main() {
     node(['node', 'node_modules/prisma/build/index.js', 'generate']);
     node(['node', 'node_modules/typescript/bin/tsc']);
     node(['node', 'node_modules/eslint/bin/eslint.js', 'src/']);
-    networkId = docker('network', 'create', '--internal', networkName);
+    networkId = docker('network', 'create', networkName);
     containerId = docker('run', '-d', '--name', containerName, '--network', networkName,
       '-p', '127.0.0.1::5432', '-e', 'POSTGRES_USER=test', '-e', `POSTGRES_DB=${database}`,
       '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', 'postgres:15-alpine');

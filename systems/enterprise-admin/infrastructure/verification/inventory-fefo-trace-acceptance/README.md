@@ -83,7 +83,7 @@ from a clean committed checkout with Node 22, Git, tar and a working Linux Docke
 engine. The runner archives the exact committed source (without ambient dotenv
 or node_modules), installs the locked backend with npm 11.21.0 in Node 22,
 generates Prisma, builds and lints. It creates a uniquely owned PG15 container
-on an internal network with loopback-only published port, verifies an empty DB
+on a dedicated network with loopback-only published port, verifies an empty DB
 and actual server identity, then applies the existing migrations. The native
 test runs in that container's network namespace with synthetic-only environment.
 
