@@ -193,3 +193,16 @@ and the cart hook still receive their original trimmed string. No UI, lookup,
 cart or inventory consumer subscribes to the new stream. USB means the keyboard
 route, not verified hardware; unknown bytes/symbology/FNC1 are not inferred.
 Manual capture returns evidence only, without dispatch. See ADR-022.
+
+### Manual scan evidence dialog
+
+`src/components/ManualScanDialog.tsx` is the first manual text UI consumer of
+`captureManualScan`; it does not subscribe to the USB stream. The toolbar entry
+opens only a temporary read-only evidence view. Clipboard text replaces the whole
+draft before textarea newline normalization, with JSON-escaped literal display.
+Closing/unmounting discards it; there is no lookup, navigation, dispatch or storage.
+The page blocks scanner effects and shortcuts while the dialog owns focus. Scanner
+blocked transitions call `cancelBarcodeInput` to cancel partial sequences as well
+as invalidate late lookups, preserving the existing Enter/300ms/min3 gate. See
+ADR-022 and `ManualScanDialog.test.tsx` / `POSCheckoutPage.manual-scan.test.tsx`.
+Browser/hardware and broader M0 gates remain unverified by these synthetic tests.

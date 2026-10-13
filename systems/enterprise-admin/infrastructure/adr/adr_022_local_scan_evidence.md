@@ -44,3 +44,26 @@ typecheck, DOM listeners or the Node 22 CI environment. Context validation and
 must be recorded on the PR.
 True USB/FNC1, camera/image, browser/manual UI, Safari/iPad, offline CPU/RAM and
 real API/DB are NOT RUN. This first slice does not complete M0-A/B/C or G0–G7.
+
+## Manual evidence UI continuation (#37)
+
+The POS toolbar can open `ManualScanDialog`, an ephemeral read-only consumer of
+`captureManualScan`. Pasting replaces the entire draft with clipboard `text/plain`
+before the textarea normalizes CR/CRLF. Typing captures the browser's current text.
+No trimming, GS1 inference, URL navigation, lookup, legacy barcode emission, cart
+mutation or persistence is added. JSON-escaped literal display exposes whitespace
+and controls without claiming decoded bytes. Editing clears the displayed result;
+closing/unmounting discards both input and evidence.
+
+The dialog owns focus and keyboard input while open. The existing scanner hook's
+blocked boundary invalidates prior asynchronous lookups; `cancelBarcodeInput` also
+cancels an unfinished buffer/sequence on either blocked transition without changing
+subscriptions or the Enter/300ms/min3 decoder gates. This prevents a pre-modal
+partial scan from contaminating the first post-modal scan. Background attributes
+and the connected, enabled opener are restored on unmount. Frozen checkout intent
+and cart authority remain with their existing stores.
+
+This is only manual text evidence UI, not M0-A completion. Exact-head component,
+page/scanner and type/build results belong in the PR. Browser, real USB/FNC1, native
+200% zoom, Safari/iPad, camera/image, offline CPU/RAM and real API/DB acceptance
+remain separate; synthetic DOM events do not establish those gates.
