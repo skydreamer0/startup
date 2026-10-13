@@ -59,6 +59,8 @@ type Envelope = {
 
 describe.skipIf(!databaseUrl)('inventory FEFO and batch trace over owned HTTP/PostgreSQL', () => {
   let prisma: PrismaClient | undefined;
+  let appPrisma: PrismaClient | undefined;
+  let teardownPromise: Promise<void> | undefined;
   let server: Server | undefined;
   let base = '';
 
@@ -104,6 +106,8 @@ describe.skipIf(!databaseUrl)('inventory FEFO and batch trace over owned HTTP/Po
     }));
     expect(counts.every((count) => count === 0n)).toBe(true);
 
+    // Capture the shared client before app import so teardown also covers a failed app import.
+    ({ basePrisma: appPrisma } = await import('../lib/prisma'));
     const { default: app } = await import('../app');
     server = await new Promise<Server>((resolve, reject) => {
       const instance = app.listen(0, '127.0.0.1', () => resolve(instance));
@@ -115,24 +119,51 @@ describe.skipIf(!databaseUrl)('inventory FEFO and batch trace over owned HTTP/Po
     base = `http://127.0.0.1:${address.port}`;
   }, 30_000);
 
-  afterAll(async () => {
-    if (server) await new Promise<void>((resolve, reject) => server!.close((error) => error ? reject(error) : resolve()));
-    let prismaDisconnected = !prisma;
-    if (prisma) {
-      await prisma.$disconnect();
-      prismaDisconnected = true;
-    }
-    if (lifecycleFile) {
-      const receipt = JSON.parse(readFileSync(ownershipFile!, 'utf8')) as OwnershipReceipt;
-      writeFileSync(lifecycleFile, `${JSON.stringify({
-        event: 'afterAll-complete',
-        serverClosed: !server || !server.listening,
-        prismaDisconnected,
-        sourceHead: receipt.sourceHead,
-        sourceTree: receipt.sourceTree,
-        testBlob: receipt.testBlob,
-      }, null, 2)}\n`);
-    }
+  afterAll(() => {
+    teardownPromise ??= (async () => {
+      const cleanupErrors: unknown[] = [];
+      let serverClosed = !server;
+      let prismaDisconnected = !prisma;
+      let appPrismaDisconnected = !appPrisma;
+      try {
+        if (server) await new Promise<void>((resolve, reject) => server!.close((error) => error ? reject(error) : resolve()));
+        serverClosed = !server || !server.listening;
+      } catch (error) {
+        cleanupErrors.push(error);
+      }
+      // Each client must be attempted even when closing the server or another client fails.
+      try {
+        if (prisma) await prisma.$disconnect();
+        prismaDisconnected = true;
+      } catch (error) {
+        cleanupErrors.push(error);
+      }
+      try {
+        if (appPrisma && appPrisma === prisma) {
+          appPrismaDisconnected = prismaDisconnected;
+        } else {
+          if (appPrisma) await appPrisma.$disconnect();
+          appPrismaDisconnected = true;
+        }
+      } catch (error) {
+        cleanupErrors.push(error);
+      }
+      if (lifecycleFile) {
+        const receipt = JSON.parse(readFileSync(ownershipFile!, 'utf8')) as OwnershipReceipt;
+        writeFileSync(lifecycleFile, `${JSON.stringify({
+          event: cleanupErrors.length === 0 ? 'afterAll-complete' : 'afterAll-failed',
+          serverClosed,
+          prismaDisconnected,
+          appPrismaDisconnected,
+          cleanupErrorCount: cleanupErrors.length,
+          sourceHead: receipt.sourceHead,
+          sourceTree: receipt.sourceTree,
+          testBlob: receipt.testBlob,
+        }, null, 2)}\n`);
+      }
+      if (cleanupErrors.length > 0) throw cleanupErrors[0];
+    })();
+    return teardownPromise;
   });
 
   it('persists FEFO split, enforces tenant-scoped read access, and returns a read-only capped trace', async () => {
