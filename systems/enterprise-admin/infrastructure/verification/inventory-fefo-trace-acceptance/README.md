@@ -74,9 +74,34 @@ snapshot around pagination and authorization reads. Keep both actual snapshot
 pairs, Vitest JSON with `assertionResults`, the process exit result, an afterAll
 shutdown marker, and owner-runner database/container cleanup output.
 
-The test is opt-in. CI without the explicit synthetic ownership inputs skips it;
-this acceptance remains a manual native run and has not been wired into a
-workflow or dedicated runner.
+The test is opt-in. Ordinary backend unit CI skips it; the dedicated
+`Inventory FEFO trace PostgreSQL acceptance` job in
+`.github/workflows/inventory-fefo-trace.yml` runs it on the exact PR head.
+
+Run `node systems/enterprise-admin/backend/scripts/inventory-fefo-trace-native.mjs`
+from a clean committed checkout with Node 22, Git, tar and a working Linux Docker
+engine. The runner archives the exact committed source (without ambient dotenv
+or node_modules), installs the locked backend with npm 11.21.0 in Node 22,
+generates Prisma, builds and lints. It creates a uniquely owned PG15 container
+on an internal network with loopback-only published port, verifies an empty DB
+and actual server identity, then applies the existing migrations. The native
+test runs in that container's network namespace with synthetic-only environment.
+
+The runner requires one passing assertion with zero skips, both read-only
+snapshot pairs across at least 28 tables, the 100/131 trace, exact source
+provenance, listener closure and both Prisma disconnects. It drops only its own
+database and verifies catalog count zero, then removes its containers/network.
+Raw logs, snapshots, lifecycle, ownership and cleanup JSON are retained in a
+unique temporary output directory; CI uploads only JSON/log evidence, not the
+source archive or installed dependencies. A cleanup failure fails acceptance.
+`inventory-fefo-trace-native.test.mjs` checks rejection of skipped/empty reports,
+unclosed pools, stale provenance, changed/missing tables and wrong trace caps.
+
+Local Windows attempt on 2026-10-13 could not start Docker's Linux engine because
+Docker Desktop could not access its stale analytics socket. No database was
+created and no local native pass is claimed. The dedicated job's exact-head
+result is the native acceptance source; browser/hardware and broader #29 remain
+separate gates.
 
 ## Local execution record — 2026-10-11 UTC
 
