@@ -160,6 +160,14 @@ acceptance. No production DB, login or tenant-switch UI is involved. See
 
 ## Commands
 
+Image decoding uses exactly `zxing-wasm@3.1.2` from the canonical pnpm lock.
+After building POS, run `pnpm --filter pos-ui exec playwright test --config
+e2e/image-scan.config.mts` from the system root for real local Chrome/WASM,
+synthetic business HTTP, failed-asset retry, explicit selection, warm offline
+decoding and close/reopen clearing at 1366/390/1024px. Output lives under
+`e2e/test-results-image-scan/`. These are viewport checks, not physical-device
+acceptance; cold offline startup, Safari/iPad and device resource budgets remain open.
+
 Run from `systems/enterprise-admin/pos-ui/`:
 
 Install through the system-root pnpm workspace (10.34.6), using only its root

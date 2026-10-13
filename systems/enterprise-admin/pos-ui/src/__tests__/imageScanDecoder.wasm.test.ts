@@ -35,14 +35,19 @@ describe('real local ZXing WASM 3.1.2 with same-engine synthetic PNGs (not confo
     const evidence = await decodeImageScan(fixtures.get(fixture.name)!);
     expect(evidence).toHaveLength(1);
     const { scan, decoderObservation: observed } = evidence[0];
-    expect(scan.literal).toBe(fixture.literal);
-    expect(scan.symbology).toEqual({ status: 'observed', value: fixture.expectedSymbology });
-    expect(scan.bytes).toEqual({ status: 'observed', value: Array.from(new TextEncoder().encode(fixture.literal)) });
+    // With both retail formats enabled, 3.1.2 reports this UPC-A symbol as EAN-13.
+    // Preserve that observed leading zero; capture must not infer or normalize identity.
+    const literal = fixture.name === 'upca' ? '0012345678905' : fixture.literal;
+    const format = fixture.name === 'upca' ? 'EAN13' : fixture.format;
+    const symbology = fixture.name === 'upca' ? 'ean-13' : fixture.expectedSymbology;
+    expect(scan.literal).toBe(literal);
+    expect(scan.symbology).toEqual({ status: 'observed', value: symbology });
+    expect(scan.bytes).toEqual({ status: 'observed', value: Array.from(new TextEncoder().encode(literal)) });
     expect(scan.gs1).toEqual({ status: 'unknown' });
     expect(scan.decoder).toEqual({ name: 'zxing-wasm/reader', version: '3.1.2' });
     expect(scan.evidence).toEqual({ inputRoute: 'image-file', hardwareVerified: false });
-    expect(observed.format).toBe(fixture.format);
-    expect(observed.text).toBe(fixture.literal);
+    expect(observed.format).toBe(format);
+    expect(observed.text).toBe(literal);
     expect(observed.bytes).toEqual(scan.bytes.status === 'observed' ? scan.bytes.value : []);
     expect(observed.bytesECI.length).toBeGreaterThan(0);
     expect(observed.symbologyIdentifier).toMatch(/^\]/);

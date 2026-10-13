@@ -36,7 +36,7 @@ function getReader(): Promise<Reader> {
       await reader.prepareZXingModule({
         overrides: {
           // Vite packages this exact installed WASM file. Never fall back to a CDN.
-          locateFile(path) {
+          locateFile(path: string) {
             if (path === 'zxing_reader.wasm') return asset.default;
             throw new Error('Unexpected decoder asset');
           },
