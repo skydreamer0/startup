@@ -1,7 +1,7 @@
-"""Reviewed 50 x 30 mm landscape medicine identity label on 30 x 50 mm stock.
+"""Reviewed 50 x 30 mm landscape medicine identity label on 50 x 30 mm stock.
 
-The preview is landscape. The printer bitmap is rotated onto the 240-dot head;
-the physical media dimensions remain 30 mm across and 50 mm along feed.
+The physical printer bitmap is the operator preview rotated 180 degrees. This
+orientation was selected by the operator from two numbered physical probes.
 """
 
 from __future__ import annotations
@@ -67,7 +67,7 @@ def _draw_fit(draw: ImageDraw.ImageDraw, x: int, y: int, text: str,
 
 
 def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Image.Image]:
-    """Return (landscape operator preview, rotated physical printer bitmap)."""
+    """Return (upright operator preview, physically accepted printer bitmap)."""
     canvas = Image.new("1", (WIDTH, HEIGHT), 1)
     draw = ImageDraw.Draw(canvas)
     left = 12
@@ -96,4 +96,4 @@ def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Imag
     canvas.paste(code, (284 + (105 - side) // 2, 43))
     _draw_fit(draw, 286, 152, "掃碼識別", 102, 18, 16, 12)
     _draw_fit(draw, 279, 188, "P1 · 內部識別", 112, 20, 14, 11)
-    return canvas, canvas.transpose(Image.Transpose.ROTATE_90)
+    return canvas, canvas.transpose(Image.Transpose.ROTATE_180)

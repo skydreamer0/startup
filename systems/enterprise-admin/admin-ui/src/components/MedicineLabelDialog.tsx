@@ -70,7 +70,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
     }, []);
 
     const draft: LabelDraft = {
-        width_mm: 30, height_mm: 50,
+        width_mm: 50, height_mm: 30,
         medicine: {
             name: product.name,
             strength: product.strength ?? '',
@@ -92,7 +92,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
         setBusy(true); setError(null);
         try {
             const result = await previewLabel(token.trim(), draft);
-            if (result.layout !== 'medicine-landscape-v1') throw new Error('本機代理版本不支援藥品橫式標籤。');
+            if (result.layout !== 'medicine-landscape-v2') throw new Error('本機代理版本不支援已驗收方向的藥品標籤。');
             setPreview(result);
         } catch (cause) {
             setError(cause instanceof Error ? cause.message : '無法產生預覽。');
@@ -118,7 +118,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
     return createPortal(<div ref={overlayRef} className="medicine-label-overlay">
         <div ref={dialogRef} className="medicine-label-dialog" role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
             <h2 id={`${id}-title`}>建立藥品標籤</h2>
-            <p>50 × 30 mm 橫式閱讀，使用 30 × 50 mm 紙張 · DL-720W NEW。這是藥局內部品項識別標籤，不是原廠 GS1 DataMatrix，也不含批次或效期。</p>
+            <p>50 × 30 mm 橫式標籤 · DL-720W NEW。列印方向依實體測試 2 設定。這是藥局內部品項識別標籤，不是原廠 GS1 DataMatrix，也不含批次或效期。</p>
             <label htmlFor={`${id}-token`}>本機代理權杖</label>
             <input id={`${id}-token`} ref={tokenRef} type="password" autoComplete="off" value={token} disabled={!!job}
                 onChange={event => { setToken(event.target.value); setError(null); }} />
@@ -142,7 +142,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
                 <h3>送印前核對</h3>
                 <img className="medicine-label-preview" src={`data:image/png;base64,${preview.preview_png_base64}`} alt="本機渲染的 50 × 30 mm 橫式藥品標籤預覽" />
                 <p>本機渲染工作：{preview.job_bytes} bytes · SHA-256 <code>{preview.job_sha256}</code></p>
-                <p>預覽由與送印相同的本機點陣產生；仍請核對實際紙張。</p>
+                <p>此為正向閱讀預覽；本機代理依實機選定方向轉成送印點陣，雜湊對應實際工作。仍請核對紙張。</p>
                 <label className="medicine-label-confirm"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} />內容及版面已核對，送印一張</label>
                 <button type="button" disabled={busy || !confirmed} onClick={() => void runSend()}>{keyRef.current ? '用同一工作鍵確認送出結果' : '確認送印一張'}</button>
             </section>}

@@ -75,13 +75,13 @@ def _parse_print_request(payload: object) -> tuple[bytes, dict, bool, int, str |
     if "medicine" in payload:
         if any(key in payload for key in ("text", "qr", "code128")):
             raise ValueError("medicine layout cannot mix with free text or symbols")
-        if payload["width_mm"] != 30 or payload["height_mm"] != 50:
-            raise ValueError("medicine layout requires physical 30 x 50 mm stock")
+        if payload["width_mm"] != 50 or payload["height_mm"] != 30:
+            raise ValueError("medicine layout requires physical 50 x 30 mm stock")
         identity = MedicineIdentity.from_payload(payload["medicine"])
         preview_image, physical_image = render_medicine_label(identity)
-        label = Label(30, 50, 203, (identity.name,))
+        label = Label(50, 30, 203, (identity.name,))
         job, metadata = serialize(label, image=physical_image, trim_blank_bottom=trim)
-        metadata["layout"] = "medicine-landscape-v1"
+        metadata["layout"] = "medicine-landscape-v2"
     else:
         label = Label(float(payload["width_mm"]), float(payload["height_mm"]), 203,
                       tuple(lines), payload.get("qr"), payload.get("code128"))

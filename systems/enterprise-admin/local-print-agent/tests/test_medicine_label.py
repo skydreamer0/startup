@@ -17,15 +17,15 @@ IDENTITY = MedicineIdentity(
 )
 
 
-def test_landscape_preview_rotates_to_verified_physical_stock():
+def test_landscape_preview_matches_operator_selected_physical_orientation():
     preview, physical = render_medicine_label(IDENTITY)
     assert preview.size == (400, 240)
-    assert physical.size == (240, 400)
-    assert physical.transpose(Image.Transpose.ROTATE_270).tobytes() == preview.tobytes()
-    job, metadata = serialize(Label(30, 50, 203, (IDENTITY.name,)), image=physical)
+    assert physical.size == (400, 240)
+    assert physical.transpose(Image.Transpose.ROTATE_180).tobytes() == preview.tobytes()
+    job, metadata = serialize(Label(50, 30, 203, (IDENTITY.name,)), image=physical)
     bitmap, row_bytes = pack_bitmap(physical)
-    assert row_bytes == 30 and bitmap in job
-    assert metadata["pixel_width"] == 240 and metadata["pixel_height"] == 400
+    assert row_bytes == 50 and bitmap in job
+    assert metadata["pixel_width"] == 400 and metadata["pixel_height"] == 240
 
 
 def test_internal_qr_identity_and_incomplete_or_oversized_content():

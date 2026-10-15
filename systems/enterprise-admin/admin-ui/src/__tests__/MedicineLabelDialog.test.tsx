@@ -16,7 +16,7 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 it('requires a matching preview and operator confirmation before one local print', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240, job_sha256: 'a'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v1' }) });
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240, job_sha256: 'a'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v2' }) });
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ job: { job_id: 'job-1', status: 'queued', job_sha256: 'a'.repeat(64), physical_print_verified: false } }) });
     render(<MedicineLabelDialog product={product} onClose={vi.fn()} />);
     expect(screen.getByLabelText('資料庫藥品標籤內容')).toHaveTextContent('測試藥品 10 mg 錠');
@@ -32,7 +32,7 @@ it('requires a matching preview and operator confirmation before one local print
     await screen.findByText('已排入本機佇列，尚未送至標籤機。');
     expect(fetchMock).toHaveBeenCalledTimes(2);
     const sent = JSON.parse(fetchMock.mock.calls[1][1].body);
-    expect(sent).toMatchObject({ send: true, approved_sha256: 'a'.repeat(64), idempotency_key: 'same-job-key-123456789', copies: 1,
+    expect(sent).toMatchObject({ width_mm: 50, height_mm: 30, send: true, approved_sha256: 'a'.repeat(64), idempotency_key: 'same-job-key-123456789', copies: 1,
         medicine: { name: '測試藥品', strength: '10 mg', dosage_form: '錠', generic_name: 'Test ingredient', nhi_code: 'NHI-001', license_number: '衛部藥製字第000001號', sku: 'MED-001' } });
     expect(screen.queryByRole('button', { name: '確認送印一張' })).not.toBeInTheDocument();
 });

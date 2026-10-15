@@ -1,8 +1,8 @@
 const BASE = 'http://127.0.0.1:8765';
 
 export type LabelDraft = {
-  width_mm: 30;
-  height_mm: 50;
+  width_mm: 50;
+  height_mm: 30;
   medicine: {
     name: string;
     strength: string;
@@ -20,7 +20,7 @@ export type LabelPreview = {
   job_sha256: string;
   job_bytes: number;
   preview_png_base64: string;
-  layout: 'medicine-landscape-v1';
+  layout: 'medicine-landscape-v2';
   sent: false;
 };
 

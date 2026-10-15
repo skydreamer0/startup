@@ -21,7 +21,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m deli720w.api serve --token-file .\private\api-token.txt --report-dir .\private\api-reports --port 8765 --allow-origin http://127.0.0.1:5173
 ```
 
-後台「Inventory (Products)」可填藥品規格、劑型、學名、健保碼及完整藥證字號。這些欄位對既有資料為空值，須由藥師核對並補齊。商品列的「建立標籤」顯示六項識別資訊與自動產生的 `P1:<SKU>` 內部 QR；缺欄位或 SKU 格式不符時不允許預覽。輸入本機 token 後，先取得 50 × 30 mm 橫式預覽與實際工作 SHA-256，再核對送印一張。代理將橫式圖旋轉至 30 × 50 mm 實體紙張的 240 × 400 點陣。此版是**店內藥品品項識別標籤**，不含批次、效期、病人資訊或用藥指示；QR 不代表原廠 GS1 DataMatrix。原廠條碼辨識、官方資料對照及 `P1` 掃描查詢仍待另案接入。Code128 不產生，掃碼驗收仍未完成。
+後台「Inventory (Products)」可填藥品規格、劑型、學名、健保碼及完整藥證字號。這些欄位對既有資料為空值，須由藥師核對並補齊。商品列的「建立標籤」顯示六項識別資訊與自動產生的 `P1:<SKU>` 內部 QR；缺欄位或 SKU 格式不符時不允許預覽。輸入本機 token 後，先取得 50 × 30 mm 橫式閱讀預覽與實際工作 SHA-256，再核對送印一張。實體紙張設定為 50 × 30 mm、400 × 240 點陣，工作點陣相對閱讀預覽旋轉 180°。2026-10-15 的兩張編號方向探針中，使用者確認 2 的出紙方向正確；代理以 `medicine-landscape-v2` 區分先前錯誤方向。此版是**店內藥品品項識別標籤**，不含批次、效期、病人資訊或用藥指示；QR 不代表原廠 GS1 DataMatrix。原廠條碼辨識、官方資料對照及 `P1` 掃描查詢仍待另案接入。Code128 不產生，掃碼驗收仍未完成。
 
 實體列印需用 `deli720w list --show-address` 確認本人的印表機位址與完整廣播名稱，並明確重啟代理：
 
@@ -29,6 +29,6 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m deli720w.api serve --token-file .\private\api-token.txt --report-dir .\private\api-reports --port 8765 --allow-origin http://127.0.0.1:5173 --enable-printing --target-address '<確切位址>' --target-name '<DL-720W(NEW)加四碼尾綴>'
 ```
 
-`queued` 只代表排入佇列；`submitted_unverified` 只代表 BLE 傳輸完成。工作逾時、斷線或代理重啟可能是 `outcome_unknown`，代理不自動重印。操作員應檢查紙張和本機紀錄，再決定是否建立新工作。此整合仍需正式後台來源、瀏覽器對 loopback 的權限與**本機 API 實際出紙**驗收。Code128 解碼尚未驗收。
+`queued` 只代表排入佇列；`submitted_unverified` 只代表 BLE 傳輸完成。工作逾時、斷線或代理重啟可能是 `outcome_unknown`，代理不自動重印。操作員應檢查紙張和本機紀錄，再決定是否建立新工作。先前 v1 本機 API 曾實際出紙但方向錯誤；v2 方向由直接 BLE 測試的編號 2 實物確認，更新後的 v2 本機 API、正式後台來源與瀏覽器 loopback 權限仍需實機驗收。Code128 解碼尚未驗收。
 
 本機 HTTP 合約與安全閘門見 `src/deli720w/api.py`；STARTUP 呼叫端見 `admin-ui/src/services/localLabelPrinter.ts`。原 POS 收據列印不經此代理。
