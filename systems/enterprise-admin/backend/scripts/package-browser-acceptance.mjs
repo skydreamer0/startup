@@ -45,10 +45,18 @@ const { PrismaClient } = requireBackend('@prisma/client');
 const db = new PrismaClient({ datasources: { db: { url: databaseUrl } } });
 const { chromium, expect } = requirePos('@playwright/test');
 const express = requireBackend('express');
-const cases = [], networkLedger = [], forbidden = [], apiLedger = [];
+const cases = [], captures = [], networkLedger = [], forbidden = [], apiLedger = [];
 const servers = [], contexts = [];
 let browser, failure = null, cleanup, fixtureOwned = false;
 const syntheticTenant = randomUUID();
+async function capture(page, name, viewport) {
+  // Full-page capture can resize a native dialog against the document height.
+  // Preserve the actual accepted viewport and record the original PNG identity.
+  const bytes = await page.screenshot({ path: path.join(output, name), fullPage: false });
+  const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);
+  assert.equal(width, viewport.width); assert.equal(height, viewport.height);
+  captures.push({ name, width, height, sha256: createHash('sha256').update(bytes).digest('hex') });
+}
 async function counts() {
   const tables = await db.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> '_prisma_migrations' ORDER BY tablename`;
   return Object.fromEntries(await Promise.all(tables.map(async ({ tablename }) => {
@@ -143,7 +151,7 @@ try {
       await expect(maintenance.getByRole('button', { name: '新增獨立包裝', exact: true })).toBeEnabled();
     }
     await create(`${prefix} 盒`, 3); await create(`${prefix} 瓶`, 6); await create(`${prefix} 未知`, null);
-    await admin.screenshot({ path: path.join(output, `admin-form-${viewport.width}.png`), fullPage: true });
+    await capture(admin, `admin-form-${viewport.width}.png`, viewport);
     await maintenance.evaluate(node => node.scrollTo({ top: 0 }));
     const adminGeometry = await maintenance.boundingBox();
     assert.ok(adminGeometry && adminGeometry.x >= 15 && adminGeometry.y >= 15
@@ -151,7 +159,7 @@ try {
       && adminGeometry.y + adminGeometry.height <= viewport.height - 15);
     assert.equal(await maintenance.evaluate(node => node.scrollWidth <= node.clientWidth), true);
     await expect(maintenance.getByRole('button', { name: '關閉包裝維護', exact: true })).toBeInViewport();
-    await admin.screenshot({ path: path.join(output, `admin-${viewport.width}.png`), fullPage: true });
+    await capture(admin, `admin-${viewport.width}.png`, viewport);
     await pos.goto(posOrigin);
     await expect(pos.getByTestId('product-search-input')).toBeEnabled();
     const open = pos.getByRole('button', { name: '包裝查找', exact: true });
@@ -164,7 +172,7 @@ try {
     const unknown = lookup.getByRole('button').filter({ hasText: `${prefix} 未知` }); await expect(unknown).toBeDisabled();
     const chosen = lookup.getByRole('button').filter({ hasText: `${prefix} 盒` });
     const geometry = await chosen.boundingBox(); assert.ok(geometry && geometry.width >= 44 && geometry.height >= 44);
-    await pos.screenshot({ path: path.join(output, `candidates-${viewport.width}.png`), fullPage: true });
+    await capture(pos, `candidates-${viewport.width}.png`, viewport);
     await chosen.focus(); await pos.keyboard.press('Enter');
     await expect(lookup.getByText(`已加入 1 個 ${prefix} 盒：3 合成庫存單位。`, { exact: true })).toBeVisible();
     await expect(pos.locator('.pos-cart-panel').getByText('共 3 件商品', { exact: true })).toBeVisible();
@@ -230,6 +238,7 @@ const sourceFiles = git('ls-files', '-z', '--', 'systems/enterprise-admin/backen
 write('source.json', { ...identity, nonce, scope: 'Built Admin/POS → real production HTTP API → owned synthetic PostgreSQL15; fixture-issued JWT, login UI/hardware not tested' });
 write('source-hashes.json', Object.fromEntries(sourceFiles.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
 write('network.json', { networkLedger, forbidden, apiLedger });
+write('captures.json', captures);
 write('report.json', { status: failure ? 'failed' : 'passed', cases, failure, cleanup });
 if (env.GITHUB_OUTPUT) fs.appendFileSync(env.GITHUB_OUTPUT, `evidence_dir=${output}\n`);
 if (failure) throw new Error(failure.message);
