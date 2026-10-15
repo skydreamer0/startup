@@ -177,7 +177,7 @@ describe('ProductPackagesService mutations', () => {
     expect(prisma.productPackageRevision.create).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({
         tenantId: 'tenant-a', packageId: 'package-a', revision: 1, actorId: 'actor-a',
-        identifiers: { create: [{ namespace: 'MANUFACTURER', value: '000AbC ', tenantId: 'tenant-a' }] },
+        identifiers: { create: [{ namespace: 'MANUFACTURER', value: '000AbC ' }] },
       }),
     }));
     expect(prisma.product.updateMany.mock.calls[0][0].data).not.toHaveProperty('stockQuantity');

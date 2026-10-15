@@ -72,7 +72,9 @@ export class ProductPackagesService {
         identifierCount: data.identifiers.length,
         validFrom: new Date(data.validFrom), validUntil: data.validUntil ? new Date(data.validUntil) : null,
         actorId,
-        identifiers: { create: data.identifiers.map(identifier => tenant.data({
+        // Prisma propagates both revisionId and tenantId through the composite
+        // parent relation. Supplying tenantId again is rejected by its engine.
+        identifiers: { create: data.identifiers.map(identifier => ({
           namespace: identifier.namespace, value: identifier.value,
         })) },
       }), include: { identifiers: true } });

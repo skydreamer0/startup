@@ -118,6 +118,9 @@ test('manual native keyboard focus and control activation', async ({ page, fixtu
   await page.keyboard.press('Tab'); await expect(inspect(page)).toBeFocused();
   await page.keyboard.press('Enter'); await evidence(page, '001\n');
   await page.keyboard.press('Tab'); await expect(close(page)).toBeFocused();
+  await page.keyboard.press('Tab');
+  const handoff = dialog(page).getByRole('button', { name: '使用這段原碼查找商品／包裝', exact: true });
+  await expect(handoff).toBeFocused();
   await page.keyboard.press('Tab'); const summary = dialog(page).locator('summary');
   await expect(summary).toBeFocused(); await page.keyboard.press('Enter');
   await expect(dialog(page).locator('details')).toHaveAttribute('open', '');

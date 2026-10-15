@@ -54,7 +54,7 @@ describe('package lookup POS confirmation dialog', () => {
     for (const gtin of ['09504000059118', '09501101020917']) {
       const raw = `01${gtin}1727022810LOT-7\x1d21SER-2`;
       const separatorOffsets = raw.split('\x1d').slice(0, -1).reduce<number[]>((offsets, part) => {
-        offsets.push((offsets.at(-1) ?? -1) + part.length + 1); return offsets;
+        offsets.push((offsets.length ? offsets[offsets.length - 1] : -1) + part.length + 1); return offsets;
       }, []);
       expect(gs1Proposal({ ...scan, literal: raw, gs1: { status: 'observed', value: { separatorOffsets } } })).toEqual({
         status: 'proposal', gtin, expiryYYMMDD: '270228', lot: 'LOT-7', serial: 'SER-2',
@@ -69,7 +69,7 @@ describe('package lookup POS confirmation dialog', () => {
     ['invalid date', `01${'09504000059118'}17270230`],
   ])('fails closed for %s without returning a partial GTIN', (_name, raw) => {
     const separatorOffsets = raw.split('\x1d').slice(0, -1).reduce<number[]>((offsets, part) => {
-      offsets.push((offsets.at(-1) ?? -1) + part.length + 1); return offsets;
+      offsets.push((offsets.length ? offsets[offsets.length - 1] : -1) + part.length + 1); return offsets;
     }, []);
     expect(gs1Proposal({ ...scan, literal: raw, gs1: { status: 'observed', value: { separatorOffsets } } })).toEqual({ status: 'unsupported' });
   });
