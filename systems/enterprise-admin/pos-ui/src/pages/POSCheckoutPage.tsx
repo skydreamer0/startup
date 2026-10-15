@@ -380,7 +380,7 @@ export default function POSCheckoutPage() {
         />
         <button ref={manualScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
         <button ref={imageScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showImageScan} onClick={event => { event.currentTarget.focus(); setShowImageScan(true); }}>圖片掃碼</button>
-        <button type="button" className="pos-topbar-action" disabled={scannerBlocked} onClick={event => { event.currentTarget.focus(); setPackageLookup({}); }}>包裝查找</button>
+        <button type="button" className="pos-topbar-action" disabled={scannerBlocked} onClick={event => { event.currentTarget.focus(); setPackageLookup({ returnFocus: event.currentTarget }); }}>包裝查找</button>
         <CustomerLookupPanel
           selectedCustomer={selectedCustomer}
           onSelect={setCustomer}
