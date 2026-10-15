@@ -67,3 +67,37 @@ This is only manual text evidence UI, not M0-A completion. Exact-head component,
 page/scanner and type/build results belong in the PR. Browser, real USB/FNC1, native
 200% zoom, Safari/iPad, camera/image, offline CPU/RAM and real API/DB acceptance
 remain separate; synthetic DOM events do not establish those gates.
+
+## Local image evidence UI continuation (#37 / #31)
+
+The next bounded route is a visible `圖片掃碼` toolbar entry, local PNG/JPEG import,
+preview of the source image and all decoded results, explicit result selection,
+and a second deliberate confirmation of the decoded text. This confirmation has
+no business callback and lasts only while the dialog is open. It is not approval
+of a product/package mapping, receipt, sale or inventory posting. Existing USB and
+manual routes retain their own behavior; no image result is emitted into either
+barcode subscription stream.
+
+The decoder dependency is pinned to `zxing-wasm` 3.1.2, matching the version already
+used by the user's ep-expense scanner. The reusable approach is Vite's local WASM
+asset import and an explicit `locateFile`; invoice-specific parsing is not reused.
+The exact JS and WASM come from the same package, with no runtime CDN fallback.
+`textMode: Plain` retains the decoder's text representation alongside copied raw
+bytes, ECI bytes, format, symbology and symbology identifier. These are observed
+decoder outputs, not proof of correct product identity or inferred GS1 boundaries.
+The shared `ScanResultV1` is unchanged; additional observed image metadata stays
+in the local `ImageScanEvidence` wrapper.
+
+PNG/JPEG signature/header checks cap compressed input at 10 MiB and pixel count at
+16 million before image decoding. These are defensive bounds, not an 8 GB PC
+performance claim. Multiple symbols remain separate; zero symbols, invalid image,
+initialization failure and decode failure have distinct presentation. A failed
+initialization clears its own cached attempt and retries only the same bundled
+asset. A new file selection or unmount discards late results; object URLs and modal
+keyboard/focus/background state are cleaned up. All content remains temporary.
+
+This slice excludes camera permissions, OCR text recognition, GS1 field parsing,
+manufacturer/package mapping, internal-batch QR routing and business writes. Each
+remains on its existing M0/M1 tracking path. Real WASM fixtures, cold-cache offline
+asset delivery, browser interaction, supported runtime/build and device/CPU/RAM
+acceptance are separate gates and must not be inferred from source or mocked tests.

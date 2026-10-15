@@ -160,6 +160,14 @@ acceptance. No production DB, login or tenant-switch UI is involved. See
 
 ## Commands
 
+Image decoding uses exactly `zxing-wasm@3.1.2` from the canonical pnpm lock.
+After building POS, run `pnpm --filter pos-ui exec playwright test --config
+e2e/image-scan.config.mts` from the system root for real local Chrome/WASM,
+synthetic business HTTP, failed-asset retry, explicit selection, warm offline
+decoding and close/reopen clearing at 1366/390/1024px. Output lives under
+`e2e/test-results-image-scan/`. These are viewport checks, not physical-device
+acceptance; cold offline startup, Safari/iPad and device resource budgets remain open.
+
 Run from `systems/enterprise-admin/pos-ui/`:
 
 Install through the system-root pnpm workspace (10.34.6), using only its root
@@ -206,3 +214,22 @@ blocked transitions call `cancelBarcodeInput` to cancel partial sequences as wel
 as invalidate late lookups, preserving the existing Enter/300ms/min3 gate. See
 ADR-022 and `ManualScanDialog.test.tsx` / `POSCheckoutPage.manual-scan.test.tsx`.
 Browser/hardware and broader M0 gates remain unverified by these synthetic tests.
+
+### Local image scan evidence
+
+`ImageScanDialog` is reached through the POS toolbar's `圖片掃碼` button. It shares
+the existing scanner-blocked boundary with the manual evidence dialog. It reads
+PNG/JPEG locally through `imageScanDecoder`, displays the image and every decoded
+symbol, and requires explicit selection followed by confirmation of the text.
+Confirmation is temporary UI state only: there is no lookup, product mapping,
+barcode dispatch, persistence, cart change or inventory command. New selections
+and close/unmount invalidate late results and release object URLs.
+
+`imageScanDecoder` uses pinned `zxing-wasm` 3.1.2 with the matching reader WASM
+emitted by Vite `?url`; initialization must override asset resolution before use.
+There is no CDN fallback. PNG/JPEG bytes and header dimensions are bounded before
+the engine loads; decoded literal, observed bytes/ECI bytes and canonical format
+metadata are retained by `imageScanResult`. GS1 parsing is deliberately absent.
+See ADR-022 and the `ImageScanDialog`, `POSCheckoutPage.image-scan`, and image
+decoder/evidence tests. Actual WASM, browser asset routing and hardware/performance
+evidence must be reported separately; mocked UI tests do not establish decoding.
