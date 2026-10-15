@@ -41,8 +41,11 @@ Status reconciled on **2026-10-16 (Asia/Taipei)** against merged master [`e46c6b
   confirmation with stale-version/unknown-conversion guards. Owner confirmed
   `[from,until)`, permanent retirement/new revision and store-admin authority.
   Shared manual/image evidence can hand off to lookup; observed GS1 fields stay
-  read-only proposals. Local Admin 208/POS 582 tests passed; native PG15/current
-  browser and exact-head CI remain pending. Device/offline/store gates stay open;
+  read-only proposals. Local Admin 208/POS 582 tests passed. At `1f692f4`, ten
+  native PG15 cases and three real-API browser flows passed, with all applicable
+  CI/security checks; final viewport-capture review and exact-head evidence are
+  recorded in [PR #142](https://github.com/skydreamer0/startup/pull/142).
+  Device/offline/store gates stay open;
   this does not complete #48/#31/#37. See the
   [adopted contract and acceptance record](infrastructure/verification/pos-manufacturer-barcode-contract/README.md).
 
