@@ -1,0 +1,35 @@
+name: Inventory FEFO trace acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-fefo-trace:
+    name: Inventory FEFO trace PostgreSQL acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Verify evidence rejection controls
+        run: node --test systems/enterprise-admin/backend/scripts/inventory-fefo-trace-native.test.mjs
+      - name: Run isolated native PostgreSQL acceptance and cleanup
+        env:
+          FEFO_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node systems/enterprise-admin/backend/scripts/inventory-fefo-trace-native.mjs
+      - name: Preserve native evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: inventory-fefo-trace-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/inventory-fefo-trace-*/*.json
+            ${{ runner.temp }}/inventory-fefo-trace-*/*.log
+          if-no-files-found: error
+          retention-days: 7

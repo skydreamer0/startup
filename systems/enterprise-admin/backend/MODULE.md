@@ -138,6 +138,13 @@ See `../infrastructure/verification/pos-confirmed-stock/README.md`.
 
 ## Commands
 
+The joined FEFO checkout/batch-detail acceptance has an exact-head Docker runner:
+`scripts/inventory-fefo-trace-native.mjs`, also invoked by the dedicated
+`inventory-fefo-trace.yml` workflow. It archives clean committed source, creates
+an isolated empty PG15 database, requires zero skips and both Prisma teardown
+markers, and verifies owned database/container/network cleanup. See
+`../infrastructure/verification/inventory-fefo-trace-acceptance/README.md`.
+
 Run from `systems/enterprise-admin/backend/`:
 
 Install with npm 11.21.0 and `npm ci` using this directory's package-lock.json;
