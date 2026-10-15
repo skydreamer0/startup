@@ -156,7 +156,7 @@ HTTP Status Code 需精確映射錯誤類別：
 - `GET /product-batches` 與 `GET /product-batches/:id` 使用 `read:products`。明細增加 `receiptMovements`，含實收 quantity、batchId、costPriceAtReceipt；舊 movement 無已知批次時保持 null。
 - `PATCH /product-batches/:id` 使用 `update:products`，可改既有 metadata／status，quantity 欄位回 `400`。`DELETE` 同權限，剩餘量或任何出庫／進貨引用回 `400`。
 - `POST /inventory/products` 使用 `create:products`，flat metadata body，新商品 stockQuantity 必為 0（可省略或明確傳 0）；其他值回 `400`。`PUT /inventory/products/:id` 使用 `update:products`，任何 stockQuantity 欄位回 `400`。UI 顯示帳量但不提供數量編輯。
-- 商品建立可選填 `strength`（規格，最多 40 字）、`dosageForm`（劑型，40）、`genericName`（學名，120）、`nhiCode`（健保碼，40）、`licenseNumber`（完整藥證字號，120）；均為去前後空白的非空單行字串。更新可用 `null` 清除。商品讀取回傳同名 nullable 欄位；舊商品不補造值。這些欄位是待藥師覆核的店內藥品識別資料，不代表批次或原廠條碼匹配。列印端要求五欄、名稱及符合格式的 SKU 齊全，QR 固定為 `P1:<SKU>`；詳見 ADR-023。
+- 商品建立可選填 `englishName`（英文商品名，最多 120 字）、`strength`（規格，40）、`dosageForm`（劑型，40）、`genericName`（學名，120）、`nhiCode`（健保碼，40）、`licenseNumber`（完整藥證字號，120）、`storageLocation`（SKU 的預設存放位置，40）；均為去前後空白的非空單行字串。更新可用 `null` 清除。商品讀取回傳同名 nullable 欄位；舊商品不補造值。這些欄位是待藥師覆核的店內識別資料；`storageLocation` 不是批次實際儲位或庫存過帳依據。三行藥品標籤要求七欄、中文品名及符合格式的 SKU 齊全，QR 固定為 `P1:<SKU>`；詳見 ADR-023。
 - `POST /inventory/products/import/csv` 仍跳過既有 SKU；新 SKU 從 0 開始，回 warnings 說明庫存欄位未匯入。
 
 商品總量包括隔離／到期實體庫存，不能當可售承諾。此切片未提供實體退回、multi-bin、調整反向過帳、完整 immutable ledger／rebuild 或正式開帳對帳；父 issue 保持開啟。

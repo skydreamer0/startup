@@ -13,11 +13,13 @@ import './ProductListPage.css';
 type ProductForm = {
     sku: string;
     name: string;
+    englishName: string;
     strength: string;
     dosageForm: string;
     genericName: string;
     nhiCode: string;
     licenseNumber: string;
+    storageLocation: string;
     description: string;
     supplierId: string;
     costPrice: string;
@@ -38,11 +40,13 @@ type ApiError = {
 const emptyProductForm: ProductForm = {
     sku: '',
     name: '',
+    englishName: '',
     strength: '',
     dosageForm: '',
     genericName: '',
     nhiCode: '',
     licenseNumber: '',
+    storageLocation: '',
     description: '',
     supplierId: '',
     costPrice: '0',
@@ -177,11 +181,13 @@ export default function ProductListPage() {
         setProductForm({
             sku: product.sku,
             name: product.name,
+            englishName: product.englishName ?? '',
             strength: product.strength ?? '',
             dosageForm: product.dosageForm ?? '',
             genericName: product.genericName ?? '',
             nhiCode: product.nhiCode ?? '',
             licenseNumber: product.licenseNumber ?? '',
+            storageLocation: product.storageLocation ?? '',
             description: product.description || '',
             supplierId: product.supplierId || product.supplier?.id || '',
             costPrice: String(product.costPrice),
@@ -202,11 +208,13 @@ export default function ProductListPage() {
         const payload: Partial<Product> = {
             sku: productForm.sku.trim(),
             name: productForm.name.trim(),
+            englishName: productForm.englishName.trim() || (editProduct ? null : undefined),
             strength: productForm.strength.trim() || (editProduct ? null : undefined),
             dosageForm: productForm.dosageForm.trim() || (editProduct ? null : undefined),
             genericName: productForm.genericName.trim() || (editProduct ? null : undefined),
             nhiCode: productForm.nhiCode.trim() || (editProduct ? null : undefined),
             licenseNumber: productForm.licenseNumber.trim() || (editProduct ? null : undefined),
+            storageLocation: productForm.storageLocation.trim() || (editProduct ? null : undefined),
             description: productForm.description.trim() || undefined,
             supplierId: productForm.supplierId || undefined,
             costPrice: Number(productForm.costPrice),
@@ -377,7 +385,12 @@ export default function ProductListPage() {
                                     <input className="input-field" required value={productForm.name}
                                         onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} />
                                 </div>
-                                <p>藥品識別標籤需填妥下列五項；一般商品可留空。資料應由藥師核對，QR 將使用店內 SKU。</p>
+                                <p>藥品識別標籤需填妥下列資料；一般商品可留空。資料應由藥師核對，QR 將使用店內 SKU。</p>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-english-name">英文商品名</label>
+                                    <input id="medicine-english-name" className="input-field" maxLength={120} value={productForm.englishName}
+                                        onChange={(e) => setProductForm({ ...productForm, englishName: e.target.value })} />
+                                </div>
                                 <div className="input-group">
                                     <label className="input-label" htmlFor="medicine-strength">規格</label>
                                     <input id="medicine-strength" className="input-field" maxLength={40} value={productForm.strength}
@@ -402,6 +415,11 @@ export default function ProductListPage() {
                                     <label className="input-label" htmlFor="medicine-license-number">完整藥品許可證字號</label>
                                     <input id="medicine-license-number" className="input-field" maxLength={120} value={productForm.licenseNumber}
                                         onChange={(e) => setProductForm({ ...productForm, licenseNumber: e.target.value })} />
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-storage-location">預設倉儲位置</label>
+                                    <input id="medicine-storage-location" className="input-field" maxLength={40} value={productForm.storageLocation}
+                                        onChange={(e) => setProductForm({ ...productForm, storageLocation: e.target.value })} />
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label">Description</label>

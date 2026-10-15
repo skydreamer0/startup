@@ -46,12 +46,14 @@ export interface Product {
   id: string;
   sku: string;
   name: string;
+  englishName?: string | null;
   description?: string | null;
   strength?: string | null;
   dosageForm?: string | null;
   genericName?: string | null;
   nhiCode?: string | null;
   licenseNumber?: string | null;
+  storageLocation?: string | null;
   categoryId?: string | null;
   supplierId?: string | null;
   /** Prisma Decimal serialises as string in JSON — use Number() before arithmetic. */

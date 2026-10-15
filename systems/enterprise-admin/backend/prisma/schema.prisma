@@ -289,12 +289,14 @@ model Product {
   id          String  @id @default(uuid())
   sku         String
   name        String
+  englishName String? @map("english_name")
   description String?
   strength      String? @map("strength")
   dosageForm    String? @map("dosage_form")
   genericName   String? @map("generic_name")
   nhiCode       String? @map("nhi_code")
   licenseNumber String? @map("license_number")
+  storageLocation String? @map("storage_location")
   tenantId    String  @map("tenant_id")
 
   categoryId String? @map("category_id")

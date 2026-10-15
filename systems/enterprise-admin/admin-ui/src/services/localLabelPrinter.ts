@@ -5,12 +5,14 @@ export type LabelDraft = {
   height_mm: 30;
   medicine: {
     name: string;
+    english_name: string;
     strength: string;
     dosage_form: string;
     generic_name: string;
     nhi_code: string;
     license_number: string;
     sku: string;
+    storage_location: string;
   };
   trim_blank_bottom: false;
 };
@@ -20,7 +22,7 @@ export type LabelPreview = {
   job_sha256: string;
   job_bytes: number;
   preview_png_base64: string;
-  layout: 'medicine-landscape-v2';
+  layout: 'medicine-landscape-v3';
   sent: false;
 };
 
