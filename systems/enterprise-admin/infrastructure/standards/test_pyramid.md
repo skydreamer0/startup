@@ -60,6 +60,11 @@ security checks for the exact PR head. Inspect the actual GitHub ruleset separat
 when checking enforced merge requirements; a document does not change that ruleset.
 
 Additional workflows:
+- `.github/workflows/inventory-fefo-trace.yml` runs the joined FEFO checkout and
+  read-only capped batch trace test on the exact PR head in an owned PG15/Node22
+  Docker environment. It requires one native pass, zero skips, both Prisma pool
+  shutdown markers and owned DB/container/network cleanup. Ordinary backend
+  skips do not satisfy this gate; broader inventory and hardware gates remain open.
 - `.github/workflows/checkout-abort-retry.yml` adds isolated exact-head #30 acceptance
   by composing the unchanged Actions-only sequence/command/stock rollback harness
   with seven retry cases (real deadlock, server abort injection, exhaustion and
