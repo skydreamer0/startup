@@ -23,6 +23,10 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+      # The local reader, writer fixtures and bundled WASM share an exact version.
+      # Upgrade together in a dedicated decoder compatibility change.
+      - dependency-name: "zxing-wasm"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
     groups:
       frontend-patch-minor:
         patterns: ["*"]
