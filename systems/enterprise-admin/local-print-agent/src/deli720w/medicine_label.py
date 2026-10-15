@@ -85,13 +85,14 @@ def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Imag
     canvas = Image.new("1", (WIDTH, HEIGHT), 1)
     draw = ImageDraw.Draw(canvas)
     left = 12
-    _draw_fit(draw, left, 4, identity.name, 307, 44, 44, 20)
-    _draw_fit(draw, left, 52, identity.english_name, 307, 39, 39, 19)
-    _draw_fit(draw, left, 97, identity.generic_name, 376, 38, 38, 18)
-    draw.line((left, 142, 388, 142), fill=0, width=1)
-    _draw_fit(draw, left, 152, identity.nhi_code, 376, 32, 32, 16)
-    _draw_fit(draw, left, 190, identity.license_number, 376, 28, 28, 14)
-    _draw_fit_right(draw, 388, 220, identity.storage_location, 160, 17, 16, 10)
+    _draw_fit(draw, left, 2, identity.name, 307, 46, 46, 20)
+    _draw_fit(draw, left, 51, identity.english_name, 307, 41, 41, 19)
+    _draw_fit(draw, left, 97, identity.generic_name, 307, 40, 40, 18)
+    divider_y = 143
+    draw.line((left, divider_y, 388, divider_y), fill=0, width=1)
+    _draw_fit(draw, left, 153, identity.license_number, 376, 32, 32, 14)
+    _draw_fit(draw, left, 197, identity.nhi_code, 245, 35, 35, 16)
+    _draw_fit_right(draw, 388, 209, identity.storage_location, 120, 17, 16, 10)
 
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, border=4, box_size=1)
     qr.add_data(identity.qr_payload)
@@ -103,5 +104,5 @@ def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Imag
     side = modules * module_size
     code = qr.make_image(fill_color="black", back_color="white").convert("1")
     code = code.resize((side, side), Image.Resampling.NEAREST)
-    canvas.paste(code, (328 + (64 - side) // 2, 8))
+    canvas.paste(code, (328 + (64 - side) // 2, divider_y - side))
     return canvas, canvas.transpose(Image.Transpose.ROTATE_180)

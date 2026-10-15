@@ -93,7 +93,7 @@ def test_medicine_preview_is_landscape_and_same_approved_job(tmp_path):
     payload = {"width_mm": 50, "height_mm": 30, "medicine": asdict(identity), "trim_blank_bottom": False}
     with local_server(tmp_path, printing=True) as (state, port):
         code, preview = request(port, "POST", "/print", payload)
-        assert code == 200 and preview["layout"] == "medicine-landscape-v6"
+        assert code == 200 and preview["layout"] == "medicine-landscape-v8"
         assert base64.b64decode(preview["preview_png_base64"]).startswith(b"\x89PNG\r\n\x1a\n")
         assert request(port, "POST", "/print", {**payload, "width_mm": 30})[0] == 400
         assert request(port, "POST", "/print", {**payload, "qr": "other"})[0] == 400

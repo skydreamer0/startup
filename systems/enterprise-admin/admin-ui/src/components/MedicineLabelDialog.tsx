@@ -94,7 +94,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
         setBusy(true); setError(null);
         try {
             const result = await previewLabel(token.trim(), draft);
-            if (result.layout !== 'medicine-landscape-v6') throw new Error('本機代理版本不支援右上 QR 藥品標籤。');
+            if (result.layout !== 'medicine-landscape-v8') throw new Error('本機代理版本不支援新版藥品標籤。');
             setPreview(result);
         } catch (cause) {
             setError(cause instanceof Error ? cause.message : '無法產生預覽。');

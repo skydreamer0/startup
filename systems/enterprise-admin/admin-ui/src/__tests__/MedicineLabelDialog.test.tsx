@@ -16,7 +16,7 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 it('requires a matching preview and operator confirmation before one local print', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240, job_sha256: 'a'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v6' }) });
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240, job_sha256: 'a'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v8' }) });
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ job: { job_id: 'job-1', status: 'queued', job_sha256: 'a'.repeat(64), physical_print_verified: false } }) });
     render(<MedicineLabelDialog product={product} onClose={vi.fn()} />);
     expect(screen.getByLabelText('資料庫藥品標籤內容')).toHaveTextContent('測試藥品');
@@ -52,7 +52,7 @@ it('blocks preview when a required medicine field is missing', async () => {
 
 it('invalidates the approved preview when the print-time location changes', async () => {
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240,
-        job_sha256: 'b'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v6' }) });
+        job_sha256: 'b'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v8' }) });
     render(<MedicineLabelDialog product={product} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('本機代理權杖'), { target: { value: 'local-secret' } });
     fireEvent.change(screen.getByLabelText('本次實際儲位'), { target: { value: 'A01-02' } });

@@ -81,7 +81,7 @@ def _parse_print_request(payload: object) -> tuple[bytes, dict, bool, int, str |
         preview_image, physical_image = render_medicine_label(identity)
         label = Label(50, 30, 203, (identity.name,))
         job, metadata = serialize(label, image=physical_image, trim_blank_bottom=trim)
-        metadata["layout"] = "medicine-landscape-v6"
+        metadata["layout"] = "medicine-landscape-v8"
     else:
         label = Label(float(payload["width_mm"]), float(payload["height_mm"]), 203,
                       tuple(lines), payload.get("qr"), payload.get("code128"))

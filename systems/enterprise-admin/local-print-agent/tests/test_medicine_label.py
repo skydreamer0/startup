@@ -21,6 +21,8 @@ def test_landscape_preview_matches_operator_selected_physical_orientation():
     preview, physical = render_medicine_label(IDENTITY)
     assert preview.size == (400, 240)
     assert physical.size == (400, 240)
+    assert all(preview.getpixel((x, y)) for x in range(328, 392) for y in range(0, 80))
+    assert any(not preview.getpixel((x, y)) for x in range(328, 392) for y in range(85, 140))
     assert physical.transpose(Image.Transpose.ROTATE_180).tobytes() == preview.tobytes()
     job, metadata = serialize(Label(50, 30, 203, (IDENTITY.name,)), image=physical)
     bitmap, row_bytes = pack_bitmap(physical)

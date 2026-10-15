@@ -20,7 +20,7 @@ export type LabelPreview = {
   job_sha256: string;
   job_bytes: number;
   preview_png_base64: string;
-  layout: 'medicine-landscape-v6';
+  layout: 'medicine-landscape-v8';
   sent: false;
 };
 
