@@ -38,6 +38,12 @@ Both install boundaries currently pass full audit with zero advisories; CI runs
 Dependabot manages weekly patch/minor updates for both boundaries; runtime and
 dependency major migrations require explicit compatibility review.
 
+The POS image decoder stays on exactly `zxing-wasm@3.1.2`. Its reader guard,
+writer fixtures and bundled WASM must move together with native decoding and
+browser/offline acceptance. Dependabot excludes its routine patch/minor updates;
+other frontend updates and security checks remain enabled. A decoder upgrade
+requires a dedicated compatibility change rather than a manifest-only update.
+
 Vitest 4.1.11 removes the old Tinypool dependency and retains the existing test
 assertions. Axios is at least 1.20.0; Router 7.18 resolves advisories without v6
 patches and is used through the existing declarative routing APIs.
