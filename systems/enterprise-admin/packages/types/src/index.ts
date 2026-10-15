@@ -18,6 +18,8 @@
  *   - Dashboard           → backend/src/modules/dashboard/dashboard.service.ts
  */
 
+export * from './productPackages';
+
 // ─── Shared enums ────────────────────────────────────────────────────────────
 
 export type PaymentMethod = 'CASH' | 'CARD' | 'LINE_PAY' | 'TRANSFER' | 'OTHER';

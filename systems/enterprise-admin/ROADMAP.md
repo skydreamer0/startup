@@ -35,6 +35,17 @@ Status reconciled on **2026-10-16 (Asia/Taipei)** against merged master [`e46c6b
   for their respective operational use. Do not repeat already merged SKU, category,
   command-recovery, audit or evidence-dialog implementations.
 
+- #48 implementation candidate: `codex/product-package-lookup` retains existing
+  SKU behavior and adds tenant product/package/revision/identifier persistence,
+  admin-reviewed maintenance, complete manufacturer/GTIN lookup and explicit POS
+  confirmation with stale-version/unknown-conversion guards. Owner confirmed
+  `[from,until)`, permanent retirement/new revision and store-admin authority.
+  Shared manual/image evidence can hand off to lookup; observed GS1 fields stay
+  read-only proposals. Local Admin 203/POS 581 tests passed; native PG15/current
+  browser and exact-head CI remain pending. Device/offline/store gates stay open;
+  this does not complete #48/#31/#37. See the
+  [adopted contract and acceptance record](infrastructure/verification/pos-manufacturer-barcode-contract/README.md).
+
 - 2026-10-16 delivery reconciliation: [#128](https://github.com/skydreamer0/startup/pull/128)
   merged as `f91704e4` (mapping gap document only); [#129](https://github.com/skydreamer0/startup/pull/129)
   merged as `e46c6bbc` after independent source/raw-artifact review. Its exact-head

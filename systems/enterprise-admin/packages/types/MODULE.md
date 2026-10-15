@@ -2,6 +2,10 @@
 
 ## Purpose
 
+`src/productPackages.ts` carries the shared literal identifier, reviewed revision,
+history and package candidate wire shapes. It does not infer stock units or GS1
+metadata; see ADR-024 and `../../infrastructure/api/product-packages.md`.
+
 `packages/types` provides shared TypeScript types for enterprise-admin applications. It is published within the workspace as `@pharmasaas/types` and is consumed by frontend apps.
 
 ## Read this first for

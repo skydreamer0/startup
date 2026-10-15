@@ -8,12 +8,13 @@ import { useCheckoutRecoveryStore } from '../store/checkoutRecoveryStore';
 import CategoryNav from '../components/CategoryNav';
 import ManualScanDialog from '../components/ManualScanDialog';
 import ImageScanDialog from '../components/ImageScanDialog';
+import PackageLookupDialog from '../components/PackageLookupDialog';
 import ProductGrid from '../components/ProductGrid';
 import CartPanel from '../components/CartPanel';
 import StaffSwitchModal from '../components/StaffSwitchModal';
 import PaymentModal from '../components/PaymentModal';
 import SplitPaymentModal from '../components/SplitPaymentModal';
-import type { PaymentEntry } from '@pharmasaas/types';
+import type { PaymentEntry, ScanResultV1 } from '@pharmasaas/types';
 import ReceiptModal from '../components/ReceiptModal';
 import PosToast, { PosToastMessage } from '../components/PosToast';
 import AdminPinModal from '../components/AdminPinModal';
@@ -53,6 +54,7 @@ export default function POSCheckoutPage() {
   const [barcodeLookupStatus, setBarcodeLookupStatus] = useState<BarcodeLookupStatus>(null);
   const [showManualScan, setShowManualScan] = useState(false);
   const [showImageScan, setShowImageScan] = useState(false);
+  const [packageLookup, setPackageLookup] = useState<{ scan?: ScanResultV1 } | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSplitModal, setShowSplitModal] = useState(false);
@@ -152,7 +154,7 @@ export default function POSCheckoutPage() {
 
   const scannerBlocked = !contextReady || !shift.activeShift || showStaffModal || showPaymentModal
     || showSplitModal || showOrderLookup || showShiftReport || !!checkoutResult
-    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget || showManualScan || showImageScan;
+    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget || showManualScan || showImageScan || !!packageLookup;
   const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast, setBarcodeCandidates, {
     blocked: scannerBlocked,
     onStatus: setBarcodeLookupStatus,
@@ -226,7 +228,7 @@ export default function POSCheckoutPage() {
   }
 
   const handleKeydown = useCallback((event: KeyboardEvent) => {
-    if (pending || showManualScan || showImageScan) return;
+    if (pending || showManualScan || showImageScan || packageLookup) return;
     if (event.defaultPrevented) return;
     // Backstop modal ownership even if a removed control/backdrop lost focus.
     if ((showPaymentModal || showSplitModal || adminPinPending) && event.key !== 'Escape') {
@@ -292,7 +294,7 @@ export default function POSCheckoutPage() {
         }
         break;
     }
-  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading, showManualScan, showImageScan]);
+  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading, showManualScan, showImageScan, packageLookup]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -376,6 +378,7 @@ export default function POSCheckoutPage() {
         />
         <button type="button" className="pos-topbar-action" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
         <button type="button" className="pos-topbar-action" disabled={scannerBlocked && !showImageScan} onClick={event => { event.currentTarget.focus(); setShowImageScan(true); }}>圖片掃碼</button>
+        <button type="button" className="pos-topbar-action" disabled={scannerBlocked} onClick={event => { event.currentTarget.focus(); setPackageLookup({}); }}>包裝查找</button>
         <CustomerLookupPanel
           selectedCustomer={selectedCustomer}
           onSelect={setCustomer}
@@ -457,8 +460,9 @@ export default function POSCheckoutPage() {
       </div>
       </fieldset>
 
-      {showManualScan && <ManualScanDialog onClose={() => setShowManualScan(false)} />}
-      {showImageScan && <ImageScanDialog onClose={() => setShowImageScan(false)} />}
+      {showManualScan && <ManualScanDialog onClose={() => setShowManualScan(false)} onLookup={scan => { setShowManualScan(false); setPackageLookup({ scan }); }} />}
+      {showImageScan && <ImageScanDialog onClose={() => setShowImageScan(false)} onLookup={scan => { setShowImageScan(false); setPackageLookup({ scan }); }} />}
+      {packageLookup && <PackageLookupDialog scan={packageLookup.scan} onClose={() => setPackageLookup(null)} />}
       {showStaffModal && (
         <StaffSwitchModal
           staffList={staffList}

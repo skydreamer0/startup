@@ -1,47 +1,32 @@
-# POS manufacturer barcode and package mapping contract — gap review
+# Product/package mapping and complete lookup — Issue #48
 
-Status: **gap review only**. This note records the remaining Issue #48 acceptance boundary. It does not claim manufacturer barcode, GTIN, package identity, temporal validity, or active/retired support has been implemented.
+Status: implementation candidate on `codex/product-package-lookup`, based on `a59a232e4c368fc4bca2aafde565f1229d54e4fe`. Owner rules are adopted in the [implementation contract](implementation-plan.md), architecture in ADR-024, wire contract in [product-packages.md](../../api/product-packages.md). PR #128's gap review remains in Git history. Its historical Node24 SKU-only test does not validate this implementation.
 
-## Current implementation evidence at base `94a2184bec6e3221e3efaa427bc75d1ef4435c9b`
+## Local execution
 
-- `backend/src/modules/pos/product-lookup.service.ts` parses the literal `code` and queries only `{ tenantId, sku: code }` through tenant persistence.
-- `backend/prisma/schema.prisma` `Product` has SKU and tenant uniqueness. `Product` and `ProductBatch` contain no manufacturer identifier, GTIN, package identity/revision, validity interval, or active/retired mapping state.
-- The route is tenant-authenticated and permission-guarded, but that does not create missing manufacturer/package lookup semantics.
-- POS may compare optional `barcode` values already present in supplied candidate objects. Those values do not establish a maintained, tenant-wide manufacturer mapping or package identity.
-- The existing native PostgreSQL test source includes cases for exact SKU lookup, zero-stock inclusion, a result beyond 100 fuzzy rows, and tenant separation for SKU. That is source inspection only for this review; this round did not rerun the PostgreSQL test, so it is not current-run evidence. It does not prove manufacturer-code or package mapping.
+Node22.22.3, canonical npm11.21.0 / pnpm10.34.6 locked installs; no dependency/lockfile changes. LUNA checks: backend build/lint and focused tests passed; Admin full 203 tests and POS full 581 tests passed; both UI builds, Admin lint, shared typecheck and context validation passed. Full backend attempt: 338 passed, 38 failed due to absent DATABASE_URL/JWT configuration, 77 skipped; this is not a passing full suite. The hosted CI supplies its owned synthetic database/configuration.
 
-## Executable synthetic coverage already present
+Native PostgreSQL and real browser acceptance: **NOT RUN locally**; Windows Docker daemon unavailable. Ten opt-in package native skips are not evidence. No ambient/production/preview database is permitted. Final exact-head CI and artifact links must be recorded after execution.
 
-`backend/src/__tests__/pos.productLookup.test.ts` is database-free and exercises the public lookup service/controller boundary with synthetic Prisma responses. It covers literal SKU preservation, tenant scoping and missing-tenant failure, malformed query rejection, response envelope, and error forwarding.
+## Native acceptance protocol
 
-## This review round's execution record
+`backend/scripts/pos-product-lookup-ci.mjs run` retains five original SKU, nine category and twenty provenance cases and adds ten package cases from `product-packages.integration.test.ts`. The package guard requires exact source head/tree, hosted run/attempt, verified loopback service identity, explicit database opt-in and preflight initially-empty ownership proof. All named cases must pass with zero skips; per-suite row counts return to zero; cleanup drops only the owned disposable database.
 
-- Runtime was Node `v24.19.0`; the repository requires Node `>=22.12.0 <23`. No Node 22 runtime manager or Node 22 binary was available, so the supported-runtime check was not run.
-- The lockfile-based backend install `npm ci --cache /tmp/startup-npm-cache` completed successfully. A first `npm ci` attempt failed because npm's default cache path `/home/agent/.npm` was unavailable; the retry changed only the cache location. No lockfile or dependency declaration changed.
-- `npm test -- src/__tests__/pos.productLookup.test.ts`: **PASS**, 1 file / 10 tests. These are existing pure-synthetic SKU tests only.
-- The full backend suite, backend build, lint, PostgreSQL test, and manufacturer/package mapping resolver tests were **NOT RUN** this round. The mapping schema and resolver do not exist at the inspected base.
-- The PostgreSQL test source was inspected, but no database test execution or current-round PostgreSQL evidence is claimed. Any prior native PostgreSQL result is prior evidence and was not reproduced in this review round.
+Cases cover literal codes, namespaces/tenant conflicts, full-dataset lookup, zero stock, validity boundaries, multiple packages/product, retirement/new revision, concurrent stale writes, composite tenant FKs, immutable/sealed history/stock unit, authenticated HTTP and no inventory/order/payment/receipt side effects. Mocked failures remain separate evidence.
 
-The 10/10 result is evidence for the current SKU-only boundary under Node 24, outside the repository's supported runtime range. It is not a passing test of manufacturer barcode/package support. Do not make a mock-only green test stand in for an absent mapping model or resolver.
+`backend/scripts/package-browser-acceptance.mjs` follows existing category/stock acceptance. Current built Admin/POS→production API→owned PG15 uses fixture-issued JWT and 1366/1024/390px Chromium viewports. Admin creates three ambiguous packages, POS blocks unknown conversion, keyboard confirms reviewed quantity; admin retires the mapping and stale POS choice gets 409 without another add. Long Chinese text, 44px candidate geometry, close/focus recovery and unchanged business snapshots are checked. Login UI and hardware are excluded.
 
-## Remaining acceptance contract before claiming manufacturer/package support
+Inspect `package-native-<head>-<attempt>` and `pos-sku-<head>-<attempt>` artifacts: source/hash identity, case reports, request ledger, screenshots, before/after row counts and quiescent process cleanup. All current pipeline/security checks must pass for the same PR head. Historical UI evidence does not validate this interface.
 
-After a tenant-scoped identifier-to-package mapping exists, add executable pure-synthetic tests for its public resolver boundary. Fixtures must be invented test data only.
+## Remaining external gates
 
-1. **Namespace and literal identity**: a manufacturer code and a GTIN are distinct identifier kinds; exact lookup preserves every character, including leading zeroes and case where applicable. No substring, numeric coercion, trim, or cross-namespace fallback.
-2. **Multiple codes per package**: separate exact codes can resolve to the same package identity without duplicating the product.
-3. **Multiple package identities per product**: each candidate exposes enough stable package identity/revision and human-readable distinction to prevent same-product/different-package auto-selection. Unknown conversion does not infer a case-to-unit quantity.
-4. **Tenant isolation**: the same namespace/value in another tenant is invisible; a global result cap cannot establish uniqueness.
-5. **Active/retired and valid-time boundary**: test active, retired, not-yet-valid, expired, and exact interval-boundary cases. The inclusive/exclusive boundary convention and whether retired mappings can be reactivated must be specified by the mapping owner before implementing these cases; current schema/service has no such policy to preserve.
-6. **Ambiguous or stale mapping**: multiple valid package candidates remain explicit candidates; stale mapping revision cannot be treated as current or auto-added.
-7. **No side effects**: lookup only proposes identity. It never increments POS quantity, receipt quantity, or inventory, and does not infer lot/expiry facts from an ordinary manufacturer code.
+| Gate | Evidence |
+| --- | --- |
+| Physical scanner/FNC1/raw bytes | NOT RUN; missing metadata remains unknown |
+| Safari/physical iPad/touch | NOT RUN; Chromium viewport evidence is separate |
+| Native zoom/text enlargement | NOT RUN |
+| Cold-offline real 8GB CPU-only device | NOT RUN; bundled decoder unchanged, API server needed |
+| Production migration/store use | NOT RUN; no live DB touched |
+| Internal batch QR/receiving quantity/posting | Separate existing workflows; no new automatic mutation/fill |
 
-Pure synthetic resolver tests should precede isolated PostgreSQL constraints/tenant-conflict acceptance. PostgreSQL evidence is still required to prove persisted uniqueness, interval overlap policy, and tenant isolation; synthetic tests cannot substitute for it.
-
-## Scope and exclusions
-
-- Reuse the existing exact-SKU path and SKU acceptance evidence; do not rewrite its API or scanner behavior here.
-- This gap review changes no decoder, OCR, GS1 parser, image path, database schema, permission, or production service.
-- Internal batch QR remains on #35 / #31 → #37. OCR remains on #34. #109 remains on HOLD; #118 is not part of this work.
-- No PR #127 files or `useBarcodeScanner.choice-stock.test.tsx` are part of this candidate.
-- Hardware scanner payloads, FNC1/raw bytes, Safari/iPad, and production database behavior remain separate acceptance gates.
+Keep #48 and parent gates open until applicable scope has actual evidence. CI alone does not establish G0–G7 or store acceptance.

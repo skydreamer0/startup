@@ -34,6 +34,15 @@
 
 ## Common task routes
 
+### Maintain reviewed product/package mappings
+
+ProductListPage opens `pages/Inventory/ProductPackagesDialog.tsx` through
+`api/productPackages.ts`. Read ADR-024 and `../infrastructure/api/product-packages.md`.
+History/source/actor and one-way retirement are retained; stale writes require
+refreshed history and explicit reselection. No stock/price writes occur here.
+Auth identity changes discard old reads/drafts. Real API/PG browser evidence is
+tracked in `../infrastructure/verification/pos-manufacturer-barcode-contract/README.md`.
+
 ### Change an admin page
 
 1. Open the nearest file under `src/pages/<area>/`.

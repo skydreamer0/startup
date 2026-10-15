@@ -37,6 +37,17 @@
 
 ## Common task routes
 
+### Change reviewed product/package mapping
+
+Read ADR-024 and `../infrastructure/api/product-packages.md`, then
+`src/modules/inventory/product-packages.*`. ProductPackage, its immutable
+revisions and sealed literal identifiers are the single tenant mapping authority.
+Product stockUnitLabel labels existing stock units without changing quantities;
+once reviewed it is immutable. The migration includes deferred FK/trigger/index
+constraints beyond Prisma DSL. Existing SKU lookup remains unchanged. Native
+ownership guards, PG15 and current browser evidence are described in
+`../infrastructure/verification/pos-manufacturer-barcode-contract/README.md`.
+
 ### Add or change a backend endpoint
 
 1. Read `../infrastructure/api/api_spec.md`.
