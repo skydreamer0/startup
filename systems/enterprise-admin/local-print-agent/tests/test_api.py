@@ -206,7 +206,9 @@ def test_token_file_and_origin_validation(tmp_path):
     with pytest.raises(ValueError):
         api.ApiState(token=TOKEN, port=8765, report_dir=tmp_path / "bad",
                      allowed_origins=frozenset({"http://127.0.0.1:abc"}))
-    for rejected in ("http://example.com", "https://example.com/path", "https://example.com@evil.test"):
+    for rejected in ("http://example.com", "https://example.com/path", "https://example.com@evil.test",
+                     "https://pharmacy.example\r\nX-Injected: yes", "https://pharmacy.example\t",
+                     "https://pharmacy.example\x00", "https://藥局.example"):
         with pytest.raises(ValueError):
             api.ApiState(token=TOKEN, port=8765, report_dir=tmp_path / "bad",
                          allowed_origins=frozenset({rejected}))
@@ -222,6 +224,19 @@ def test_exact_browser_preflight_has_no_data_access(tmp_path):
     thread.start()
     try:
         port = server.server_address[1]
+        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        connection.putrequest("OPTIONS", "/print", skip_host=True)
+        connection.putheader("Host", "127.0.0.1:8765")
+        connection.putheader("Origin", "http://127.0.0.1:3000", "X-Injected: yes")
+        connection.putheader("Access-Control-Request-Method", "POST")
+        connection.putheader("Access-Control-Request-Headers", "authorization, content-type")
+        connection.endheaders()
+        response = connection.getresponse()
+        assert response.status == 403
+        assert response.getheader("Access-Control-Allow-Origin") is None
+        assert response.getheader("X-Injected") is None
+        response.read()
+        connection.close()
         assert request(port, "OPTIONS", "/print", token=None,
                        origin="http://127.0.0.1:3000", preflight=True)[0] == 204
         assert request(port, "POST", "/print", PRINT, token=None,

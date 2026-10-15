@@ -120,6 +120,8 @@ class ApiState:
         if self.printing_enabled and (not self.target_address or not self.target_name or not TARGET_NAME.fullmatch(self.target_name)):
             raise ValueError("printing requires exact target address and advertised DL-720W(NEW) name")
         for origin in self.allowed_origins:
+            if not re.fullmatch(r"[\x21-\x7e]+", origin):
+                raise ValueError("allowed origins must contain printable ASCII only")
             parsed = urlsplit(origin)
             if (parsed.scheme not in ("http", "https") or not parsed.hostname
                     or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment
@@ -247,6 +249,11 @@ def make_handler(state: ApiState) -> type[BaseHTTPRequestHandler]:
             super().setup()
             self.connection.settimeout(5)
 
+        def _cors_origin(self) -> str | None:
+            requested = self.headers.get("Origin")
+            # Return the validated server configuration, never request bytes.
+            return next((allowed for allowed in state.allowed_origins if requested == allowed), None)
+
         def _respond(self, status: int, value: dict) -> None:
             body = _json_bytes(value)
             self.send_response(status)
@@ -254,8 +261,8 @@ def make_handler(state: ApiState) -> type[BaseHTTPRequestHandler]:
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
-            origin = self.headers.get("Origin")
-            if origin in state.allowed_origins:
+            origin = self._cors_origin()
+            if origin is not None:
                 self.send_header("Access-Control-Allow-Origin", origin)
                 self.send_header("Vary", "Origin")
             self.end_headers()
@@ -363,13 +370,13 @@ def make_handler(state: ApiState) -> type[BaseHTTPRequestHandler]:
             if self.headers.get("Host") != f"127.0.0.1:{state.port}":
                 self._respond(403, {"error": "host rejected"})
                 return
-            origin = self.headers.get("Origin")
+            origin = self._cors_origin()
             method = self.headers.get("Access-Control-Request-Method")
             headers = {part.strip().casefold() for part in self.headers.get("Access-Control-Request-Headers", "").split(",") if part.strip()}
             requested_path = urlsplit(self.path).path
             route_method = ((requested_path == "/print" and method == "POST")
                             or (requested_path in ("/status", "/printers") and method == "GET"))
-            if (origin not in state.allowed_origins or not route_method
+            if (origin is None or not route_method
                     or "authorization" not in headers or not headers <= {"authorization", "content-type"}):
                 self._respond(403, {"error": "preflight rejected"})
                 return
