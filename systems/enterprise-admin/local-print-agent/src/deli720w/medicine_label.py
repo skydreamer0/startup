@@ -24,8 +24,6 @@ SKU = re.compile(r"[A-Za-z0-9._-]{1,24}\Z")
 class MedicineIdentity:
     name: str
     english_name: str
-    strength: str
-    dosage_form: str
     generic_name: str
     nhi_code: str
     license_number: str
@@ -36,10 +34,10 @@ class MedicineIdentity:
     def from_payload(cls, payload: object) -> "MedicineIdentity":
         keys = set(cls.__dataclass_fields__)
         if not isinstance(payload, dict) or set(payload) != keys:
-            raise ValueError("medicine must contain exactly the nine identity fields")
+            raise ValueError("medicine must contain exactly the seven label fields")
         values = {}
-        limits = {"name": 80, "english_name": 120, "strength": 40, "dosage_form": 40,
-                  "generic_name": 120, "nhi_code": 40, "license_number": 120,
+        limits = {"name": 80, "english_name": 120, "generic_name": 120,
+                  "nhi_code": 40, "license_number": 120,
                   "sku": 24, "storage_location": 40}
         for key in keys:
             value = payload[key]
@@ -69,20 +67,31 @@ def _draw_fit(draw: ImageDraw.ImageDraw, x: int, y: int, text: str,
     raise ValueError("medicine label text does not fit the 50 x 30 mm layout")
 
 
+def _draw_fit_right(draw: ImageDraw.ImageDraw, right: int, y: int, text: str,
+                    max_width: int, max_height: int, start_size: int, min_size: int) -> None:
+    cjk = any(ord(char) > 127 for char in text)
+    for size in range(start_size, min_size - 1, -1):
+        font = _font(size, cjk=cjk)
+        box = draw.textbbox((0, 0), text, font=font)
+        width, height = box[2] - box[0], box[3] - box[1]
+        if width <= max_width and height <= max_height:
+            draw.text((right - width - box[0], y - box[1]), text, fill=0, font=font)
+            return
+    raise ValueError("medicine label text does not fit the 50 x 30 mm layout")
+
+
 def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Image.Image]:
     """Return (upright operator preview, physically accepted printer bitmap)."""
     canvas = Image.new("1", (WIDTH, HEIGHT), 1)
     draw = ImageDraw.Draw(canvas)
     left = 12
-    title = " ".join((identity.name, identity.strength, identity.dosage_form))
-    _draw_fit(draw, left, 10, title, 376, 27, 27, 17)
-    _draw_fit(draw, left, 45, identity.english_name, 376, 25, 24, 16)
-    _draw_fit(draw, left, 79, identity.generic_name, 376, 24, 22, 15)
-    draw.line((left, 109, 388, 109), fill=0, width=1)
-    _draw_fit(draw, left, 119, identity.nhi_code, 307, 21, 19, 13)
-    _draw_fit(draw, left, 146, identity.license_number, 307, 19, 17, 11)
-    _draw_fit(draw, left, 179, identity.sku, 305, 18, 16, 11)
-    _draw_fit(draw, left, 209, identity.storage_location, 305, 17, 15, 11)
+    _draw_fit(draw, left, 4, identity.name, 307, 44, 44, 20)
+    _draw_fit(draw, left, 52, identity.english_name, 307, 39, 39, 19)
+    _draw_fit(draw, left, 97, identity.generic_name, 376, 38, 38, 18)
+    draw.line((left, 142, 388, 142), fill=0, width=1)
+    _draw_fit(draw, left, 152, identity.nhi_code, 376, 32, 32, 16)
+    _draw_fit(draw, left, 190, identity.license_number, 376, 28, 28, 14)
+    _draw_fit_right(draw, 388, 220, identity.storage_location, 160, 17, 16, 10)
 
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, border=4, box_size=1)
     qr.add_data(identity.qr_payload)
@@ -94,5 +103,5 @@ def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Imag
     side = modules * module_size
     code = qr.make_image(fill_color="black", back_color="white").convert("1")
     code = code.resize((side, side), Image.Resampling.NEAREST)
-    canvas.paste(code, (329 + (64 - side) // 2, 162))
+    canvas.paste(code, (328 + (64 - side) // 2, 8))
     return canvas, canvas.transpose(Image.Transpose.ROTATE_180)

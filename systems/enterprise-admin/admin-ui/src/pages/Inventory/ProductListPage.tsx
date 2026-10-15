@@ -19,7 +19,6 @@ type ProductForm = {
     genericName: string;
     nhiCode: string;
     licenseNumber: string;
-    storageLocation: string;
     description: string;
     supplierId: string;
     costPrice: string;
@@ -46,7 +45,6 @@ const emptyProductForm: ProductForm = {
     genericName: '',
     nhiCode: '',
     licenseNumber: '',
-    storageLocation: '',
     description: '',
     supplierId: '',
     costPrice: '0',
@@ -187,7 +185,6 @@ export default function ProductListPage() {
             genericName: product.genericName ?? '',
             nhiCode: product.nhiCode ?? '',
             licenseNumber: product.licenseNumber ?? '',
-            storageLocation: product.storageLocation ?? '',
             description: product.description || '',
             supplierId: product.supplierId || product.supplier?.id || '',
             costPrice: String(product.costPrice),
@@ -214,7 +211,6 @@ export default function ProductListPage() {
             genericName: productForm.genericName.trim() || (editProduct ? null : undefined),
             nhiCode: productForm.nhiCode.trim() || (editProduct ? null : undefined),
             licenseNumber: productForm.licenseNumber.trim() || (editProduct ? null : undefined),
-            storageLocation: productForm.storageLocation.trim() || (editProduct ? null : undefined),
             description: productForm.description.trim() || undefined,
             supplierId: productForm.supplierId || undefined,
             costPrice: Number(productForm.costPrice),
@@ -415,11 +411,6 @@ export default function ProductListPage() {
                                     <label className="input-label" htmlFor="medicine-license-number">完整藥品許可證字號</label>
                                     <input id="medicine-license-number" className="input-field" maxLength={120} value={productForm.licenseNumber}
                                         onChange={(e) => setProductForm({ ...productForm, licenseNumber: e.target.value })} />
-                                </div>
-                                <div className="input-group">
-                                    <label className="input-label" htmlFor="medicine-storage-location">預設倉儲位置</label>
-                                    <input id="medicine-storage-location" className="input-field" maxLength={40} value={productForm.storageLocation}
-                                        onChange={(e) => setProductForm({ ...productForm, storageLocation: e.target.value })} />
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label">Description</label>

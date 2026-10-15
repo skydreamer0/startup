@@ -23,6 +23,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
     const closeRef = useRef(onClose);
     const busyRef = useRef(false);
     const [token, setToken] = useState('');
+    const [storageLocation, setStorageLocation] = useState('');
     const [preview, setPreview] = useState<LabelPreview | null>(null);
     const [job, setJob] = useState<LabelJob | null>(null);
     const [confirmed, setConfirmed] = useState(false);
@@ -74,29 +75,26 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
         medicine: {
             name: product.name,
             english_name: product.englishName ?? '',
-            strength: product.strength ?? '',
-            dosage_form: product.dosageForm ?? '',
             generic_name: product.genericName ?? '',
             nhi_code: product.nhiCode ?? '',
             license_number: product.licenseNumber ?? '',
             sku: product.sku,
-            storage_location: product.storageLocation ?? '',
+            storage_location: storageLocation.trim(),
         },
         trim_blank_bottom: false,
     };
     const missing = [
         !product.name.trim() && '中文品名', !product.englishName?.trim() && '英文商品名',
-        !product.strength?.trim() && '規格',
-        !product.dosageForm?.trim() && '劑型', !product.genericName?.trim() && '學名',
+        !product.genericName?.trim() && '學名',
         !product.nhiCode?.trim() && '健保碼', !product.licenseNumber?.trim() && '完整藥證',
-        !product.storageLocation?.trim() && '預設倉儲位置',
         !/^[A-Za-z0-9._-]{1,24}$/.test(product.sku) && '1–24 碼 ASCII SKU',
+        !storageLocation.trim() && '本次實際儲位',
     ].filter((item): item is string => Boolean(item));
     async function runPreview() {
         setBusy(true); setError(null);
         try {
             const result = await previewLabel(token.trim(), draft);
-            if (result.layout !== 'medicine-landscape-v3') throw new Error('本機代理版本不支援三行藥品標籤。');
+            if (result.layout !== 'medicine-landscape-v6') throw new Error('本機代理版本不支援右上 QR 藥品標籤。');
             setPreview(result);
         } catch (cause) {
             setError(cause instanceof Error ? cause.message : '無法產生預覽。');
@@ -122,24 +120,31 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
     return createPortal(<div ref={overlayRef} className="medicine-label-overlay">
         <div ref={dialogRef} className="medicine-label-dialog" role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
             <h2 id={`${id}-title`}>建立藥品標籤</h2>
-            <p>50 × 30 mm 三行藥品識別標籤 · DL-720W NEW。這是店內品項標籤，不含批次或效期；縮小的 QR 需實際掃描驗收。</p>
+            <p>50 × 30 mm 三行藥品識別標籤 · DL-720W NEW。SKU 只編入 QR，不印在紙面；這是店內品項標籤，不含批次或效期。QR 仍需實際掃描驗收。</p>
             <label htmlFor={`${id}-token`}>本機代理權杖</label>
             <input id={`${id}-token`} ref={tokenRef} type="password" autoComplete="off" value={token} disabled={!!job}
                 onChange={event => { setToken(event.target.value); setError(null); }} />
             <p className="medicine-label-help">從本機私有 token 檔取得；只在本視窗記憶，關閉後清除。</p>
+            <label htmlFor={`${id}-storage-location`}>本次實際儲位</label>
+            <input id={`${id}-storage-location`} value={storageLocation} maxLength={40}
+                disabled={busy || !!job || !!keyRef.current} placeholder="例如 A01-02"
+                onChange={event => {
+                    setStorageLocation(event.target.value); setPreview(null); setConfirmed(false); setError(null);
+                }} />
+            <p className="medicine-label-help">每次列印重新選擇；不會寫回商品或批次庫存。</p>
             <section aria-label="資料庫藥品標籤內容">
                 <dl className="medicine-label-fields">
-                    <dt>中文品名</dt><dd>{[product.name, product.strength, product.dosageForm].filter(Boolean).join(' ')}</dd>
+                    <dt>中文品名</dt><dd>{product.name}</dd>
                     <dt>英文商品名</dt><dd>{product.englishName || '未填'}</dd>
                     <dt>學名</dt><dd>{product.genericName || '未填'}</dd>
                     <dt>健保碼</dt><dd>{product.nhiCode || '未填'}</dd>
                     <dt>藥品許可證</dt><dd>{product.licenseNumber || '未填'}</dd>
                     <dt>SKU</dt><dd>{product.sku}</dd>
-                    <dt>預設倉儲位置</dt><dd>{product.storageLocation || '未填'}</dd>
+                    <dt>本次實際儲位</dt><dd>{storageLocation.trim() || '未填'}</dd>
                     <dt>QR 內容</dt><dd><code>P1:{product.sku}</code>（店內識別）</dd>
                 </dl>
             </section>
-            {missing.length > 0 && <p role="alert" className="medicine-label-error">商品資料尚缺：{missing.join('、')}。請關閉視窗並編輯商品，補齊後重新開啟。</p>}
+            {missing.length > 0 && <p role="alert" className="medicine-label-error">標籤資料尚缺：{missing.join('、')}。請補齊本次儲位；其他資料請至商品編輯頁更新後重新開啟。</p>}
             {!job && <div className="medicine-label-actions">
                 <button type="button" onClick={() => void runPreview()} disabled={busy || !token.trim() || missing.length > 0 || !!keyRef.current}>取得列印預覽雜湊</button>
                 <button type="button" onClick={onClose} disabled={busy}>關閉</button>

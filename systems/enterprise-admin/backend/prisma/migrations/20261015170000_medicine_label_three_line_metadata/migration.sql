@@ -1,4 +1,3 @@
--- Optional reviewed item name and default SKU storage position for the internal label.
+-- Optional reviewed English product name for the internal label.
 ALTER TABLE "products"
-  ADD COLUMN "english_name" TEXT,
-  ADD COLUMN "storage_location" TEXT;
+  ADD COLUMN "english_name" TEXT;

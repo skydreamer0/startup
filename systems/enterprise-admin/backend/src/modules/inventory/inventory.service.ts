@@ -97,7 +97,6 @@ export class InventoryService {
         genericName?: string;
         nhiCode?: string;
         licenseNumber?: string;
-        storageLocation?: string;
         costPrice: number;
         retailPrice: number;
         stockQuantity?: number;
@@ -118,7 +117,6 @@ export class InventoryService {
         genericName?: string | null;
         nhiCode?: string | null;
         licenseNumber?: string | null;
-        storageLocation?: string | null;
         costPrice?: number;
         retailPrice?: number;
         stockQuantity?: number;

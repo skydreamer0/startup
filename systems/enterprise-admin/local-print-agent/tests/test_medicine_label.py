@@ -11,9 +11,9 @@ from deli720w.tspl import pack_bitmap, serialize
 
 
 IDENTITY = MedicineIdentity(
-    name="示範藥品", english_name="Example Medicine", strength="10 mg", dosage_form="錠",
-    generic_name="Example ingredient 10 mg", nhi_code="XXXXXXXXXXXX",
-    license_number="衛部藥製字第XXXXXX號", sku="MED-000123", storage_location="A01-02",
+    name="安舒悅100毫克", english_name="Aclonac",
+    generic_name="Aceclofenac", nhi_code="AC58623100",
+    license_number="衛署藥製字第058623號", sku="TEST-MED-001", storage_location="TEST-A01-02",
 )
 
 
@@ -29,7 +29,12 @@ def test_landscape_preview_matches_operator_selected_physical_orientation():
 
 
 def test_internal_qr_identity_and_incomplete_or_oversized_content():
-    assert IDENTITY.qr_payload == "P1:MED-000123"
+    assert IDENTITY.qr_payload == "P1:TEST-MED-001"
+    other_sku = MedicineIdentity(**{**asdict(IDENTITY), "sku": "TEST-MED-002"})
+    first_preview, _ = render_medicine_label(IDENTITY)
+    second_preview, _ = render_medicine_label(other_sku)
+    assert first_preview.crop((0, 0, 320, 240)).tobytes() == second_preview.crop((0, 0, 320, 240)).tobytes()
+    assert first_preview.tobytes() != second_preview.tobytes()
     assert MedicineIdentity.from_payload(asdict(IDENTITY)) == IDENTITY
     for changed in ({"english_name": ""}, {"storage_location": ""}, {"nhi_code": ""},
                     {"sku": "P1:MED-000123"}, {"license_number": "bad\nline"}):

@@ -6,8 +6,6 @@ export type LabelDraft = {
   medicine: {
     name: string;
     english_name: string;
-    strength: string;
-    dosage_form: string;
     generic_name: string;
     nhi_code: string;
     license_number: string;
@@ -22,7 +20,7 @@ export type LabelPreview = {
   job_sha256: string;
   job_bytes: number;
   preview_png_base64: string;
-  layout: 'medicine-landscape-v3';
+  layout: 'medicine-landscape-v6';
   sent: false;
 };
 
