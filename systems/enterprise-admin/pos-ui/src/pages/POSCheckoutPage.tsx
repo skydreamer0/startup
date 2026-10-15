@@ -54,7 +54,9 @@ export default function POSCheckoutPage() {
   const [barcodeLookupStatus, setBarcodeLookupStatus] = useState<BarcodeLookupStatus>(null);
   const [showManualScan, setShowManualScan] = useState(false);
   const [showImageScan, setShowImageScan] = useState(false);
-  const [packageLookup, setPackageLookup] = useState<{ scan?: ScanResultV1 } | null>(null);
+  const [packageLookup, setPackageLookup] = useState<{ scan?: ScanResultV1; returnFocus?: HTMLElement | null } | null>(null);
+  const manualScanButton = useRef<HTMLButtonElement>(null);
+  const imageScanButton = useRef<HTMLButtonElement>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSplitModal, setShowSplitModal] = useState(false);
@@ -376,8 +378,8 @@ export default function POSCheckoutPage() {
           placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
           className="pos-search-input"
         />
-        <button type="button" className="pos-topbar-action" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
-        <button type="button" className="pos-topbar-action" disabled={scannerBlocked && !showImageScan} onClick={event => { event.currentTarget.focus(); setShowImageScan(true); }}>圖片掃碼</button>
+        <button ref={manualScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
+        <button ref={imageScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showImageScan} onClick={event => { event.currentTarget.focus(); setShowImageScan(true); }}>圖片掃碼</button>
         <button type="button" className="pos-topbar-action" disabled={scannerBlocked} onClick={event => { event.currentTarget.focus(); setPackageLookup({}); }}>包裝查找</button>
         <CustomerLookupPanel
           selectedCustomer={selectedCustomer}
@@ -460,9 +462,9 @@ export default function POSCheckoutPage() {
       </div>
       </fieldset>
 
-      {showManualScan && <ManualScanDialog onClose={() => setShowManualScan(false)} onLookup={scan => { setShowManualScan(false); setPackageLookup({ scan }); }} />}
-      {showImageScan && <ImageScanDialog onClose={() => setShowImageScan(false)} onLookup={scan => { setShowImageScan(false); setPackageLookup({ scan }); }} />}
-      {packageLookup && <PackageLookupDialog scan={packageLookup.scan} onClose={() => setPackageLookup(null)} />}
+      {showManualScan && <ManualScanDialog onClose={() => setShowManualScan(false)} onLookup={scan => { setShowManualScan(false); setPackageLookup({ scan, returnFocus: manualScanButton.current }); }} />}
+      {showImageScan && <ImageScanDialog onClose={() => setShowImageScan(false)} onLookup={scan => { setShowImageScan(false); setPackageLookup({ scan, returnFocus: imageScanButton.current }); }} />}
+      {packageLookup && <PackageLookupDialog scan={packageLookup.scan} returnFocus={packageLookup.returnFocus} onClose={() => setPackageLookup(null)} />}
       {showStaffModal && (
         <StaffSwitchModal
           staffList={staffList}

@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { StrictMode, useState } from 'react';
 import { AxiosError, type AxiosResponse } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PackageCandidate, PosProduct, ScanResultV1 } from '@pharmasaas/types';
@@ -189,7 +190,25 @@ describe('package lookup POS confirmation dialog', () => {
     expect(screen.getByRole('status')).toHaveTextContent('正在查找');
     expect(opener).toHaveAttribute('inert');
     unmount();
-    expect(signal.aborted).toBe(true); expect(opener).toHaveFocus(); expect(opener).not.toHaveAttribute('inert');
+    expect(signal.aborted).toBe(true); expect(opener).not.toHaveAttribute('inert');
+    await waitFor(() => expect(opener).toHaveFocus());
+  });
+
+  it('restores the caller trigger after handoff closes without StrictMode replay stealing focus', async () => {
+    const trigger = document.createElement('button'); trigger.disabled = true; document.body.append(trigger);
+    const focus = vi.spyOn(trigger, 'focus');
+    function Handoff() {
+      const [open, setOpen] = useState(true);
+      return open ? <PackageLookupDialog returnFocus={trigger} onClose={() => { trigger.disabled = false; setOpen(false); }} /> : null;
+    }
+    const view = render(<StrictMode><Handoff /></StrictMode>);
+    await act(async () => { await new Promise<void>(resolve => queueMicrotask(resolve)); });
+    expect(focus).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '關閉包裝查找' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(focus).toHaveBeenCalledOnce();
+    view.unmount(); trigger.remove();
   });
 
   it('blocks lookup while a checkout recovery intent is pending', async () => {

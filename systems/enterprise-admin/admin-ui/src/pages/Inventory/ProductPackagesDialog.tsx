@@ -19,7 +19,7 @@ function failure(error: unknown) {
 
 export default function ProductPackagesDialog({ productId, onClose }: { productId: string; onClose: () => void }) {
   const { user, loading, hasPermission } = useAuth();
-  return <PackagePanel key={`${user?.id}:${user?.permissions.join(',')}:${loading}`} productId={productId} onClose={onClose}
+  return <PackagePanel key={`${productId}:${user?.id}:${user?.permissions.join(',')}:${loading}`} productId={productId} onClose={onClose}
     userId={user?.id ?? ''} allowed={!loading && !!user && hasPermission('read:products')}
     editable={!loading && !!user && hasPermission('update:products')} />;
 }
@@ -143,9 +143,13 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
           {identifiers.map((identifier, index) => <div className="package-identifier" key={index}>
             <label>種類 {index + 1}<select aria-label={`識別碼種類 ${index + 1}`} value={identifier.namespace} onChange={event => setIdentifiers(identifiers.map((item, i) => i === index ? { ...item, namespace: event.target.value as PackageIdentifier['namespace'] } : item))}>
               <option value="MANUFACTURER">原廠碼</option><option value="GTIN">GTIN</option></select></label>
-            <label>識別碼 {index + 1}<textarea aria-label={`識別碼 ${index + 1}`} value={identifier.value} maxLength={256} required onChange={event => setIdentifiers(identifiers.map((item, i) => i === index ? { ...item, value: event.target.value } : item))} /></label>
+            <label>識別碼 {index + 1}<textarea aria-label={`識別碼 ${index + 1}`} value={identifier.value} maxLength={256} required
+              onChange={event => setIdentifiers(identifiers.map((item, i) => i === index ? { ...item, value: event.target.value } : item))}
+              onPaste={event => { event.preventDefault(); const value = event.clipboardData.getData('text/plain'); setIdentifiers(identifiers.map((item, i) => i === index ? { ...item, value } : item)); }} />
+              <code aria-label={`識別碼 ${index + 1} 原文`}>{JSON.stringify(identifier.value)}</code></label>
             <button type="button" className="btn btn-ghost" disabled={identifiers.length === 1} onClick={() => setIdentifiers(identifiers.filter((_, i) => i !== index))}>移除識別碼 {index + 1}</button>
           </div>)}
+          <p>識別碼貼上會取代整段內容；引號內為 JSON 原文表示，請核對前後空白與跳脫字元。</p>
           <button type="button" className="btn btn-ghost" disabled={identifiers.length >= 50} onClick={() => setIdentifiers([...identifiers, { namespace: 'MANUFACTURER', value: '' }])}>新增識別碼</button>
           <button type="submit" className="btn btn-primary">{pending ? '儲存中…' : '確認覆核並儲存新 revision'}</button>
         </fieldset>

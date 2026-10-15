@@ -101,6 +101,24 @@ describe('tenant-reviewed product package maintenance', () => {
     expect(screen.getByLabelText('包裝名稱')).toHaveValue('新原廠盒');
   });
 
+  it('replaces the full identifier from pasted text and submits the exact CRLF literal', async () => {
+    setup();
+    await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）');
+    fireEvent.click(screen.getByRole('button', { name: '新增獨立包裝' }));
+    fillNewDraft();
+    const original = ' 00Ab\r\n ';
+    fireEvent.paste(screen.getByLabelText('識別碼 1'), {
+      clipboardData: { getData: vi.fn(() => original) },
+    });
+    expect(screen.getByLabelText('識別碼 1 原文')).toHaveTextContent(JSON.stringify(original));
+    apiMock.create.mockResolvedValue({ data: { success: true } });
+    fireEvent.click(screen.getByRole('button', { name: '確認覆核並儲存新 revision' }));
+    await waitFor(() => expect(productPackagesApi.create).toHaveBeenCalledOnce());
+    expect(vi.mocked(productPackagesApi.create).mock.calls[0][1].identifiers).toEqual([
+      { namespace: 'MANUFACTURER', value: original },
+    ]);
+  });
+
   it('creates a new immutable revision from selected history and sends the expected revision', async () => {
     setup();
     await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）');
@@ -153,6 +171,23 @@ describe('tenant-reviewed product package maintenance', () => {
     await waitFor(() => expect(productPackagesApi.list).toHaveBeenCalledWith('product-b', expect.any(AbortSignal)));
     expect(productPackagesApi.list).toHaveBeenLastCalledWith('product-b', expect.any(AbortSignal));
     expect(screen.queryByDisplayValue('private draft')).not.toBeInTheDocument();
+  });
+
+  it('discards a draft when the same reviewer switches to a different product', async () => {
+    const context = auth();
+    const view = setup(context);
+    await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）');
+    fireEvent.click(screen.getByRole('button', { name: '新增獨立包裝' }));
+    fireEvent.change(screen.getByLabelText('包裝名稱'), { target: { value: 'product-a private draft' } });
+    apiMock.list.mockImplementation(async (id: string) => ({
+      product: { ...history.product, id, name: '商品 B' }, packages: [],
+    }));
+    view.rerenderWith(context, 'product-b');
+    expect(await screen.findByText('商品 B · SKU SKU-001')).toBeInTheDocument();
+    expect(productPackagesApi.list).toHaveBeenLastCalledWith('product-b', expect.any(AbortSignal));
+    expect(screen.queryByDisplayValue('product-a private draft')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '新增包裝草稿' })).toBeInTheDocument();
+    expect(screen.getByLabelText('包裝名稱')).toHaveValue('');
   });
 
   it('shows query failures and restores the opener on close', async () => {

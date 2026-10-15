@@ -18,13 +18,14 @@ function failureMessage(error: unknown) {
   return '包裝查找或確認失敗，購物車未變更。請重試或回到商品搜尋。';
 }
 
-export default function PackageLookupDialog({ onClose, scan }: { onClose: () => void; scan?: ScanResultV1 }) {
+export default function PackageLookupDialog({ onClose, scan, returnFocus }: { onClose: () => void; scan?: ScanResultV1; returnFocus?: HTMLElement | null }) {
   const proposal = gs1Proposal(scan);
   const id = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const closeRef = useRef(onClose);
+  const returnFocusRef = useRef(returnFocus);
   const request = useRef(0);
   const abort = useRef<AbortController | null>(null);
   const busy = useRef(false);
@@ -44,7 +45,7 @@ export default function PackageLookupDialog({ onClose, scan }: { onClose: () => 
     invalid.current = false;
     const dialog = dialogRef.current!;
     const overlay = overlayRef.current!;
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const opener = returnFocusRef.current ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     const backgrounds = Array.from(document.body.children)
       .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== overlay)
       .map(element => ({ element, inert: element.getAttribute('inert'), hidden: element.getAttribute('aria-hidden') }));
@@ -91,7 +92,11 @@ export default function PackageLookupDialog({ onClose, scan }: { onClose: () => 
         if (inert === null) element.removeAttribute('inert'); else element.setAttribute('inert', inert);
         if (hidden === null) element.removeAttribute('aria-hidden'); else element.setAttribute('aria-hidden', hidden);
       }
-      if (opener?.isConnected && !opener.matches(':disabled') && !opener.closest('[inert]')) opener.focus();
+      // A handoff's toolbar button becomes enabled in the closing commit. Wait
+      // for that commit, and do not steal focus during StrictMode's replay.
+      queueMicrotask(() => {
+        if (!overlay.isConnected && opener?.isConnected && !opener.matches(':disabled') && !opener.closest('[inert]')) opener.focus();
+      });
     };
   }, []);
 
@@ -157,6 +162,7 @@ export default function PackageLookupDialog({ onClose, scan }: { onClose: () => 
           onSelect={() => void confirm(row)}>
           <span className="block"><strong>{row.label}</strong> · {row.contents}</span>
           <span className="block">{row.unitsPerPackage === null ? '換算未知：禁止加車' : `確認加入 1 個包裝 = ${row.unitsPerPackage} ${row.stockUnitLabel}`}</span>
+          <span className="block text-sm">售價以每庫存單位計算，加車後按換算數量計價。</span>
           <span className="block text-sm">包裝 {row.packageId} · revision {row.revision} · 來源 {row.source}</span>
         </BarcodeCandidateButton>
       </li>)}</ul>}

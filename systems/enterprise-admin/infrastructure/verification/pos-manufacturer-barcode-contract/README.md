@@ -4,9 +4,9 @@ Status: implementation candidate on `codex/product-package-lookup`, based on `a5
 
 ## Local execution
 
-Node22.22.3, canonical npm11.21.0 / pnpm10.34.6 locked installs; no dependency/lockfile changes. LUNA checks: backend build/lint and focused tests passed; Admin full 203 tests and POS full 581 tests passed; both UI builds, Admin lint, shared typecheck and context validation passed. Full backend attempt: 338 passed, 38 failed due to absent DATABASE_URL/JWT configuration, 77 skipped; this is not a passing full suite. The hosted CI supplies its owned synthetic database/configuration.
+Node22.22.3, canonical npm11.21.0 / pnpm10.34.6 locked installs; no dependency/lockfile changes. LUNA checks: backend build/lint and focused tests passed; Admin full 205 tests and POS full 582 tests passed; both UI builds, Admin lint, shared typecheck and context validation passed. Full backend attempt: 338 passed, 38 failed due to absent DATABASE_URL/JWT configuration, 77 skipped; this is not a passing full suite. The hosted CI supplies its owned synthetic database/configuration.
 
-Native PostgreSQL and real browser acceptance: **NOT RUN locally**; Windows Docker daemon unavailable. Ten opt-in package native skips are not evidence. No ambient/production/preview database is permitted. Final exact-head CI and artifact links must be recorded after execution.
+Native PostgreSQL and real browser acceptance: **NOT RUN locally**; Windows Docker daemon unavailable. Ten opt-in package native skips are not evidence. No ambient/production/preview database is permitted. Hosted native package cases passed 10/10 with zero skips at `dad0ce1b84655101bd36a1ad034f92ccf7c5892f` in [run 38793624241](https://github.com/skydreamer0/startup/actions/runs/38793624241). That head predates subsequent literal-preservation/focus fixes; final exact-head CI and browser artifacts remain required and are recorded in PR #142.
 
 ## Native acceptance protocol
 
@@ -14,7 +14,7 @@ Native PostgreSQL and real browser acceptance: **NOT RUN locally**; Windows Dock
 
 Cases cover literal codes, namespaces/tenant conflicts, full-dataset lookup, zero stock, validity boundaries, multiple packages/product, retirement/new revision, concurrent stale writes, composite tenant FKs, immutable/sealed history/stock unit, authenticated HTTP and no inventory/order/payment/receipt side effects. Mocked failures remain separate evidence.
 
-`backend/scripts/package-browser-acceptance.mjs` follows existing category/stock acceptance. Current built Admin/POS→production API→owned PG15 uses fixture-issued JWT and 1366/1024/390px Chromium viewports. Admin creates three ambiguous packages, POS blocks unknown conversion, keyboard confirms reviewed quantity; admin retires the mapping and stale POS choice gets 409 without another add. Long Chinese text, 44px candidate geometry, close/focus recovery and unchanged business snapshots are checked. Login UI and hardware are excluded.
+`backend/scripts/package-browser-acceptance.mjs` follows existing category/stock acceptance. Current built Admin/POS→production API→owned PG15 uses fixture-issued JWT and 1366/1024/390px Chromium viewports. Admin creates three ambiguous packages, POS blocks unknown conversion, keyboard confirms reviewed quantity; admin retires the mapping and stale POS choice gets 409 without another add. Long Chinese text, 44px candidate geometry, direct and manual-input handoff close/focus recovery, literal preservation and unchanged business snapshots are checked. Login UI and hardware are excluded.
 
 Inspect `package-native-<head>-<attempt>` and `pos-sku-<head>-<attempt>` artifacts: source/hash identity, case reports, request ledger, screenshots, before/after row counts and quiescent process cleanup. All current pipeline/security checks must pass for the same PR head. Historical UI evidence does not validate this interface.
 

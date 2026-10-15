@@ -176,9 +176,21 @@ try {
     await expect(lookup.getByText('包裝對照已變更或失效，請重新查找。', { exact: true })).toBeVisible();
     await expect(pos.locator('.pos-cart-panel').getByText('共 3 件商品', { exact: true })).toBeVisible();
     await lookup.getByRole('button', { name: '關閉包裝查找', exact: true }).click(); await expect(open).toBeFocused();
+    const manualOpen = pos.getByRole('button', { name: '手動貼碼', exact: true });
+    await manualOpen.click();
+    const manual = pos.getByRole('dialog', { name: '手動貼碼', exact: true });
+    await manual.getByRole('textbox', { name: '掃描文字', exact: true }).fill(code);
+    await manual.getByRole('button', { name: '檢視掃描結果', exact: true }).click();
+    await manual.getByRole('button', { name: '使用這段原碼查找商品／包裝', exact: true }).click();
+    await expect(lookup.getByRole('textbox', { name: '原始識別碼', exact: true })).toHaveValue(code);
+    await lookup.getByRole('button', { name: '查找完全相符包裝', exact: true }).click();
+    await expect(lookup.getByText('找到 2 個包裝；請核對後人工確認。', { exact: true })).toBeVisible();
+    await expect(pos.locator('.pos-cart-panel').getByText('共 3 件商品', { exact: true })).toBeVisible();
+    await lookup.getByRole('button', { name: '關閉包裝查找', exact: true }).click();
+    await expect(manualOpen).toBeFocused();
     assert.deepEqual(await business(), baseline);
     cases.push({ viewport, status: 'passed', manualConfirmation: true, unknownConversionBlocked: true, ambiguity: 3,
-      confirmedBaseQuantity: 3, staleRevisionRejected: true, backendBusinessUnchanged: true, geometry });
+      confirmedBaseQuantity: 3, staleRevisionRejected: true, manualHandoff: true, handoffFocusRestored: true, backendBusinessUnchanged: true, geometry });
     await context.close();
   }
   assert.equal(forbidden.length, 0); assert.equal(cases.length, 3);
