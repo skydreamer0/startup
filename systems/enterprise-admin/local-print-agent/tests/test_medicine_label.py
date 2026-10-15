@@ -39,8 +39,25 @@ def test_internal_qr_identity_and_incomplete_or_oversized_content():
     assert first_preview.tobytes() != second_preview.tobytes()
     assert MedicineIdentity.from_payload(asdict(IDENTITY)) == IDENTITY
     for changed in ({"english_name": ""}, {"storage_location": ""}, {"nhi_code": ""},
-                    {"sku": "P1:MED-000123"}, {"license_number": "bad\nline"}):
+                    {"sku": "P1:MED-000123"}, {"license_number": "bad\nline"},
+                    {"name": "測試\u2028換行"}):
         with pytest.raises(ValueError):
             MedicineIdentity.from_payload({**asdict(IDENTITY), **changed})
-    with pytest.raises(ValueError, match="does not fit"):
-        render_medicine_label(MedicineIdentity(**{**asdict(IDENTITY), "name": "過長藥品名稱" * 8}))
+
+
+def test_long_top_lines_shrink_independently_or_identify_unprintable_field():
+    for field, value in (
+        ("name", "測試用超長中文藥品名稱一百毫克錠"),
+        ("english_name", "Example Extended Release Tablets"),
+        ("generic_name", "Exampleaceclofenaclongname"),
+    ):
+        preview, _ = render_medicine_label(MedicineIdentity(**{**asdict(IDENTITY), field: value}))
+        assert preview.size == (400, 240)
+
+    for field, label, value in (
+        ("name", "中文品名", "過長藥品名稱" * 8),
+        ("english_name", "英文商品名", "LongEnglishName" * 12),
+        ("generic_name", "學名", "LongGenericName" * 12),
+    ):
+        with pytest.raises(ValueError, match=f"{label}過長"):
+            render_medicine_label(MedicineIdentity(**{**asdict(IDENTITY), field: value}))

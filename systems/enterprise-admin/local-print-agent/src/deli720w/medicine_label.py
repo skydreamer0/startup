@@ -42,7 +42,8 @@ class MedicineIdentity:
         for key in keys:
             value = payload[key]
             if (not isinstance(value, str) or not value or value != value.strip()
-                    or len(value) > limits[key] or any(ord(char) < 32 for char in value)):
+                    or len(value) > limits[key] or len(value.splitlines()) != 1
+                    or any(ord(char) < 32 for char in value)):
                 raise ValueError(f"medicine.{key} must be nonempty reviewed single-line text")
             values[key] = value
         if not SKU.fullmatch(values["sku"]):
@@ -56,7 +57,7 @@ class MedicineIdentity:
 
 def _draw_fit(draw: ImageDraw.ImageDraw, x: int, y: int, text: str,
               max_width: int, max_height: int, start_size: int, min_size: int,
-              *, fill: int = 0) -> None:
+              *, field: str, fill: int = 0) -> None:
     cjk = any(ord(char) > 127 for char in text)
     for size in range(start_size, min_size - 1, -1):
         font = _font(size, cjk=cjk)
@@ -64,11 +65,12 @@ def _draw_fit(draw: ImageDraw.ImageDraw, x: int, y: int, text: str,
         if box[2] - box[0] <= max_width and box[3] - box[1] <= max_height:
             draw.text((x, y - box[1]), text, fill=fill, font=font)
             return
-    raise ValueError("medicine label text does not fit the 50 x 30 mm layout")
+    raise ValueError(f"{field}過長，50 × 30 mm 標籤無法以可讀字體完整顯示；請縮短內容")
 
 
 def _draw_fit_right(draw: ImageDraw.ImageDraw, right: int, y: int, text: str,
-                    max_width: int, max_height: int, start_size: int, min_size: int) -> None:
+                    max_width: int, max_height: int, start_size: int, min_size: int,
+                    *, field: str) -> None:
     cjk = any(ord(char) > 127 for char in text)
     for size in range(start_size, min_size - 1, -1):
         font = _font(size, cjk=cjk)
@@ -77,7 +79,7 @@ def _draw_fit_right(draw: ImageDraw.ImageDraw, right: int, y: int, text: str,
         if width <= max_width and height <= max_height:
             draw.text((right - width - box[0], y - box[1]), text, fill=0, font=font)
             return
-    raise ValueError("medicine label text does not fit the 50 x 30 mm layout")
+    raise ValueError(f"{field}過長，50 × 30 mm 標籤無法以可讀字體完整顯示；請縮短內容")
 
 
 def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Image.Image]:
@@ -85,14 +87,15 @@ def render_medicine_label(identity: MedicineIdentity) -> tuple[Image.Image, Imag
     canvas = Image.new("1", (WIDTH, HEIGHT), 1)
     draw = ImageDraw.Draw(canvas)
     left = 12
-    _draw_fit(draw, left, 2, identity.name, 307, 46, 46, 20)
-    _draw_fit(draw, left, 51, identity.english_name, 307, 41, 41, 19)
-    _draw_fit(draw, left, 97, identity.generic_name, 307, 40, 40, 18)
+    # The first row is entirely above QR; the next two reserve its right column.
+    _draw_fit(draw, left, 2, identity.name, 376, 46, 46, 20, field="中文品名")
+    _draw_fit(draw, left, 51, identity.english_name, 307, 41, 41, 19, field="英文商品名")
+    _draw_fit(draw, left, 97, identity.generic_name, 307, 40, 40, 18, field="學名")
     divider_y = 143
     draw.line((left, divider_y, 388, divider_y), fill=0, width=1)
-    _draw_fit(draw, left, 153, identity.license_number, 376, 32, 32, 14)
-    _draw_fit(draw, left, 197, identity.nhi_code, 245, 35, 35, 16)
-    _draw_fit_right(draw, 388, 209, identity.storage_location, 120, 17, 16, 10)
+    _draw_fit(draw, left, 153, identity.license_number, 376, 32, 32, 14, field="藥品許可證")
+    _draw_fit(draw, left, 197, identity.nhi_code, 245, 35, 35, 16, field="健保碼")
+    _draw_fit_right(draw, 388, 209, identity.storage_location, 120, 17, 16, 10, field="儲位")
 
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, border=4, box_size=1)
     qr.add_data(identity.qr_payload)

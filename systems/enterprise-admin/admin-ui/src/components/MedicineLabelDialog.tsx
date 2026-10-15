@@ -94,7 +94,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
         setBusy(true); setError(null);
         try {
             const result = await previewLabel(token.trim(), draft);
-            if (result.layout !== 'medicine-landscape-v8') throw new Error('本機代理版本不支援新版藥品標籤。');
+            if (result.layout !== 'medicine-landscape-v9') throw new Error('本機代理版本不支援長名稱自動縮字。');
             setPreview(result);
         } catch (cause) {
             setError(cause instanceof Error ? cause.message : '無法產生預覽。');
@@ -120,7 +120,7 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
     return createPortal(<div ref={overlayRef} className="medicine-label-overlay">
         <div ref={dialogRef} className="medicine-label-dialog" role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
             <h2 id={`${id}-title`}>建立藥品標籤</h2>
-            <p>50 × 30 mm 三行藥品識別標籤 · DL-720W NEW。SKU 只編入 QR，不印在紙面；這是店內品項標籤，不含批次或效期。QR 仍需實際掃描驗收。</p>
+            <p>50 × 30 mm 三行藥品識別標籤 · DL-720W NEW。上方三行名稱會各自縮字以完整顯示；過長而無法清楚印出時會拒絕預覽，不裁字。SKU 只編入 QR，不印在紙面；這是店內品項標籤，不含批次或效期。QR 仍需實際掃描驗收。</p>
             <label htmlFor={`${id}-token`}>本機代理權杖</label>
             <input id={`${id}-token`} ref={tokenRef} type="password" autoComplete="off" value={token} disabled={!!job}
                 onChange={event => { setToken(event.target.value); setError(null); }} />

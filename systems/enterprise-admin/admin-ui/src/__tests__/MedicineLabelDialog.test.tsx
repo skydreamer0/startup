@@ -16,7 +16,7 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 it('requires a matching preview and operator confirmation before one local print', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240, job_sha256: 'a'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v8' }) });
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240, job_sha256: 'a'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v9' }) });
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ job: { job_id: 'job-1', status: 'queued', job_sha256: 'a'.repeat(64), physical_print_verified: false } }) });
     render(<MedicineLabelDialog product={product} onClose={vi.fn()} />);
     expect(screen.getByLabelText('資料庫藥品標籤內容')).toHaveTextContent('測試藥品');
@@ -50,9 +50,20 @@ it('blocks preview when a required medicine field is missing', async () => {
     await waitFor(() => expect(fetchMock).not.toHaveBeenCalled());
 });
 
+it('shows the named overlong field and keeps printing unavailable', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 400, json: async () => ({ error: '中文品名過長，50 × 30 mm 標籤無法以可讀字體完整顯示；請縮短內容' }) });
+    render(<MedicineLabelDialog product={{ ...product, name: '過長藥品名稱'.repeat(8) }} onClose={vi.fn()} />);
+    fireEvent.change(screen.getByLabelText('本機代理權杖'), { target: { value: 'local-secret' } });
+    fireEvent.change(screen.getByLabelText('本次實際儲位'), { target: { value: 'A01-02' } });
+    fireEvent.click(screen.getByRole('button', { name: '取得列印預覽雜湊' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('中文品名過長');
+    expect(screen.queryByRole('button', { name: '確認送印一張' })).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
 it('invalidates the approved preview when the print-time location changes', async () => {
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'dry_run', sent: false, job_bytes: 240,
-        job_sha256: 'b'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v8' }) });
+        job_sha256: 'b'.repeat(64), preview_png_base64: png, layout: 'medicine-landscape-v9' }) });
     render(<MedicineLabelDialog product={product} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('本機代理權杖'), { target: { value: 'local-secret' } });
     fireEvent.change(screen.getByLabelText('本次實際儲位'), { target: { value: 'A01-02' } });
