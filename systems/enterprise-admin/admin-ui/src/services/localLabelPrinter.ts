@@ -3,10 +3,16 @@ const BASE = 'http://127.0.0.1:8765';
 export type LabelDraft = {
   width_mm: 30;
   height_mm: 50;
-  text: string[];
-  qr?: string;
-  code128?: string;
-  trim_blank_bottom: true;
+  medicine: {
+    name: string;
+    strength: string;
+    dosage_form: string;
+    generic_name: string;
+    nhi_code: string;
+    license_number: string;
+    sku: string;
+  };
+  trim_blank_bottom: false;
 };
 
 export type LabelPreview = {
@@ -14,6 +20,7 @@ export type LabelPreview = {
   job_sha256: string;
   job_bytes: number;
   preview_png_base64: string;
+  layout: 'medicine-landscape-v1';
   sent: false;
 };
 

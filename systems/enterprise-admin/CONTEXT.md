@@ -43,6 +43,7 @@
 - Read the relevant module `MODULE.md` before opening module source files.
 - Prefer nearest source files after selecting a task route.
 - Medicine/product label printing starts at the admin product list and calls the workstation's loopback agent; see ADR-023 and `local-print-agent/README.md`. POS receipt printing remains separate.
+- Product's optional medicine identity fields (strength, dosage form, generic name, NHI code and complete licence number) live in Prisma and the inventory product API contract. Existing values are nullable; the label workflow requires reviewed values and encodes only `P1:<SKU>` for internal product identity, not a stock batch or manufacturer code.
 
 ## End-of-work context rules
 

@@ -42,7 +42,7 @@
 
 ### Change medicine/product labels
 
-`pages/Inventory/ProductListPage.tsx` opens `components/MedicineLabelDialog.tsx` for a selected Product. The dialog calls the workstation-only `services/localLabelPrinter.ts`; the Python contract and installation live in `../local-print-agent/README.md` and ADR-023. Product name/SKU are draft inputs, QR is manual, and no Code128 is produced. Never store the local token in a frontend bundle or browser persistence, infer physical success from BLE ACK, or route the workstation request through the cloud API. Exact store origin/browser permission and local-API physical output remain acceptance gates.
+`pages/Inventory/ProductListPage.tsx` edits Product's optional medicine identity fields and opens `components/MedicineLabelDialog.tsx` for a selected Product. The dialog requires reviewed name, strength, dosage form, generic name, NHI code, full licence number and valid SKU, then calls the workstation-only `services/localLabelPrinter.ts`. The Python contract and installation live in `../local-print-agent/README.md` and ADR-023. Its QR is `P1:<SKU>` for internal product identity; no Code128 or lot identity is produced. Never store the local token in a frontend bundle or browser persistence, infer physical success from BLE ACK, or route the workstation request through the cloud API. Exact store origin/browser permission and local-API physical output remain acceptance gates.
 
 ### Change an API client
 

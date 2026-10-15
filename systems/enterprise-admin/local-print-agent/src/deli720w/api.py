@@ -23,6 +23,7 @@ from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
 from .raster import Label, render
+from .medicine_label import MedicineIdentity, render_medicine_label
 from .tspl import serialize
 from .transport import MAX_JOB_BYTES, send_approved_job
 
@@ -33,7 +34,7 @@ IDEMPOTENCY = re.compile(r"[A-Za-z0-9_-]{16,128}\Z")
 TARGET_NAME = re.compile(r"DL-720W\(NEW\)[0-9A-Fa-f]{4}\Z")
 ALLOWED_PRINT_FIELDS = frozenset({
     "width_mm", "height_mm", "text", "qr", "code128", "trim_blank_bottom",
-    "send", "copies", "approved_sha256", "idempotency_key",
+    "send", "copies", "approved_sha256", "idempotency_key", "medicine",
 })
 
 
@@ -71,12 +72,24 @@ def _parse_print_request(payload: object) -> tuple[bytes, dict, bool, int, str |
     copies = payload.get("copies", 1)
     if type(trim) is not bool or type(send) is not bool or type(copies) is not int or copies not in (1, 2):
         raise ValueError("trim_blank_bottom/send must be booleans and copies must be 1 or 2")
-    label = Label(float(payload["width_mm"]), float(payload["height_mm"]), 203,
-                  tuple(lines), payload.get("qr"), payload.get("code128"))
-    image = render(label)
-    job, metadata = serialize(label, image=image, trim_blank_bottom=trim)
+    if "medicine" in payload:
+        if any(key in payload for key in ("text", "qr", "code128")):
+            raise ValueError("medicine layout cannot mix with free text or symbols")
+        if payload["width_mm"] != 30 or payload["height_mm"] != 50:
+            raise ValueError("medicine layout requires physical 30 x 50 mm stock")
+        identity = MedicineIdentity.from_payload(payload["medicine"])
+        preview_image, physical_image = render_medicine_label(identity)
+        label = Label(30, 50, 203, (identity.name,))
+        job, metadata = serialize(label, image=physical_image, trim_blank_bottom=trim)
+        metadata["layout"] = "medicine-landscape-v1"
+    else:
+        label = Label(float(payload["width_mm"]), float(payload["height_mm"]), 203,
+                      tuple(lines), payload.get("qr"), payload.get("code128"))
+        preview_image = render(label)
+        job, metadata = serialize(label, image=preview_image, trim_blank_bottom=trim)
+        metadata["layout"] = "general-v1"
     preview = BytesIO()
-    image.save(preview, format="PNG")
+    preview_image.save(preview, format="PNG")
     metadata["preview_png_base64"] = base64.b64encode(preview.getvalue()).decode("ascii")
     approved = payload.get("approved_sha256")
     key = payload.get("idempotency_key")
@@ -318,7 +331,8 @@ def make_handler(state: ApiState) -> type[BaseHTTPRequestHandler]:
                     self._respond(200, {"status": "dry_run", "job_sha256": digest,
                         "job_bytes": len(job), "bitmap_height_dots": metadata["bitmap_height_dots"],
                         "copies": copies, "sent": False,
-                        "preview_png_base64": metadata["preview_png_base64"]})
+                        "preview_png_base64": metadata["preview_png_base64"],
+                        "layout": metadata["layout"]})
                     return
                 if not state.printing_enabled:
                     self._respond(403, {"error": "printing disabled at server startup"})

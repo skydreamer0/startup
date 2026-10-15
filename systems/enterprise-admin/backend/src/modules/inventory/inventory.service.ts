@@ -91,6 +91,11 @@ export class InventoryService {
     static async createProduct(data: {
         sku: string;
         name: string;
+        strength?: string;
+        dosageForm?: string;
+        genericName?: string;
+        nhiCode?: string;
+        licenseNumber?: string;
         costPrice: number;
         retailPrice: number;
         stockQuantity?: number;
@@ -103,7 +108,13 @@ export class InventoryService {
     }
 
     static async updateProduct(id: string, data: {
+        sku?: string;
         name?: string;
+        strength?: string | null;
+        dosageForm?: string | null;
+        genericName?: string | null;
+        nhiCode?: string | null;
+        licenseNumber?: string | null;
         costPrice?: number;
         retailPrice?: number;
         stockQuantity?: number;

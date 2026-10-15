@@ -40,7 +40,10 @@
 .medicine-label-help { font-size: 0.875rem; color: var(--text-muted); }
 .medicine-label-dialog section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
 .medicine-label-dialog pre { white-space: pre-wrap; overflow-wrap: anywhere; }
-.medicine-label-preview { display: block; width: 240px; max-width: 100%; image-rendering: pixelated; border: 1px solid var(--border); }
+.medicine-label-preview { display: block; width: 400px; max-width: 100%; image-rendering: pixelated; border: 1px solid var(--border); }
+.medicine-label-fields { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 14px; margin: 0; }
+.medicine-label-fields dt { color: var(--text-muted); }
+.medicine-label-fields dd { margin: 0; overflow-wrap: anywhere; font-weight: 600; }
 .medicine-label-confirm { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
 .medicine-label-confirm input { width: 22px; height: 22px; }
 .medicine-label-error { color: var(--danger); }

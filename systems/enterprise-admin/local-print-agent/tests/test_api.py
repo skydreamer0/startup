@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from dataclasses import asdict
 import base64
 import http.client
 from http.server import ThreadingHTTPServer
@@ -13,6 +14,7 @@ import threading
 import pytest
 
 from deli720w import api
+from deli720w.medicine_label import MedicineIdentity
 
 
 TOKEN = "A" * 43
@@ -84,6 +86,21 @@ def test_default_off_dry_run_hash_and_no_enqueue(tmp_path):
         assert request(port, "POST", "/print", attempted)[0] == 403
         assert state.jobs.qsize() == 0
         assert not list(tmp_path.iterdir())
+
+
+def test_medicine_preview_is_landscape_and_same_approved_job(tmp_path):
+    identity = MedicineIdentity("示範藥品", "10 mg", "錠", "Example ingredient", "NHI-001", "衛部藥製字第000001號", "MED-000123")
+    payload = {"width_mm": 30, "height_mm": 50, "medicine": asdict(identity), "trim_blank_bottom": False}
+    with local_server(tmp_path, printing=True) as (state, port):
+        code, preview = request(port, "POST", "/print", payload)
+        assert code == 200 and preview["layout"] == "medicine-landscape-v1"
+        assert base64.b64decode(preview["preview_png_base64"]).startswith(b"\x89PNG\r\n\x1a\n")
+        assert request(port, "POST", "/print", {**payload, "width_mm": 50})[0] == 400
+        assert request(port, "POST", "/print", {**payload, "qr": "other"})[0] == 400
+        code, result = request(port, "POST", "/print", {**payload, "send": True,
+            "approved_sha256": preview["job_sha256"], "idempotency_key": "medicine-label-request-001"})
+        assert code == 202 and result["job"]["job_sha256"] == preview["job_sha256"]
+        assert state.jobs.qsize() == 1
 
 
 def test_exact_hash_idempotency_and_conflict_before_queue(tmp_path):

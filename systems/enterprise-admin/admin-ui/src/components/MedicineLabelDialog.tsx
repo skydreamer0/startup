@@ -23,17 +23,12 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
     const closeRef = useRef(onClose);
     const busyRef = useRef(false);
     const [token, setToken] = useState('');
-    const [name, setName] = useState(product.name);
-    const [sku, setSku] = useState(product.sku);
-    const [extra, setExtra] = useState('');
-    const [qr, setQr] = useState('');
     const [preview, setPreview] = useState<LabelPreview | null>(null);
     const [job, setJob] = useState<LabelJob | null>(null);
     const [confirmed, setConfirmed] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const keyRef = useRef<string | null>(null);
-    const draftRevisionRef = useRef(0);
     useLayoutEffect(() => { closeRef.current = onClose; }, [onClose]);
     useLayoutEffect(() => { busyRef.current = busy; }, [busy]);
 
@@ -76,21 +71,31 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
 
     const draft: LabelDraft = {
         width_mm: 30, height_mm: 50,
-        text: [name, sku && `SKU ${sku}`, extra].filter(Boolean),
-        ...(qr ? { qr } : {}), trim_blank_bottom: true,
+        medicine: {
+            name: product.name,
+            strength: product.strength ?? '',
+            dosage_form: product.dosageForm ?? '',
+            generic_name: product.genericName ?? '',
+            nhi_code: product.nhiCode ?? '',
+            license_number: product.licenseNumber ?? '',
+            sku: product.sku,
+        },
+        trim_blank_bottom: false,
     };
-    function change(set: (value: string) => void, value: string) {
-        draftRevisionRef.current += 1;
-        set(value); setPreview(null); setConfirmed(false); setError(null);
-    }
+    const missing = [
+        !product.name.trim() && '藥品名稱', !product.strength?.trim() && '規格',
+        !product.dosageForm?.trim() && '劑型', !product.genericName?.trim() && '學名',
+        !product.nhiCode?.trim() && '健保碼', !product.licenseNumber?.trim() && '完整藥證',
+        !/^[A-Za-z0-9._-]{1,24}$/.test(product.sku) && '1–24 碼 ASCII SKU',
+    ].filter((item): item is string => Boolean(item));
     async function runPreview() {
-        const revision = draftRevisionRef.current;
         setBusy(true); setError(null);
         try {
             const result = await previewLabel(token.trim(), draft);
-            if (revision === draftRevisionRef.current) setPreview(result);
+            if (result.layout !== 'medicine-landscape-v1') throw new Error('本機代理版本不支援藥品橫式標籤。');
+            setPreview(result);
         } catch (cause) {
-            if (revision === draftRevisionRef.current) setError(cause instanceof Error ? cause.message : '無法產生預覽。');
+            setError(cause instanceof Error ? cause.message : '無法產生預覽。');
         }
         finally { setBusy(false); }
     }
@@ -113,32 +118,29 @@ export default function MedicineLabelDialog({ product, onClose }: { product: Pro
     return createPortal(<div ref={overlayRef} className="medicine-label-overlay">
         <div ref={dialogRef} className="medicine-label-dialog" role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
             <h2 id={`${id}-title`}>建立藥品標籤</h2>
-            <p>30 × 50 mm · DL-720W NEW。先核對內容並取得本機渲染雜湊，再送出一張。這是商品識別草稿，請依店內核定樣式確認內容。</p>
+            <p>50 × 30 mm 橫式閱讀，使用 30 × 50 mm 紙張 · DL-720W NEW。這是藥局內部品項識別標籤，不是原廠 GS1 DataMatrix，也不含批次或效期。</p>
             <label htmlFor={`${id}-token`}>本機代理權杖</label>
             <input id={`${id}-token`} ref={tokenRef} type="password" autoComplete="off" value={token} disabled={!!job}
                 onChange={event => { setToken(event.target.value); setError(null); }} />
             <p className="medicine-label-help">從本機私有 token 檔取得；只在本視窗記憶，關閉後清除。</p>
-            <label htmlFor={`${id}-name`}>藥品／商品名稱</label>
-            <input id={`${id}-name`} value={name} maxLength={100} disabled={busy || !!job || !!keyRef.current}
-                onChange={event => change(setName, event.target.value)} />
-            <label htmlFor={`${id}-sku`}>SKU</label>
-            <input id={`${id}-sku`} value={sku} maxLength={80} disabled={busy || !!job || !!keyRef.current}
-                onChange={event => change(setSku, event.target.value)} />
-            <label htmlFor={`${id}-extra`}>補充資訊（選填，單行）</label>
-            <input id={`${id}-extra`} value={extra} maxLength={100} disabled={busy || !!job || !!keyRef.current}
-                onChange={event => change(setExtra, event.target.value)} />
-            <label htmlFor={`${id}-qr`}>QR 內容（選填）</label>
-            <input id={`${id}-qr`} value={qr} maxLength={120} disabled={busy || !!job || !!keyRef.current}
-                onChange={event => change(setQr, event.target.value)} />
-            <p className="medicine-label-help">不自動產生 QR 或 Code128；QR 內容需由人員核對。Code128 掃碼仍待驗收。</p>
+            <section aria-label="資料庫藥品標籤內容">
+                <dl className="medicine-label-fields">
+                    <dt>產品名稱</dt><dd>{[product.name, product.strength, product.dosageForm].filter(Boolean).join(' ')}</dd>
+                    <dt>學名</dt><dd>{product.genericName || '未填'}</dd>
+                    <dt>健保碼</dt><dd>{product.nhiCode || '未填'}</dd>
+                    <dt>藥品許可證</dt><dd>{product.licenseNumber || '未填'}</dd>
+                    <dt>SKU</dt><dd>{product.sku}</dd>
+                    <dt>QR 內容</dt><dd><code>P1:{product.sku}</code>（店內識別）</dd>
+                </dl>
+            </section>
+            {missing.length > 0 && <p role="alert" className="medicine-label-error">商品資料尚缺：{missing.join('、')}。請關閉視窗並編輯商品，補齊後重新開啟。</p>}
             {!job && <div className="medicine-label-actions">
-                <button type="button" onClick={() => void runPreview()} disabled={busy || !token.trim() || !name.trim() || !!keyRef.current}>取得列印預覽雜湊</button>
+                <button type="button" onClick={() => void runPreview()} disabled={busy || !token.trim() || missing.length > 0 || !!keyRef.current}>取得列印預覽雜湊</button>
                 <button type="button" onClick={onClose} disabled={busy}>關閉</button>
             </div>}
             {preview && !job && <section aria-label="標籤預覽資料">
                 <h3>送印前核對</h3>
-                <img className="medicine-label-preview" src={`data:image/png;base64,${preview.preview_png_base64}`} alt="本機渲染的 30 × 50 mm 標籤預覽" />
-                <pre>{draft.text.join('\n')}{qr && `\nQR: ${qr}`}</pre>
+                <img className="medicine-label-preview" src={`data:image/png;base64,${preview.preview_png_base64}`} alt="本機渲染的 50 × 30 mm 橫式藥品標籤預覽" />
                 <p>本機渲染工作：{preview.job_bytes} bytes · SHA-256 <code>{preview.job_sha256}</code></p>
                 <p>預覽由與送印相同的本機點陣產生；仍請核對實際紙張。</p>
                 <label className="medicine-label-confirm"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} />內容及版面已核對，送印一張</label>
