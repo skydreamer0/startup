@@ -40,6 +40,10 @@
 2. Open referenced components, hooks, and API client files only as needed.
 3. Read backend API spec only when request/response behavior is involved.
 
+### Change medicine/product labels
+
+`pages/Inventory/ProductListPage.tsx` opens `components/MedicineLabelDialog.tsx` for a selected Product. The dialog calls the workstation-only `services/localLabelPrinter.ts`; the Python contract and installation live in `../local-print-agent/README.md` and ADR-023. Product name/SKU are draft inputs, QR is manual, and no Code128 is produced. Never store the local token in a frontend bundle or browser persistence, infer physical success from BLE ACK, or route the workstation request through the cloud API. Exact store origin/browser permission and local-API physical output remain acceptance gates.
+
 ### Change an API client
 
 1. Read `../infrastructure/api/api_spec.md`.

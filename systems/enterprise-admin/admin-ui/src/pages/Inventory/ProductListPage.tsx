@@ -7,6 +7,7 @@ import { inventoryApi, Product, Supplier } from '../../api/inventory';
 import { excelApi } from '../../api/excel';
 import PlanGate from '../../components/PlanGate';
 import ImportProductsModal from '../../components/ImportProductsModal';
+import MedicineLabelDialog from '../../components/MedicineLabelDialog';
 import './ProductListPage.css';
 
 type ProductForm = {
@@ -86,6 +87,7 @@ export default function ProductListPage() {
     const [productForm, setProductForm] = useState<ProductForm>(emptyProductForm);
     const [saving, setSaving] = useState(false);
     const [showImport, setShowImport] = useState(false);
+    const [labelProduct, setLabelProduct] = useState<Product | null>(null);
     const queryClient = useQueryClient();
 
     const exportMutation = useMutation({
@@ -256,6 +258,7 @@ export default function ProductListPage() {
                     onClose={() => setShowImport(false)}
                 />
             )}
+            {labelProduct && <MedicineLabelDialog product={labelProduct} onClose={() => setLabelProduct(null)} />}
 
             <div className="table-container product-table-scroll" role="region" aria-label="Products table" tabIndex={0}>
                 {loading ? (
@@ -318,6 +321,7 @@ export default function ProductListPage() {
                                             </td>
                                             <td style={{ textAlign: 'right' }}>
                                                 <button id={`product-batches-${p.id}`} type="button" className="btn btn-ghost product-batches-button" aria-label={`查看 ${p.name} 的批次`} onClick={() => openBatches(p.id)}>查看批次</button>
+                                                <button type="button" className="btn btn-ghost btn-sm" aria-label={`建立 ${p.name} 的藥品標籤`} onClick={() => setLabelProduct(p)}>建立標籤</button>
                                                 <button className="btn btn-ghost btn-sm" onClick={() => openEdit(p)}>Edit</button>
                                             </td>
                                         </tr>
