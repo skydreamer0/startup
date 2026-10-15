@@ -24,6 +24,7 @@ Avoid broad source crawling until the route is selected.
 | Database / Prisma | `systems/enterprise-admin/backend/MODULE.md`, then `systems/enterprise-admin/backend/prisma/schema.prisma` | Relevant migrations, seed files, services, tests | Changing model meaning without context updates |
 | Admin UI | `systems/enterprise-admin/admin-ui/MODULE.md` | Nearest screen, component, hook, API client, and tests | Reading backend unless API behavior is involved |
 | POS UI | `systems/enterprise-admin/pos-ui/MODULE.md` | Nearest POS screen, component, state, test, and API call | Reading admin UI unless shared behavior is involved |
+| Local BLE label printing | `systems/enterprise-admin/local-print-agent/README.md`, `systems/enterprise-admin/infrastructure/adr/adr_023_local_ble_medicine_label_bridge.md` | `admin-ui/MODULE.md`, product list, label dialog/client, nearest Python API/renderer/transport/tests | Routing workstation BLE through the cloud backend or treating receipt printing as labels |
 | Shared types | `systems/enterprise-admin/packages/types/MODULE.md` | Relevant type source and consumers | Duplicating types in app-specific modules |
 | Standards / workflow | `systems/enterprise-admin/infrastructure/standards/README.md` | Specific standard file and PR template | Updating workflow without updating agent context |
 | Dependencies / lockfiles | `systems/enterprise-admin/infrastructure/standards/dependency_management.md` | Owning manifest, canonical lock, CI and Dockerfile | Adding a second lockfile or putting backend in the frontend workspace |

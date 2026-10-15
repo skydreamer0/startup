@@ -7,11 +7,18 @@ import { inventoryApi, Product, Supplier } from '../../api/inventory';
 import { excelApi } from '../../api/excel';
 import PlanGate from '../../components/PlanGate';
 import ImportProductsModal from '../../components/ImportProductsModal';
+import MedicineLabelDialog from '../../components/MedicineLabelDialog';
 import './ProductListPage.css';
 
 type ProductForm = {
     sku: string;
     name: string;
+    englishName: string;
+    strength: string;
+    dosageForm: string;
+    genericName: string;
+    nhiCode: string;
+    licenseNumber: string;
     description: string;
     supplierId: string;
     costPrice: string;
@@ -32,6 +39,12 @@ type ApiError = {
 const emptyProductForm: ProductForm = {
     sku: '',
     name: '',
+    englishName: '',
+    strength: '',
+    dosageForm: '',
+    genericName: '',
+    nhiCode: '',
+    licenseNumber: '',
     description: '',
     supplierId: '',
     costPrice: '0',
@@ -86,6 +99,7 @@ export default function ProductListPage() {
     const [productForm, setProductForm] = useState<ProductForm>(emptyProductForm);
     const [saving, setSaving] = useState(false);
     const [showImport, setShowImport] = useState(false);
+    const [labelProduct, setLabelProduct] = useState<Product | null>(null);
     const queryClient = useQueryClient();
 
     const exportMutation = useMutation({
@@ -165,6 +179,12 @@ export default function ProductListPage() {
         setProductForm({
             sku: product.sku,
             name: product.name,
+            englishName: product.englishName ?? '',
+            strength: product.strength ?? '',
+            dosageForm: product.dosageForm ?? '',
+            genericName: product.genericName ?? '',
+            nhiCode: product.nhiCode ?? '',
+            licenseNumber: product.licenseNumber ?? '',
             description: product.description || '',
             supplierId: product.supplierId || product.supplier?.id || '',
             costPrice: String(product.costPrice),
@@ -185,6 +205,12 @@ export default function ProductListPage() {
         const payload: Partial<Product> = {
             sku: productForm.sku.trim(),
             name: productForm.name.trim(),
+            englishName: productForm.englishName.trim() || (editProduct ? null : undefined),
+            strength: productForm.strength.trim() || (editProduct ? null : undefined),
+            dosageForm: productForm.dosageForm.trim() || (editProduct ? null : undefined),
+            genericName: productForm.genericName.trim() || (editProduct ? null : undefined),
+            nhiCode: productForm.nhiCode.trim() || (editProduct ? null : undefined),
+            licenseNumber: productForm.licenseNumber.trim() || (editProduct ? null : undefined),
             description: productForm.description.trim() || undefined,
             supplierId: productForm.supplierId || undefined,
             costPrice: Number(productForm.costPrice),
@@ -256,6 +282,7 @@ export default function ProductListPage() {
                     onClose={() => setShowImport(false)}
                 />
             )}
+            {labelProduct && <MedicineLabelDialog product={labelProduct} onClose={() => setLabelProduct(null)} />}
 
             <div className="table-container product-table-scroll" role="region" aria-label="Products table" tabIndex={0}>
                 {loading ? (
@@ -318,6 +345,7 @@ export default function ProductListPage() {
                                             </td>
                                             <td style={{ textAlign: 'right' }}>
                                                 <button id={`product-batches-${p.id}`} type="button" className="btn btn-ghost product-batches-button" aria-label={`查看 ${p.name} 的批次`} onClick={() => openBatches(p.id)}>查看批次</button>
+                                                <button type="button" className="btn btn-ghost btn-sm" aria-label={`建立 ${p.name} 的藥品標籤`} onClick={() => setLabelProduct(p)}>建立標籤</button>
                                                 <button className="btn btn-ghost btn-sm" onClick={() => openEdit(p)}>Edit</button>
                                             </td>
                                         </tr>
@@ -352,6 +380,37 @@ export default function ProductListPage() {
                                     <label className="input-label">Name</label>
                                     <input className="input-field" required value={productForm.name}
                                         onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} />
+                                </div>
+                                <p>藥品識別標籤需填妥下列資料；一般商品可留空。資料應由藥師核對，QR 將使用店內 SKU。</p>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-english-name">英文商品名</label>
+                                    <input id="medicine-english-name" className="input-field" maxLength={120} value={productForm.englishName}
+                                        onChange={(e) => setProductForm({ ...productForm, englishName: e.target.value })} />
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-strength">規格</label>
+                                    <input id="medicine-strength" className="input-field" maxLength={40} value={productForm.strength}
+                                        onChange={(e) => setProductForm({ ...productForm, strength: e.target.value })} />
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-dosage-form">劑型</label>
+                                    <input id="medicine-dosage-form" className="input-field" maxLength={40} value={productForm.dosageForm}
+                                        onChange={(e) => setProductForm({ ...productForm, dosageForm: e.target.value })} />
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-generic-name">學名</label>
+                                    <input id="medicine-generic-name" className="input-field" maxLength={120} value={productForm.genericName}
+                                        onChange={(e) => setProductForm({ ...productForm, genericName: e.target.value })} />
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-nhi-code">健保碼</label>
+                                    <input id="medicine-nhi-code" className="input-field" maxLength={40} value={productForm.nhiCode}
+                                        onChange={(e) => setProductForm({ ...productForm, nhiCode: e.target.value })} />
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label" htmlFor="medicine-license-number">完整藥品許可證字號</label>
+                                    <input id="medicine-license-number" className="input-field" maxLength={120} value={productForm.licenseNumber}
+                                        onChange={(e) => setProductForm({ ...productForm, licenseNumber: e.target.value })} />
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label">Description</label>
