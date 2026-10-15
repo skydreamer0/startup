@@ -143,6 +143,14 @@ try {
       await expect(maintenance.getByRole('button', { name: '新增獨立包裝', exact: true })).toBeEnabled();
     }
     await create(`${prefix} 盒`, 3); await create(`${prefix} 瓶`, 6); await create(`${prefix} 未知`, null);
+    await admin.screenshot({ path: path.join(output, `admin-form-${viewport.width}.png`), fullPage: true });
+    await maintenance.evaluate(node => node.scrollTo({ top: 0 }));
+    const adminGeometry = await maintenance.boundingBox();
+    assert.ok(adminGeometry && adminGeometry.x >= 15 && adminGeometry.y >= 15
+      && adminGeometry.x + adminGeometry.width <= viewport.width - 15
+      && adminGeometry.y + adminGeometry.height <= viewport.height - 15);
+    assert.equal(await maintenance.evaluate(node => node.scrollWidth <= node.clientWidth), true);
+    await expect(maintenance.getByRole('button', { name: '關閉包裝維護', exact: true })).toBeInViewport();
     await admin.screenshot({ path: path.join(output, `admin-${viewport.width}.png`), fullPage: true });
     await pos.goto(posOrigin);
     await expect(pos.getByTestId('product-search-input')).toBeEnabled();
@@ -190,7 +198,7 @@ try {
     await expect(manualOpen).toBeFocused();
     assert.deepEqual(await business(), baseline);
     cases.push({ viewport, status: 'passed', manualConfirmation: true, unknownConversionBlocked: true, ambiguity: 3,
-      confirmedBaseQuantity: 3, staleRevisionRejected: true, manualHandoff: true, handoffFocusRestored: true, backendBusinessUnchanged: true, geometry });
+      confirmedBaseQuantity: 3, staleRevisionRejected: true, manualHandoff: true, handoffFocusRestored: true, backendBusinessUnchanged: true, geometry, adminGeometry });
     await context.close();
   }
   assert.equal(forbidden.length, 0); assert.equal(cases.length, 3);
