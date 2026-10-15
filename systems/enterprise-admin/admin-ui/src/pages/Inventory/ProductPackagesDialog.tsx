@@ -39,6 +39,7 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
   const [identifiers, setIdentifiers] = useState<PackageIdentifier[]>([{ namespace: 'MANUFACTURER', value: '' }]);
   const [retirementReason, setRetirementReason] = useState('');
   const [mustReview, setMustReview] = useState(false);
+  const [needsRefresh, setNeedsRefresh] = useState(false);
   const history = useQuery({
     queryKey: ['product-packages', userId, productId], queryFn: ({ signal }) => productPackagesApi.list(productId, signal),
     enabled: allowed, retry: false, staleTime: 0, gcTime: 0,
@@ -51,8 +52,9 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
     return () => { mounted.current = false; node?.close?.(); if (opener?.isConnected && !opener.matches(':disabled')) opener.focus(); };
   }, []);
   const available = allowed && history.isSuccess && !history.isFetching && !history.isError;
-  const canWrite = available && editable && !pending && !mustReview;
+  const canWrite = available && editable && !pending && !mustReview && !needsRefresh;
   function editRevision(row: PackageRevision) {
+    if (!available || pending || needsRefresh) return;
     setTarget({ packageId: row.packageId, revision: row.revision });
     setForm({ label: row.label, contents: row.contents, stockUnitLabel: history.data?.product.stockUnitLabel ?? '',
       units: row.unitsPerPackage === null ? '' : String(row.unitsPerPackage), source: row.source, reason: '',
@@ -62,14 +64,19 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
     setMustReview(false);
     document.getElementById(`${id}-label`)?.focus();
   }
+  async function refreshHistory() {
+    setMustReview(true); setNeedsRefresh(true);
+    const result = await history.refetch();
+    if (mounted.current && result.isSuccess) setNeedsRefresh(false);
+  }
   async function write(work: () => Promise<unknown>) {
     if (!canWrite || writing.current) return;
-    writing.current = true; setPending(true); setMessage('正在儲存，請等待確認…');
+    writing.current = true; setPending(true); setNeedsRefresh(true); setMessage('正在儲存，請等待確認…');
     try {
       await work();
       if (!mounted.current) return;
       setMessage('已儲存。請核對更新後的包裝歷史。'); setMustReview(true);
-      await history.refetch();
+      await refreshHistory();
     } catch (error) { if (mounted.current) { setMessage(failure(error)); setMustReview(true); } }
     finally { writing.current = false; if (mounted.current) setPending(false); }
   }
@@ -88,6 +95,7 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
       : productPackagesApi.create(productId, data));
   }
   function newPackage() {
+    if (!available || pending || needsRefresh) return;
     setTarget(null); setMustReview(false); setMessage('新增獨立包裝；請勿以新增包裝代替修訂既有包裝。');
     setForm({ label: '', contents: '', stockUnitLabel: history.data?.product.stockUnitLabel ?? '', units: '', source: '', reason: '',
       validFrom: localTime(new Date().toISOString()), validUntil: '' });
@@ -112,18 +120,18 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
             <ul>{row.identifiers.map((identifier, index) => <li key={index}>{identifier.namespace} <code>{JSON.stringify(identifier.value)}</code></li>)}</ul>
             {row.retiredAt && <p>停用：{dateTime(row.retiredAt)} · {row.retiredById} · {row.retirementReason}</p>}
             {row.revision === item.revision && editable && <div className="package-actions">
-              <button type="button" className="btn btn-ghost" disabled={pending} onClick={() => editRevision(row)}>以 revision {row.revision} 建立新版本</button>
+              <button type="button" className="btn btn-ghost" disabled={pending || needsRefresh || !available} onClick={() => editRevision(row)}>以 revision {row.revision} 建立新版本</button>
               {!row.retiredAt && <button type="button" className="btn btn-ghost" disabled={!canWrite || !retirementReason.trim()}
                 onClick={() => void write(() => productPackagesApi.retire(productId, item.id, row.revision, retirementReason))}>停用此 revision</button>}
             </div>}
           </details>)}
         </li>)}</ul>
       </>}
-    <button type="button" className="btn btn-ghost" disabled={pending || history.isFetching || !allowed} onClick={() => { setMustReview(true); void history.refetch(); }}>重新載入歷史</button>
+    <button type="button" className="btn btn-ghost" disabled={pending || history.isFetching || !allowed} onClick={() => void refreshHistory()}>重新載入歷史</button>
     <p role="status" aria-live="polite">{message}</p>
     {editable && <>
       <label htmlFor={`${id}-retirement`}>停用原因（停用前必填）</label><textarea id={`${id}-retirement`} value={retirementReason} disabled={pending} maxLength={1000} onChange={event => setRetirementReason(event.target.value)} />
-      <button type="button" className="btn btn-ghost" disabled={pending || !available} onClick={newPackage}>新增獨立包裝</button>
+      <button type="button" className="btn btn-ghost" disabled={pending || needsRefresh || !available} onClick={newPackage}>新增獨立包裝</button>
       {mustReview && <p>請先重新讀取歷史並核對結果，再按「建立新版本」或「新增獨立包裝」繼續。原草稿仍保留。</p>}
       <form onSubmit={event => void save(event)} aria-label="包裝覆核草稿">
         <h3>{target ? `建立新 revision（原版本 ${target.revision}）` : '新增包裝草稿'}</h3>

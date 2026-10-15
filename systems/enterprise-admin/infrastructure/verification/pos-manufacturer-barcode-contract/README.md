@@ -4,7 +4,7 @@ Status: implementation candidate on `codex/product-package-lookup`, based on `a5
 
 ## Local execution
 
-Node22.22.3, canonical npm11.21.0 / pnpm10.34.6 locked installs; no dependency/lockfile changes. LUNA checks: backend build/lint and focused tests passed; Admin full 205 tests and POS full 582 tests passed; both UI builds, Admin lint, shared typecheck and context validation passed. Full backend attempt: 338 passed, 38 failed due to absent DATABASE_URL/JWT configuration, 77 skipped; this is not a passing full suite. The hosted CI supplies its owned synthetic database/configuration.
+Node22.22.3, canonical npm11.21.0 / pnpm10.34.6 locked installs; no dependency/lockfile changes. LUNA checks: backend build/lint and focused tests passed; Admin full 208 tests and POS full 582 tests passed; both UI builds, Admin lint, shared typecheck and context validation passed. Full backend attempt: 338 passed, 38 failed due to absent DATABASE_URL/JWT configuration, 77 skipped; this is not a passing full suite. The hosted CI supplies its owned synthetic database/configuration.
 
 Native PostgreSQL and real browser acceptance: **NOT RUN locally**; Windows Docker daemon unavailable. Ten opt-in package native skips are not evidence. No ambient/production/preview database is permitted. Hosted native package cases passed 10/10 with zero skips at `dad0ce1b84655101bd36a1ad034f92ccf7c5892f` in [run 38793624241](https://github.com/skydreamer0/startup/actions/runs/38793624241). That head predates subsequent literal-preservation/focus fixes; final exact-head CI and browser artifacts remain required and are recorded in PR #142.
 

@@ -146,6 +146,56 @@ describe('tenant-reviewed product package maintenance', () => {
     expect(productPackagesApi.list).toHaveBeenCalledOnce();
   });
 
+  it.each([['new package', 'create'], ['revision', 'revise']] as const)(
+    'preserves and locks the %s draft after an unknown HTTP 500 result', async (_label, kind) => {
+      setup();
+      await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）');
+      if (kind === 'revise') fireEvent.click(screen.getByRole('button', { name: '以 revision 2 建立新版本' }));
+      else fireEvent.click(screen.getByRole('button', { name: '新增獨立包裝' }));
+      fillNewDraft();
+      const write = kind === 'create' ? apiMock.create : apiMock.revise;
+      write.mockRejectedValue(axiosError(500));
+      fireEvent.click(screen.getByRole('button', { name: '確認覆核並儲存新 revision' }));
+      await waitFor(() => expect(write).toHaveBeenCalledOnce());
+      expect(await screen.findByRole('status')).toHaveTextContent('操作未確認成功');
+      expect(screen.getByLabelText('包裝名稱')).toHaveValue('新原廠盒');
+      expect(screen.getByLabelText('識別碼 1 原文')).toHaveTextContent(JSON.stringify(' 000Mfr '));
+      expect(screen.getByRole('button', { name: '新增獨立包裝' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: '以 revision 2 建立新版本' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: '確認覆核並儲存新 revision' })).toBeDisabled();
+      fireEvent.click(screen.getByRole('button', { name: '確認覆核並儲存新 revision' }));
+      expect(write).toHaveBeenCalledOnce();
+    },
+  );
+
+  it('stays locked after refresh GET fails and requires refreshed history plus explicit selection before writing', async () => {
+    setup();
+    await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）');
+    fireEvent.click(screen.getByRole('button', { name: '新增獨立包裝' })); fillNewDraft();
+    apiMock.create.mockRejectedValue(axiosError(500));
+    fireEvent.click(screen.getByRole('button', { name: '確認覆核並儲存新 revision' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('操作未確認成功');
+
+    apiMock.list.mockRejectedValueOnce(axiosError(500));
+    fireEvent.click(screen.getByRole('button', { name: '重新載入歷史' }));
+    await waitFor(() => expect(productPackagesApi.list).toHaveBeenCalledTimes(2));
+    await screen.findByRole('alert');
+    expect(screen.getByLabelText('包裝名稱')).toHaveValue('新原廠盒');
+    expect(screen.getByRole('button', { name: '新增獨立包裝' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '確認覆核並儲存新 revision' })).toBeDisabled();
+
+    apiMock.list.mockResolvedValueOnce({ product: history.product, packages: history.packages });
+    fireEvent.click(screen.getByRole('button', { name: '重新載入歷史' }));
+    await waitFor(() => expect(productPackagesApi.list).toHaveBeenCalledTimes(3));
+    expect(await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '新增獨立包裝' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '以 revision 2 建立新版本' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '確認覆核並儲存新 revision' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: '以 revision 2 建立新版本' }));
+    expect(screen.getByRole('button', { name: '確認覆核並儲存新 revision' })).toBeEnabled();
+    expect(apiMock.create).toHaveBeenCalledOnce();
+  });
+
   it('blocks concurrent writes and requires an explicit reason to retire a current revision', async () => {
     setup();
     await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）');
