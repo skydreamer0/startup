@@ -35,10 +35,11 @@ describe.skipIf(!databaseUrl)('reviewed package mappings with native PostgreSQL 
     ({ tenantContext: context } = await import('../lib/tenant.context'));
     ({ signAccessToken: sign } = await import('../lib/jwt'));
     const { setTenantContext } = await import('../middleware/tenant.middleware');
+    const { defaultRateLimit } = await import('../middleware/rate-limit.middleware');
     const { default: pos } = await import('../modules/pos/pos.routes');
     const { default: inventory } = await import('../modules/inventory/inventory.routes');
     const { errorMiddleware } = await import('../middleware/error.middleware');
-    app = express(); app.use(express.json()); app.use(setTenantContext);
+    app = express(); app.use(express.json()); app.use(defaultRateLimit); app.use(setTenantContext);
     app.use('/pos', pos); app.use('/inventory', inventory); app.use(errorMiddleware);
     for (const tenantId of tenantIds) {
       await db.tenant.create({ data: { id: tenantId, slug: tenantId, name: '合成包裝租戶', plan: 'pro' } });
@@ -134,7 +135,7 @@ describe.skipIf(!databaseUrl)('reviewed package mappings with native PostgreSQL 
     await expect(save(0, 'BAD-UNIT', { stockUnitLabel: 'different unit' })).rejects.toMatchObject({ statusCode: 409 });
   });
   it('requires authenticated permissions and isolates real HTTP lookup maintenance and confirmation', async () => {
-    expect((await request(app).get('/pos/packages/lookup').query({ namespace: 'MANUFACTURER', value: 'SECOND' })).status).toBe(401);
+    expect((await request(app).get('/pos/packages/lookup').query({ namespace: 'MANUFACTURER', value: 'SECOND' }).set('X-Tenant-Id', tenantIds[0])).status).toBe(401);
     expect((await request(app).get('/pos/packages/lookup').query({ namespace: 'MANUFACTURER', value: 'SECOND' }).set(http(0, []))).status).toBe(403);
     expect((await request(app).post(`/inventory/products/${products[0]}/packages`).send(input('DENIED')).set(http(0, ['read:products']))).status).toBe(403);
     const created = await request(app).post(`/inventory/products/${products[0]}/packages`).send(input('HTTP-CODE')).set(http());
@@ -149,7 +150,7 @@ describe.skipIf(!databaseUrl)('reviewed package mappings with native PostgreSQL 
     const other = await request(app).get('/pos/packages/lookup').query({ namespace: 'MANUFACTURER', value: 'HTTP-CODE' }).set(http(1));
     expect(other.body.data).toEqual([]);
     const header = await request(app).get('/pos/packages/lookup').query({ namespace: 'MANUFACTURER', value: 'HTTP-CODE' }).set(http()).set('X-Tenant-Id', tenantIds[1]);
-    expect(header.status).toBe(403);
+    expect(header.status).toBe(401);
   });
   it('blocks unknown conversion and stale confirmation without lookup side effects', async () => {
     const row = await save(0, 'UNKNOWN', { unitsPerPackage: null });
