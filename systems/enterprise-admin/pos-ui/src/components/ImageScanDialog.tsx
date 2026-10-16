@@ -2,6 +2,7 @@ import { useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { decodeImageScan, ImageScanError } from '../services/imageScanDecoder';
 import type { ImageScanEvidence } from '../services/imageScanResult';
+import type { ScanResultV1 } from '@pharmasaas/types';
 import './ImageScanDialog.css';
 
 type ImagePreview = { name: string; url: string; results: readonly ImageScanEvidence[] };
@@ -20,8 +21,8 @@ function errorMessage(error: unknown): string {
   return '圖片辨識失敗，請重新選取圖片再試。';
 }
 
-/** Temporary local evidence only. No business callback, storage or product lookup. */
-export default function ImageScanDialog({ onClose }: { onClose: () => void }) {
+/** Temporary local evidence; product lookup requires a separate explicit handoff. */
+export default function ImageScanDialog({ onClose, onLookup }: { onClose: () => void; onLookup?: (scan: ScanResultV1) => void }) {
   const id = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -148,6 +149,7 @@ export default function ImageScanDialog({ onClose }: { onClose: () => void }) {
         </section>}
         <div className="image-scan-actions">
           <button type="button" disabled={!chosen || pending || confirmed} onClick={() => setConfirmed(true)}>確認這段辨識文字</button>
+          {onLookup && <button type="button" disabled={!chosen || pending || !confirmed || chosen.decoderObservation.sequenceSize >= 0} onClick={() => { if (chosen) onLookup(chosen.scan); }}>使用這段原碼查找商品／包裝</button>}
           <button type="button" onClick={onClose}>關閉</button>
         </div>
       </div>

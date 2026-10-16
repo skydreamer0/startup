@@ -2,6 +2,8 @@ import { Router } from 'express';
 import multer from 'multer';
 import { InventoryController } from './inventory.controller';
 import { CsvController } from './csv.controller';
+import { ProductPackagesController } from './product-packages.controller';
+import { packageProductParams, packageRevisionBody, packageRevisionSchema, packageRetireSchema } from './product-packages.schema';
 import { authMiddleware } from '../../middleware/auth.middleware';
 import { requirePermission } from '../../middleware/rbac.middleware';
 import { validate } from '../../middleware/validate.middleware';
@@ -29,6 +31,10 @@ router.post('/suppliers', requirePermission('create:suppliers'), validate({ body
 router.put('/suppliers/:id', requirePermission('update:suppliers'), validate({ body: updateSupplierSchema }), InventoryController.updateSupplier);
 
 // --- Products ---
+router.get('/products/:productId/packages', requirePermission('read:products'), validate({ params: packageProductParams }), ProductPackagesController.list);
+router.post('/products/:productId/packages', requirePermission('update:products'), validate({ params: packageProductParams, body: packageRevisionBody }), ProductPackagesController.create);
+router.post('/products/:productId/packages/:packageId/revisions', requirePermission('update:products'), validate(packageRevisionSchema), ProductPackagesController.revise);
+router.post('/products/:productId/packages/:packageId/retire', requirePermission('update:products'), validate(packageRetireSchema), ProductPackagesController.retire);
 router.get('/products', requirePermission('read:products'), InventoryController.getProducts);
 router.get('/products/:id', requirePermission('read:products'), InventoryController.getProductById);
 router.post('/products', requirePermission('create:products'), validate({ body: createProductSchema.shape.body }), InventoryController.createProduct);

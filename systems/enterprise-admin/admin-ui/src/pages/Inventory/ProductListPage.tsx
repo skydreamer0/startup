@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import ProductBatchesView from './ProductBatchesView';
+import ProductPackagesDialog from './ProductPackagesDialog';
 import { isAxiosError } from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi, Product, Supplier } from '../../api/inventory';
@@ -86,6 +87,7 @@ export default function ProductListPage() {
     const [productForm, setProductForm] = useState<ProductForm>(emptyProductForm);
     const [saving, setSaving] = useState(false);
     const [showImport, setShowImport] = useState(false);
+    const [packageProductId, setPackageProductId] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
     const exportMutation = useMutation({
@@ -319,6 +321,7 @@ export default function ProductListPage() {
                                             <td style={{ textAlign: 'right' }}>
                                                 <button id={`product-batches-${p.id}`} type="button" className="btn btn-ghost product-batches-button" aria-label={`查看 ${p.name} 的批次`} onClick={() => openBatches(p.id)}>查看批次</button>
                                                 <button className="btn btn-ghost btn-sm" onClick={() => openEdit(p)}>Edit</button>
+                                                <button type="button" className="btn btn-ghost product-batches-button" aria-label={`維護 ${p.name} 的包裝對照`} onClick={() => setPackageProductId(p.id)}>包裝對照</button>
                                             </td>
                                         </tr>
                                     );
@@ -412,6 +415,7 @@ export default function ProductListPage() {
                     </div>
                 </div>
             )}
+            {packageProductId && <ProductPackagesDialog productId={packageProductId} onClose={() => setPackageProductId(null)} />}
         </div>
     );
 }

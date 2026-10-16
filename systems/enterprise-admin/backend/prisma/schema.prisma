@@ -44,6 +44,9 @@ model Tenant {
   checkoutCommands    CheckoutCommand[]
   productBatchChanges ProductBatchChange[]
   orderNumberCounters OrderNumberCounter[]
+  productPackages ProductPackage[]
+  packageRevisions ProductPackageRevision[]
+  packageIdentifiers ProductPackageIdentifier[]
 
   @@map("tenants")
 }
@@ -74,6 +77,8 @@ model User {
   shifts    Shift[]
   salesOrders  Order[] @relation("SalesOrders")
   batchChanges ProductBatchChange[] @relation("BatchChangeActor")
+  packageRevisions ProductPackageRevision[] @relation("PackageRevisionActor")
+  packageRetirements ProductPackageRevision[] @relation("PackageRetirementActor")
 
   @@unique([id, tenantId])
   @@index([tenantId])
@@ -300,6 +305,7 @@ model Product {
 
   stockQuantity Int @default(0) @map("stock_quantity")
   safetyStock   Int @default(10) @map("safety_stock")
+  stockUnitLabel String? @map("stock_unit_label")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -311,6 +317,7 @@ model Product {
   transactions InventoryTransaction[]
   batches      ProductBatch[]
   batchChanges ProductBatchChange[]
+  packages ProductPackage[]
 
   @@unique([id, tenantId])
   @@unique([sku, tenantId])
@@ -318,6 +325,64 @@ model Product {
   @@index([categoryId])
   @@index([supplierId])
   @@map("products")
+}
+
+// Tenant-reviewed package authority. Revisions are append-only except their
+// one-way retirement metadata; SQL migration enforces that invariant.
+model ProductPackage {
+  id String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  productId String @map("product_id")
+  revision Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at")
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  product Product @relation(fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)
+  revisions ProductPackageRevision[]
+  @@unique([id, tenantId])
+  @@index([tenantId, productId])
+  @@map("product_packages")
+}
+
+model ProductPackageRevision {
+  id String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  packageId String @map("package_id")
+  revision Int
+  label String
+  contents String
+  unitsPerPackage Int? @map("units_per_package")
+  identifierCount Int @map("identifier_count")
+  source String
+  reason String
+  validFrom DateTime @map("valid_from")
+  validUntil DateTime? @map("valid_until")
+  createdAt DateTime @default(now()) @map("created_at")
+  actorId String @map("actor_id")
+  retiredAt DateTime? @map("retired_at")
+  retiredById String? @map("retired_by_id")
+  retirementReason String? @map("retirement_reason")
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  package ProductPackage @relation(fields: [packageId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)
+  actor User @relation("PackageRevisionActor", fields: [actorId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)
+  retiredBy User? @relation("PackageRetirementActor", fields: [retiredById, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)
+  identifiers ProductPackageIdentifier[]
+  @@unique([id, tenantId])
+  @@unique([packageId, revision, tenantId])
+  @@index([tenantId, packageId])
+  @@map("product_package_revisions")
+}
+
+model ProductPackageIdentifier {
+  id String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  revisionId String @map("revision_id")
+  namespace String
+  value String
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  packageRevision ProductPackageRevision @relation(fields: [revisionId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Restrict)
+  @@unique([revisionId, namespace, value, tenantId])
+  @@index([tenantId, namespace, value])
+  @@map("product_package_identifiers")
 }
 
 // ─── Orders & Transactions (Phase 4) ──────────────────────

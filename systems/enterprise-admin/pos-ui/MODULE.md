@@ -37,6 +37,17 @@
 
 ## Common task routes
 
+### Lookup reviewed manufacturer/package identifiers
+
+Read ADR-024 and `../infrastructure/api/product-packages.md`. The explicit
+`components/PackageLookupDialog.tsx` reuses BarcodeCandidateButton and re-resolves
+the chosen revision before cartStore.addPackage applies reviewed base units.
+Unknown conversion cannot add; editing, scope/draft/pending transitions and
+unmount invalidate choices. Manual/image evidence handoff is explicit, and
+`services/gs1Proposal.ts` only reads observed GS1 boundaries as read-only proposals.
+Legacy SKU scanner matching/timing remains intact. Verification/current device
+limits: `../infrastructure/verification/pos-manufacturer-barcode-contract/README.md`.
+
 ### Change checkout or cart behavior
 
 1. Open the nearest POS page/component/store/service files.
@@ -208,7 +219,8 @@ Manual capture returns evidence only, without dispatch. See ADR-022.
 `captureManualScan`; it does not subscribe to the USB stream. The toolbar entry
 opens only a temporary read-only evidence view. Clipboard text replaces the whole
 draft before textarea newline normalization, with JSON-escaped literal display.
-Closing/unmounting discards it; there is no lookup, navigation, dispatch or storage.
+Closing/unmounting discards it. An explicit lookup handoff opens the reviewed
+package flow; capture itself has no lookup, dispatch or storage side effect.
 The page blocks scanner effects and shortcuts while the dialog owns focus. Scanner
 blocked transitions call `cancelBarcodeInput` to cancel partial sequences as well
 as invalidate late lookups, preserving the existing Enter/300ms/min3 gate. See
@@ -221,15 +233,17 @@ Browser/hardware and broader M0 gates remain unverified by these synthetic tests
 the existing scanner-blocked boundary with the manual evidence dialog. It reads
 PNG/JPEG locally through `imageScanDecoder`, displays the image and every decoded
 symbol, and requires explicit selection followed by confirmation of the text.
-Confirmation is temporary UI state only: there is no lookup, product mapping,
-barcode dispatch, persistence, cart change or inventory command. New selections
+Confirmation is temporary UI state only. A separate explicit handoff opens
+package lookup for nonsegmented symbols; confirmation itself has no barcode
+dispatch, persistence, cart change or inventory command. New selections
 and close/unmount invalidate late results and release object URLs.
 
 `imageScanDecoder` uses pinned `zxing-wasm` 3.1.2 with the matching reader WASM
 emitted by Vite `?url`; initialization must override asset resolution before use.
 There is no CDN fallback. PNG/JPEG bytes and header dimensions are bounded before
 the engine loads; decoded literal, observed bytes/ECI bytes and canonical format
-metadata are retained by `imageScanResult`. GS1 parsing is deliberately absent.
+metadata are retained by `imageScanResult`. That adapter reports GS1 unknown;
+the separate proposal reader must not infer missing metadata.
 See ADR-022 and the `ImageScanDialog`, `POSCheckoutPage.image-scan`, and image
 decoder/evidence tests. Actual WASM, browser asset routing and hardware/performance
 evidence must be reported separately; mocked UI tests do not establish decoding.

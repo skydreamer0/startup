@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { ProductPackagesController } from '../inventory/product-packages.controller';
+import { packageLookupSchema, packageResolveSchema } from '../inventory/product-packages.schema';
 import { lookupProduct } from './product-lookup.controller';
 import { productLookupSchema } from './product-lookup.schema';
 import { PosController } from './pos.controller';
@@ -24,6 +26,8 @@ router.get('/checkout-commands/:commandId', validate(checkoutCommandQuerySchema)
 router.get('/checkout-context', PosController.getCheckoutContext);
 router.get('/categories', PosController.getCategories);
 router.get('/products/lookup', validate(productLookupSchema), lookupProduct);
+router.get('/packages/lookup', validate(packageLookupSchema), ProductPackagesController.lookup);
+router.post('/packages/resolve', validate(packageResolveSchema), ProductPackagesController.resolve);
 router.get('/products', validate(posProductsSchema), PosController.getProducts);
 router.get('/customer-lookup', validate(customerLookupSchema), PosController.lookupCustomer);
 router.post('/customers', validate(createPosCustomerSchema), PosController.createCustomer);
