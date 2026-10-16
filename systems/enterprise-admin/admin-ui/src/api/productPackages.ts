@@ -1,4 +1,4 @@
-import type { ApiSuccess, ProductPackageHistory, PackageRevisionInput } from '@pharmasaas/types';
+import type { ApiSuccess, ProductPackageHistory, PackageRevisionInput, PackageRevisionRequest } from '@pharmasaas/types';
 import api from './client';
 
 export const productPackagesApi = {
@@ -9,8 +9,9 @@ export const productPackagesApi = {
     return response.data.data;
   },
   create: (productId: string, data: PackageRevisionInput) => api.post(`/inventory/products/${productId}/packages`, data),
-  revise: (productId: string, packageId: string, expectedRevision: number, data: PackageRevisionInput) =>
-    api.post(`/inventory/products/${productId}/packages/${packageId}/revisions`, { expectedRevision, data }),
+  revise: (productId: string, packageId: string, expectedRevision: number, data: PackageRevisionInput, expectedRetired = false) =>
+    api.post(`/inventory/products/${productId}/packages/${packageId}/revisions`,
+      { expectedRevision, expectedRetired, data } satisfies PackageRevisionRequest),
   retire: (productId: string, packageId: string, expectedRevision: number, reason: string) =>
     api.post(`/inventory/products/${productId}/packages/${packageId}/retire`, { expectedRevision, reason }),
 };

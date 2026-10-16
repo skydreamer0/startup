@@ -30,6 +30,17 @@ export const expectedCases = {
     'enforces immutable revision identifier and stock-unit history in PostgreSQL',
     'requires authenticated permissions and isolates real HTTP lookup maintenance and confirmation',
     'blocks unknown conversion and stale confirmation without lookup side effects',
+    "retire then stale save returns HTTP 409 with no new mapping; refreshed replacement succeeds",
+    "save then stale retire returns HTTP 409 and leaves the new mapping active",
+    "keeps manufacturer colon literals case- and whitespace-exact through lookup and resolve",
+    "rejects persisted URI mapping mailto:synthetic@example.test at lookup and resolve",
+    "rejects persisted URI mapping DATA:text/plain,synthetic at lookup and resolve",
+    "rejects persisted URI mapping TeL:+886200000000 at lookup and resolve",
+    "rejects persisted URI mapping javascript:alert(1) at lookup and resolve",
+    "rejects persisted URI mapping sms:+886200000000 at lookup and resolve",
+    "rejects persisted URI mapping urn:uuid:synthetic at lookup and resolve",
+    "forces native lock overlap with retire first and rejects the stale second writer",
+    "forces native lock overlap with save first and rejects the stale second writer",
   ],
   provenance: [
     'returns no invented inventory rows for an empty tenant',
@@ -326,7 +337,7 @@ async function main(mode) {
     assert.equal(tests.status, 'passed');
     for (const kind of Object.keys(testFiles)) assert.equal(tests[kind].length, expectedCases[kind].length);
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: 5 original SKU + 9 category + 20 native provenance + 10 package cases, zero skips; fixture rows zero; owned DB removed');
+    console.log(`Acceptance passed: 5 original SKU + 9 category + 20 native provenance + ${expectedCases.packages.length} package cases, zero skips; fixture rows zero; owned DB removed`);
     return;
   }
 
@@ -397,7 +408,7 @@ async function main(mode) {
       if (errors.length) break; // Do not run another suite on contaminated fixtures.
     }
     save('tests.json', { ...results, status: errors.length ? 'failed' : 'passed', errors });
-    assert.deepEqual(errors, [], 'Require every original SKU/category, 20 native provenance and 10 package cases to pass; skipped is not acceptance');
+    assert.deepEqual(errors, [], `Require every original SKU/category, 20 native provenance and ${expectedCases.packages.length} package cases to pass; skipped is not acceptance`);
   } finally { await db.$disconnect(); }
 }
 

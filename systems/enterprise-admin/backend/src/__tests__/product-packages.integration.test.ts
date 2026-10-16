@@ -101,11 +101,128 @@ describe.skipIf(!databaseUrl)('reviewed package mappings with native PostgreSQL 
     await inTenant(0, () => service.retire(products[0], row.packageId, 1, '合成停用', actors[0].id));
     expect(await lookup(0, 'LIFECYCLE')).toEqual([]);
     await expect(inTenant(0, () => service.resolve({ namespace: 'MANUFACTURER', value: 'LIFECYCLE' }, row.packageId, 1))).rejects.toMatchObject({ statusCode: 409 });
-    const next = await inTenant(0, () => service.save(products[0], input('LIFECYCLE'), actors[0].id, { packageId: row.packageId, expectedRevision: 1 }));
+    const next = await inTenant(0, () => service.save(products[0], input('LIFECYCLE'), actors[0].id, { packageId: row.packageId, expectedRevision: 1, expectedRetired: true }));
     expect(next.revision).toBe(2); expect(next.id).not.toBe(row.id);
     const old = await db.productPackageRevision.findUniqueOrThrow({ where: { id: row.id } });
     expect(old.retiredAt).not.toBeNull(); expect(old.retirementReason).toBe('合成停用');
     expect((await lookup(0, 'LIFECYCLE'))[0].revision).toBe(2);
+  });
+  it('retire then stale save returns HTTP 409 with no new mapping; refreshed replacement succeeds', async () => {
+    const row = await save(0, 'RACE-RETIRE-FIRST');
+    const path = `/inventory/products/${products[0]}/packages/${row.packageId}`;
+    expect((await request(app).post(`${path}/retire`).set(http()).send({ expectedRevision: 1, reason: '合成停用' })).status).toBe(200);
+    const before = await db.productPackageRevision.findMany({ where: { packageId: row.packageId }, include: { identifiers: true } });
+    const draft = { expectedRevision: 1, expectedRetired: false, data: input('RACE-STALE-MAPPING') };
+    expect((await request(app).post(`${path}/revisions`).set(http()).send(draft)).status).toBe(409);
+    expect(await db.productPackageRevision.findMany({ where: { packageId: row.packageId }, include: { identifiers: true } })).toEqual(before);
+    expect((await db.productPackage.findUniqueOrThrow({ where: { id: row.packageId } })).revision).toBe(1);
+    expect(await lookup(0, 'RACE-STALE-MAPPING')).toEqual([]);
+    const refreshed = await request(app).get(`/inventory/products/${products[0]}/packages`).set(http());
+    expect(refreshed.status).toBe(200);
+    const history = refreshed.body.data.packages as Array<{ id: string; revisions: Array<{ retiredAt: string | null }> }>;
+    expect(history.find(item => item.id === row.packageId)!.revisions[0].retiredAt).not.toBeNull();
+    const replacement = await request(app).post(`${path}/revisions`).set(http()).send({ ...draft, expectedRetired: true });
+    expect(replacement.status).toBe(201); expect(replacement.body.data.revision).toBe(2);
+    expect(await lookup(0, 'RACE-STALE-MAPPING')).toHaveLength(1);
+  });
+  it('save then stale retire returns HTTP 409 and leaves the new mapping active', async () => {
+    const row = await save(0, 'RACE-SAVE-FIRST');
+    const path = `/inventory/products/${products[0]}/packages/${row.packageId}`;
+    const revised = await request(app).post(`${path}/revisions`).set(http()).send({ expectedRevision: 1, expectedRetired: false, data: input('RACE-SAVED-MAPPING') });
+    expect(revised.status).toBe(201);
+    expect((await request(app).post(`${path}/retire`).set(http()).send({ expectedRevision: 1, reason: '合成過期停用' })).status).toBe(409);
+    expect(await db.productPackageRevision.count({ where: { packageId: row.packageId } })).toBe(2);
+    expect((await lookup(0, 'RACE-SAVED-MAPPING'))[0].revision).toBe(2);
+  });
+  it.each(['retire', 'save'] as const)(
+    'forces native lock overlap with %s first and rejects the stale second writer', async first => {
+      const row = await save(0, `OVERLAP-${first}-ORIGINAL`);
+      let unlock!: () => void;
+      let reportLocked!: (pid: number) => void;
+      const release = new Promise<void>(resolve => { unlock = resolve; });
+      const locked = new Promise<number>(resolve => { reportLocked = resolve; });
+      // A third real connection holds the identity row only long enough to
+      // establish an observable PostgreSQL lock queue for two service calls.
+      const holder = db.$transaction(async tx => {
+        await tx.$queryRaw`SELECT id FROM product_packages WHERE id = ${row.packageId} FOR UPDATE`;
+        const [connection] = await tx.$queryRaw<Array<{ pid: number }>>`SELECT pg_backend_pid() AS pid`;
+        reportLocked(connection.pid);
+        await release;
+      }, { timeout: 8000 });
+      const holderOutcome = holder.then(() => ({ ok: true }), error => ({ error }));
+      const calls: Array<Promise<{ ok: true; value: unknown } | { ok: false; error: unknown }>> = [];
+      const capture = (call: Promise<unknown>) => {
+        const outcome = call.then(value => ({ ok: true as const, value }), error => ({ ok: false as const, error }));
+        calls.push(outcome); return outcome;
+      };
+      const run = (kind: 'retire' | 'save') => inTenant(0, () => kind === 'retire'
+        ? service.retire(products[0], row.packageId, 1, 'synthetic overlap', actors[0].id)
+        : service.save(products[0], input(`OVERLAP-${first}-NEW`), actors[0].id,
+          { packageId: row.packageId, expectedRevision: 1, expectedRetired: false }));
+      const waiterBehind = async (pid: number) => {
+        const deadline = Date.now() + 900;
+        do {
+          const waiting = await db.$queryRaw<Array<{ pid: number }>>`
+            SELECT pid FROM pg_stat_activity
+            WHERE datname = current_database() AND wait_event_type = 'Lock'
+              AND ${pid}::int = ANY(pg_blocking_pids(pid))`;
+          if (waiting.length === 1) return waiting[0].pid;
+          await new Promise(resolve => setTimeout(resolve, 25));
+        } while (Date.now() < deadline);
+        throw new Error(`No unique PostgreSQL waiter behind PID ${pid}`);
+      };
+      try {
+        const holderPid = await Promise.race([locked, holder.then(() => { throw new Error('holder ended before barrier'); })]);
+        const firstResult = capture(run(first));
+        const firstPid = await waiterBehind(holderPid);
+        const secondResult = capture(run(first === 'retire' ? 'save' : 'retire'));
+        const secondPid = await waiterBehind(firstPid);
+        expect(new Set([holderPid, firstPid, secondPid]).size).toBe(3);
+        unlock();
+        expect(await holderOutcome).toEqual({ ok: true });
+        expect((await firstResult).ok).toBe(true);
+        expect(await secondResult).toMatchObject({ ok: false, error: { statusCode: 409 } });
+        expect(await db.productPackageRevision.count({ where: { packageId: row.packageId } }))
+          .toBe(first === 'retire' ? 1 : 2);
+        expect(await lookup(0, `OVERLAP-${first}-NEW`)).toHaveLength(first === 'retire' ? 0 : 1);
+        if (first === 'retire') {
+          expect((await db.productPackageRevision.findUniqueOrThrow({ where: { id: row.id } })).retiredAt).not.toBeNull();
+          const replacement = await inTenant(0, () => service.save(products[0], input('OVERLAP-REFRESHED'), actors[0].id,
+            { packageId: row.packageId, expectedRevision: 1, expectedRetired: true }));
+          expect(replacement.revision).toBe(2);
+        } else {
+          expect((await db.productPackageRevision.findFirstOrThrow({ where: { packageId: row.packageId, revision: 2 } })).retiredAt).toBeNull();
+        }
+      } finally {
+        unlock();
+        await Promise.allSettled([...calls, holderOutcome]);
+      }
+    }, 15000,
+  );
+  it.each(['mailto:synthetic@example.test', 'DATA:text/plain,synthetic', 'TeL:+886200000000',
+    'javascript:alert(1)', 'sms:+886200000000', 'urn:uuid:synthetic'])(
+    'rejects persisted URI mapping %s at lookup and resolve', async value => {
+      // Preserve a pre-existing invalid mapping to prove read-path enforcement.
+      const row = await save(0, value);
+      expect(await db.productPackageIdentifier.count({ where: { revisionId: row.id, value } })).toBe(1);
+      await expect(lookup(0, value)).rejects.toMatchObject({ statusCode: 422 });
+      await expect(inTenant(0, () => service.resolve({ namespace: 'MANUFACTURER', value }, row.packageId, 1)))
+        .rejects.toMatchObject({ statusCode: 422 });
+      expect((await request(app).get('/pos/packages/lookup').query({ namespace: 'MANUFACTURER', value }).set(http())).status).toBe(422);
+      expect((await request(app).post('/pos/packages/resolve').set(http()).send({
+        identifier: { namespace: 'MANUFACTURER', value }, packageId: row.packageId, revision: 1,
+      })).status).toBe(422);
+    },
+  );
+  it('keeps manufacturer colon literals case- and whitespace-exact through lookup and resolve', async () => {
+    const value = ' Maker:AbC ';
+    const row = await save(0, value);
+    expect((await lookup(0, value))[0].packageId).toBe(row.packageId);
+    expect(await lookup(0, ' maker:AbC ')).toEqual([]);
+    expect(await lookup(0, 'Maker:AbC ')).toEqual([]);
+    expect(await lookup(0, ' Maker:AbC')).toEqual([]);
+    await expect(inTenant(0, () => service.resolve({ namespace: 'MANUFACTURER', value }, row.packageId, 1)))
+      .resolves.toMatchObject({ packageId: row.packageId, revision: 1 });
   });
   it('rejects stale concurrent revision writes atomically and preserves one current revision', async () => {
     const row = await save(0, 'CONCURRENT');

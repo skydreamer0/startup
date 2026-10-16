@@ -5,6 +5,7 @@ import {
   packageIdentifierSchema,
   packageLookupSchema,
   packageRevisionBody,
+  packageRevisionSchema,
 } from '../modules/inventory/product-packages.schema';
 import { ProductPackagesService } from '../modules/inventory/product-packages.service';
 
@@ -13,7 +14,7 @@ const { prismaMock } = vi.hoisted(() => ({
     $transaction: vi.fn(),
     product: { findFirst: vi.fn(), updateMany: vi.fn() },
     productPackage: { findMany: vi.fn(), updateMany: vi.fn(), create: vi.fn() },
-    productPackageRevision: { findMany: vi.fn(), updateMany: vi.fn(), create: vi.fn() },
+    productPackageRevision: { findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), create: vi.fn() },
   },
 }));
 
@@ -58,6 +59,7 @@ const revisionCandidate = (overrides = {}) => ({
 beforeEach(() => {
   vi.resetAllMocks();
   prismaMock.$transaction.mockImplementation((work) => work(prismaMock));
+  prismaMock.productPackageRevision.findFirst.mockResolvedValue({ retiredAt: null });
 });
 
 describe('product package identifier and revision schemas', () => {
@@ -82,6 +84,12 @@ describe('product package identifier and revision schemas', () => {
     const query = { namespace: 'MANUFACTURER', value: ` ${'x'.repeat(255)}` };
     expect(packageLookupSchema.query.parse(query)).toEqual(query);
     expect(packageLookupSchema.query.safeParse({ ...query, value: `${query.value}x` }).success).toBe(false);
+  });
+
+  it('defaults revision requests to an active head and validates explicit retirement state', () => {
+    expect(packageRevisionSchema.body.parse({ expectedRevision: 1, data: validRevision }).expectedRetired).toBe(false);
+    expect(packageRevisionSchema.body.parse({ expectedRevision: 1, expectedRetired: true, data: validRevision }).expectedRetired).toBe(true);
+    expect(packageRevisionSchema.body.safeParse({ expectedRevision: 1, expectedRetired: 'true', data: validRevision }).success).toBe(false);
   });
 
   it('requires a half-open valid-time interval and distinct identifiers per revision', () => {
@@ -205,6 +213,29 @@ describe('ProductPackagesService mutations', () => {
     expect(prisma.productPackageRevision.create).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ packageId: 'package-a', revision: 2 }),
     }));
+  });
+
+  it('rejects an active draft after retirement without creating a replacement', async () => {
+    prismaMock.product.findFirst.mockResolvedValue({ id: 'product-a' });
+    prismaMock.product.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.productPackage.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.productPackageRevision.findFirst.mockResolvedValue({ retiredAt: new Date(validFrom) });
+    await expect(ProductPackagesService.save('product-a', validRevision, 'actor-a', {
+      packageId: 'package-a', expectedRevision: 1,
+    })).rejects.toMatchObject({ statusCode: 409 });
+    expect(prisma.productPackageRevision.create).not.toHaveBeenCalled();
+    expect(prisma.productPackageRevision.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('allows explicit replacement of a refreshed retired head', async () => {
+    prismaMock.product.findFirst.mockResolvedValue({ id: 'product-a' });
+    prismaMock.product.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.productPackage.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.productPackageRevision.findFirst.mockResolvedValue({ retiredAt: new Date(validFrom) });
+    prismaMock.productPackageRevision.create.mockResolvedValue({ revision: 2 });
+    await expect(ProductPackagesService.save('product-a', validRevision, 'actor-a', {
+      packageId: 'package-a', expectedRevision: 1, expectedRetired: true,
+    })).resolves.toEqual({ revision: 2 });
   });
 
   it('requires a tenant-scoped revision check when retiring', async () => {

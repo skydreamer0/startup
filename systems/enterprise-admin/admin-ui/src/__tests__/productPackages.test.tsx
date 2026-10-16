@@ -131,7 +131,40 @@ describe('tenant-reviewed product package maintenance', () => {
     await waitFor(() => expect(productPackagesApi.revise).toHaveBeenCalledOnce());
     expect(productPackagesApi.revise).toHaveBeenCalledWith(productId, 'package-a', 2, expect.objectContaining({
       label: '新原廠盒', identifiers: [{ namespace: 'MANUFACTURER', value: ' 000Mfr ' }],
-    }));
+    }), false);
+  });
+
+  it('keeps a stale active draft after retirement conflict and requires explicit refreshed replacement', async () => {
+    setup();
+    await screen.findByText('原廠瓶 · revision 2 · 未停用（仍須符合有效期）');
+    fireEvent.click(screen.getByRole('button', { name: '以 revision 2 建立新版本' }));
+    fillNewDraft();
+    apiMock.revise.mockRejectedValueOnce(axiosError(409));
+    fireEvent.click(screen.getByRole('button', { name: '確認覆核並儲存新 revision' }));
+    await waitFor(() => expect(productPackagesApi.revise).toHaveBeenCalledOnce());
+    expect(productPackagesApi.revise).toHaveBeenLastCalledWith(productId, 'package-a', 2,
+      expect.objectContaining({ label: '新原廠盒' }), false);
+    expect(await screen.findByRole('status')).toHaveTextContent('草稿已保留');
+    expect(screen.getByLabelText('包裝名稱')).toHaveValue('新原廠盒');
+    expect(screen.getByLabelText('識別碼 1')).toHaveValue(' 000Mfr ');
+    expect(screen.getByRole('button', { name: '確認覆核並儲存新 revision' })).toBeDisabled();
+
+    apiMock.list.mockResolvedValue({ ...history, packages: [{ ...history.packages[0], revisions: [{
+      ...revision, retiredAt: '2026-10-02T00:00:00.000Z', retiredById: 'reviewer-b', retirementReason: '停售',
+    }] }] });
+    fireEvent.click(screen.getByRole('button', { name: '重新載入歷史' }));
+    await screen.findByText('原廠瓶 · revision 2 · 已停用');
+    expect(screen.getByLabelText('包裝名稱')).toHaveValue('新原廠盒');
+    expect(screen.getByRole('button', { name: '確認覆核並儲存新 revision' })).toBeDisabled();
+    expect(productPackagesApi.revise).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole('button', { name: '以 revision 2 建立新版本' }));
+    fillNewDraft();
+    apiMock.revise.mockResolvedValueOnce({ data: { success: true } });
+    fireEvent.click(screen.getByRole('button', { name: '確認覆核並儲存新 revision' }));
+    await waitFor(() => expect(productPackagesApi.revise).toHaveBeenCalledTimes(2));
+    expect(productPackagesApi.revise).toHaveBeenLastCalledWith(productId, 'package-a', 2,
+      expect.objectContaining({ label: '新原廠盒' }), true);
+    await screen.findByText('已儲存。請核對更新後的包裝歷史。');
   });
 
   it.each([[403, '權限不足'], [409, '版本或庫存單位已變更']])('keeps the draft and blocks resubmission after HTTP %s', async (status, message) => {

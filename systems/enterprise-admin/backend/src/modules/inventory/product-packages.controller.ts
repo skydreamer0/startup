@@ -19,7 +19,7 @@ export const ProductPackagesController = {
     try {
       const { productId, packageId } = packageParams.parse(req.params);
       res.status(201).json({ success: true, data: await ProductPackagesService.save(
-        productId, req.body.data, req.user!.userId, { packageId, expectedRevision: req.body.expectedRevision },
+        productId, req.body.data, req.user!.userId, { packageId, expectedRevision: req.body.expectedRevision, expectedRetired: req.body.expectedRetired },
       ) });
     } catch (error) { next(error); }
   },

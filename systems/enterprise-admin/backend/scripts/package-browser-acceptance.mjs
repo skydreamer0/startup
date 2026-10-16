@@ -1,5 +1,6 @@
 // GitHub-hosted, synthetic-only built Admin/POS -> production HTTP API -> PG15.
 import assert from 'node:assert/strict';
+import { runPackageBrowserInteractions } from './package-browser-interactions.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
@@ -204,8 +205,11 @@ try {
     await expect(pos.locator('.pos-cart-panel').getByText('共 3 件商品', { exact: true })).toBeVisible();
     await lookup.getByRole('button', { name: '關閉包裝查找', exact: true }).click();
     await expect(manualOpen).toBeFocused();
+    const interactions = viewport.width === 390 ? await runPackageBrowserInteractions({
+      admin, pos, context, adminOrigin, posOrigin, maintenance, product, code, prefix, viewport, expect, requirePos, capture, networkLedger,
+    }) : undefined;
     assert.deepEqual(await business(), baseline);
-    cases.push({ viewport, status: 'passed', manualConfirmation: true, unknownConversionBlocked: true, ambiguity: 3,
+    cases.push({ viewport, interactions, status: 'passed', manualConfirmation: true, unknownConversionBlocked: true, ambiguity: 3,
       confirmedBaseQuantity: 3, staleRevisionRejected: true, manualHandoff: true, handoffFocusRestored: true, backendBusinessUnchanged: true, geometry, adminGeometry });
     await context.close();
   }

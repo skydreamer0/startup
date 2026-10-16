@@ -29,7 +29,7 @@ export const packageLookupSchema = { query: packageIdentifierSchema };
 export const packageProductParams = z.object({ productId: z.string().uuid() }).strict();
 export const packageParams = z.object({ productId: z.string().uuid(), packageId: z.string().uuid() }).strict();
 export const packageRevisionSchema = { params: packageParams, body: z.object({
-  expectedRevision: z.number().int().min(1), data: packageRevisionBody,
+  expectedRevision: z.number().int().min(1), expectedRetired: z.boolean().default(false), data: packageRevisionBody,
 }).strict() };
 export const packageRetireSchema = { params: packageParams, body: z.object({
   expectedRevision: z.number().int().min(1), reason: text,

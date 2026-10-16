@@ -15,6 +15,12 @@ export interface PackageRevisionInput {
   validUntil: string | null;
   identifiers: PackageIdentifier[];
 }
+export interface PackageRevisionRequest {
+  expectedRevision: number;
+  /** State observed when selecting the revision; omission means an active revision. */
+  expectedRetired?: boolean;
+  data: PackageRevisionInput;
+}
 export interface PackageRevision extends Omit<PackageRevisionInput, 'stockUnitLabel'> {
   id: string;
   packageId: string;

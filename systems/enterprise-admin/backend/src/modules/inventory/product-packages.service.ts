@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { isUnsupportedPackageIdentifier } from './product-packages-identifier-policy';
 import { prisma } from '../../lib/prisma';
 import { tenantPersistence } from '../../lib/tenant-persistence';
 import { AppError } from '../../lib/errors';
@@ -33,7 +34,7 @@ export class ProductPackagesService {
   }
 
   static async save(productId: string, input: PackageRevisionInput, actorId: string,
-    previous?: { packageId: string; expectedRevision: number }) {
+    previous?: { packageId: string; expectedRevision: number; expectedRetired?: boolean }) {
     const tenant = tenantPersistence();
     const data = packageRevisionBody.parse(input);
     return prisma.$transaction(async tx => {
@@ -55,6 +56,16 @@ export class ProductPackagesService {
           data: { revision: { increment: 1 } },
         });
         if (changed.count !== 1) throw new AppError(409, '包裝版本已變更，請重新讀取後再建立 revision');
+        // Retirement keeps the revision number. Check the observed retirement
+        // state after taking the identity lock shared with retire(), so a draft
+        // opened before retirement cannot silently create a replacement.
+        const head = await tx.productPackageRevision.findFirst({
+          where: tenant.where({ packageId: previous.packageId, revision: previous.expectedRevision }),
+          select: { retiredAt: true },
+        });
+        if (!head || (head.retiredAt !== null) !== (previous.expectedRetired ?? false)) {
+          throw new AppError(409, '包裝停用狀態已變更，請重新讀取並核對後再建立 revision');
+        }
         packageId = previous.packageId;
         revision = previous.expectedRevision + 1;
         await tx.productPackageRevision.updateMany({
@@ -105,7 +116,8 @@ export class ProductPackagesService {
     const identifier = packageIdentifierSchema.parse(input);
     // Explicit namespace selection never routes an unsupported internal QR or
     // a URL to a product code, nor does it fall back to the legacy SKU endpoint.
-    if (/^[PB]\d+:|^[a-z][a-z0-9+.-]*:\/\//i.test(identifier.value)) {
+    // Classification only: preserve the original identifier for exact matching.
+    if (isUnsupportedPackageIdentifier(identifier.value)) {
       throw new AppError(422, '此內容屬內部標籤或連結，不能當作原廠碼查找');
     }
     const rows = await prisma.productPackageRevision.findMany({

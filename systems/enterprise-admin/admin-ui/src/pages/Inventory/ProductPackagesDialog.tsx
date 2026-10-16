@@ -33,7 +33,7 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
   const writing = useRef(false);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState('');
-  const [target, setTarget] = useState<{ packageId: string; revision: number } | null>(null);
+  const [target, setTarget] = useState<{ packageId: string; revision: number; expectedRetired: boolean } | null>(null);
   const [form, setForm] = useState({ label: '', contents: '', stockUnitLabel: '', units: '', source: '', reason: '',
     validFrom: localTime(new Date().toISOString()), validUntil: '' });
   const [identifiers, setIdentifiers] = useState<PackageIdentifier[]>([{ namespace: 'MANUFACTURER', value: '' }]);
@@ -55,7 +55,7 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
   const canWrite = available && editable && !pending && !mustReview && !needsRefresh;
   function editRevision(row: PackageRevision) {
     if (!available || pending || needsRefresh) return;
-    setTarget({ packageId: row.packageId, revision: row.revision });
+    setTarget({ packageId: row.packageId, revision: row.revision, expectedRetired: row.retiredAt !== null });
     setForm({ label: row.label, contents: row.contents, stockUnitLabel: history.data?.product.stockUnitLabel ?? '',
       units: row.unitsPerPackage === null ? '' : String(row.unitsPerPackage), source: row.source, reason: '',
       validFrom: localTime(new Date().toISOString()), validUntil: '' });
@@ -91,7 +91,7 @@ function PackagePanel({ productId, onClose, userId, allowed, editable }: {
         validUntil: form.validUntil ? new Date(`${form.validUntil}+08:00`).toISOString() : null, identifiers };
     } catch { setMessage('請填寫完整有效時間（台北時間）。'); return; }
     await write(() => target
-      ? productPackagesApi.revise(productId, target.packageId, target.revision, data)
+      ? productPackagesApi.revise(productId, target.packageId, target.revision, data, target.expectedRetired)
       : productPackagesApi.create(productId, data));
   }
   function newPackage() {
