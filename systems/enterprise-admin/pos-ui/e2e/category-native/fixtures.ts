@@ -19,11 +19,18 @@ const fonts = new Set([
 declare global { interface Window { __categoryKeys: { key: string; trusted: boolean }[] } }
 export const test = base.extend<{ guard: Guard; nativeBrowser: { context: BrowserContext; close: () => Promise<void> } }>({
   nativeBrowser: async ({}, use, info) => {
+    const identity = { runNonce: process.env.CATEGORY_UI_NONCE ?? '', testNonce: randomUUID(), test: info.title };
     await withNativeContext(async (context, close) => {
       const receipt = await assertNativeFocus(context);
       mkdirSync(info.outputDir, { recursive: true });
-      writeFileSync(info.outputPath('native-focus-preflight.json'), JSON.stringify({ test: info.title, nonce: process.env.CATEGORY_UI_NONCE, ...receipt }, null, 2) + '\n');
+      writeFileSync(info.outputPath('native-focus-preflight.json'), JSON.stringify({ test: info.title, nonce: identity.runNonce, ...receipt }, null, 2) + '\n');
       await use({ context, close });
+    }, {
+      identity,
+      onReceipt: receipt => {
+        mkdirSync(info.outputDir, { recursive: true });
+        writeFileSync(info.outputPath('native-lifecycle.json'), JSON.stringify(receipt, null, 2) + '\n');
+      },
     });
   },
   context: async ({ nativeBrowser }, use) => { await use(nativeBrowser.context); },

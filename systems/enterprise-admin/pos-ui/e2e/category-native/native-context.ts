@@ -1,34 +1,58 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium, expect, type BrowserContext } from '@playwright/test';
+import { recordNativeLifecycle, validateNativeLifecycleReceipt } from './native-context.lifecycle.mjs';
 
 // A second CDP session cannot release the capturer held by Playwright's first
 // session. Connect without creating that override in the first place. launchServer
 // owns Chrome's temporary profile/process and retains Playwright's sandboxed args.
-export async function withNativeContext(use: (context: BrowserContext, close: () => Promise<void>) => Promise<void>) {
+async function readProcessStartTime(pid: number | undefined) {
+  if (!pid) return null;
+  try {
+    const stat = await readFile(`/proc/${pid}/stat`, 'utf8');
+    return stat.slice(stat.lastIndexOf(')') + 2).trim().split(/\s+/)[19] ?? null;
+  } catch { return null; }
+}
+
+export async function withNativeContext(
+  use: (context: BrowserContext, close: () => Promise<void>) => Promise<void>,
+  lifecycle?: { identity: { runNonce: string; testNonce: string; test: string }; onReceipt: (receipt: unknown) => void },
+) {
+  const identity = lifecycle?.identity ?? {
+    runNonce: process.env.CATEGORY_UI_NONCE ?? '', testNonce: randomUUID(), test: 'native-focus-preflight',
+  };
   const server = await chromium.launchServer({ channel: 'chrome', headless: false,
     chromiumSandbox: true, args: ['--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0'] });
-  let closing: Promise<void> | undefined;
-  const close = () => closing ??= server.close();
-  try {
-    const profileArg = server.process().spawnargs.find(arg => arg.startsWith('--user-data-dir='));
-    if (!profileArg) throw new Error('Owned Chrome did not expose its temporary profile argument');
-    const activePort = join(profileArg.slice('--user-data-dir='.length), 'DevToolsActivePort');
-    let endpoint = '';
-    await expect.poll(async () => {
-      try {
-        const [port, path] = (await readFile(activePort, 'utf8')).trim().split('\n');
-        if (!/^\d+$/.test(port) || !/^\/devtools\/browser\/[\w-]+$/.test(path)) throw new Error('Invalid owned CDP endpoint');
-        endpoint = `ws://127.0.0.1:${port}${path}`;
-        return true;
-      } catch (error) {
-        if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return false;
-        throw error;
-      }
-    }, { timeout: 10_000 }).toBe(true);
-    const browser = await chromium.connectOverCDP(endpoint, { noDefaults: true });
-    try {
+  const child = server.process();
+  const profileArg = child.spawnargs.find(arg => arg.startsWith('--user-data-dir='));
+  const profilePath = profileArg?.slice('--user-data-dir='.length) ?? null;
+  const activePort = profilePath ? join(profilePath, 'DevToolsActivePort') : null;
+  let endpoint = '';
+  let browser: Awaited<ReturnType<typeof chromium.connectOverCDP>> | null = null;
+  const exited = new Promise<{ exitCode: number | null; signal: string | null }>(resolve => {
+    if (child.exitCode !== null || child.signalCode !== null) resolve({ exitCode: child.exitCode, signal: child.signalCode });
+    else child.once('exit', (exitCode, signal) => resolve({ exitCode, signal }));
+  });
+  const closed = new Promise<boolean>(resolve => child.once('close', () => resolve(true)));
+  const lifecycleResult = await recordNativeLifecycle({
+    identity: { ...identity, pid: child.pid, uid: process.getuid?.() ?? null, startTime: await readProcessStartTime(child.pid) },
+    profilePath,
+    use: async (close: () => Promise<void>) => {
+      if (!activePort) throw new Error('Owned Chrome did not expose its temporary profile argument');
+      await expect.poll(async () => {
+        try {
+          const [port, path] = (await readFile(activePort, 'utf8')).trim().split('\n');
+          if (!/^\d+$/.test(port) || !/^\/devtools\/browser\/[\w-]+$/.test(path)) throw new Error('Invalid owned CDP endpoint');
+          endpoint = `ws://127.0.0.1:${port}${path}`;
+          return true;
+        } catch (error) {
+          if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return false;
+          throw error;
+        }
+      }, { timeout: 10_000 }).toBe(true);
+      browser = await chromium.connectOverCDP(endpoint, { noDefaults: true });
       const contexts = browser.contexts();
       expect(contexts).toHaveLength(1);
       // Only the default context honors noDefaults. Never call newContext here.
@@ -41,10 +65,20 @@ export async function withNativeContext(use: (context: BrowserContext, close: ()
         });
       });
       await use(contexts[0], close);
-    } finally {
-      try { await close(); } finally { await browser.close(); }
-    }
-  } finally { await close(); }
+    },
+    closeServer: () => server.close(),
+    closeClient: async () => { if (browser) await browser.close(); },
+    waitForProcessClose: async () => ({ ...(await exited), closeEvent: await closed }),
+    profileExists: async () => {
+      if (!profilePath) return false;
+      try { await access(profilePath); return true; }
+      catch (error) { if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return false; throw error; }
+    },
+    onReceipt: lifecycle?.onReceipt,
+  });
+  if (lifecycleResult.callbackFailed) throw lifecycleResult.callbackError;
+  const verified = validateNativeLifecycleReceipt(lifecycleResult.receipt, identity);
+  if (!verified.ok) throw new Error(`Native browser lifecycle is not a normal close: ${verified.errors.join('; ')}`);
 }
 
 export async function assertNativeFocus(context: BrowserContext) {
