@@ -5,11 +5,17 @@ import { withNativeContext } from '../../e2e/category-native/native-context';
 // Resource/API regression only; these doubles do not establish native visibility.
 const state = vi.hoisted(() => ({ scenario: 'success', calls: [] as string[] }));
 vi.mock('node:fs/promises', () => {
-  const fs = { readFile: vi.fn(async () => '12345\n/devtools/browser/unit-id\n') };
+  const fs = {
+    readFile: vi.fn(async (path: string) => path.startsWith('/proc/')
+      ? `42 (unit-owned-chrome) ${['S', ...Array(18).fill('0'), '123'].join(' ')}`
+      : '12345\n/devtools/browser/unit-id\n'),
+    access: vi.fn(async () => { throw Object.assign(new Error('unit profile removed'), { code: 'ENOENT' }); }),
+  };
   return { ...fs, default: fs }; // Support Vite's CJS default-import interop as well as named imports.
 });
 vi.mock('@playwright/test', async () => {
   const { expect: check } = await import('vitest');
+  const { EventEmitter } = await import('node:events');
   const assertion = Object.assign((value: unknown) => check(value), {
     poll: (read: () => Promise<unknown>) => ({ toBe: async (value: unknown) => check(await read()).toBe(value) }),
   });
@@ -21,10 +27,13 @@ vi.mock('@playwright/test', async () => {
       check(options).toEqual({ channel: 'chrome', headless: false, chromiumSandbox: true,
         args: ['--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0'] });
       state.calls.push('launch');
+      const child = Object.assign(new EventEmitter(), { pid: 42, exitCode: null, signalCode: null,
+        spawnargs: state.scenario === 'missing-profile' ? [] : ['--user-data-dir=/unit-owned-profile'] });
       return {
-        process: () => ({ spawnargs: state.scenario === 'missing-profile' ? [] : ['--user-data-dir=/unit-owned-profile'] }),
+        process: () => child,
         close: async () => {
           state.calls.push('close-owned-server');
+          child.emit('exit', 0, null); child.emit('close', 0, null);
           if (state.scenario === 'close-failure') throw new Error('unit-close');
         },
       };
@@ -51,7 +60,8 @@ it.each(['success', 'callback-failure', 'connect-failure', 'missing-profile', 'w
       state.calls.push('use');
       if (scenario === 'callback-failure') throw new Error('unit-callback');
       await close(); await close();
-    });
+    }, { identity: { runNonce: '00000000-0000-0000-0000-000000000001',
+      testNonce: '00000000-0000-0000-0000-000000000002', test: scenario }, onReceipt: () => {} });
     if (scenario === 'success') await run();
     else await expect(run()).rejects.toThrow();
     expect(state.calls.filter(call => call === 'close-owned-server')).toHaveLength(1);

@@ -11,13 +11,14 @@ import { assertEnvironment, assertReport, assertNetwork, assertDatabase, assertF
 import { assertOwnership, assertService, databaseName } from '../../../backend/scripts/pos-product-lookup-ci.mjs';
 import { validatePng } from '../admin-margin-warning/png.mjs';
 import { assertBrandSources } from '../dialog-acceptance/brand-assets.mjs';
+import { runOwnedPhaseWithRecoveryReceipt, validateNativeLifecycleSet } from './native-context.lifecycle.mjs';
 
 export async function runOwnedPhase(owner, command, args, options, state, cleanup) {
   state.quiescent = false;
-  const result = await owner.run(command, args, options);
-  const receipt = await cleanup(); state.quiescent = result.quiescent === true && receipt.quiescent === true;
+  const result = await runOwnedPhaseWithRecoveryReceipt(owner, command, args, options, cleanup);
+  state.quiescent = result.quiescent === true && result.cleanup.quiescent === true;
   assert.equal(state.quiescent, true, 'Owned processes must be quiescent');
-  return { ...result, cleanup: receipt };
+  return result;
 }
 export function publishEvidence(state, output, githubOutput) {
   if (!state.quiescent) return false;
@@ -87,6 +88,7 @@ async function main() {
     assert.equal(phases['native-focus-preflight'].exitCode, 0, 'Native focus prerequisite must pass');
     assert.equal(phases['native-focus-preflight'].signal, null); assert.equal(phases['native-focus-preflight'].error, null);
     const commands = [
+      ['native-lifecycle-pure', app, ['--test', path.join(app, 'e2e/category-native/native-context.lifecycle.test.mjs')]],
       ['browser-types', app, ['node_modules/typescript/bin/tsc', '--project', 'tsconfig.category-native.json']],
       ['fixture-types', backend, ['node_modules/typescript/bin/tsc', '--project', 'tsconfig.category-native.json']],
       ['collection', app, ['node_modules/@playwright/test/cli.js', 'test', '--config', 'e2e/category-native.config.mts', '--list']],
@@ -111,6 +113,14 @@ async function main() {
     }
     const ledgers = files.filter(file => file.endsWith('/network.json')).map(file => read(path.join('tests', file)));
     assert.deepEqual(ledgers.map(row => row.test).sort(), [...expectedCases].sort()); ledgers.forEach(row => assert.equal(row.nonce, nonce));
+    const nativeLifecycle = files.filter(file => file.endsWith('/native-lifecycle.json')).map(file => read(path.join('tests', file)));
+    const lifecycleValidation = validateNativeLifecycleSet(nativeLifecycle, {
+      expectedCases, runNonce: nonce,
+      supervisorSignalCount: phases['real-api-browser'].cleanup.signalCount,
+      supervisorQuiescent: phases['real-api-browser'].cleanup.quiescent,
+    });
+    assert.equal(lifecycleValidation.ok, true, `Native lifecycle receipts incomplete: ${lifecycleValidation.errors.join('; ')}`);
+    write('native-lifecycle-receipts.json', nativeLifecycle);
     const api = read('api-ledger.json'), database = read('database-receipt.json');
     ledgers.forEach(row => assertCategoryStaticEvidence(row.verifiedStatic));
     const networkReads = assertNetwork(ledgers, api); const databaseProof = assertDatabase(database, api);
@@ -150,13 +160,18 @@ async function main() {
     }
     write('captures.json', captures);
     accepted = { ...identity, nonce, status: 'passed', cases, networkReads, databaseProof, captures: captures.length,
+      nativeLifecycleReceipts: nativeLifecycle.length, browserProcessRecovery: 'none',
       checkoutRequests: 0, writesFromBrowser: 0, cartUnchanged: true, phases,
       databaseRemoval: 'Require the subsequent unchanged SKU cleanup receipt with ownedDatabaseAbsent=true; this runner only removes its exact fixture rows',
       visualReview: 'Actual screenshots still require independent Chinese readability, reachability and focus review',
       notRun: ['checkout/refund confirmed quantity', 'whole POS responsive layout', 'hardware/iPad/Safari', 'production DB or deployment'] };
   } catch (problem) { error = problem; }
   finally {
-    try { const cleanup = await cleanupRunProcesses(scope); write('run-cleanup.json', cleanup); state.quiescent = state.quiescent && cleanup.quiescent === true; }
+    try {
+      const cleanup = await cleanupRunProcesses(scope); write('run-cleanup.json', cleanup);
+      state.quiescent = state.quiescent && cleanup.quiescent === true && cleanup.signalCount === 0;
+      if (cleanup.signalCount !== 0) error ??= new Error('Forced final process cleanup cannot count as normal native acceptance');
+    }
     catch (problem) { state.quiescent = false; error ??= problem; }
     // A cancelled fixture may not get to its finally block. Never publish its JWT.
     fs.rmSync(path.join(output, '.bootstrap.json'), { force: true });

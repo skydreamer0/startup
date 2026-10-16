@@ -17,13 +17,13 @@ async function liveGroup(group) {
   return members;
 }
 const signal = (group, name) => {
-  try { process.kill(-group, name); } catch (error) { if (error.code !== 'ESRCH') throw error; }
+  try { process.kill(-group, name); return true; } catch (error) { if (error.code !== 'ESRCH') throw error; return false; }
 };
-async function settle(group) {
+async function settle(group, recoverySignals) {
   if (!(await liveGroup(group)).length) return;
-  signal(group, 'SIGTERM');
+  if (signal(group, 'SIGTERM')) recoverySignals.push({ source: 'settle', signal: 'SIGTERM' });
   for (let i = 0; i < 40; i++) { if (!(await liveGroup(group)).length) return; await delay(50); }
-  signal(group, 'SIGKILL');
+  if (signal(group, 'SIGKILL')) recoverySignals.push({ source: 'settle', signal: 'SIGKILL' });
   for (let i = 0; i < 40; i++) { if (!(await liveGroup(group)).length) return; await delay(50); }
   throw new Error('Owned process group did not become quiescent; no upload may be published');
 }
@@ -37,22 +37,27 @@ export function processOwner() {
   return {
     get cancelled() { return cancelled; },
     async run(command, args, options) {
-      if (cancelled) return { exitCode: null, signal: cancelled, error: null, quiescent: true };
+      if (cancelled) return { exitCode: null, signal: cancelled, error: null, quiescent: true,
+        signalCount: 0, recoverySignals: [], cancelled };
       const child = spawn(command, args, { ...options, detached: true });
       let error = null;
       let escalation;
+      const recoverySignals = [];
       child.once('error', problem => { error = problem.message; });
       cancelChild = () => {
         if (!child.pid) return;
-        signal(child.pid, 'SIGTERM');
-        escalation ??= setTimeout(() => signal(child.pid, 'SIGKILL'), 2000);
+        if (signal(child.pid, 'SIGTERM')) recoverySignals.push({ source: 'cancel', signal: 'SIGTERM' });
+        escalation ??= setTimeout(() => {
+          if (signal(child.pid, 'SIGKILL')) recoverySignals.push({ source: 'cancel', signal: 'SIGKILL' });
+        }, 2000);
       };
       if (cancelled) cancelChild();
       const result = await new Promise(resolve => child.once('close', (exitCode, signal) => resolve({ exitCode, signal })));
       if (escalation) clearTimeout(escalation);
       cancelChild = null;
-      if (child.pid) await settle(child.pid);
-      return { ...result, error, quiescent: true };
+      if (child.pid) await settle(child.pid, recoverySignals);
+      return { ...result, error, quiescent: true, signalCount: recoverySignals.length,
+        recoverySignals, cancelled };
     },
     dispose() { for (const [name, handler] of Object.entries(handlers)) process.off(name, handler); },
   };
