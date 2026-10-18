@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom/vitest';
 import { useState } from 'react';
-import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom';
+import { MemoryRouter, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { AxiosError, AxiosHeaders } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthContext, type AuthContextType } from '../hooks/authContext';
+import StockReconciliationPage from '../pages/Inventory/StockReconciliationPage';
 import ProductListPage from '../pages/Inventory/ProductListPage';
 import { parseProductBatches } from '../api/productBatches';
 
@@ -49,7 +50,7 @@ function Harness() {
         <button onClick={() => setAllowed(false)}>Revoke permission</button>
         <button onClick={() => setAllowed(true)}>Restore permission</button>
         <output aria-label="Current URL">{location.pathname}{location.search}</output>
-        <ProductListPage />
+        <Routes><Route path="/inventory" element={<ProductListPage />} /><Route path="/inventory/reconciliation" element={<StockReconciliationPage />} /></Routes>
     </AuthContext.Provider>;
 }
 function setup(entry = '/inventory?page=2&lowStock=true') {
@@ -62,6 +63,14 @@ beforeEach(() => {
     vi.resetAllMocks();
     batchRequest.mockImplementation(async id => ({ data: envelope(id, id === 'product-a' ? 'LOT-A' : 'LOT-B') }));
     httpGet.mockImplementation(async (path: string, options?: { params?: Record<string, string>; signal?: AbortSignal }) => {
+        if (path === '/inventory/stock-reconciliation') return { data: { success: true, data: {
+            page: 1, limit: 50, total: 1, observedAt: '2026-10-18T12:00:00.000Z', expiryCutoff: '2026-10-18T16:00:00.000Z',
+            data: [{ id: 'product-a', name: '商品 product-a', sku: 'SKU-product-a', stockUnitLabel: null,
+                stockQuantity: 9, physicalBatchQuantity: 5, difference: 4, batchCount: 3,
+                releasedQuantity: 7, quarantineQuantity: -2, blockedQuantity: 0, expiredQuantity: 0,
+                eligibleReleasedQuantity: 7, negativeBatchCount: 1, untracedReceiptCount: 0,
+                reservedQuantity: null, availableQuantity: null, historyComplete: null }],
+        } } };
         if (path === '/inventory/products') return { data: { success: true, data: {
             page: Number(options?.params?.page ?? 1), limit: 50, total: 101,
             data: ['product-a', 'product-b'].map(id => ({ id, name: `商品 ${id}`, sku: `SKU-${id}`, costPrice: '10', retailPrice: '20', stockQuantity: 0, safetyStock: 1 })),
@@ -75,6 +84,30 @@ beforeEach(() => {
 afterEach(() => {
     expect(httpPost).not.toHaveBeenCalled(); expect(httpPut).not.toHaveBeenCalled(); expect(httpDelete).not.toHaveBeenCalled();
     cleanup(); clients.splice(0).forEach(client => client.clear());
+});
+
+describe('reconciliation negative batch investigation', () => {
+    it('follows the real report link to signed batch rows and preserves browser Back/Forward without writes', async () => {
+        batchRequest.mockResolvedValue({ data: { success: true, data: [
+            batch(), { ...batch('product-a', 'LOT-NEGATIVE'), quantity: -2 },
+            { ...batch('product-a', 'LOT-ZERO'), quantity: 0 },
+        ] } });
+        setup('/inventory/reconciliation?page=1');
+        expect(await screen.findByText('1 個批次為負數，需核對。')).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('link', { name: '查看 商品 product-a 的批次' }));
+        expect(await screen.findByText('LOT-NEGATIVE')).toBeInTheDocument();
+        expect(screen.getByText('-2')).toBeInTheDocument();
+        expect(screen.getByText('LOT-ZERO')).toBeInTheDocument();
+        expect(screen.getByText('負數帳量，需核對')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toHaveTextContent('1 個批次帳量為負數');
+        expect(screen.getByRole('heading', { name: '商品批次' })).toHaveFocus();
+        expect(batchRequest).toHaveBeenCalledWith('product-a', expect.any(AbortSignal));
+        fireEvent.click(screen.getByRole('button', { name: 'Browser Back' }));
+        expect(await screen.findByRole('heading', { name: '庫存差異對帳（唯讀）' })).toBeInTheDocument();
+        expect(screen.getByLabelText('Current URL')).toHaveTextContent('/inventory/reconciliation?page=1');
+        fireEvent.click(screen.getByRole('button', { name: 'Browser Forward' }));
+        expect(await screen.findByText('LOT-NEGATIVE')).toBeInTheDocument();
+    });
 });
 
 describe('product → product-scoped batches → original product list', () => {
@@ -253,13 +286,18 @@ describe('product → product-scoped batches → original product list', () => {
 });
 
 describe('product batch read contract', () => {
+    it.each([Number.MIN_SAFE_INTEGER, -2, -1, 0, 1, Number.MAX_SAFE_INTEGER])('preserves safe signed read quantity %s', quantity => {
+        const row = { ...batch(), quantity };
+        expect(parseProductBatches({ success: true, data: [row] }, 'product-a')).toEqual([row]);
+    });
     it('accepts the current API envelope and preserves the product identity', () => {
         expect(parseProductBatches(envelope(), 'product-a')).toEqual([batch()]);
     });
     it.each([
         { success: true, data: [batch('product-b')] },
         { success: true, data: [{ ...batch(), product: { ...batch().product, id: 'product-b' } }] },
-        { success: true, data: [{ ...batch(), quantity: -1 }] },
+        ...[NaN, Infinity, -Infinity, 0.5, -0.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1, '-2', null].map(quantity => ({ success: true, data: [{ ...batch(), quantity }] })),
+        { success: true, data: [{ ...batch(), tenantId: '' }] },
         { success: true, data: [{ ...batch(), expiryDate: 'unknown' }] },
         { success: true, data: [{ ...batch(), status: 'unknown' }] },
         { success: true, data: [batch(), batch()] },

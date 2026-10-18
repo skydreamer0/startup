@@ -17,13 +17,14 @@ function record(value: unknown): value is Record<string, unknown> {
 function text(value: unknown): value is string { return typeof value === 'string' && value.length > 0; }
 function invalid(): never { throw new Error('商品批次資料格式不符，無法確認查詢結果。'); }
 
-/** Validate the existing read envelope; server auth remains the tenant authority. */
+/** Read-only ledger quantities may be negative; receipt/write validation is separate.
+ * Validate the existing envelope; server auth remains the tenant authority. */
 export function parseProductBatches(value: unknown, productId: string): ProductBatchRow[] {
     if (!record(value) || value.success !== true || !Array.isArray(value.data)) return invalid();
     const rows = value.data.map((row: unknown): ProductBatchRow => {
         if (!record(row) || !text(row.id) || row.productId !== productId || !text(row.tenantId)
             || !text(row.batchNumber) || !text(row.expiryDate) || !Number.isFinite(Date.parse(row.expiryDate))
-            || typeof row.quantity !== 'number' || !Number.isSafeInteger(row.quantity) || row.quantity < 0
+            || typeof row.quantity !== 'number' || !Number.isSafeInteger(row.quantity)
             || (row.status !== 'RELEASED' && row.status !== 'QUARANTINE' && row.status !== 'BLOCKED')
             || !record(row.product) || row.product.id !== productId || !text(row.product.name) || !text(row.product.sku)) return invalid();
         return { id: row.id, productId, tenantId: row.tenantId, batchNumber: row.batchNumber,

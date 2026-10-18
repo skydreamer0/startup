@@ -32,6 +32,7 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
   const origin = new URL(adminOrigin);
   assert.equal(origin.protocol, 'http:'); assert.equal(origin.hostname, '127.0.0.1');
   const reportPath = '/api/v1/admin/inventory/stock-reconciliation';
+  const batchesPath = '/api/v1/admin/product-batches';
   const productId = randomUUID(), deniedUserId = randomUUID(), deniedRoleId = randomUUID();
   const productName = '0 合成庫存對帳商品', productSku = 'RECON-BROWSER-ONLY';
   const cases = [], network = [], forbidden = [], responseTasks = [];
@@ -51,7 +52,10 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
     for (const [batchNumber, status, quantity, expiryDate] of [
       ['RECON-FUTURE', 'RELEASED', 1, '2099-01-01'],
       ['RECON-EXPIRED', 'RELEASED', 1, '2000-01-01'],
-      ['RECON-QUARANTINE', 'QUARANTINE', 2, '2099-01-01'],
+      ['RECON-QUARANTINE', 'QUARANTINE', 4, '2099-01-01'],
+      // Pre-existing inconsistent ledger fixture, not a receipt/write command.
+      ['RECON-NEGATIVE', 'BLOCKED', -2, '2099-01-01'],
+      ['RECON-ZERO', 'RELEASED', 0, '2099-01-01'],
     ]) await db.productBatch.create({ data: { productId, tenantId, batchNumber, status, quantity, expiryDate: new Date(expiryDate), costPrice: 1 } });
     await db.inventoryTransaction.create({ data: { tenantId, productId, type: 'IN', quantity: 9, notes: 'Synthetic untraced receipt for readonly acceptance' } });
     // Persisted synthetic actor/role with no grants. The JWT permissions=[]
@@ -79,7 +83,7 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
         const entry = { viewport: viewport.width, method: request.method(), path: url.pathname + url.search, allowed };
         network.push(entry);
         if (!allowed) { forbidden.push(entry); await route.abort(); return; }
-        if (url.pathname === reportPath && mode === 'fail500') {
+        if ((url.pathname === reportPath && mode === 'fail500') || (url.pathname === batchesPath && mode === 'failBatch500')) {
           entry.syntheticTransportFailure = true;
           await route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ success: false, error: { code: 'SYNTHETIC_TRANSPORT_FAILURE', message: 'Controlled browser transport failure, not production server failure' } }) });
           return;
@@ -101,7 +105,7 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
       const page = await context.newPage();
       page.on('response', response => {
         const url = new URL(response.url());
-        if (url.origin !== adminOrigin || url.pathname !== reportPath) return;
+        if (url.origin !== adminOrigin || ![reportPath, batchesPath].includes(url.pathname)) return;
         const task = (async () => {
           const body = await response.text();
           pendingResponses.push({ viewport: viewport.width, path: url.pathname + url.search, status: response.status(), bodyHash: hash(body), injected: body.includes('SYNTHETIC_TRANSPORT_FAILURE') });
@@ -119,6 +123,7 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
         await expect(target).toContainText('可出庫候選 1');
         await expect(target).toContainText('保留量／可承諾量：未知');
         await expect(target).toContainText('1 筆進貨未能追溯批次');
+        await expect(target).toContainText('1 個批次為負數，需核對');
         await expect(page.getByRole('alert')).toHaveCount(0);
       }
       try {
@@ -160,9 +165,28 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
         } else { await link.focus(); }
         await page.keyboard.press('Enter');
         await expect(page.getByRole('heading', { name: '商品批次', exact: true })).toBeFocused();
-        await expect(page.getByRole('region', { name: '商品批次清單', exact: true }).getByRole('row')).toHaveCount(4);
+        const batchTable = page.getByRole('region', { name: '商品批次清單', exact: true });
+        async function traced() {
+          await expect(batchTable.getByRole('row')).toHaveCount(6);
+          const negative = batchTable.getByRole('row').filter({ hasText: 'RECON-NEGATIVE' });
+          await expect(negative.getByRole('cell').nth(3)).toContainText('-2');
+          await expect(negative).toContainText('負數帳量，需核對');
+          await expect(batchTable.getByRole('row').filter({ hasText: 'RECON-ZERO' }).getByRole('cell').nth(3)).toHaveText('0');
+          await expect(page.getByRole('alert')).toContainText('1 個批次帳量為負數');
+          await expect(page).toHaveURL(new RegExp(`productId=${productId}$`));
+        }
+        await traced();
+        await capture(page, `reconciliation-negative-batch-${viewport.width}.png`, viewport);
+        mode = 'failBatch500'; await page.reload();
+        await expect(page.getByRole('alert')).toContainText('讀取失敗不代表沒有批次');
+        await expect(batchTable).toHaveCount(0);
+        mode = 'normal'; await page.getByRole('button', { name: '重新載入商品批次', exact: true }).click();
+        await traced();
         await expect(page.getByText('RECON-QUARANTINE', { exact: true })).toBeVisible();
         await page.goBack(); await loaded(); await expect(page).toHaveURL(/reconciliation\?page=1$/);
+        await page.goForward(); await traced();
+        await page.reload(); await traced();
+        await page.goBack(); await loaded();
 
         mode = 'fail500';
         await page.getByRole('button', { name: '更新本頁對帳', exact: true }).click();
@@ -191,7 +215,7 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'No whole-page horizontal overflow');
         await capture(page, `reconciliation-ready-${viewport.width}.png`, viewport);
         cases.push({ viewport, status: 'passed', loadingRealResponseHeld: true, pageSizes: [50, 50], keyboardPagination: true,
-          traceBatchRows: 3, traceScope: 'heading focus, row count and quarantine text only; no full trace-table narrow-layout acceptance', backNavigation: true, injected500InitialAndStaleRecovery: true, realDeniedTokenHttp: 403, permissionSource: 'signed JWT permissions=[] fast path; not role-grant lookup',
+          traceBatchRows: 5, signedBatchQuantity: -2, zeroBatchQuantity: 0, negativeWarning: true, batch500Recovery: true, forwardAndReloadTrace: true, traceScope: 'heading focus, signed/zero quantities, warning and quarantine; no full trace-table narrow-layout acceptance', backNavigation: true, injected500InitialAndStaleRecovery: true, realDeniedTokenHttp: 403, permissionSource: 'signed JWT permissions=[] fast path; not role-grant lookup',
           deniedCacheHidden: true, retryRecovered: true, geometry, readableGeometry, keyboardHorizontalScroll, nativeTouchAndSoftwareKeyboard: 'NOT_RUN' });
       } finally {
         release.resolve();
