@@ -36,6 +36,11 @@ export const loadingFor = (slug: Slug) => slug === 'margin' ? 'Loading margin da
 export const notice = (page: Page) => page.getByRole('note', { name: noticeName });
 
 type Harness = {
+  readerId?: string;
+  readerHandler?: (url: URL) => Reply | Promise<Reply>;
+  authWrites: string[];
+  readerResponses: {endpoint:string;status:number;sequence:number}[];
+  consoleErrors: string[];
   reads: string[]; responses: number[]; unexpected: string[]; pageErrors: string[];
   stubbedStylesheets: string[];
   imports: Awaited<ReturnType<typeof readImportRequest>>[];
@@ -46,13 +51,14 @@ type Harness = {
 };
 export const test = base.extend<{ harness: Harness }>({
   harness: [async ({ page, context }, use, info) => {
-    const state: Harness = { reads: [], responses: [], unexpected: [], pageErrors: [], stubbedStylesheets: [], imports: [], handler: url => ({ status: 200,
+    const state: Harness = { readerResponses: [], consoleErrors: [], authWrites: [], reads: [], responses: [], unexpected: [], pageErrors: [], stubbedStylesheets: [], imports: [], handler: url => ({ status: 200,
       data: url.pathname.endsWith('/sales-ranking') ? ranking : margin }) };
     await context.addInitScript(() => {
       localStorage.setItem('accessToken', 'synthetic-ui-fixture-not-a-credential');
       localStorage.setItem('admin-ui-theme', 'light');
     });
     await page.clock.setFixedTime(new Date('2026-10-10T12:00:00Z'));
+    page.on('console', message => { if (message.type() === 'error') state.consoleErrors.push(message.text()); });
     page.on('pageerror', error => state.pageErrors.push(error.message));
     await context.routeWebSocket('**/*', socket => { state.unexpected.push('WebSocket'); socket.close(); });
     await context.route('**/*', async (route: Route) => {
@@ -64,6 +70,12 @@ export const test = base.extend<{ harness: Harness }>({
       if (request.method() === 'GET' && request.resourceType() === 'stylesheet' && fontStylesheets.includes(request.url())) {
         state.stubbedStylesheets.push(request.url());
         await route.fulfill({ status: 200, contentType: 'text/css', body: '' }); return;
+      }
+      // Reader cases opt in to bounded synthetic auth only; never a live API write.
+      if (state.readerHandler && url.origin === origin && request.method() === 'POST'
+        && ['/api/v1/admin/auth/login','/api/v1/admin/auth/logout','/api/v1/admin/auth/refresh'].includes(url.pathname)) {
+        state.authWrites.push(url.pathname);
+        await route.fulfill({status:200,json:{success:true,data:{accessToken:'synthetic-reader-token',refreshToken:'synthetic-reader-refresh'}}}); return;
       }
       // Opt-in only for import cases; exact loopback POSTs are fulfilled here,
       // never continued to a server. The original read-only cases stay read-only.
@@ -83,8 +95,15 @@ export const test = base.extend<{ harness: Harness }>({
       if (!url.pathname.startsWith('/api/')) { await route.continue(); return; }
       const endpoint = url.pathname.replace('/api/v1/admin', '');
       let reply: Reply;
-      if (endpoint === '/auth/me') reply = { status: 200, data: { id: 'synthetic-user', email: 'synthetic@example.invalid', fullName: '合成驗收使用者', roles: ['Admin'], permissions: ['*'] } };
-      else if (endpoint === '/tenants/me/plan') reply = { status: 200, data: { plan: 'starter', features: [] } };
+      if (endpoint === '/auth/me') reply = { status: 200, data: { id: state.readerId ?? 'synthetic-user', email: 'synthetic@example.invalid', fullName: '合成驗收使用者', roles: ['Admin'], permissions: ['*'] } };
+      else if (endpoint === '/tenants/me/plan') reply = { status: 200, data: { plan: state.readerHandler ? 'pro' : 'starter', features: [] } };
+      else if (state.readerHandler && ['/inventory/suppliers','/analytics/product-abc','/analytics/supplier-ranking'].includes(endpoint)) {
+        state.reads.push(`${endpoint}${url.search}`); const sequence=state.reads.length; reply = await state.readerHandler(url); state.responses.push(reply.status); state.readerResponses.push({endpoint,status:reply.status,sequence});
+      }
+      else if (state.readerHandler && (endpoint.startsWith('/dashboard/') || endpoint === '/crm/metrics' || ['/analytics/kpis','/analytics/trends','/analytics/bonus-gate','/analytics/heatmap','/analytics/reorder-forecast'].includes(endpoint))) {
+        // Dashboard is only the auth redirect transit; no business values are fabricated.
+        reply = {status:500};
+      }
       else if (state.importHandler && ['/inventory/products', '/inventory/suppliers'].includes(endpoint)) {
         state.reads.push(`${endpoint}${url.search}`);
         reply = endpoint === '/inventory/products' && state.importProductsHandler
@@ -103,9 +122,9 @@ export const test = base.extend<{ harness: Harness }>({
     await use(state);
     const evidence = { title: info.title, browser: context.browser()?.version(), viewport: page.viewportSize(),
       input: 'case-specific native browser automation', syntheticHttp: true, physicalDevice: false,
-      imports: state.imports, importScope: 'exact loopback synthetic POST fulfillment only; no backend writes',
+      readerResponses: state.readerResponses, consoleErrors: state.consoleErrors, consoleErrorScope: 'Recorded separately; intentional synthetic HTTP failures may produce console resource errors', authWrites: state.authWrites, imports: state.imports, importScope: 'exact loopback synthetic POST fulfillment only; no backend writes',
       reads: state.reads, responses: state.responses, unexpected: state.unexpected, pageErrors: state.pageErrors,
-      fontScope: state.importHandler ? 'Import screenshots need independent CJK/visual review; no glyph attestation for this slice' : 'Ubuntu Noto CJK verified via actual Chrome platform glyphs; external Google font CSS stubbed, no browser font downloads', stubbedStylesheets: state.stubbedStylesheets };
+      fontScope: state.readerHandler ? 'Reader PNGs require independent visual/CJK review; no CDP glyph attestation for this slice' : state.importHandler ? 'Import screenshots need independent CJK/visual review; no glyph attestation for this slice' : 'Ubuntu Noto CJK verified via actual Chrome platform glyphs; external Google font CSS stubbed, no browser font downloads', stubbedStylesheets: state.stubbedStylesheets };
     await writeFile(info.outputPath('network.json'), JSON.stringify(evidence, null, 2));
     await info.attach('network.json', { path: info.outputPath('network.json'), contentType: 'application/json' });
     expect(state.unexpected, 'No external request, API write or unexpected endpoint').toEqual([]);
@@ -198,3 +217,4 @@ export async function captureTrace(page: Page, info: TestInfo, name: string, cap
   await info.attach(`${name}.png`, { path: info.outputPath(`${name}.png`), contentType: 'image/png' });
   await info.attach(`${name}.json`, { path: info.outputPath(`${name}.json`), contentType: 'application/json' });
 }
+

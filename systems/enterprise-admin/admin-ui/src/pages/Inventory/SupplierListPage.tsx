@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { isAxiosError } from 'axios';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
+import { useQueryClient } from '@tanstack/react-query';
+import { useGuardedRead } from '../../hooks/useGuardedRead';
 import { inventoryApi, Supplier } from '../../api/inventory';
 
 type SupplierForm = {
@@ -37,32 +38,40 @@ export default function SupplierListPage() {
     const [showCreate, setShowCreate] = useState(false);
     const [editSupplier, setEditSupplier] = useState<Supplier | null>(null);
     const [supplierForm, setSupplierForm] = useState<SupplierForm>(emptySupplierForm);
+    const [draftOwner, setDraftOwner] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const queryClient = useQueryClient();
 
     const {
-        data: suppliersData, isPending: loading, isFetching, isError: failed, error, refetch,
-    } = useQuery({
+        data: suppliersData, isPending: loading, isFetching, isError: failed, error, refetch, readerId,
+    } = useGuardedRead({
         queryKey: ['inventory', 'suppliers'],
-        queryFn: () => inventoryApi.getSuppliers(),
+        queryFn: ({ signal }) => inventoryApi.getSuppliers(signal),
         retry: false,
     });
 
-    const suppliers: Supplier[] = suppliersData ?? [];
-    const supplierStatus = isAxiosError(error) ? error.response?.status : undefined;
-    const supplierErrorMessage = supplierStatus === 403
-        ? 'You do not have permission to view suppliers (403).'
-        : supplierStatus
-            ? `Unable to load suppliers (HTTP ${supplierStatus}).`
-            : 'Unable to load suppliers. Check your connection and retry.';
+    const accessDenied = isReportAccessDenied(error);
+    const visibleData = accessDenied ? undefined : suppliersData;
+    const suppliers: Supplier[] = visibleData ?? [];
+    // A denied read must not retain a contact-bearing edit draft on screen or restore it later.
+    // This is display cleanup only; API mutation authorization remains unchanged.
+    useEffect(() => {
+        if (!accessDenied) return;
+        setShowCreate(false); setEditSupplier(null); setSupplierForm(emptySupplierForm);
+    }, [accessDenied]);
+    useEffect(() => {
+        setShowCreate(false); setEditSupplier(null); setSupplierForm(emptySupplierForm); setDraftOwner(null);
+    }, [readerId]);
 
     function openCreate() {
+        setDraftOwner(readerId);
         setEditSupplier(null);
         setSupplierForm(emptySupplierForm);
         setShowCreate(true);
     }
 
     function openEdit(supplier: Supplier) {
+        setDraftOwner(readerId);
         setShowCreate(false);
         setEditSupplier(supplier);
         setSupplierForm({
@@ -119,26 +128,21 @@ export default function SupplierListPage() {
                 <div>
                     <h1 className="page-title">Suppliers Management</h1>
                     <p className="page-subtitle">
-                        {suppliersData
+                        {visibleData
                             ? failed ? `Last loaded: ${suppliers.length} suppliers` : `${suppliers.length} active suppliers`
                             : loading ? 'Loading suppliers...' : 'Supplier list unavailable'}
                     </p>
                 </div>
-                <button className="btn btn-primary" onClick={openCreate}>Add Supplier</button>
+                <button className="btn btn-primary" onClick={openCreate} disabled={accessDenied}>Add Supplier</button>
             </header>
 
-            {failed && (
-                <div role="alert">
-                    <p>{supplierErrorMessage}</p>
-                    <button type="button" className="btn btn-ghost" disabled={isFetching}
-                        onClick={() => { void refetch(); }}>Retry suppliers</button>
-                </div>
-            )}
+            <ReportReadNotice label="供應商清單" isError={failed} error={error}
+                hasData={visibleData !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />
 
             <div className="table-container">
                 {loading ? (
                     <div role="status">Loading suppliers...</div>
-                ) : failed && suppliers.length === 0 ? null : (
+                ) : visibleData === undefined || (failed && suppliers.length === 0) ? null : (
                     <table className="table">
                         <thead>
                             <tr>
@@ -191,7 +195,7 @@ export default function SupplierListPage() {
                 )}
             </div>
 
-            {(showCreate || editSupplier) && (
+            {!accessDenied && draftOwner === readerId && (showCreate || editSupplier) && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content card" onClick={(e) => e.stopPropagation()}>
                         <h2 className="modal-title">{modalTitle}</h2>

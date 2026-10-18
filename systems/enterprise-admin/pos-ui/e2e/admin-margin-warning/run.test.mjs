@@ -8,7 +8,7 @@ import { randomUUID } from 'node:crypto';
 import { deflateSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
-import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
+import { assertReaderGeometry, assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
 import { importRequestAllowed, readImportRequest, files, assertImportNetwork } from './import-contract.mjs';
@@ -16,10 +16,10 @@ import { cleanupRunProcesses, findRunProcesses, signalRunProcess, createRunScope
 
 const report = () => ({ errors: [], suites: [{ specs: expectedCases.map(title => ({ title, ok: true,
   tests: [{ expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', errors: [], duration: 1, attachments: [] }] }] })) }] });
-test('registry retains original 24 cases and adds nine bounded import flows', () => {
-  assert.equal(expectedCases.length, 33); assert.equal(new Set(expectedCases).size, 33);
-  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ') && !name.startsWith('import ')).length, 22);
-  assert.equal(assertReport(report()).length, 33);
+test('registry retains 33 existing cases and adds 13 reader flows', () => {
+  assert.equal(expectedCases.length, 46); assert.equal(new Set(expectedCases).size, 46);
+  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ') && !name.startsWith('import ') && !name.startsWith('reader-')).length, 22);
+  assert.equal(assertReport(report()).length, 46);
 });
 test('synthetic import allowance never admits another origin, path, query or method', () => {
   const origin = 'http://127.0.0.1:4287', target = `${origin}/api/v1/admin/excel/import/products/preview`;
@@ -189,7 +189,7 @@ test('locked Playwright loader collects all cases without launching a browser', 
       'test', '--config=e2e/admin-margin-warning/playwright.config.mts', '--list'], {
       cwd: pos, env: childEnvironment(process.env, output, randomUUID()), encoding: 'utf8', timeout: 20000,
     });
-    assert.match(listed, /Total: 33 tests in 3 files/);
+    assert.match(listed, /Total: 46 tests in 4 files/);
     for (const name of expectedCases) assert.ok(listed.includes(name), name);
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
 });
@@ -273,4 +273,16 @@ test('trace evidence rejects missing null-order screenshot stage', () => {
         .map(name => ({ name: `${name}.png`, path: path.join(output, `${name}.png`) }))];
     assert.throws(() => validateEvidence(output, [{ title, duration: 1, attachments }]), /source-null-order/);
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
+});
+
+
+test('reader geometry rejects fixed-sidebar occlusion and horizontal page scrolling', () => {
+  const good = { subject:'inventory-reader', keyboardReachable:true, scrollX:0, documentWidth:390, sidebarRight:72,
+    viewport:{width:390,height:844}, target:{x:112,y:250,right:230,bottom:290,width:118,height:40}, hitTest:[true,true,true,true,true] };
+  const b=good.target;good.edgePoints=[[b.x+2,b.y+b.height/2],[b.right-2,b.y+b.height/2],[b.x+b.width/2,b.y+2],[b.x+b.width/2,b.bottom-2],[b.x+b.width/2,b.y+b.height/2]].map(([x,y])=>({x,y,owned:true,hit:{tag:'BUTTON'}}));
+  good.legacyCorners=[{},{},{},{}];good.radius={bottomRight:'8px'};
+  assert.doesNotThrow(()=>assertReaderGeometry(good));
+  for (const mutate of [g=>g.scrollX=88,g=>g.documentWidth=478,g=>g.target.x=41,g=>g.hitTest[0]=false,g=>g.sidebarRight=undefined,g=>g.edgePoints[0].owned=false,g=>g.edgePoints[0].x=170]) {
+    const bad=structuredClone(good);mutate(bad);assert.throws(()=>assertReaderGeometry(bad));
+  }
 });

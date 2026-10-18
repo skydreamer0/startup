@@ -5,8 +5,8 @@ export type { Product, Supplier };
 
 export const inventoryApi = {
     // Suppliers
-    getSuppliers: async (): Promise<Supplier[]> => {
-        const { data } = await api.get<ApiSuccess<Supplier[]>>('/inventory/suppliers');
+    getSuppliers: async (signal?: AbortSignal): Promise<Supplier[]> => {
+        const { data } = await api.get<ApiSuccess<Supplier[]>>('/inventory/suppliers', { signal });
         return data.data;
     },
     getSupplierById: async (id: string) => {

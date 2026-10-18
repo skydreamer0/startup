@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useGuardedRead } from '../../hooks/useGuardedRead';
 import api from '../../api/client';
+import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 
 type AbcQuadrant = 'star' | 'cash_cow' | 'hidden_gem' | 'underperformer';
 
@@ -53,21 +54,24 @@ export default function InventoryAnalyticsPage() {
     const [activeTab, setActiveTab] = useState<'products' | 'suppliers'>('products');
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7)); // YYYY-MM
 
-    const abcQuery = useQuery({
+    const abcQuery = useGuardedRead({
         queryKey: ['analytics', 'product-abc', period],
-        queryFn: async () => {
-            const res = await api.get<{ success: boolean; data: AbcResult }>(`/analytics/product-abc?period=${period}`);
+        queryFn: async ({ signal }) => {
+            const res = await api.get<{ success: boolean; data: AbcResult }>(`/analytics/product-abc?period=${period}`, { signal });
             return res.data.data;
         },
     });
 
-    const supplierQuery = useQuery({
+    const supplierQuery = useGuardedRead({
         queryKey: ['analytics', 'supplier-ranking', period],
-        queryFn: async () => {
-            const res = await api.get<{ success: boolean; data: RankedSupplier[] }>(`/analytics/supplier-ranking?period=${period}`);
+        queryFn: async ({ signal }) => {
+            const res = await api.get<{ success: boolean; data: RankedSupplier[] }>(`/analytics/supplier-ranking?period=${period}`, { signal });
             return res.data.data;
         },
     });
+
+    const abcData = isReportAccessDenied(abcQuery.error) ? undefined : abcQuery.data;
+    const supplierData = isReportAccessDenied(supplierQuery.error) ? undefined : supplierQuery.data;
 
     function scorebadge(score: number) {
         if (score >= 80) return 'badge-success';
@@ -94,7 +98,7 @@ export default function InventoryAnalyticsPage() {
             </header>
 
             {/* ── Tab Switcher ── */}
-            <div className="flex gap-8" style={{ marginBottom: 28 }}>
+            <div className="flex gap-8" style={{ marginBottom: 28, flexWrap: 'wrap' }}>
                 <button
                     className={`btn ${activeTab === 'products' ? 'btn-primary' : 'btn-ghost'}`}
                     onClick={() => setActiveTab('products')}
@@ -112,6 +116,8 @@ export default function InventoryAnalyticsPage() {
             {/* ══════════ Products Tab ══════════ */}
             {activeTab === 'products' && (
                 <div className="space-y-24">
+                    <ReportReadNotice label="商品分析" isError={abcQuery.isError} error={abcQuery.error}
+                        hasData={abcData !== undefined} isFetching={abcQuery.isFetching} onRetry={() => { void abcQuery.refetch(); }} />
                     {abcQuery.isLoading ? (
                         <div className="stat-grid stagger-fade">
                             {[...Array(4)].map((_, i) => (
@@ -122,15 +128,7 @@ export default function InventoryAnalyticsPage() {
                                 </div>
                             ))}
                         </div>
-                    ) : abcQuery.isError ? (
-                        <div className="card">
-                            <div className="empty-state">
-                                <div className="empty-state-icon">❌</div>
-                                <div className="empty-state-title">Failed to Load</div>
-                                <div className="empty-state-text">Could not fetch product analysis data. Please try again later.</div>
-                            </div>
-                        </div>
-                    ) : (
+                    ) : abcData === undefined ? null : (
                         <>
                             {/* Quadrant KPI Cards */}
                             <div className="stat-grid stagger-fade">
@@ -142,7 +140,7 @@ export default function InventoryAnalyticsPage() {
                                                 <span className="stat-label">{cfg.icon} {cfg.label}</span>
                                                 <div className="stat-icon" style={{ color: cfg.iconColor, background: cfg.iconBg }}>{cfg.icon}</div>
                                             </div>
-                                            <div className="stat-value">{abcQuery.data?.summary[q] || 0}</div>
+                                            <div className="stat-value">{abcData?.summary[q] || 0}</div>
                                             <div className="text-sm text-muted">{QUADRANT_DESCRIPTIONS[q]}</div>
                                         </div>
                                     );
@@ -155,7 +153,7 @@ export default function InventoryAnalyticsPage() {
                                     <span className="section-icon">📊</span> Product Performance Matrix
                                 </h3>
                                 <p className="text-muted text-sm" style={{ marginTop: -12, marginBottom: 20 }}>
-                                    Median Revenue: ${abcQuery.data?.medianRevenue?.toLocaleString() ?? 0} | Median Margin: {abcQuery.data?.medianMargin ?? 0}%
+                                    Median Revenue: ${abcData?.medianRevenue?.toLocaleString() ?? 0} | Median Margin: {abcData?.medianMargin ?? 0}%
                                 </p>
 
                                 <div className="table-container">
@@ -171,7 +169,7 @@ export default function InventoryAnalyticsPage() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {abcQuery.data?.products.map((p) => {
+                                            {abcData?.products.map((p) => {
                                                 const quad = QUADRANT_CONFIG[p.quadrant];
                                                 return (
                                                     <tr key={p.id}>
@@ -194,7 +192,7 @@ export default function InventoryAnalyticsPage() {
                                                     </tr>
                                                 );
                                             })}
-                                            {abcQuery.data?.products.length === 0 && (
+                                            {abcData?.products.length === 0 && (
                                                 <tr>
                                                     <td colSpan={6}>
                                                         <div className="empty-state">
@@ -217,21 +215,15 @@ export default function InventoryAnalyticsPage() {
             {/* ══════════ Suppliers Tab ══════════ */}
             {activeTab === 'suppliers' && (
                 <div className="space-y-24">
+                    <ReportReadNotice label="供應商排行" isError={supplierQuery.isError} error={supplierQuery.error}
+                        hasData={supplierData !== undefined} isFetching={supplierQuery.isFetching} onRetry={() => { void supplierQuery.refetch(); }} />
                     {supplierQuery.isLoading ? (
                         <div className="card section-card">
                             <div className="skeleton skeleton-title" />
                             <div className="skeleton skeleton-subtitle" style={{ marginBottom: 20 }} />
                             <div className="skeleton skeleton-chart" style={{ height: 200 }} />
                         </div>
-                    ) : supplierQuery.isError ? (
-                        <div className="card">
-                            <div className="empty-state">
-                                <div className="empty-state-icon">❌</div>
-                                <div className="empty-state-title">Failed to Load</div>
-                                <div className="empty-state-text">Could not fetch supplier ranking data. Please try again later.</div>
-                            </div>
-                        </div>
-                    ) : (
+                    ) : supplierData === undefined ? null : (
                         <div className="card section-card">
                             <h3 className="section-title">
                                 <span className="section-icon">🏆</span> Supplier Performance Ranking
@@ -255,7 +247,7 @@ export default function InventoryAnalyticsPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {supplierQuery.data?.map((s, index) => (
+                                        {supplierData?.map((s, index) => (
                                             <tr key={s.id}>
                                                 <td style={{ textAlign: 'center', fontSize: 16 }}>
                                                     {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
@@ -275,7 +267,7 @@ export default function InventoryAnalyticsPage() {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {supplierQuery.data?.length === 0 && (
+                                        {supplierData?.length === 0 && (
                                             <tr>
                                                 <td colSpan={8}>
                                                     <div className="empty-state">
