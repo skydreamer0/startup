@@ -19,6 +19,15 @@ async function bounded(promise, label) {
 }
 const hash = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
 
+// Synthetic fixture geometry only; not a maximum-height guarantee for arbitrary product names.
+export function assertReconciliationGeometry(value) {
+  assert.ok(value.tableWidth >= 1040, 'Reconciliation columns must retain readable width');
+  assert.equal(value.cellWidths.length, 6, 'All six report columns must remain present');
+  assert.ok(value.cellWidths.every(width => width >= 100), 'Report columns must not collapse');
+  assert.ok(value.firstRowHeight <= 180, 'Synthetic reconciliation row must remain compact');
+  assert.ok(value.cellFontSizes.every(size => size >= 14), 'Do not shrink report text to fit');
+}
+
 export async function runStockReconciliationJourney({ db, tenantId, browser, adminOrigin, token, signAccessToken, output, expect, capture }) {
   const origin = new URL(adminOrigin);
   assert.equal(origin.protocol, 'http:'); assert.equal(origin.hostname, '127.0.0.1');
@@ -126,8 +135,30 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
         await expect(table.getByRole('row')).toHaveCount(51);
         await page.getByRole('button', { name: '上一頁', exact: true }).click();
         await expect(page).toHaveURL(/page=1$/); await loaded();
+        const readableGeometry = await target.evaluate(row => ({
+          tableWidth: row.closest('table').getBoundingClientRect().width,
+          cellWidths: [...row.cells].map(cell => cell.getBoundingClientRect().width),
+          firstRowHeight: row.getBoundingClientRect().height,
+          cellFontSizes: [...row.cells].map(cell => parseFloat(getComputedStyle(cell).fontSize)),
+        }));
+        assertReconciliationGeometry(readableGeometry);
         const link = target.getByRole('link', { name: `查看 ${productName} 的批次`, exact: true });
-        await link.focus(); await page.keyboard.press('Enter');
+        let keyboardHorizontalScroll = null;
+        if (viewport.width === 390) {
+          await table.focus(); await expect(table).toBeFocused();
+          const beforeScroll = await table.evaluate(element => element.scrollLeft);
+          await page.keyboard.press('ArrowRight');
+          await expect.poll(() => table.evaluate(element => element.scrollLeft)).toBeGreaterThan(beforeScroll);
+          const afterArrow = await table.evaluate(element => element.scrollLeft);
+          await page.keyboard.press('Tab'); await expect(link).toBeFocused();
+          await expect.poll(async () => {
+            const region = await table.boundingBox(); const box = await link.boundingBox();
+            return !!region && !!box && box.x >= region.x - 1 && box.x + box.width <= region.x + region.width + 1;
+          }).toBe(true);
+          keyboardHorizontalScroll = { beforeScroll, afterArrow, traceLinkRevealedByTab: true };
+          await capture(page, 'reconciliation-keyboard-trace-390.png', viewport);
+        } else { await link.focus(); }
+        await page.keyboard.press('Enter');
         await expect(page.getByRole('heading', { name: '商品批次', exact: true })).toBeFocused();
         await expect(page.getByRole('region', { name: '商品批次清單', exact: true }).getByRole('row')).toHaveCount(4);
         await expect(page.getByText('RECON-QUARANTINE', { exact: true })).toBeVisible();
@@ -161,7 +192,7 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
         await capture(page, `reconciliation-ready-${viewport.width}.png`, viewport);
         cases.push({ viewport, status: 'passed', loadingRealResponseHeld: true, pageSizes: [50, 50], keyboardPagination: true,
           traceBatchRows: 3, traceScope: 'heading focus, row count and quarantine text only; no full trace-table narrow-layout acceptance', backNavigation: true, injected500InitialAndStaleRecovery: true, realDeniedTokenHttp: 403, permissionSource: 'signed JWT permissions=[] fast path; not role-grant lookup',
-          deniedCacheHidden: true, retryRecovered: true, geometry, nativeTouchAndSoftwareKeyboard: 'NOT_RUN' });
+          deniedCacheHidden: true, retryRecovered: true, geometry, readableGeometry, keyboardHorizontalScroll, nativeTouchAndSoftwareKeyboard: 'NOT_RUN' });
       } finally {
         release.resolve();
         if (held) await bounded(handled.promise, 'held response cleanup');

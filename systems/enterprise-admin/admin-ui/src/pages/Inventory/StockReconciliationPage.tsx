@@ -1,3 +1,4 @@
+import './StockReconciliationPage.css';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getStockReconciliation } from '../../api/stock-reconciliation';
@@ -19,7 +20,7 @@ export default function StockReconciliationPage() {
     });
     const data = permitted && !isReportAccessDenied(query.error) ? query.data : undefined;
     const setPage = (next: number) => setParams({ page: String(next) });
-    return <div className="admin-page">
+    return <div className="admin-page stock-reconciliation-page">
         <header className="page-header"><div><h1 className="page-title">庫存差異對帳（唯讀）</h1>
             <p>商品總量與全部批次實體量比較，不會修正庫存。</p></div></header>
         <section role="note" className="card" style={{ padding: 16 }}>
@@ -34,7 +35,7 @@ export default function StockReconciliationPage() {
             {data && <>
                 <p role="status">本頁快照時間：{data.observedAt}；共 {data.total} 個商品。跨頁非同一快照。</p>
                 <button type="button" className="btn btn-ghost" disabled={query.isFetching} onClick={() => { void query.refetch(); }}>更新本頁對帳</button>
-                <div role="region" aria-label="庫存對帳表" tabIndex={0} style={{ overflowX: 'auto' }}>
+                <div role="region" aria-label="庫存對帳表" tabIndex={0} className="stock-reconciliation-scroll">
                     <table className="table"><thead><tr><th>商品／單位</th><th>商品總量</th><th>批次實體量</th><th>差異</th><th>批次狀態／效期</th><th>追查</th></tr></thead>
                         <tbody>{data.data.map(row => <tr key={row.id}>
                             <td>{row.name}<br />{row.sku}<br />{row.stockUnitLabel ?? '基本庫存單位（未標示）'}</td>
