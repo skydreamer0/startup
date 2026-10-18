@@ -1,4 +1,4 @@
-// Actions-only, synthetic-only acceptance: unchanged SKU/category cases plus separately reported inventory provenance SQL cases.
+// Actions-only synthetic acceptance: unchanged SKU/category, provenance and reviewed package cases.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
@@ -15,9 +15,33 @@ const root = path.resolve(backend, '../../..');
 const nativeFile = 'src/__tests__/pos-product-lookup.integration.test.ts';
 const categoryFile = 'src/__tests__/pos-categories.integration.test.ts';
 const provenanceFile = 'src/__tests__/inventory-provenance.integration.test.ts';
+const packagesFile = 'src/__tests__/product-packages.integration.test.ts';
 const provenanceSql = 'prisma/diagnostics/preflight-inventory-provenance.sql';
-export const testFiles = { native: nativeFile, categories: categoryFile, provenance: provenanceFile };
+export const testFiles = { native: nativeFile, categories: categoryFile, provenance: provenanceFile, packages: packagesFile };
 export const expectedCases = {
+  packages: [
+    'persists multiple literal codes on one stable package without duplicated lookup results',
+    'keeps namespaces and overlapping tenant codes distinct across the complete dataset',
+    'uses inclusive start and exclusive end without hiding future expired or zero-stock history',
+    'returns different packages of the same product as explicit candidates',
+    'retains retired history and creates a new revision instead of reactivating the old row',
+    'rejects stale concurrent revision writes atomically and preserves one current revision',
+    'rejects cross-tenant product actor and revision foreign keys in the native engine',
+    'enforces immutable revision identifier and stock-unit history in PostgreSQL',
+    'requires authenticated permissions and isolates real HTTP lookup maintenance and confirmation',
+    'blocks unknown conversion and stale confirmation without lookup side effects',
+    "retire then stale save returns HTTP 409 with no new mapping; refreshed replacement succeeds",
+    "save then stale retire returns HTTP 409 and leaves the new mapping active",
+    "keeps manufacturer colon literals case- and whitespace-exact through lookup and resolve",
+    "rejects persisted URI mapping mailto:synthetic@example.test at lookup and resolve",
+    "rejects persisted URI mapping DATA:text/plain,synthetic at lookup and resolve",
+    "rejects persisted URI mapping TeL:+886200000000 at lookup and resolve",
+    "rejects persisted URI mapping javascript:alert(1) at lookup and resolve",
+    "rejects persisted URI mapping sms:+886200000000 at lookup and resolve",
+    "rejects persisted URI mapping urn:uuid:synthetic at lookup and resolve",
+    "forces native lock overlap with retire first and rejects the stale second writer",
+    "forces native lock overlap with save first and rejects the stale second writer",
+  ],
   provenance: [
     'returns no invented inventory rows for an empty tenant',
     'flags order quantity mismatch even when OUT and its allocation are balanced',
@@ -218,7 +242,7 @@ export function probeProvenanceGuard(source) {
   return cases.map(([name, env, saved, expected]) => {
     let accepted = true, proofRead = false;
     try {
-      vm.runInNewContext(guard, { process: { env, version: process.version }, URL, path, __dirname: '/repo/backend/src/__tests__',
+      vm.runInNewContext(guard, { process: { env, version: process.version }, URL, path: path.posix, __dirname: '/repo/backend/src/__tests__',
         readFileSync: file => { assert.equal(file, base.INVENTORY_PROVENANCE_OWNERSHIP_FILE); proofRead = true; if (!saved) throw new Error('Missing ownership'); return JSON.stringify(saved); },
         execFileSync: (_command, args) => args[1] === 'HEAD' ? head : tree,
       }, { timeout: 1000 });
@@ -279,6 +303,11 @@ async function main(mode) {
     save('source.json', { ...identity, parents: git('cat-file', '-p', 'HEAD').split('\n').filter(line => line.startsWith('parent ')).map(line => line.slice(7)) });
     save('network.json', { service, members: Object.keys(network.Containers), driver: network.Driver });
     const files = ['.github/workflows/ci.yml', ...[nativeFile, categoryFile, provenanceFile, provenanceSql, 'src/modules/pos/checkout.service.ts', 'src/modules/pos/pos.routes.ts', 'src/modules/pos/pos.controller.ts', 'src/middleware/tenant.middleware.ts', 'src/middleware/rate-limit.middleware.ts', 'src/middleware/auth.middleware.ts', 'src/lib/jwt.ts', 'src/modules/pos/product-lookup.service.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/pos-product-lookup-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
+    files.push(...[packagesFile, 'src/__tests__/helpers/package-acceptance-guard.ts',
+      'src/modules/inventory/product-packages.service.ts', 'src/modules/inventory/product-packages.schema.ts',
+      'src/modules/inventory/product-packages.controller.ts', 'src/modules/inventory/inventory.routes.ts',
+      'prisma/migrations/20261016090000_product_package_mapping/migration.sql']
+      .map(file => `systems/enterprise-admin/backend/${file}`));
     save('source-hashes.json', Object.fromEntries(files.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
     save('guard.json', { url: databaseUrl, equalEnvironmentUrls: true, probes: probeOriginalGuard(fs.readFileSync(path.join(backend, nativeFile), 'utf8')) });
     save('category-guard.json', { probes: probeCategoryGuard(fs.readFileSync(path.join(backend, categoryFile), 'utf8')) });
@@ -308,7 +337,7 @@ async function main(mode) {
     assert.equal(tests.status, 'passed');
     for (const kind of Object.keys(testFiles)) assert.equal(tests[kind].length, expectedCases[kind].length);
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: 5 original SKU + 9 category + 20 native provenance cases, zero skips; fixture rows zero; owned DB removed');
+    console.log(`Acceptance passed: 5 original SKU + 9 category + 20 native provenance + ${expectedCases.packages.length} package cases, zero skips; fixture rows zero; owned DB removed`);
     return;
   }
 
@@ -361,6 +390,12 @@ async function main(mode) {
         GITHUB_ACTIONS: 'true', RUNNER_ENVIRONMENT: 'github-hosted',
         GITHUB_RUN_ID: identity.runId, GITHUB_RUN_ATTEMPT: identity.attempt,
         SKU_QA_HEAD: identity.head, SKU_QA_CONTAINER: container, SKU_QA_NETWORK: service.network,
+      } : kind === 'packages' ? {
+        PACKAGE_LOOKUP_DATABASE_URL: databaseUrl, PACKAGE_LOOKUP_ALLOW_SYNTHETIC: '1',
+        PACKAGE_LOOKUP_OWNERSHIP_FILE: path.join(evidence, 'ownership.json'),
+        GITHUB_ACTIONS: 'true', RUNNER_ENVIRONMENT: 'github-hosted',
+        GITHUB_RUN_ID: identity.runId, GITHUB_RUN_ATTEMPT: identity.attempt,
+        SKU_QA_HEAD: identity.head, SKU_QA_CONTAINER: container, SKU_QA_NETWORK: service.network,
       } : {};
       const outcome = recorded(kind, [path.join(backend, 'node_modules/vitest/vitest.mjs'), 'run', file, '--maxWorkers=1', '--no-file-parallelism', '--reporter=verbose', '--reporter=json', `--outputFile.json=${path.join(evidence, `${kind}.json`)}`], provenanceEnv);
       try {
@@ -373,7 +408,7 @@ async function main(mode) {
       if (errors.length) break; // Do not run another suite on contaminated fixtures.
     }
     save('tests.json', { ...results, status: errors.length ? 'failed' : 'passed', errors });
-    assert.deepEqual(errors, [], 'Require every original SKU/category and all 20 native provenance cases to pass; skipped is not acceptance');
+    assert.deepEqual(errors, [], `Require every original SKU/category, 20 native provenance and ${expectedCases.packages.length} package cases to pass; skipped is not acceptance`);
   } finally { await db.$disconnect(); }
 }
 

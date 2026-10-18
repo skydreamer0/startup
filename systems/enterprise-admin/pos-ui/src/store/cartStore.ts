@@ -33,6 +33,7 @@ interface CartState extends EditableDraft {
   heldCarts: HeldCart[];
 
   addItem: (product: PosProduct) => void;
+  addPackage: (product: PosProduct, quantity: number) => boolean;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   updateItemDiscount: (productId: string, discountRate: number) => void;
@@ -91,6 +92,18 @@ export const useCartStore = create<CartState>((set, get) => {
     }
     return { items: [...state.items, { product, quantity: 1, discountRate: 0 }] };
   }),
+
+  addPackage: (product, quantity) => {
+    if (useCheckoutRecoveryStore.getState().pending || !Number.isSafeInteger(quantity) || quantity < 1) return false;
+    const state = get();
+    const existing = state.items.find(item => item.product.id === product.id);
+    const total = (existing?.quantity ?? 0) + quantity;
+    if (!Number.isSafeInteger(total) || total > product.stockQuantity) return false;
+    set({ items: existing ? state.items.map(item => item.product.id === product.id
+      ? { ...item, product, quantity: total } : item)
+      : [...state.items, { product, quantity, discountRate: 0 }] });
+    return true;
+  },
 
   removeItem: (productId) => mutate((state) => ({
     items: state.items.filter((item) => item.product.id !== productId),

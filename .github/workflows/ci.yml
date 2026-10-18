@@ -470,7 +470,7 @@ jobs:
         run: |
           node --test backend/scripts/pos-product-lookup-ci.test.mjs
           node --test pos-ui/e2e/sku-acceptance/run.test.mjs
-      - name: Run unchanged five real PostgreSQL SKU cases
+      - name: Run original SKU/category/provenance and reviewed package PostgreSQL cases
         env:
           SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
           SKU_QA_NETWORK: ${{ job.services.postgres.network }}
@@ -507,6 +507,22 @@ jobs:
         run: |
           node --test pos-ui/e2e/stock-native/run.test.mjs
           node pos-ui/e2e/stock-native/run.mjs
+      - name: Reviewed package maintenance and POS through real API and owned PostgreSQL
+        id: package_native
+        timeout-minutes: 5
+        env:
+          NODE_ENV: test
+          PACKAGE_LOOKUP_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+          PACKAGE_LOOKUP_ALLOW_SYNTHETIC: '1'
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+          JWT_ACCESS_SECRET: package-browser-synthetic-key-never-real-credentials
+          JWT_REFRESH_SECRET: package-browser-synthetic-key-never-real-credentials
+        run: |
+          npm --prefix backend run build
+          pnpm --filter admin-ui run build
+          pnpm --filter pos-ui run build
+          node backend/scripts/package-browser-acceptance.mjs
       - name: Verify zero rows and drop only the owned SKU database
         if: ${{ always() && steps.sku_preflight.outcome == 'success' }}
         env:
@@ -519,6 +535,14 @@ jobs:
         with:
           name: pos-category-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ steps.category_native.outputs.evidence_dir }}
+          if-no-files-found: error
+          retention-days: 7
+      - name: Preserve quiescent package browser API database evidence
+        if: ${{ always() && steps.package_native.outputs.evidence_dir != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: package-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.package_native.outputs.evidence_dir }}
           if-no-files-found: error
           retention-days: 7
       - name: Preserve separate PostgreSQL and current POS evidence

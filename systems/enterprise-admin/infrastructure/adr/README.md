@@ -12,6 +12,7 @@ Each ADR should follow the standard format:
 - **Consequences**: What are the trade-offs (positive and negative)?
 
 ## 3. ADR Index
+- [ADR-024: Reviewed tenant product/package identifiers](adr_024_reviewed_product_packages.md)
 - [ADR-001: Choice of Relational Database for Core Data](adr_001_relational_database_choice.md)
 - [ADR-002: Token-Based Authentication Standard (JWT)](adr_002_authentication_standard.md)
 - [ADR-003: Backend Framework Choice (Express vs NestJS)](adr_003_backend_framework_choice.md)

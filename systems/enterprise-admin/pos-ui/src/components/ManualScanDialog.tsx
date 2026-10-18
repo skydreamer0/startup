@@ -4,8 +4,8 @@ import type { ScanResultV1 } from '@pharmasaas/types';
 import { captureManualScan } from '../services/scanInput';
 import './ManualScanDialog.css';
 
-/** Local evidence only. Deliberately has no product, cart or persistence callback. */
-export default function ManualScanDialog({ onClose }: { onClose: () => void }) {
+/** Local evidence; optional explicit handoff does not itself look up or add. */
+export default function ManualScanDialog({ onClose, onLookup }: { onClose: () => void; onLookup?: (scan: ScanResultV1) => void }) {
   const titleId = useId();
   const inputId = useId();
   const helpId = useId();
@@ -92,6 +92,7 @@ export default function ManualScanDialog({ onClose }: { onClose: () => void }) {
           <p>來源：手動（manual） · 碼制、原始 bytes、GS1：未知（unknown） · 硬體未驗證</p>
           <p>以下為原始 literal 的 JSON 表示；引號與跳脫字元用於顯示，不會改寫原文。</p>
           <pre aria-label="原始 literal">{JSON.stringify(result.literal)}</pre>
+          {onLookup && <button type="button" onClick={() => onLookup(result)}>使用這段原碼查找商品／包裝</button>}
           <details><summary>完整掃描證據</summary><pre aria-label="掃描證據 JSON">{JSON.stringify(result, null, 2)}</pre></details>
         </section>}
       </div>

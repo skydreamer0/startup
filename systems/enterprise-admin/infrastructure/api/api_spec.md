@@ -183,4 +183,4 @@ HTTP Status Code 需精確映射錯誤類別：
 
 ### 3.13 POS 精準 SKU 查詢
 
-`GET /pos/products/lookup?code=<literal SKU>` 沿用 auth + `manage:pos`。字串完全相符、tenant 隔離、無商品瀏覽上限，回既有 `PosProduct[]` envelope。完整契約與原廠 barcode／實機驗收界線見 [pos-product-lookup.md](pos-product-lookup.md)。
+`GET /pos/products/lookup?code=<literal SKU>` 沿用 auth + `manage:pos`。字串完全相符、tenant 隔離、無商品瀏覽上限，回既有 `PosProduct[]` envelope。既有 SKU 契約見 [pos-product-lookup.md](pos-product-lookup.md)。原廠碼／GTIN 使用獨立明確 namespace 的 `/pos/packages/lookup` 與 `/pos/packages/resolve`；商品對照維護使用 `/inventory/products/:productId/packages`。完整生命週期、權限、換算與錯誤契約見 [product-packages.md](product-packages.md)，架構見 ADR-024。
