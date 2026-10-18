@@ -21,7 +21,7 @@ const auth = (id: string): AuthContextType => ({ user: { id, email: 'synthetic@e
 function mount(id: string | null = 'reader-a') { act(() => root.render(<AuthContext.Provider value={id ? auth(id) : { ...auth('unused'), user: null, loading: true }}><QueryClientProvider client={client}><Page /></QueryClientProvider></AuthContext.Provider>)); }
 async function until(check: () => void) { await vi.waitFor(async () => { await act(async () => { await new Promise(resolve => setTimeout(resolve, 0)); }); check(); }); }
 function button(name: string) { const found = [...host.querySelectorAll('button')].find(element => element.textContent?.trim() === name); expect(found).toBeDefined(); return found!; }
-async function click(name: string) { await act(async () => { button(name).click(); }); }
+async function click(name: string) { await until(() => { expect(button(name).disabled).toBe(false); }); await act(async () => { button(name).click(); }); }
 async function refresh(key: string[]) { await act(async () => { await client.refetchQueries({ queryKey: key }); }); }
 const failure = (status: number) => ({ response: { status } });
 
