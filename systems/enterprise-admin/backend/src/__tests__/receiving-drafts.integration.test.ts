@@ -34,9 +34,10 @@ describe.skipIf(!databaseUrl)('private receiving drafts with native PostgreSQL a
     ({ tenantContext: context } = await import('../lib/tenant.context'));
     ({ signAccessToken: sign } = await import('../lib/jwt'));
     const { setTenantContext } = await import('../middleware/tenant.middleware');
+    const { defaultRateLimit } = await import('../middleware/rate-limit.middleware');
     const { default: routes } = await import('../modules/receiving-drafts/receiving-drafts.routes');
     const { errorMiddleware } = await import('../middleware/error.middleware');
-    app = express(); app.use(express.json()); app.use(setTenantContext); app.use('/receiving-drafts', routes); app.use(errorMiddleware);
+    app = express(); app.use(express.json()); app.use(defaultRateLimit); app.use(setTenantContext); app.use('/receiving-drafts', routes); app.use(errorMiddleware);
     for (const tenantId of tenants) await db.tenant.create({ data: { id: tenantId, slug: tenantId, name: '合成收貨租戶', plan: 'pro' } });
     for (const [index, tenantId] of [tenants[0], tenants[1], tenants[0]].entries()) {
       actors.push(await db.user.create({ data: { tenantId, email: `${index}-${tenantId}@receiving.example.test`, fullName: '合成草稿作者', passwordHash: 'not-a-login-hash' } }));
