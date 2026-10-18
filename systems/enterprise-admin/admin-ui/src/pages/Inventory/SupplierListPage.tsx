@@ -142,7 +142,7 @@ export default function SupplierListPage() {
             <div className="table-container">
                 {loading ? (
                     <div role="status">Loading suppliers...</div>
-                ) : visibleData === undefined ? null : (
+                ) : visibleData === undefined || (failed && suppliers.length === 0) ? null : (
                     <table className="table">
                         <thead>
                             <tr>

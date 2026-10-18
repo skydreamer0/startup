@@ -109,3 +109,16 @@ it('does not share denial across QueryClients; removing an owner cannot retain i
     mount(); await until(()=>expect(host.textContent).toContain('資料尚不可用')); expect(host.textContent).not.toContain('fixture@example.test');
     otherClient.clear();
 });
+
+it('does not present an old empty supplier result as a currently successful empty state', async () => {
+    api.get.mockResolvedValue({ data: { data: [] } }); mount();
+    await until(() => expect(host.textContent).toContain('No suppliers found'));
+    api.get.mockRejectedValue(failure(500)); await refresh(['inventory', 'suppliers']);
+    await until(() => expect(host.textContent).toContain('可能已過期'));
+    expect(host.textContent).not.toContain('No suppliers found');
+    expect(host.textContent).toContain('Last loaded: 0 suppliers');
+    api.get.mockResolvedValue({ data: { data: [] } }); await click('重試供應商清單');
+    await until(() => expect(host.textContent).toContain('No suppliers found'));
+    expect(host.querySelector('[role="alert"]')).toBeNull();
+    expect(api.post).not.toHaveBeenCalled(); expect(api.put).not.toHaveBeenCalled();
+});
