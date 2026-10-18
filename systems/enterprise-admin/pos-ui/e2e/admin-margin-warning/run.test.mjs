@@ -8,7 +8,7 @@ import { randomUUID } from 'node:crypto';
 import { deflateSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
-import { assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
+import { assertReaderGeometry, assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
 import { importRequestAllowed, readImportRequest, files, assertImportNetwork } from './import-contract.mjs';
@@ -275,3 +275,12 @@ test('trace evidence rejects missing null-order screenshot stage', () => {
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
 });
 
+
+test('reader geometry rejects fixed-sidebar occlusion and horizontal page scrolling', () => {
+  const good = { subject:'inventory-reader', keyboardReachable:true, scrollX:0, documentWidth:390, sidebarRight:72,
+    viewport:{width:390,height:844}, target:{x:112,y:250,right:230,bottom:290,width:118,height:40}, hitTest:[true,true,true,true,true] };
+  assert.doesNotThrow(()=>assertReaderGeometry(good));
+  for (const mutate of [g=>g.scrollX=88,g=>g.documentWidth=478,g=>g.target.x=41,g=>g.hitTest[0]=false,g=>g.sidebarRight=undefined]) {
+    const bad=structuredClone(good);mutate(bad);assert.throws(()=>assertReaderGeometry(bad));
+  }
+});

@@ -96,3 +96,11 @@ describe('analytics denial persists across owners', () => {
         api.get.mockImplementation(success); await click('重試商品分析'); await until(()=>expect(host.textContent).toContain('SYNTHETIC_PRODUCT'));
     });
 });
+
+it('wraps the analytics tab row instead of forcing whole-page horizontal scrolling', async () => {
+    api.get.mockRejectedValue(failure(500)); mount();
+    await until(() => expect(host.textContent).toContain('重試商品分析'));
+    const tabs = button('📦 ABC Product Analysis').parentElement!;
+    expect(tabs.style.flexWrap).toBe('wrap');
+    expect(tabs.contains(button('🏢 Supplier Ranking'))).toBe(true);
+});

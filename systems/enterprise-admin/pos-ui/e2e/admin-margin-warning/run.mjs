@@ -59,6 +59,19 @@ export function validateScreenshot(bytes, title) {
   assert.ok(expectedCases.includes(title), 'Unknown screenshot case');
   return title === 'batch-trace 1366: source lifecycle' ? validateTraceDesktopPng(bytes) : validatePng(bytes);
 }
+export function assertReaderGeometry(geometry) {
+  assert.equal(geometry.subject, 'inventory-reader');
+  assert.equal(geometry.keyboardReachable, true);
+  assert.equal(geometry.scrollX, 0);
+  assert.ok(geometry.documentWidth <= geometry.viewport.width + 1);
+  assert.ok(Number.isFinite(geometry.sidebarRight) && geometry.sidebarRight > 0);
+  assert.ok(geometry.target.x >= geometry.sidebarRight);
+  assert.deepEqual(geometry.hitTest, [true, true, true, true, true]);
+  assert.ok(geometry.target.width > 0 && geometry.target.height > 0);
+  assert.ok(geometry.target.x >= 0 && geometry.target.right <= geometry.viewport.width + 1);
+  assert.ok(geometry.target.y >= 0 && geometry.target.bottom <= geometry.viewport.height + 1);
+}
+
 export function validateEvidence(output, cases) {
   return cases.map(item => {
     const names = item.attachments.map(a => a.name);
@@ -102,11 +115,7 @@ export function validateEvidence(output, cases) {
         assert.ok(bounds.y + bounds.height <= geometry.viewport.height + 1);
       }
       if (item.title.startsWith('reader-')) {
-        assert.equal(geometry.subject, 'inventory-reader');
-        assert.equal(geometry.keyboardReachable, true);
-        assert.ok(geometry.target.width > 0 && geometry.target.height > 0);
-        assert.ok(geometry.target.x >= 0 && geometry.target.right <= geometry.viewport.width + 1);
-        assert.ok(geometry.target.y >= 0 && geometry.target.bottom <= geometry.viewport.height + 1);
+        assertReaderGeometry(geometry);
       } else if (item.title.startsWith('batch-trace ')) {
         assert.equal(geometry.subject, 'batch-trace');
         assert.ok(geometry.dialog.width > 0 && geometry.dialog.height > 0);

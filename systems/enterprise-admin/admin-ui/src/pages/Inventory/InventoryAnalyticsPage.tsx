@@ -98,7 +98,7 @@ export default function InventoryAnalyticsPage() {
             </header>
 
             {/* ── Tab Switcher ── */}
-            <div className="flex gap-8" style={{ marginBottom: 28 }}>
+            <div className="flex gap-8" style={{ marginBottom: 28, flexWrap: 'wrap' }}>
                 <button
                     className={`btn ${activeTab === 'products' ? 'btn-primary' : 'btn-ghost'}`}
                     onClick={() => setActiveTab('products')}
