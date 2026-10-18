@@ -12,6 +12,7 @@ Each ADR should follow the standard format:
 - **Consequences**: What are the trade-offs (positive and negative)?
 
 ## 3. ADR Index
+- [ADR-025: Actor-private manual receiving drafts](adr_025_private_receiving_drafts.md)
 - [ADR-024: Reviewed tenant product/package identifiers](adr_024_reviewed_product_packages.md)
 - [ADR-001: Choice of Relational Database for Core Data](adr_001_relational_database_choice.md)
 - [ADR-002: Token-Based Authentication Standard (JWT)](adr_002_authentication_standard.md)
@@ -31,3 +32,4 @@ Each ADR should follow the standard format:
 - [ADR-016: Reviewed Product Master-Data Import](adr_016_reviewed_master_data_import.md)
 - [ADR-017: Atomic Batch Receipts and Quantity Bypasses](adr_017_atomic_batch_receipts.md)
 - [ADR-023: Local BLE Medicine Label Bridge](adr_023_local_ble_medicine_label_bridge.md)
+

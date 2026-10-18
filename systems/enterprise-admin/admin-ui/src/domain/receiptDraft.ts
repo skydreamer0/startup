@@ -2,6 +2,8 @@
 export type ReceiptFields = Readonly<{
   productId: string; baseUnit: string; batchNumber: string;
   expiryDate: string; quantity: string; note: string;
+  orderedQuantity?: string; quarantineQuantity?: string; rejectedQuantity?: string;
+  packageDescription?: string; unitCost?: string; sourceReference?: string;
 }>;
 export type Review = Readonly<{ actorId: string; reviewedAtRevision: number }>;
 export type ReceiptLine = Readonly<{ id: string; fields: ReceiptFields; review: Review | null }>;
@@ -12,7 +14,8 @@ export class DraftError extends Error {
   readonly code: DraftErrorCode;
   constructor(code: DraftErrorCode) { super(code); this.name = 'DraftError'; this.code = code; }
 }
-const fields = ['productId', 'baseUnit', 'batchNumber', 'expiryDate', 'quantity', 'note'] as const;
+const fields = ['productId', 'baseUnit', 'batchNumber', 'expiryDate', 'quantity', 'note', 'orderedQuantity', 'quarantineQuantity', 'rejectedQuantity', 'packageDescription', 'unitCost', 'sourceReference'] as const;
+const required = ['productId', 'baseUnit', 'batchNumber', 'expiryDate', 'quantity'] as const;
 const critical = fields.filter(key => key !== 'note');
 const emptyFields: ReceiptFields = Object.freeze({ productId: '', baseUnit: '', batchNumber: '', expiryDate: '', quantity: '', note: '' });
 function fail(code: DraftErrorCode): never { throw new DraftError(code); }
@@ -66,12 +69,16 @@ function validCalendarDate(raw: string): boolean {
 export function issuesFor(raw: ReceiptFields): readonly FieldIssue[] {
   const checked = patchFields(raw);
   const issues: FieldIssue[] = [];
-  for (const field of critical) {
+  for (const field of required) {
     const value = checked[field];
     if (typeof value !== 'string' || value.trim().length === 0) issues.push({ field, code: 'required' });
   }
   if (checked.expiryDate?.trim() && !validCalendarDate(checked.expiryDate)) issues.push({ field: 'expiryDate', code: 'invalid_date' });
   if (checked.quantity?.trim() && (checked.quantity.match(/^\d+(?:\.\d+)?$/)?.[0] !== checked.quantity || !/[1-9]/.test(checked.quantity))) issues.push({ field: 'quantity', code: 'invalid_quantity' });
+  for (const field of ['orderedQuantity', 'quarantineQuantity', 'rejectedQuantity', 'unitCost'] as const) {
+    const value = checked[field];
+    if (value && value.match(/^\d+(?:\.\d+)?$/)?.[0] !== value) issues.push({ field, code: 'invalid_quantity' });
+  }
   return Object.freeze(issues.map(issue => Object.freeze(issue)));
 }
 export function createDraft(id: string): ReceiptDraft { identity(id); return snapshot(id, 0, []); }
@@ -114,3 +121,4 @@ export function summarizeDraft(draft: ReceiptDraft) {
   }
   return Object.freeze({ reviewed: Object.freeze(reviewed), needsReview: Object.freeze(needsReview), invalid: Object.freeze(invalid) });
 }
+

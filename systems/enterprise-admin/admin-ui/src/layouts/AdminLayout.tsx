@@ -47,6 +47,9 @@ export default function AdminLayout() {
                             <span className="icon">📊</span> <span>Inventory Analytics</span>
                         </NavLink>
                     )}
+                    <NavLink to="/receiving" aria-label="人工收貨草稿" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📝</span> <span>收貨草稿</span>
+                    </NavLink>
                     <NavLink to="/inventory/batches" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">📦</span> <span>批號管理</span>
                     </NavLink>
@@ -124,3 +127,4 @@ export default function AdminLayout() {
         </div>
     );
 }
+
