@@ -83,7 +83,13 @@ describe.skipIf(!databaseUrl)('private receiving drafts with native PostgreSQL a
   });
   it('enforces real authentication active-user and existing read/create permissions', async () => {
     const id = randomUUID(), body = { expectedRevision: 0, payload: payload() };
-    expect((await request(app).put(`/receiving-drafts/${id}`).send(body)).status).toBe(401);
+    // Tenant resolution precedes route auth in the real stack. Exercise both gates without bypassing either.
+    const unscoped = await request(app).put(`/receiving-drafts/${id}`).send(body);
+    expect(unscoped.status).toBe(400);
+    expect(unscoped.body.error.code).toBe('TENANT_REQUIRED');
+    const anonymous = await request(app).put(`/receiving-drafts/${id}`).set('x-tenant-id', tenants[0]).send(body);
+    expect(anonymous.status).toBe(401);
+    expect(anonymous.body.error.code).toBe('UNAUTHORIZED');
     expect((await request(app).get('/receiving-drafts').set(http(0, []))).status).toBe(403);
     expect((await request(app).put(`/receiving-drafts/${id}`).set(http(0, ['read:products'])).send(body)).status).toBe(403);
     await db.user.update({ where: { id: actors[2].id }, data: { status: 'inactive' } });

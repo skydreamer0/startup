@@ -58,13 +58,13 @@ for (const width of [1440, 390]) test.describe(`receiving ${width}`, () => {
     const state = fixture(harness); await fresh(page); await page.getByLabel('草稿名稱').fill('合成十行私人草稿');
     for (let i=0;i<10;i++) await page.getByRole('button', { name: '新增一行', exact: true }).click();
     await expect(page.locator('fieldset')).toHaveCount(10);
-    const first = page.locator('fieldset').first(); await first.getByLabel('商品', { exact: true }).selectOption(productId);
+    const first = page.locator('fieldset').first(); await first.getByRole('combobox', { name: '商品', exact: true }).selectOption(productId);
     await first.getByLabel('實收單位（人工核對）').fill('盒'); await first.getByLabel('實到數量', { exact: true }).fill('2');
     await first.getByLabel('批號', { exact: true }).fill('SYNTHETIC-LOT'); await first.getByLabel('完整效期 YYYY-MM-DD').fill('2028-12-31');
     await first.getByRole('button', { name: '核對此行資料', exact: true }).click(); await expect(first.locator('legend')).toContainText('已核對');
     await first.getByLabel('實到數量', { exact: true }).fill('3'); await expect(first.locator('legend')).toContainText('待核對');
     await page.getByRole('button', { name: '商品下一頁', exact: true }).click(); await expect(page.getByText('商品第 2 頁', { exact: false })).toBeVisible();
-    await expect(first.getByLabel('商品', { exact: true })).toHaveValue(productId); await expect(first.getByLabel('商品', { exact: true }).locator('option:checked')).toContainText('本頁未載入');
+    await expect(first.getByRole('combobox', { name: '商品', exact: true })).toHaveValue(productId); await expect(first.getByRole('combobox', { name: '商品', exact: true }).locator('option:checked')).toContainText('本頁未載入');
     await capture(page, info, 'receiving-before', page.getByRole('button', { name: '保存草稿', exact: true })); await page.keyboard.press('Enter');
     await expect(page.getByText('草稿已保存，尚未入庫。', { exact: true })).toBeVisible(); expect([...state.rows.values()][0].payload.lines).toHaveLength(10);
     await page.getByRole('button', { name: '關閉本頁草稿', exact: true }).click(); await page.getByRole('button', { name: '合成十行私人草稿 · v1', exact: true }).click();
