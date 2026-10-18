@@ -247,3 +247,23 @@ the separate proposal reader must not infer missing metadata.
 See ADR-022 and the `ImageScanDialog`, `POSCheckoutPage.image-scan`, and image
 decoder/evidence tests. Actual WASM, browser asset routing and hardware/performance
 evidence must be reported separately; mocked UI tests do not establish decoding.
+
+### Local camera capture and explicit package handoff
+
+The toolbar's camera entry opens ImageScanDialog with camera acquisition.
+CameraCapture requests video only on an explicit enable click, captures one
+bounded local PNG on a second click and stops all tracks before local decoding.
+Retake, late media/encoding/decode, close/navigation, hidden page and interrupted
+media use cancellation/cleanup boundaries; checkout identity, draft and staff
+changes discard the camera session. Existing image/manual entries stay available.
+
+Selection plus text confirmation only exposes the separate package handoff.
+PackageLookupDialog remains the sole reviewed mapping/revision authority; no
+automatic cart or inventory effects are introduced by camera capture.
+ADR-022 records provenance and resource limits. CameraCapture, ImageScanDialog
+and POSCheckoutPage.image-scan tests cover synthetic lifecycle/integration.
+The existing exact-head e2e/dialog-acceptance runner includes camera.spec.ts,
+generated fake Y4M, real local WASM and sealed camera/geometry/font evidence.
+Fake video and synthetic HTTP are not physical camera, OS permissions or real
+API/PG acceptance; hardware/LAN HTTPS/offline installation/8 GB performance gates
+remain open. Current-source CI and independent pixel review must accompany the PR.

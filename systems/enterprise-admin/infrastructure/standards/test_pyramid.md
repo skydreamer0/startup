@@ -35,13 +35,13 @@ and manual dispatch. It currently has nine jobs:
 | --- | --- |
 | Agent Context Validation | Context links/tracking, canonical dependency-lock boundaries, and the Python-standard-library synthetic OCR evaluator contract (unit tests, control/negative CLI exit checks, and repeat-byte determinism). No OCR engine or real-image accuracy. |
 | Backend CI | npm audit, Prisma generation, lint/build, final Docker image and migration CLI, PostgreSQL migrations/seed/tests, and isolated final-Alpine readiness acceptance with cleanup evidence. Individual tests may still mock dependencies; a PostgreSQL service alone does not prove every feature has native DB coverage. |
-| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin margin/ranking warning browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
+| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin 46-case report/batch-trace/import/reader browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
 | POS UI CI | Unit/component tests, build/type-check, Docker image, real HTTP restart/lost-response recovery with isolated PostgreSQL, and fixed-subject scanner/supplier Chromium evidence. The fixed subjects are historical versions, not the current UI. |
 | Product pagination PostgreSQL acceptance | Exact-head pagination regression and native PostgreSQL cases, ownership guards, and cleanup evidence. |
 | Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU/category/provenance plus ten reviewed package cases and current POS Chromium with synthetic HTTP retain their separate scopes. A dedicated stable-category Chrome slice also follows the real built POS through the unchanged HTTP/JWT/RBAC API to the same owned PostgreSQL fixture, at 1366/1024/390px; a separate stock slice at 1366/1024px verifies confirmed checkout/refund quantity, test-injected product-read 500s, manual retry and cart preservation. A package slice also follows built Admin maintenance → real production API → owned PG15 → built POS at 1366/1024/390px, covering manual confirmation, unknown conversion, stale revision and manual-input handoff/focus; fixture-issued JWT excludes login UI. Native evidence and independent review are required; whole POS layout and hardware remain separate. |
 | Batch audit PostgreSQL acceptance | Exact-head append-only batch audit cases and schema contracts, with owned fixture evidence. |
 | Order sequence PostgreSQL acceptance | Exact-head numbering, legacy-upgrade, and checkout regression cases with owned DB cleanup. |
-| Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 14 split/PIN/ordinary-payment native-input cases, locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. |
+| Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 19 existing split/PIN/ordinary-payment/manual-input cases plus four camera cases in this candidate (23 total), locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. Camera cases use generated fake Y4M with real video/canvas/pinned local WASM; physical media/permissions remain separate. |
 
 The OCR step runs `python3 -I scripts/ocr-evaluation/verify.py` against the existing
 job checkout (the PR merge commit on pull requests), using the runner's installed
@@ -101,6 +101,13 @@ Additional workflows:
   prior local socket denial remains NOT RUN and is never retried or bypassed.
   The bounded dialog runner installs Ubuntu `fonts-noto-cjk` and verifies CJK
   font availability; screenshots still require independent actual-pixel review.
+  Camera additions retain the same owned process, sealed network/keyboard, CJK,
+  exact-case and no-retry guards. Fake Y4M generation/reader checks and camera
+  cleanup/provenance/geometry guards run in run.test.mjs. Four camera journeys
+  require ten affected captures: live video, confirmed evidence and explicit
+  package choice at three widths, plus denied-camera recovery. Browser counts
+  are planned until the submitted head actually runs; unit success is not Chrome
+  or physical-camera acceptance. No new API/schema or native PG gate is added.
 - Browser downloads require access to the relevant Playwright/CDN hosts or a valid
   pre-populated cache. A denied launch or unavailable prerequisite is BLOCKED / NOT
   RUN. Do not bypass security restrictions or relabel it as successful verification.
@@ -118,8 +125,16 @@ Additional workflows:
   no API proxy, clean child environment and owned loopback process bounds are
   explicit. Google font CSS is stubbed rather than downloaded. Screenshots and
   geometry are retained; actual pixels need independent review before claiming
-  visual acceptance. Existing zero/empty error fallback and whole-report overflow
-  are not repaired or certified by this disclosure-only slice. Physical devices,
+  visual acceptance. At merged master c4e6307, cases.mjs declares 46 cases:
+  24 original report/batch-trace cases, nine import-dialog cases and 13
+  Supplier/InventoryAnalytics reader cases from #148. The reader cases cover
+  initial retry, 401/403 cached-data hiding, both analytics tabs and supplier
+  identity changes; they use synthetic HTTP and cannot establish real RBAC/PG.
+  This is no longer a disclosure-only suite. Whole-report layout and financial
+  correctness are not globally certified by these bounded flows. Draft #149's
+  seven receiving browser cases (53 on that branch) and ten separate native
+  PostgreSQL cases are not part of this master-based 46-case Admin suite and
+  must not be counted as one browser-to-database end-to-end run. Physical devices,
   native zoom, screen readers, Safari and financial reconciliation remain separate.
 - `e2e/category-native/run.mjs` covers the bounded Issue #49 category slice: single-SKU/empty searches and category switching retain every category entry; real keyboard/pointer activation preserves the cart and makes no checkout/write request. A synthetic active shift and signed test JWT avoid unrelated login/shift-opening writes. Browser/API response hashes and all business rows are compared before/after; exact fixture rows are removed before the existing owned-DB cleanup. Chrome sandbox, CJK glyphs, sealed ledgers and quiescent-only artifact publication are required. Independent raw/pixel review is still needed; the seven-case matrix additionally covers initial loading/error/retry, real empty
   tenant, injected 403/500, stale refetch failure/recovery and delayed real product

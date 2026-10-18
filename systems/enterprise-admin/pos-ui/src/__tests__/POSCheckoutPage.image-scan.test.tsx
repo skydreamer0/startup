@@ -165,3 +165,43 @@ describe('image scan entry + real POS page/scanner/cart integration', () => {
     expect(posApi.checkout).not.toHaveBeenCalled(); expect(lookupProduct).not.toHaveBeenCalled();
   });
 });
+
+describe('camera entry shares POS scanner and checkout boundaries', () => {
+  it.each(['identity', 'identity-ABA', 'draft', 'staff', 'pending', 'unmount'])('releases camera and drops evidence when %s changes', async boundary => {
+    const { user, unmount } = await setup();
+    vi.stubGlobal('isSecureContext', true);
+    const stop = vi.fn();
+    const stream = { getTracks: () => [{ stop }], getVideoTracks: () => [{ stop, onended: null }] } as unknown as MediaStream;
+    const getUserMedia = vi.fn().mockResolvedValue(stream);
+    Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getUserMedia } });
+    const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+    try {
+      await user.click(screen.getByRole('button', { name: '相機掃碼' }));
+      expect(getUserMedia).not.toHaveBeenCalled();
+      await user.click(screen.getByRole('button', { name: '啟用相機／重新拍攝' }));
+      expect(screen.getByRole('button', { name: '拍攝並在本機辨識' })).toBeEnabled();
+      const cart = useCartStore.getState();
+      scan('ONE');
+      expect(useCartStore.getState().items).toEqual(cart.items);
+      expect(lookupProduct).not.toHaveBeenCalled(); expect(posApi.checkout).not.toHaveBeenCalled();
+      if (boundary === 'unmount') unmount();
+      else act(() => {
+        if (boundary === 'identity') useCheckoutRecoveryStore.setState({ scope: 'another:actor' });
+        if (boundary === 'identity-ABA') {
+          const original = useCheckoutRecoveryStore.getState().scope;
+          useCheckoutRecoveryStore.setState({ scope: 'another:actor' });
+          useCheckoutRecoveryStore.setState({ scope: original });
+        }
+        if (boundary === 'draft') useCartStore.setState({ draftRevision: cart.draftRevision + 1 });
+        if (boundary === 'staff') useCartStore.setState({ currentSalesStaffId: 'another-staff' });
+        if (boundary === 'pending') useCheckoutRecoveryStore.getState().prepare({
+          commandId: 'camera-pending', shiftId: 'shift-1', cartItems: [{ productId: existing.id, quantity: 1, discountRate: 0 }],
+          paymentMethod: 'CASH', orderDiscountAmount: 0,
+        }, { items: cart.items, orderDiscountAmount: 0, orderDiscountNote: '', paymentMethod: 'CASH', currentSalesStaffId: 'cashier-1' });
+      });
+      expect(stop).toHaveBeenCalledOnce();
+      expect(screen.queryByRole('dialog', { name: '相機掃碼' })).toBeNull();
+      expect(posApi.checkout).not.toHaveBeenCalled();
+    } finally { play.mockRestore(); }
+  });
+});
