@@ -58,11 +58,18 @@ for (const slug of ['margin', 'sales-ranking'] as const) {
         await expect(notice(page)).toBeVisible();
         await expect(page.getByText(productName, { exact: true })).toHaveCount(0);
         await capture(page, info, 'initial-error');
-        // Existing zero/empty error fallback is observed, not certified as good
-        // error UX or repaired by this narrowly scoped warning acceptance.
+        // Initial failures expose a query-local retry instead of the success header.
+        const label = slug === 'margin' ? '毛利報表' : '銷售排行';
+        const readNotice = page.getByRole('alert', { name: `${label}讀取狀態`, exact: true });
+        await expect(readNotice).toContainText('資料尚不可用');
+        const completed = harness.responses.length;
         harness.handler = () => ({ status: 200, data: dataFor(slug) });
-        await page.getByRole('button', { name: 'Refresh', exact: true }).click();
-        await success(page); await capture(page, info, 'error-recovered');
+        await readNotice.getByRole('button', { name: `重試${label}`, exact: true }).click();
+        await expect.poll(() => harness.responses.length).toBe(completed + 1);
+        await success(page);
+        await expect(readNotice).toHaveCount(0);
+        await expect(notice(page)).toBeVisible();
+        await capture(page, info, 'error-recovered');
       });
       test(`${slug} ${width}: refetch failure and recovery`, async ({ page, harness }, info) => {
         await ready(page, slug); await success(page);

@@ -1,6 +1,7 @@
 // Pure harness controls only. These tests never import Prisma or connect to a DB.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import { test } from 'node:test';
 import { assertConnection, assertReport, assertService, databaseName, databaseUrl, expectedCases, probeOriginalGuard } from './products-pagination-ci.mjs';
 
@@ -46,12 +47,12 @@ test('service guard rejects wildcard ports, other networks and external mounts',
   }
 });
 
-for (const kind of ['mock', 'native']) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
+for (const kind of ['mock', 'native', 'http']) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
   const names = expectedCases[kind];
   const report = {
     success: true, numTotalTests: names.length, numPassedTests: names.length,
     numFailedTests: 0, numPendingTests: 0, numTodoTests: 0,
-    testResults: [{ status: 'passed', name: kind === 'native' ? '/repo/src/__tests__/products-pagination.integration.test.ts' : '/repo/src/modules/inventory/__tests__/products-pagination.test.ts', assertionResults: names.map(title => ({ title, status: 'passed', duration: 1 })) }],
+    testResults: [{ status: 'passed', name: kind === 'http' ? '/repo/src/__tests__/product-update-http.integration.test.ts' : kind === 'native' ? '/repo/src/__tests__/products-pagination.integration.test.ts' : '/repo/src/modules/inventory/__tests__/products-pagination.test.ts', assertionResults: names.map(title => ({ title, status: 'passed', duration: 1 })) }],
   };
   assert.equal(assertReport(report, kind).length, names.length);
   for (const mutate of [
@@ -67,4 +68,16 @@ for (const kind of ['mock', 'native']) test(`${kind} report cannot accept skippe
     mutate(invalid);
     assert.throws(() => assertReport(invalid, kind));
   }
+});
+
+test('HTTP suite rejects non-owned URLs before importing application modules', () => {
+  const source = fs.readFileSync(new URL('../src/__tests__/product-update-http.integration.test.ts', import.meta.url), 'utf8');
+  const guard = source.slice(source.indexOf('const databaseUrl ='), source.indexOf('describe.skipIf'));
+  const check = env => vm.runInNewContext(guard, { process: { env } }, { timeout: 1000 });
+  check({});
+  check({ PRODUCT_PAGINATION_DATABASE_URL: databaseUrl, DATABASE_URL: databaseUrl });
+  for (const other of [databaseUrl + '?schema=other', databaseUrl.replace('127.0.0.1', 'localhost'), databaseUrl.replace('test@', 'test:test@'), databaseUrl.replace(':55434', ':5432'), databaseUrl.replace(databaseName, 'production')]) {
+    assert.throws(() => check({ PRODUCT_PAGINATION_DATABASE_URL: other, DATABASE_URL: other }));
+  }
+  assert.throws(() => check({ PRODUCT_PAGINATION_DATABASE_URL: databaseUrl, DATABASE_URL: databaseUrl + '_other' }));
 });

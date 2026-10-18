@@ -1,5 +1,6 @@
 // GitHub-hosted, synthetic-only built Admin/POS -> production HTTP API -> PG15.
 import assert from 'node:assert/strict';
+import { runMedicineLabelJourney } from './medicine-label-cloud.ts';
 import { runPackageBrowserInteractions } from './package-browser-interactions.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -213,6 +214,8 @@ try {
       confirmedBaseQuantity: 3, staleRevisionRejected: true, manualHandoff: true, handoffFocusRestored: true, backendBusinessUnchanged: true, geometry, adminGeometry });
     await context.close();
   }
+  const medicine = await runMedicineLabelJourney({ db, tenantId: syntheticTenant, browser, adminOrigin, token, system, output, nonce, expect, capture });
+  assert.equal(medicine.status, 'passed');
   assert.equal(forbidden.length, 0); assert.equal(cases.length, 3);
   assert.equal(apiLedger.some(row => row.path.startsWith('/api/v1/admin/inventory/products/') && row.method === 'POST' && row.status === 201), true);
   assert.equal(apiLedger.filter(row => row.path === '/api/v1/admin/pos/packages/resolve' && row.status === 409).length, 3);
@@ -238,7 +241,7 @@ finally {
   } finally { await db.$disconnect(); }
 }
 assert.equal(cleanup.quiescent, true); assert.equal(git('status', '--porcelain'), ''); assert.equal(git('rev-parse', 'HEAD'), identity.head);
-const sourceFiles = git('ls-files', '-z', '--', 'systems/enterprise-admin/backend', 'systems/enterprise-admin/admin-ui', 'systems/enterprise-admin/pos-ui', 'systems/enterprise-admin/packages', '.github/workflows/ci.yml').split('\0').filter(Boolean);
+const sourceFiles = git('ls-files', '-z', '--', 'systems/enterprise-admin/backend', 'systems/enterprise-admin/admin-ui', 'systems/enterprise-admin/pos-ui', 'systems/enterprise-admin/packages', 'systems/enterprise-admin/local-print-agent', '.github/workflows/ci.yml').split('\0').filter(Boolean);
 write('source.json', { ...identity, nonce, scope: 'Built Admin/POS → real production HTTP API → owned synthetic PostgreSQL15; fixture-issued JWT, login UI/hardware not tested' });
 write('source-hashes.json', Object.fromEntries(sourceFiles.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
 write('network.json', { networkLedger, forbidden, apiLedger });
@@ -247,3 +250,4 @@ write('report.json', { status: failure ? 'failed' : 'passed', cases, failure, cl
 if (env.GITHUB_OUTPUT) fs.appendFileSync(env.GITHUB_OUTPUT, `evidence_dir=${output}\n`);
 if (failure) throw new Error(failure.message);
 console.log(`Package native browser acceptance passed: ${cases.length} viewport flows, no implicit adds, stale revision rejected, zero business rows and owned processes quiescent`);
+

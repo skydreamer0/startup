@@ -1,4 +1,4 @@
-// Actions-only, synthetic-only acceptance for the unchanged #55 pagination tests.
+// Actions-only, synthetic-only acceptance for the #55 pagination and #145 product-update HTTP tests.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
@@ -13,8 +13,10 @@ export const databaseUrl = `postgresql://test@127.0.0.1:55434/${databaseName}`;
 const backend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.resolve(backend, '../../..');
 const nativeFile = 'src/__tests__/products-pagination.integration.test.ts';
+const httpFile = 'src/__tests__/product-update-http.integration.test.ts';
 const mockFile = 'src/modules/inventory/__tests__/products-pagination.test.ts';
 export const expectedCases = {
+  http: ['returns generic HTTP 404 for a missing product without writes', 'returns identical HTTP 404 across tenants and preserves the owner product', 'persists an authorized owner metadata update without changing stock', 'retains authentication and update permission rejection without writes', 'rejects direct stock updates without changing persisted product data'],
   mock: [
     'fills the first low-stock page after filtering and reports the full filtered total',
     'orders equal names by ID across pages regardless of seed order',
@@ -69,7 +71,7 @@ export function assertReport(report, kind) {
   assert.equal(report.testResults.length, 1);
   const suite = report.testResults[0];
   assert.equal(suite.status, 'passed');
-  assert.ok(suite.name.endsWith(kind === 'native' ? nativeFile : mockFile));
+  assert.ok(suite.name.endsWith(kind === 'http' ? httpFile : kind === 'native' ? nativeFile : mockFile));
   assert.deepEqual(suite.assertionResults.map(test => test.title).sort(), [...names].sort());
   assert.ok(suite.assertionResults.every(test => test.status === 'passed'));
   return suite.assertionResults.map(({ title, status, duration }) => ({ title, status, duration }));
@@ -153,7 +155,7 @@ async function main(mode) {
     assert.equal(fs.existsSync(path.join(evidence, 'ownership.json')), false, 'Never reuse a prior fixture');
     save('source.json', { ...identity, parents: git('cat-file', '-p', 'HEAD').split('\n').filter(line => line.startsWith('parent ')).map(line => line.slice(7)) });
     save('network.json', { service, members: Object.keys(network.Containers), driver: network.Driver });
-    const files = ['.github/workflows/ci.yml', ...[nativeFile, mockFile, 'src/modules/inventory/inventory.service.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/products-pagination-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
+    const files = ['.github/workflows/ci.yml', ...[nativeFile, mockFile, httpFile, 'src/modules/inventory/inventory.service.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/products-pagination-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
     save('source-hashes.json', Object.fromEntries(files.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
     save('guard.json', { url: databaseUrl, equalEnvironmentUrls: true, probes: probeOriginalGuard(fs.readFileSync(path.join(backend, nativeFile), 'utf8')) });
     assert.deepEqual(tables(), [], 'Refuse a previously used service database; never reset it');
@@ -181,14 +183,17 @@ async function main(mode) {
     assert.equal(tests.status, 'passed');
     assert.equal(tests.mock.length, 6);
     assert.equal(tests.native.length, 8);
+    assert.equal(tests.http.length, 5);
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: 6 mocked + 8 real PostgreSQL; fixture rows zero; owned DB removed');
+    console.log('Acceptance passed: 6 mocked + 8 real PostgreSQL + 5 real HTTP/PostgreSQL; fixture rows zero; owned DB removed');
     return;
   }
 
   const requireBackend = createRequire(path.join(backend, 'package.json'));
   const childEnv = Object.fromEntries(['PATH', 'HOME', 'TMPDIR', 'RUNNER_TEMP', 'CI'].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
-  Object.assign(childEnv, { NODE_ENV: 'test', DATABASE_URL: databaseUrl, PRODUCT_PAGINATION_DATABASE_URL: databaseUrl });
+  Object.assign(childEnv, { NODE_ENV: 'test', DATABASE_URL: databaseUrl, PRODUCT_PAGINATION_DATABASE_URL: databaseUrl,
+    JWT_ACCESS_SECRET: 'synthetic-product-update-access-not-a-credential',
+    JWT_REFRESH_SECRET: 'synthetic-product-update-refresh-not-a-credential' });
   function recorded(name, args) {
     const result = spawnSync(process.execPath, args, { cwd: backend, env: childEnv, encoding: 'utf8', timeout: 120000, maxBuffer: 16 * 1024 * 1024 });
     fs.writeFileSync(path.join(evidence, `${name}.log`), (result.stdout || '') + (result.stderr || ''));
@@ -215,10 +220,10 @@ async function main(mode) {
     assert.ok(Object.keys(before).length > 0);
     save('before-test-counts.json', before);
     requireZero(before);
-    // No broad seed, API server, build, HTTP, or other suite is run here.
+    // No broad seed, deployed server or build. Supertest uses ephemeral HTTP for the bounded update suite.
     const results = {};
     const errors = [];
-    for (const [kind, file] of [['mock', mockFile], ['native', nativeFile]]) {
+    for (const [kind, file] of [['mock', mockFile], ['native', nativeFile], ['http', httpFile]]) {
       const outcome = recorded(kind, [path.join(backend, 'node_modules/vitest/vitest.mjs'), 'run', file, '--maxWorkers=1', '--no-file-parallelism', '--reporter=verbose', '--reporter=json', `--outputFile.json=${path.join(evidence, `${kind}.json`)}`]);
       try {
         assert.equal(outcome.status, 0, `${kind} tests must exit successfully`);

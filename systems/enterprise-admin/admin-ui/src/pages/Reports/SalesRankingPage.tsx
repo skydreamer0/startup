@@ -1,3 +1,4 @@
+import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { reportsApi, SalesRankingProduct } from '../../api/reports';
@@ -8,7 +9,7 @@ export default function SalesRankingPage() {
     const [sortBy, setSortBy] = useState<'revenue' | 'quantity'>('revenue');
     const queryClient = useQueryClient();
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isError, error, isFetching, refetch } = useQuery({
         queryKey: ['reports', 'sales-ranking', period, sortBy],
         queryFn: () => reportsApi.getSalesRanking(period, sortBy, 20),
     });
@@ -30,6 +31,16 @@ export default function SalesRankingPage() {
             </details>
         </section>
     );
+
+    const reportNotice = <ReportReadNotice label="銷售排行" isError={isError} error={error}
+        hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
+
+    if (isError && (data === undefined || isReportAccessDenied(error))) {
+        return <div className="admin-page report-page sales-ranking-page">
+            {estimateNotice}
+            {reportNotice}
+        </div>;
+    }
 
     if (isLoading && products.length === 0) {
         return <div className="admin-page report-page sales-ranking-page">
@@ -69,6 +80,7 @@ export default function SalesRankingPage() {
             </header>
 
             {estimateNotice}
+            {reportNotice}
 
             <div className="report-grid-wide">
                 {/* Category Breakdown Pie Chart */}

@@ -125,9 +125,19 @@ export class InventoryService {
         supplierId?: string;
     }) {
         if (data.stockQuantity !== undefined) throw new AppError(400, '商品庫存不能直接修改，請使用庫存過帳作業');
-        return await prisma.product.update({
-            where: { id },
-            data,
-        });
+        try {
+            return await prisma.product.update({
+                where: { id },
+                data,
+            });
+        } catch (error) {
+            // Missing and tenant-hidden products share the same public result.
+            // Keep the scoped update atomic; do not add an existence preflight.
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+                throw new AppError(404, 'Product not found');
+            }
+            throw error;
+        }
     }
 }
+
