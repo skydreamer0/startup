@@ -1,5 +1,6 @@
 // GitHub-hosted, synthetic-only built Admin/POS -> production HTTP API -> PG15.
 import assert from 'node:assert/strict';
+import { runStockReconciliationJourney } from './stock-reconciliation-browser.mjs';
 import { runMedicineLabelJourney } from './medicine-label-cloud.ts';
 import { runPackageBrowserInteractions } from './package-browser-interactions.mjs';
 import fs from 'node:fs';
@@ -214,6 +215,8 @@ try {
       confirmedBaseQuantity: 3, staleRevisionRejected: true, manualHandoff: true, handoffFocusRestored: true, backendBusinessUnchanged: true, geometry, adminGeometry });
     await context.close();
   }
+  const reconciliation = await runStockReconciliationJourney({ db, tenantId: syntheticTenant, browser, adminOrigin, token, signAccessToken, output, expect, capture });
+  assert.equal(reconciliation.status, 'passed');
   const medicine = await runMedicineLabelJourney({ db, tenantId: syntheticTenant, browser, adminOrigin, token, system, output, nonce, expect, capture });
   assert.equal(medicine.status, 'passed');
   assert.equal(forbidden.length, 0); assert.equal(cases.length, 3);
