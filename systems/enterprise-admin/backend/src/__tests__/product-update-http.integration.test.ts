@@ -30,9 +30,10 @@ describe.skipIf(!databaseUrl)('Product update errors through real HTTP and Postg
         ({ basePrisma: db } = await import('../lib/prisma'));
         ({ signAccessToken: sign } = await import('../lib/jwt'));
         const { setTenantContext } = await import('../middleware/tenant.middleware');
+        const { defaultRateLimit } = await import('../middleware/rate-limit.middleware');
         const { default: inventory } = await import('../modules/inventory/inventory.routes');
         const { errorMiddleware } = await import('../middleware/error.middleware');
-        app = express(); app.use(express.json()); app.use(setTenantContext);
+        app = express(); app.use(express.json()); app.use(defaultRateLimit); app.use(setTenantContext);
         app.use('/inventory', inventory); app.use(errorMiddleware);
         server = createServer(app);
         await new Promise<void>((resolve, reject) => {
