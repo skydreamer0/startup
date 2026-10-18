@@ -1,3 +1,4 @@
+import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reportsApi, CashFlowStatement } from '../../api/reports';
@@ -9,12 +10,12 @@ export default function CashFlowPage() {
     const [showExpenseModal, setShowExpenseModal] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data, isLoading } = useQuery<CashFlowStatement>({
+    const { data, isLoading, isError, error, isFetching, refetch } = useQuery<CashFlowStatement>({
         queryKey: ['reports', 'cashflow', period],
         queryFn: () => reportsApi.getCashFlowStatement(period),
     });
 
-    const { data: trend } = useQuery({
+    const { data: trend, isError: trendIsError, error: trendError, isLoading: trendIsLoading, isFetching: trendIsFetching, refetch: refetchTrend } = useQuery({
         queryKey: ['reports', 'cashflow-trend', period],
         queryFn: () => reportsApi.getCashFlowTrend(period),
     });
@@ -34,6 +35,16 @@ export default function CashFlowPage() {
             </details>
         </section>
     );
+
+    const reportNotice = <ReportReadNotice label="現金流報表" isError={isError} error={error}
+        hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
+
+    if (isError && (data === undefined || isReportAccessDenied(error))) {
+        return <div className="admin-page report-page cashflow-report-page">
+            {estimateNotice}
+            {reportNotice}
+        </div>;
+    }
 
     if (isLoading && !data) {
         return <div className="admin-page report-page cashflow-report-page">
@@ -64,6 +75,7 @@ export default function CashFlowPage() {
             </header>
 
             {estimateNotice}
+            {reportNotice}
 
             {/* Top Summary Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
@@ -103,7 +115,11 @@ export default function CashFlowPage() {
                 {/* 6-Month Liquidity Trend */}
                 <section className="card" style={{ padding: '24px' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>Cash Position & Net Cash Flow Trend（估算）</h3>
-                    <div style={{ width: '100%', height: '350px' }}>
+                    <ReportReadNotice label="趨勢" isError={trendIsError} error={trendError}
+                        hasData={trend !== undefined} isFetching={trendIsFetching} onRetry={() => { void refetchTrend(); }} />
+                    {trendIsLoading && !trend && <p role="status">趨勢載入中…</p>}
+                    {!trendIsError && trend?.length === 0 && <p>此期間沒有趨勢資料。</p>}
+                    {trend && !isReportAccessDenied(trendError) && <div style={{ width: '100%', height: '350px' }}>
                         <ResponsiveContainer>
                             <BarChart data={trend || []} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -115,7 +131,7 @@ export default function CashFlowPage() {
                                 <Bar dataKey="netCashFlow" name="Net Flow（估算）" fill="#10b981" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
-                    </div>
+                    </div>}
                 </section>
 
                 {/* Operating Expenses Breakdown */}
