@@ -1,0 +1,13 @@
+/* Scoped read-only report: retain complete columns inside a keyboard-focusable scroll region. */
+.stock-reconciliation-page { min-width: 0; max-width: 100%; }
+.stock-reconciliation-page .stock-reconciliation-scroll { max-width: 100%; overflow-x: auto; }
+.stock-reconciliation-page .table { min-width: 1040px; table-layout: fixed; }
+.stock-reconciliation-page .table th,
+.stock-reconciliation-page .table td { vertical-align: top; overflow-wrap: anywhere; }
+.stock-reconciliation-page .table th:nth-child(1) { width: 22%; }
+.stock-reconciliation-page .table th:nth-child(2) { width: 10%; }
+.stock-reconciliation-page .table th:nth-child(3) { width: 12%; }
+.stock-reconciliation-page .table th:nth-child(4) { width: 12%; }
+.stock-reconciliation-page .table th:nth-child(5) { width: 24%; }
+.stock-reconciliation-page .table th:nth-child(6) { width: 20%; }
+.stock-reconciliation-page nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }

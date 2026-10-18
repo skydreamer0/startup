@@ -50,6 +50,9 @@ export default function AdminLayout() {
                     <NavLink to="/receiving" aria-label="人工收貨草稿" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">📝</span> <span>收貨草稿</span>
                     </NavLink>
+                    <NavLink to="/inventory/reconciliation" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📋</span> <span>庫存差異對帳</span>
+                    </NavLink>
                     <NavLink to="/inventory/batches" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">📦</span> <span>批號管理</span>
                     </NavLink>

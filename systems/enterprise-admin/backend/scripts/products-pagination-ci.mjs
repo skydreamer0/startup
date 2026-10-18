@@ -13,9 +13,11 @@ export const databaseUrl = `postgresql://test@127.0.0.1:55434/${databaseName}`;
 const backend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.resolve(backend, '../../..');
 const nativeFile = 'src/__tests__/products-pagination.integration.test.ts';
+const reconciliationFile = 'src/__tests__/stock-reconciliation-http.integration.test.ts';
 const httpFile = 'src/__tests__/product-update-http.integration.test.ts';
 const mockFile = 'src/modules/inventory/__tests__/products-pagination.test.ts';
 export const expectedCases = {
+  reconciliation: ['reports the preserved legacy 9 versus 4 discrepancy with explicit untraced history', 'paginates stable same-name products without duplicates or missing rows', 'isolates concurrent tenant counts and batch totals', 'rejects unauthenticated and unauthorized readers without writes', 'distinguishes invalid pages from valid empty pages without writes'],
   http: ['returns generic HTTP 404 for a missing product without writes', 'returns identical HTTP 404 across tenants and preserves the owner product', 'persists an authorized owner metadata update without changing stock', 'retains authentication and update permission rejection without writes', 'rejects direct stock updates without changing persisted product data'],
   mock: [
     'fills the first low-stock page after filtering and reports the full filtered total',
@@ -71,7 +73,7 @@ export function assertReport(report, kind) {
   assert.equal(report.testResults.length, 1);
   const suite = report.testResults[0];
   assert.equal(suite.status, 'passed');
-  assert.ok(suite.name.endsWith(kind === 'http' ? httpFile : kind === 'native' ? nativeFile : mockFile));
+  assert.ok(suite.name.endsWith(kind === 'reconciliation' ? reconciliationFile : kind === 'http' ? httpFile : kind === 'native' ? nativeFile : mockFile));
   assert.deepEqual(suite.assertionResults.map(test => test.title).sort(), [...names].sort());
   assert.ok(suite.assertionResults.every(test => test.status === 'passed'));
   return suite.assertionResults.map(({ title, status, duration }) => ({ title, status, duration }));
@@ -155,7 +157,7 @@ async function main(mode) {
     assert.equal(fs.existsSync(path.join(evidence, 'ownership.json')), false, 'Never reuse a prior fixture');
     save('source.json', { ...identity, parents: git('cat-file', '-p', 'HEAD').split('\n').filter(line => line.startsWith('parent ')).map(line => line.slice(7)) });
     save('network.json', { service, members: Object.keys(network.Containers), driver: network.Driver });
-    const files = ['.github/workflows/ci.yml', ...[nativeFile, mockFile, httpFile, 'src/modules/inventory/inventory.service.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/products-pagination-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
+    const files = ['.github/workflows/ci.yml', ...[nativeFile, mockFile, httpFile, reconciliationFile, 'src/modules/inventory/stock-reconciliation.service.ts', 'src/modules/inventory/stock-reconciliation.controller.ts', 'src/modules/inventory/inventory.routes.ts', 'src/modules/inventory/inventory.service.ts', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/products-pagination-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
     save('source-hashes.json', Object.fromEntries(files.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
     save('guard.json', { url: databaseUrl, equalEnvironmentUrls: true, probes: probeOriginalGuard(fs.readFileSync(path.join(backend, nativeFile), 'utf8')) });
     assert.deepEqual(tables(), [], 'Refuse a previously used service database; never reset it');
@@ -184,8 +186,9 @@ async function main(mode) {
     assert.equal(tests.mock.length, 6);
     assert.equal(tests.native.length, 8);
     assert.equal(tests.http.length, 5);
+    assert.equal(tests.reconciliation.length, 5);
     save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: 6 mocked + 8 real PostgreSQL + 5 real HTTP/PostgreSQL; fixture rows zero; owned DB removed');
+    console.log('Acceptance passed: 6 mocked + 8 real PostgreSQL + 5 product-update + 5 reconciliation real HTTP/PostgreSQL; fixture rows zero; owned DB removed');
     return;
   }
 
@@ -223,7 +226,7 @@ async function main(mode) {
     // No broad seed, deployed server or build. Supertest uses ephemeral HTTP for the bounded update suite.
     const results = {};
     const errors = [];
-    for (const [kind, file] of [['mock', mockFile], ['native', nativeFile], ['http', httpFile]]) {
+    for (const [kind, file] of [['mock', mockFile], ['native', nativeFile], ['http', httpFile], ['reconciliation', reconciliationFile]]) {
       const outcome = recorded(kind, [path.join(backend, 'node_modules/vitest/vitest.mjs'), 'run', file, '--maxWorkers=1', '--no-file-parallelism', '--reporter=verbose', '--reporter=json', `--outputFile.json=${path.join(evidence, `${kind}.json`)}`]);
       try {
         assert.equal(outcome.status, 0, `${kind} tests must exit successfully`);

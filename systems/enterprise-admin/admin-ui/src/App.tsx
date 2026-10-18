@@ -1,4 +1,5 @@
 import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route, Navigate, Outlet } from 'react-router-dom';
+import StockReconciliationPage from './pages/Inventory/StockReconciliationPage';
 import { AuthProvider } from './hooks/useAuth';
 import { useAuth } from './hooks/authContext';
 import LoginPage from './pages/LoginPage';
@@ -60,6 +61,7 @@ const router = createBrowserRouter(createRoutesFromElements(
                             <Route path="/crm/analytics" element={<PlanGate plan="pro"><CrmAnalyticsPage /></PlanGate>} />
                             <Route path="/crm/:id" element={<CustomerDetailPage />} />
                             {/* Inventory Phase 3 */}
+                            <Route path="/inventory/reconciliation" element={<StockReconciliationPage />} />
                             <Route path="/inventory" element={<ProductListPage />} />
                             <Route path="/receiving" element={<ReceivingDraftPage />} />
                             <Route path="/inventory/analytics" element={<PlanGate plan="pro"><InventoryAnalyticsPage /></PlanGate>} />
