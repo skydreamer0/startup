@@ -279,8 +279,10 @@ test('trace evidence rejects missing null-order screenshot stage', () => {
 test('reader geometry rejects fixed-sidebar occlusion and horizontal page scrolling', () => {
   const good = { subject:'inventory-reader', keyboardReachable:true, scrollX:0, documentWidth:390, sidebarRight:72,
     viewport:{width:390,height:844}, target:{x:112,y:250,right:230,bottom:290,width:118,height:40}, hitTest:[true,true,true,true,true] };
+  const b=good.target;good.edgePoints=[[b.x+2,b.y+b.height/2],[b.right-2,b.y+b.height/2],[b.x+b.width/2,b.y+2],[b.x+b.width/2,b.bottom-2],[b.x+b.width/2,b.y+b.height/2]].map(([x,y])=>({x,y,owned:true,hit:{tag:'BUTTON'}}));
+  good.legacyCorners=[{},{},{},{}];good.radius={bottomRight:'8px'};
   assert.doesNotThrow(()=>assertReaderGeometry(good));
-  for (const mutate of [g=>g.scrollX=88,g=>g.documentWidth=478,g=>g.target.x=41,g=>g.hitTest[0]=false,g=>g.sidebarRight=undefined]) {
+  for (const mutate of [g=>g.scrollX=88,g=>g.documentWidth=478,g=>g.target.x=41,g=>g.hitTest[0]=false,g=>g.sidebarRight=undefined,g=>g.edgePoints[0].owned=false,g=>g.edgePoints[0].x=170]) {
     const bad=structuredClone(good);mutate(bad);assert.throws(()=>assertReaderGeometry(bad));
   }
 });

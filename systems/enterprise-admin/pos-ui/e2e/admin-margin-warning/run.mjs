@@ -67,6 +67,12 @@ export function assertReaderGeometry(geometry) {
   assert.ok(Number.isFinite(geometry.sidebarRight) && geometry.sidebarRight > 0);
   assert.ok(geometry.target.x >= geometry.sidebarRight);
   assert.deepEqual(geometry.hitTest, [true, true, true, true, true]);
+  const b=geometry.target;
+  const coordinates=[[b.x+2,b.y+b.height/2],[b.right-2,b.y+b.height/2],[b.x+b.width/2,b.y+2],[b.x+b.width/2,b.bottom-2],[b.x+b.width/2,b.y+b.height/2]];
+  assert.deepEqual(geometry.edgePoints.map(point=>[point.x,point.y]),coordinates);
+  assert.ok(geometry.edgePoints.every(point=>point.owned===true && point.hit?.tag));
+  assert.equal(geometry.legacyCorners.length,4);
+  assert.equal(typeof geometry.radius.bottomRight,'string');
   assert.ok(geometry.target.width > 0 && geometry.target.height > 0);
   assert.ok(geometry.target.x >= 0 && geometry.target.right <= geometry.viewport.width + 1);
   assert.ok(geometry.target.y >= 0 && geometry.target.bottom <= geometry.viewport.height + 1);

@@ -12,10 +12,18 @@ const labels={suppliers:'重試供應商清單',analytics:'重試商品分析'};
 async function tabTo(page:Page,target:Locator){for(let i=0;i<90;i++){await page.keyboard.press('Tab');if(await target.evaluate(el=>document.activeElement===el))return;}throw Error('Reader control is not keyboard reachable');}
 async function capture(page:Page,info:TestInfo,name:string,target:Locator){
  await tabTo(page,target);await expect(target).toBeFocused();await target.scrollIntoViewIfNeeded();await page.evaluate(()=>document.fonts.ready);
- const geometry=await target.evaluate(el=>{const b=el.getBoundingClientRect();const sidebarRight=document.querySelector('.sidebar')!.getBoundingClientRect().right;const points=[[b.x+2,b.y+2],[b.right-2,b.y+2],[b.x+2,b.bottom-2],[b.right-2,b.bottom-2],[b.x+b.width/2,b.y+b.height/2]];const hitTest=points.map(([x,y])=>el.contains(document.elementFromPoint(x,y)));return {scrollX:window.scrollX,sidebarRight,hitTest,subject:'inventory-reader',keyboardReachable:document.activeElement===el,target:{x:b.x,y:b.y,right:b.right,bottom:b.bottom,width:b.width,height:b.height},viewport:{width:innerWidth,height:innerHeight},documentWidth:document.documentElement.scrollWidth};});
+ const geometry=await target.evaluate(el=>{
+  const b=el.getBoundingClientRect(),style=getComputedStyle(el),sidebarRight=document.querySelector('.sidebar')!.getBoundingClientRect().right;
+  const observe=([x,y]:number[])=>{const hit=document.elementFromPoint(x,y);return {x,y,owned:el.contains(hit),hit:hit?{tag:hit.tagName,id:hit.id,className:hit.getAttribute('class'),text:hit.textContent?.slice(0,100)}:null};};
+  const edgePoints=[[b.x+2,b.y+b.height/2],[b.right-2,b.y+b.height/2],[b.x+b.width/2,b.y+2],[b.x+b.width/2,b.bottom-2],[b.x+b.width/2,b.y+b.height/2]].map(observe);
+  const legacyCorners=[[b.x+2,b.y+2],[b.right-2,b.y+2],[b.x+2,b.bottom-2],[b.right-2,b.bottom-2]].map(observe);
+  return {scrollX:window.scrollX,sidebarRight,edgePoints,legacyCorners,radius:{topLeft:style.borderTopLeftRadius,topRight:style.borderTopRightRadius,bottomLeft:style.borderBottomLeftRadius,bottomRight:style.borderBottomRightRadius},hitTest:edgePoints.map(point=>point.owned),subject:'inventory-reader',keyboardReachable:document.activeElement===el,target:{x:b.x,y:b.y,right:b.right,bottom:b.bottom,width:b.width,height:b.height},viewport:{width:innerWidth,height:innerHeight},documentWidth:document.documentElement.scrollWidth};
+ });
+ // Retain actual element/radius evidence even when an assertion below fails.
+ const image=info.outputPath(name+'.png'),measure=info.outputPath(name+'.json');await page.screenshot({path:image,fullPage:false});await writeFile(measure,JSON.stringify(geometry,null,2));await info.attach(name+'.png',{path:image,contentType:'image/png'});await info.attach(name+'.json',{path:measure,contentType:'application/json'});
  expect(geometry.scrollX).toBe(0);expect(geometry.documentWidth).toBeLessThanOrEqual(geometry.viewport.width+1);expect(geometry.hitTest).toEqual([true,true,true,true,true]);expect(geometry.target.x).toBeGreaterThanOrEqual(geometry.sidebarRight);
  expect(geometry.target.x).toBeGreaterThanOrEqual(0);expect(geometry.target.right).toBeLessThanOrEqual(geometry.viewport.width+1);
- const image=info.outputPath(name+'.png'),measure=info.outputPath(name+'.json');await page.screenshot({path:image,fullPage:false});await writeFile(measure,JSON.stringify(geometry,null,2));await info.attach(name+'.png',{path:image,contentType:'image/png'});await info.attach(name+'.json',{path:measure,contentType:'application/json'});
+
 }
 async function leaveAndReturn(page:Page,subject:'suppliers'|'analytics',time:number){
  await page.clock.setFixedTime(new Date(time));const other=subject==='suppliers'?'analytics':'suppliers';
