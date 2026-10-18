@@ -49,6 +49,10 @@ tracked in `../infrastructure/verification/pos-manufacturer-barcode-contract/REA
 2. Open referenced components, hooks, and API client files only as needed.
 3. Read backend API spec only when request/response behavior is involved.
 
+### Change medicine/product labels
+
+`pages/Inventory/ProductListPage.tsx` edits Product's optional medicine identity fields and opens `components/MedicineLabelDialog.tsx` for a selected Product. The dialog requires reviewed Chinese name, English product name, generic name, NHI code, full licence number and valid SKU, plus an actual storage location entered for this print. The Chinese line uses Product.name verbatim; strength and dosage form remain optional product metadata. The local renderer shrinks the three name lines independently and rejects field-specific overflow before preview or send. Changing that location invalidates preview approval. It then calls the workstation-only `services/localLabelPrinter.ts`. The Python contract and installation live in `../local-print-agent/README.md` and ADR-023. Its QR is `P1:<SKU>` for internal product identity; no Code128 or lot identity is produced. The print-time location does not persist to Product or batch inventory. Never store the local token in a frontend bundle or browser persistence, infer physical success from BLE ACK, or route the workstation request through the cloud API. Exact store origin/browser permission and local-API physical output remain acceptance gates.
+
 ### Change an API client
 
 1. Read `../infrastructure/api/api_spec.md`.

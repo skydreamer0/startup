@@ -507,6 +507,14 @@ jobs:
         run: |
           node --test pos-ui/e2e/stock-native/run.test.mjs
           node pos-ui/e2e/stock-native/run.mjs
+      - name: Prepare pinned render-only Python for medicine label journey
+        run: |
+          python3 -c "import sys, platform; assert sys.version_info[:2] == (3, 12); assert platform.machine() == 'x86_64'"
+          export PYTHONDONTWRITEBYTECODE=1
+          python3 backend/scripts/medicine-label-disabled-agent.test.py
+          python3 -m venv "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/bin/python" -m pip install --disable-pip-version-check --require-hashes --only-binary=:all: --no-deps -r backend/scripts/medicine-label-ci.requirements.txt
+          "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/bin/python" -m pip check
       - name: Reviewed package maintenance and POS through real API and owned PostgreSQL
         id: package_native
         timeout-minutes: 5
@@ -522,7 +530,8 @@ jobs:
           npm --prefix backend run build
           pnpm --filter admin-ui run build
           pnpm --filter pos-ui run build
-          node backend/scripts/package-browser-acceptance.mjs
+          export MEDICINE_LABEL_PYTHON="$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/bin/python"
+          (cd backend && node --import tsx scripts/package-browser-acceptance.mjs)
       - name: Verify zero rows and drop only the owned SKU database
         if: ${{ always() && steps.sku_preflight.outcome == 'success' }}
         env:
@@ -751,3 +760,4 @@ jobs:
           path: ${{ steps.dialog_chrome.outputs.evidence_dir }}
           if-no-files-found: error
           retention-days: 7
+

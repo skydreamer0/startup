@@ -104,6 +104,8 @@ are tracked in `../infrastructure/verification/product-batch-change-integration.
 4. Check seed/migration impact.
 5. Update context if model meaning, tenant boundaries, or source-of-truth assumptions change.
 
+Product's optional englishName, strength, dosageForm, genericName, nhiCode and licenseNumber are reviewed medicine identity metadata for an internal item label. The actual storage location is selected at print time and is not a Product field or stock posting field. These fields do not identify a stock lot, prove a manufacturer barcode match, or authorize dispensing. Existing rows remain null until reviewed. See ADR-023 and the inventory product contract in `../infrastructure/api/api_spec.md`.
+
 ### Change product-list pagination
 
 1. Read API spec §3.6 and `src/modules/inventory/inventory.service.ts`.
