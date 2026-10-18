@@ -21,6 +21,7 @@ export default function ProductBatchesView({ productId, onBack }: { productId: s
     const message = status === 403 ? '權限不足，無法讀取此商品的批次。'
         : status === 404 ? '找不到此商品的批次資料或無法存取。'
             : '無法載入商品批次，請重試。讀取失敗不代表沒有批次。';
+    const negativeBatchCount = batches.data?.filter(batch => batch.quantity < 0).length ?? 0;
     return <div className="inventory-product-page product-batches-view">
         <header className="page-header product-header">
             <div className="product-heading">
@@ -39,6 +40,7 @@ export default function ProductBatchesView({ productId, onBack }: { productId: s
                             : <>
                                 <h2>{batches.data[0].product.name}（{batches.data[0].product.sku}）</h2>
                                 <p>{batches.data.length} 筆批次（本次載入）</p>
+                                {negativeBatchCount > 0 && <p role="alert"><strong>{negativeBatchCount} 個批次帳量為負數，需人工核對。</strong> 此頁保留原始帳量，不修正庫存；不得以假批次補平。</p>}
                                 <p id="product-batches-scroll-hint">欄位較多時可在表格內左右捲動；鍵盤可聚焦表格後使用方向鍵。</p>
                                 <div className="table-container product-table-scroll" role="region" aria-label="商品批次清單" aria-describedby="product-batches-scroll-hint" tabIndex={0}>
                                     <table className="table"><thead><tr>
@@ -47,7 +49,7 @@ export default function ProductBatchesView({ productId, onBack }: { productId: s
                                         <td>{batch.batchNumber}</td>
                                         <td>{new Date(batch.expiryDate).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' })}</td>
                                         <td>{batch.status === 'RELEASED' ? '已驗收' : batch.status === 'BLOCKED' ? '封鎖' : '待驗收隔離'}</td>
-                                        <td>{batch.quantity.toLocaleString()}</td>
+                                        <td>{batch.quantity < 0 ? <><strong>{batch.quantity.toLocaleString()}</strong><br /><strong>負數帳量，需核對</strong></> : batch.quantity.toLocaleString()}</td>
                                     </tr>)}</tbody></table>
                                 </div>
                             </>}

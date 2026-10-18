@@ -8,3 +8,10 @@ export const importCases = ['import 1440: keyboard and idle dismissal', 'import 
   'import 1440: preview pending recovery', 'import 1440: confirm pending pairing', 'import 1440: confirmation failure reset',
   ...['preview', 'confirm'].flatMap(phase => ['success', 'error'].map(outcome => `import 1440: late ${phase} ${outcome}`))];
 expectedCases.push(...importCases);
+
+
+export const readerCases = ['suppliers','analytics'].flatMap(page => widths.flatMap(width => ['initial retry','denial 401','denial 403'].map(flow => `reader-${page} ${width}: ${flow}`))).concat(['reader-suppliers 1440: identity change']);
+expectedCases.push(...readerCases);
+
+export const receivingCases = widths.flatMap(width => ['ten-line save reopen history', 'lost response and navigation', 'CAS explicit choice'].map(flow => `receiving ${width}: ${flow}`)).concat(['receiving 1440: identity and invalid URL']);
+expectedCases.push(...receivingCases);

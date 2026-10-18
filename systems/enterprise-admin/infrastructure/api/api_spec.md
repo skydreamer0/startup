@@ -154,6 +154,7 @@ HTTP Status Code 需精確映射錯誤類別：
 
 - `POST /product-batches` 使用 `create:products`。接受既有 productId、batchNumber、完整 ISO expiryDate、正整數 quantity（上限 2147483647）、正成本 costPrice、選填 status。同一 transaction 鎖定並增加商品總量、建立批次、寫 IN movement；預設 QUARANTINE。RELEASED 在取得鎖後再次檢查到期當日規則。重複批號回 `409`，庫存不再增加；不是追加同批第二次到貨或 command 結果查詢。
 - `GET /product-batches` 與 `GET /product-batches/:id` 使用 `read:products`。明細增加 `receiptMovements`，含實收 quantity、batchId、costPriceAtReceipt；舊 movement 無已知批次時保持 null。
+- 商品範圍唯讀列表 `GET /product-batches?productId=<id>` 保留既有批次的有號整數帳量，含零與負數，不因負數排除整筆或整份回應。Admin reader 要求 JavaScript safe integer；NaN、非整數及超出安全範圍仍整份拒絕，商品／租戶識別驗證不放寬。負量以文字警示並保留原值，供 §3.14 對帳追查；負量不是可出庫數，也不授權修帳、補造批次或負量進貨。上述 POST 正整數及禁止直接改量的寫入規則不變。
 - `PATCH /product-batches/:id` 使用 `update:products`，可改既有 metadata／status，quantity 欄位回 `400`。`DELETE` 同權限，剩餘量或任何出庫／進貨引用回 `400`。
 - `POST /inventory/products` 使用 `create:products`，flat metadata body，新商品 stockQuantity 必為 0（可省略或明確傳 0）；其他值回 `400`。`PUT /inventory/products/:id` 使用 `update:products`，任何 stockQuantity 欄位回 `400`。UI 顯示帳量但不提供數量編輯。
 - 商品建立可選填 `englishName`（英文商品名，最多 120 字）、`strength`（規格，40）、`dosageForm`（劑型，40）、`genericName`（學名，120）、`nhiCode`（健保碼，40）、`licenseNumber`（完整藥證字號，120）；均為去前後空白的非空單行字串。更新可用 `null` 清除。商品讀取回傳同名 nullable 欄位；舊商品不補造值。這些欄位是待藥師覆核的店內識別資料。三行藥品標籤要求英文商品名、學名、健保碼、完整藥證、中文品名及符合格式的 SKU 齊全；中文行直接使用商品 `name`，不另附規格或劑型。實際儲位只在列印視窗輸入，不寫入 Product 或批次。QR 固定為 `P1:<SKU>`；詳見 ADR-023。

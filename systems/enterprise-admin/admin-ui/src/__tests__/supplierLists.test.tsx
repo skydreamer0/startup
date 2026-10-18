@@ -6,6 +6,7 @@ import { AxiosError, AxiosHeaders } from 'axios';
 import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import type { ApiFailure, ApiSuccess, Product, Supplier } from '@pharmasaas/types';
+import { AuthContext, type AuthContextType } from '../hooks/authContext';
 import { inventoryApi } from '../api/inventory';
 import ProductListPage from '../pages/Inventory/ProductListPage';
 import SupplierListPage from '../pages/Inventory/SupplierListPage';
@@ -27,6 +28,11 @@ const product: Product = {
 };
 
 const clients: QueryClient[] = [];
+const authenticated: AuthContextType = {
+    user: { id: 'synthetic-reader', email: 'reader@example.test', fullName: 'Reader', roles: [], permissions: ['read:products'] },
+    loading: false, login: async () => {}, logout: () => {}, demoLogin: () => {},
+    hasPermission: permission => permission === 'read:products',
+};
 function requestFailure(status: number) {
     return new AxiosError<ApiFailure>('Synthetic request failed', undefined, undefined, undefined, {
         status, statusText: 'Synthetic failure', headers: new AxiosHeaders(), config: { headers: new AxiosHeaders() },
@@ -45,7 +51,7 @@ function failureText(kind: typeof failures[number]) {
 function setup(page: ReactElement) {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     clients.push(client);
-    render(<MemoryRouter><QueryClientProvider client={client}>{page}</QueryClientProvider></MemoryRouter>);
+    render(<AuthContext.Provider value={authenticated}><MemoryRouter><QueryClientProvider client={client}>{page}</QueryClientProvider></MemoryRouter></AuthContext.Provider>);
     return client;
 }
 beforeEach(() => {
@@ -120,10 +126,10 @@ describe('supplier list contract and consumers', () => {
     it.each(failures)('shows the supplier %s error and recovers the table on retry', async (kind) => {
         suppliersRequest.mockRejectedValueOnce(failureFor(kind));
         setup(<SupplierListPage />);
-        expect(await screen.findByRole('alert')).toHaveTextContent(failureText(kind));
+        expect(await screen.findByRole('alert')).toHaveTextContent(kind === 403 ? '存取被拒絕' : '讀取失敗');
         expect(screen.queryByText('No suppliers found')).not.toBeInTheDocument();
         expect(screen.queryByText('0 active suppliers')).not.toBeInTheDocument();
-        fireEvent.click(screen.getByRole('button', { name: 'Retry suppliers' }));
+        fireEvent.click(screen.getByRole('button', { name: '重試供應商清單' }));
         expect(await screen.findByText(supplier.name)).toBeInTheDocument();
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
         expect(httpPost).not.toHaveBeenCalled();
@@ -226,7 +232,7 @@ describe('supplier list contract and consumers', () => {
         await screen.findByText('No suppliers found');
         suppliersRequest.mockRejectedValueOnce(requestFailure(500));
         await act(async () => { await client.invalidateQueries({ queryKey: ['inventory', 'suppliers'] }); });
-        expect(await screen.findByRole('alert')).toHaveTextContent('500');
+        expect(await screen.findByRole('alert')).toHaveTextContent(page === 'products' ? '500' : '更新失敗');
         expect(screen.queryByText('No suppliers found')).not.toBeInTheDocument();
     });
 
@@ -235,9 +241,10 @@ describe('supplier list contract and consumers', () => {
         await screen.findByText(supplier.name);
         suppliersRequest.mockRejectedValueOnce(new AxiosError('Network Error', 'ERR_NETWORK'));
         await act(async () => { await client.invalidateQueries({ queryKey: ['inventory', 'suppliers'] }); });
-        expect(await screen.findByRole('alert')).toHaveTextContent('Check your connection');
+        expect(await screen.findByRole('alert')).toHaveTextContent('更新失敗');
         expect(screen.getByText(supplier.name)).toBeInTheDocument();
         expect(screen.getByText('Last loaded: 1 suppliers')).toBeInTheDocument();
         expect(screen.queryByText('No suppliers found')).not.toBeInTheDocument();
     });
 });
+

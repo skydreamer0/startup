@@ -29,18 +29,19 @@ To maintain a high deployment velocity without sacrificing stability, we follow 
 
 The execution source of truth is `.github/workflows/ci.yml` at repository root.
 It runs for every PR, including stacked PRs, plus pushes to `master` / `main`
-and manual dispatch. It currently has nine jobs:
+and manual dispatch. It currently has ten jobs:
 
 | Job | Coverage and important limits |
 | --- | --- |
 | Agent Context Validation | Context links/tracking, canonical dependency-lock boundaries, and the Python-standard-library synthetic OCR evaluator contract (unit tests, control/negative CLI exit checks, and repeat-byte determinism). No OCR engine or real-image accuracy. |
 | Backend CI | npm audit, Prisma generation, lint/build, final Docker image and migration CLI, PostgreSQL migrations/seed/tests, and isolated final-Alpine readiness acceptance with cleanup evidence. Individual tests may still mock dependencies; a PostgreSQL service alone does not prove every feature has native DB coverage. |
-| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin margin/ranking warning browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
+| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin report/trace/import/reader/private-receiving browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
 | POS UI CI | Unit/component tests, build/type-check, Docker image, real HTTP restart/lost-response recovery with isolated PostgreSQL, and fixed-subject scanner/supplier Chromium evidence. The fixed subjects are historical versions, not the current UI. |
 | Product pagination PostgreSQL acceptance | Exact-head pagination regression and native PostgreSQL cases, ownership guards, and cleanup evidence. |
 | Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU/category/provenance plus ten reviewed package cases and current POS Chromium with synthetic HTTP retain their separate scopes. A dedicated stable-category Chrome slice also follows the real built POS through the unchanged HTTP/JWT/RBAC API to the same owned PostgreSQL fixture, at 1366/1024/390px; a separate stock slice at 1366/1024px verifies confirmed checkout/refund quantity, test-injected product-read 500s, manual retry and cart preservation. A package slice also follows built Admin maintenance → real production API → owned PG15 → built POS at 1366/1024/390px, covering manual confirmation, unknown conversion, stale revision and manual-input handoff/focus; fixture-issued JWT excludes login UI. Native evidence and independent review are required; whole POS layout and hardware remain separate. |
 | Batch audit PostgreSQL acceptance | Exact-head append-only batch audit cases and schema contracts, with owned fixture evidence. |
 | Order sequence PostgreSQL acceptance | Exact-head numbering, legacy-upgrade, and checkout regression cases with owned DB cleanup. |
+| Private receiving PostgreSQL acceptance | Exact-head ten native PostgreSQL/real-auth HTTP cases for private actor/tenant drafts, competing creates/CAS, composite FK, append-only history, failed snapshot rollback and GET readback. Dedicated owned empty PG15 service; retained synthetic row counts and removal of only the owned database. No production migration, posting or devices. |
 | Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 14 split/PIN/ordinary-payment native-input cases, locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. |
 
 The OCR step runs `python3 -I scripts/ocr-evaluation/verify.py` against the existing
@@ -74,7 +75,7 @@ Additional workflows:
   slice and does not complete #30 or any production gate.
 - `.github/workflows/dependency-review.yml` runs Dependency Review on PRs and rejects
   newly introduced high/critical vulnerable dependencies. Keep the existing audits
-  and security checks; their results are separate from the nine-job pipeline.
+  and security checks; their results are separate from the ten-job pipeline.
 - `.github/workflows/argon2-compat.yml` is intentionally restricted to the named
   Argon2 compatibility branches. A skip on another branch is not fresh Argon2
   compatibility evidence and is not a general backend regression pass.
@@ -131,3 +132,10 @@ Additional workflows:
 - Business acceptance, real payment-provider behavior, physical scanner/touch,
   Safari/iPad, OS keyboard, native zoom, and screen-reader checks remain separate
   when relevant. CI success does not close those gates or authorize deployment.
+
+### Private receiving acceptance scope
+
+`backend/scripts/receiving-drafts-ci.mjs` guards the dedicated Actions-owned PG15 fixture before deploying candidate migrations. The ten cases in `backend/src/__tests__/receiving-drafts.integration.test.ts` use production Prisma/services/auth routes. Append-only snapshots are retained until the verified disposable database is dropped; triggers are never disabled. Seeded product rows are compared in full; initially empty order/batch/movement/payment tables remain empty. This does not prove preservation of every kind of pre-existing financial row.
+
+Seven receiving journeys extend `pos-ui/e2e/admin-margin-warning/receiving-drafts.spec.ts` while retaining the prior 46 cases. They use the real built Admin UI and synthetic HTTP Map persistence: ten-line editing, explicit saving/reopening/history, product paging, review invalidation, dirty/pending/unknown navigation protection, lost-response GET recovery/canonical URL, explicit CAS choice, list-refresh failure and identity clearing. Fourteen receiving PNGs require independent CJK/focus/geometry review. The separate native PG and synthetic browser slices are complementary, not combined browser-to-real-API-to-PG end-to-end acceptance. Original #31/#37 posting/OCR/device gates remain open.
+

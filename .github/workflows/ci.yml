@@ -761,3 +761,74 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  receiving-drafts:
+    name: Private receiving PostgreSQL acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_DB: checkout_http_recovery_receiving_drafts_ci
+          # Only this new, disposable, synthetic-only service uses passwordless auth.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - '127.0.0.1:55438:5432'
+        options: >-
+          --health-cmd "pg_isready -U test -d checkout_http_recovery_receiving_drafts_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin/backend
+    env:
+      DATABASE_URL: 'postgresql://test@127.0.0.1:55438/checkout_http_recovery_receiving_drafts_ci'
+      RECEIVING_DRAFT_DATABASE_URL: 'postgresql://test@127.0.0.1:55438/checkout_http_recovery_receiving_drafts_ci'
+      RECEIVING_QA_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # This job proves the exact source head; the original four jobs stay unchanged.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
+      - name: Guard exact source, loopback service and empty owned DB
+        id: receiving_preflight
+        env:
+          RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
+          RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/receiving-drafts-ci.mjs preflight
+      - name: Install locked backend dependencies and generate Prisma
+        run: |
+          npm install --global npm@11.21.0
+          npm ci
+          npm run db:generate
+      - name: Validate harness safety and evidence controls
+        run: node --test scripts/receiving-drafts-ci.test.mjs
+      - name: Run ten private receiving native PostgreSQL and HTTP cases
+        env:
+          RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
+          RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/receiving-drafts-ci.mjs run
+      - name: Retain append-only row receipt and remove only the owned DB
+        if: ${{ always() && steps.receiving_preflight.outcome == 'success' }}
+        env:
+          RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
+          RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/receiving-drafts-ci.mjs cleanup
+      - name: Preserve exact-head receiving evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: receiving-drafts-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/receiving-qa-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
