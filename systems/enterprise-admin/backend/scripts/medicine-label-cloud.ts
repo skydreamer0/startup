@@ -1,0 +1,130 @@
+/** Bounded synthetic acceptance; no ambient DB, no BLE, no production server. */
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
+
+async function main() {
+  const expected = 'postgresql://test@127.0.0.1:55438/pr138_cloud_test';
+  assert.equal(process.env.DATABASE_URL, expected);
+  assert.equal(process.env.MEDICINE_LABEL_CLOUD_ACCEPTANCE, 'owned-pr138-cloud-pg');
+  assert.equal(process.env.NODE_ENV, 'test');
+  const evidence = process.env.MEDICINE_LABEL_EVIDENCE!;
+  assert.ok(evidence && resolve(evidence).startsWith('/workspace/'));
+  mkdirSync(evidence, { recursive: true });
+  const { basePrisma: db } = await import('../src/lib/prisma');
+  const { signAccessToken } = await import('../src/lib/jwt');
+  const { default: app } = await import('../src/app');
+  const requireBrowser = createRequire(resolve('../pos-ui/package.json'));
+  const { chromium, expect } = requireBrowser('@playwright/test');
+  const passes: string[] = [];
+  const pass = (name: string) => { passes.push(name); console.log(`PASS ${name}`); };
+  const fields = ['englishName', 'strength', 'dosageForm', 'genericName', 'nhiCode', 'licenseNumber'] as const;
+  const old = await db.product.findUniqueOrThrow({ where: { id: '13800000-0000-4000-8000-000000000002' } });
+  for (const field of fields) assert.equal(old[field], null);
+  const rows = await db.$queryRaw<Array<{ equal: boolean }>>`SELECT (to_jsonb(p) - ARRAY['english_name','strength','dosage_form','generic_name','nhi_code','license_number']) = s.value AS equal FROM products p CROSS JOIN pr138_legacy_snapshot s WHERE p.id = '13800000-0000-4000-8000-000000000002'`;
+  assert.deepEqual(rows, [{ equal: true }]);
+  pass('upgrade preserves every legacy field; six new fields remain null');
+  const tenants: string[] = [];
+  const tokens: string[] = [];
+  let noWrite = '';
+  let server: ReturnType<typeof app.listen> | undefined;
+  let browser;
+  try {
+    for (let i = 0; i < 2; i++) {
+      const id = randomUUID(); tenants.push(id);
+      await db.tenant.create({ data: { id, slug: id, name: 'Synthetic medicine acceptance', plan: 'pro' } });
+      const user = await db.user.create({ data: { tenantId: id, email: `${id}@example.test`, fullName: 'Synthetic pharmacist', passwordHash: 'not-a-login-hash' } });
+      const claims = { userId: user.id, email: user.email, tenantId: id, plan: 'pro' };
+      tokens.push(signAccessToken({ ...claims, permissions: ['read:products', 'create:products', 'update:products', 'read:suppliers'] }));
+      if (!i) noWrite = signAccessToken({ ...claims, permissions: ['read:products'] });
+    }
+    server = app.listen(3138, '127.0.0.1');
+    await new Promise<void>(r => server!.once('listening', r));
+    async function api(method: string, path: string, body?: object, token = tokens[0]) {
+      const response = await fetch(`http://127.0.0.1:3138/api/v1/admin/inventory${path}`, { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
+      return { status: response.status, body: await response.json() };
+    }
+    const metadata = { englishName: 'Synthetic Medicine', strength: '10 mg', dosageForm: '錠', genericName: 'Example ingredient', nhiCode: 'SYNTHETIC', licenseNumber: '合成藥證000001' };
+    const created = await api('POST', '/products', { sku: 'MED-CLOUD-138', name: '合成測試藥品', costPrice: 1, retailPrice: 2, ...metadata });
+    assert.equal(created.status, 201, JSON.stringify(created));
+    const id = created.body.data.id;
+    const read = await api('GET', `/products/${id}`);
+    for (const field of fields) assert.equal(read.body.data[field], metadata[field]);
+    assert.equal(read.body.data.stockQuantity, 0);
+    pass('real HTTP create/read persists six medicine fields and zero stock');
+    const packageResult = await api('POST', `/products/${id}/packages`, { label: '合成盒', contents: '10錠', stockUnitLabel: '錠', unitsPerPackage: 10, source: 'synthetic fixture', reason: 'integration acceptance', validFrom: '2026-01-01T00:00:00Z', validUntil: null, identifiers: [{ namespace: 'MANUFACTURER', value: 'SYNTHETIC-138' }] });
+    assert.equal(packageResult.status, 201, JSON.stringify(packageResult));
+    const packageBefore = (await api('GET', `/products/${id}/packages`)).body.data.packages;
+    assert.equal((await api('PUT', `/products/${id}`, { englishName: 'Updated Medicine' })).status, 200);
+    assert.equal((await api('GET', `/products/${id}`)).body.data.genericName, metadata.genericName);
+    assert.deepEqual((await api('GET', `/products/${id}/packages`)).body.data.packages, packageBefore);
+    pass('metadata update preserves omitted fields and reviewed package mapping');
+    assert.equal((await api('PUT', `/products/${id}`, Object.fromEntries(fields.map(f => [f, null])))).status, 200);
+    for (const field of fields) assert.equal((await api('GET', `/products/${id}`)).body.data[field], null);
+    assert.equal((await api('PUT', `/products/${id}`, metadata)).status, 200);
+    pass('explicit null clears all six fields; subsequent edit restores them');
+    assert.equal((await api('GET', `/products/${id}`, undefined, tokens[1])).status, 404);
+    assert.ok((await api('PUT', `/products/${id}`, { englishName: 'Cross tenant' }, tokens[1])).status >= 400);
+    assert.equal((await api('GET', '/products', undefined, tokens[1])).body.data.total, 0);
+    assert.equal((await api('PUT', `/products/${id}`, { englishName: 'Forbidden' }, noWrite)).status, 403);
+    assert.equal((await api('PUT', `/products/${id}`, { englishName: 'Invalid\nname' })).status, 400);
+    assert.equal((await api('PUT', `/products/${id}`, { stockQuantity: 9 })).status, 400);
+    assert.equal((await api('GET', `/products/${id}`)).body.data.englishName, metadata.englishName);
+    pass('tenant read/write isolation, RBAC, validation, and stock-write rejection');
+    browser = await chromium.launch({ executablePath: '/usr/bin/chromium', headless: true, chromiumSandbox: true });
+    const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+    await context.addInitScript((token: string) => localStorage.setItem('accessToken', token), tokens[0]);
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on('pageerror', (e: Error) => errors.push(e.message));
+    await page.goto('http://127.0.0.1:5173/inventory');
+    const row = page.getByRole('row').filter({ hasText: 'MED-CLOUD-138' });
+    await expect(row).toBeVisible();
+    await row.getByRole('button', { name: 'Edit', exact: true }).click();
+    await page.getByLabel('英文商品名', { exact: true }).fill('Browser Edited Medicine');
+    await page.getByRole('button', { name: /Save/ }).click();
+    await expect(page.getByLabel('英文商品名', { exact: true })).toHaveCount(0);
+    assert.equal((await api('GET', `/products/${id}`)).body.data.englishName, 'Browser Edited Medicine');
+    await row.getByRole('button', { name: /包裝對照/ }).click();
+    await expect(page.getByRole('dialog')).toContainText('合成盒');
+    await page.keyboard.press('Escape');
+    await row.getByRole('button', { name: /藥品標籤/ }).click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toContainText('Browser Edited Medicine');
+    await page.getByLabel('本機代理權杖').fill('pr138-synthetic-local-agent-token');
+    await page.getByLabel('本次實際儲位').fill('TEST-A01');
+    await page.getByRole('button', { name: '取得列印預覽雜湊' }).click();
+    await expect(page.getByAltText('本機渲染的 50 × 30 mm 橫式藥品標籤預覽')).toBeVisible();
+    await expect(page.getByRole('button', { name: '確認送印一張', exact: true })).toBeDisabled();
+    await page.screenshot({ path: `${evidence}/desktop-preview.png`, fullPage: true });
+    await page.getByLabel('本次實際儲位').fill('TEST-B02');
+    await expect(page.getByAltText('本機渲染的 50 × 30 mm 橫式藥品標籤預覽')).toHaveCount(0);
+    await page.getByRole('button', { name: '取得列印預覽雜湊' }).click();
+    await expect(page.getByAltText('本機渲染的 50 × 30 mm 橫式藥品標籤預覽')).toBeVisible();
+    await page.getByLabel('內容及版面已核對，送印一張').check();
+    await page.getByRole('button', { name: '確認送印一張', exact: true }).click();
+    await expect(dialog.getByRole('alert')).toContainText(/disabled/i);
+    assert.equal((await api('GET', `/products/${id}`)).body.data.stockQuantity, 0);
+    assert.deepEqual((await api('GET', `/products/${id}/packages`)).body.data.packages, packageBefore);
+    pass('real Chromium edit -> API/DB -> dialog -> real loopback preview; approval/reset; printing disabled; no stock/package mutation');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: `${evidence}/mobile-disabled.png`, fullPage: true });
+    assert.ok(await dialog.evaluate((el: HTMLElement) => el.getBoundingClientRect().right <= innerWidth));
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(row.getByRole('button', { name: /藥品標籤/ })).toBeFocused();
+    assert.deepEqual(errors, []);
+    pass('390px dialog containment, Escape dismissal, opener focus; no browser page errors');
+    await context.close();
+  } finally {
+    if (browser) await browser.close();
+    if (server) await new Promise<void>((r, reject) => server!.close(e => e ? reject(e) : r()));
+    // Append-only package revisions are retained for owned-container removal by runner.
+    console.log('FIXTURES_RETAINED_FOR_OWNED_CONTAINER_REMOVAL', tenants.length);
+    await db.$disconnect();
+    writeFileSync(`${evidence}/acceptance.json`, JSON.stringify({ passes, hardware: 'NOT RUN', browserBoundary: 'Linux Chromium loopback, not deployed Windows origin', glyphs: 'Linux fallback font is not Windows paper evidence' }, null, 2));
+  }
+}
+main().catch(error => { console.error(error); process.exitCode = 1; });

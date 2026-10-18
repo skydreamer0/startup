@@ -30,3 +30,4 @@ Each ADR should follow the standard format:
 - [ADR-015: Refund Registration Without Stock Receipt](adr_015_refund_without_stock_receipt.md)
 - [ADR-016: Reviewed Product Master-Data Import](adr_016_reviewed_master_data_import.md)
 - [ADR-017: Atomic Batch Receipts and Quantity Bypasses](adr_017_atomic_batch_receipts.md)
+- [ADR-023: Local BLE Medicine Label Bridge](adr_023_local_ble_medicine_label_bridge.md)
