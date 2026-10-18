@@ -71,7 +71,7 @@ export function validateEvidence(output, cases) {
     if (item.title.startsWith('import ')) assertImportNetwork(data);
     const images = item.attachments.filter(a => a.name.endsWith('.png'));
     const suffix = item.title.split(': ')[1];
-    const required = item.title.startsWith('import ') ? ({
+    const required = item.title.startsWith('reader-') ? (item.title.startsWith('reader-analytics ') && suffix.startsWith('denial ') ? ['reader-before', 'reader-after', 'ranking-denied', 'ranking-recovered'] : ['reader-before', 'reader-after']) : item.title.startsWith('import ') ? ({
       'keyboard and idle dismissal': ['import-open'],
       'preview pending recovery': ['preview-pending', 'preview-recovered'],
       'confirm pending pairing': ['confirm-pending', 'import-complete'],
@@ -101,7 +101,13 @@ export function validateEvidence(output, cases) {
         assert.ok(bounds.x + bounds.width <= geometry.viewport.width + 1);
         assert.ok(bounds.y + bounds.height <= geometry.viewport.height + 1);
       }
-      if (item.title.startsWith('batch-trace ')) {
+      if (item.title.startsWith('reader-')) {
+        assert.equal(geometry.subject, 'inventory-reader');
+        assert.equal(geometry.keyboardReachable, true);
+        assert.ok(geometry.target.width > 0 && geometry.target.height > 0);
+        assert.ok(geometry.target.x >= 0 && geometry.target.right <= geometry.viewport.width + 1);
+        assert.ok(geometry.target.y >= 0 && geometry.target.bottom <= geometry.viewport.height + 1);
+      } else if (item.title.startsWith('batch-trace ')) {
         assert.equal(geometry.subject, 'batch-trace');
         assert.ok(geometry.dialog.width > 0 && geometry.dialog.height > 0);
         assertTraceCjkFonts(geometry.platformFonts);
@@ -206,3 +212,4 @@ async function main() {
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   main().catch(error => { console.error(error); process.exitCode = 1; });
 }
+

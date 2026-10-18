@@ -47,12 +47,12 @@ test('service guard rejects wildcard ports, other networks and external mounts',
   }
 });
 
-for (const kind of ['mock', 'native', 'http']) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
+for (const kind of ['mock', 'native', 'http', 'reconciliation']) test(`${kind} report cannot accept skipped, omitted, failed or substituted cases`, () => {
   const names = expectedCases[kind];
   const report = {
     success: true, numTotalTests: names.length, numPassedTests: names.length,
     numFailedTests: 0, numPendingTests: 0, numTodoTests: 0,
-    testResults: [{ status: 'passed', name: kind === 'http' ? '/repo/src/__tests__/product-update-http.integration.test.ts' : kind === 'native' ? '/repo/src/__tests__/products-pagination.integration.test.ts' : '/repo/src/modules/inventory/__tests__/products-pagination.test.ts', assertionResults: names.map(title => ({ title, status: 'passed', duration: 1 })) }],
+    testResults: [{ status: 'passed', name: kind === 'reconciliation' ? '/repo/src/__tests__/stock-reconciliation-http.integration.test.ts' : kind === 'http' ? '/repo/src/__tests__/product-update-http.integration.test.ts' : kind === 'native' ? '/repo/src/__tests__/products-pagination.integration.test.ts' : '/repo/src/modules/inventory/__tests__/products-pagination.test.ts', assertionResults: names.map(title => ({ title, status: 'passed', duration: 1 })) }],
   };
   assert.equal(assertReport(report, kind).length, names.length);
   for (const mutate of [
@@ -70,8 +70,8 @@ for (const kind of ['mock', 'native', 'http']) test(`${kind} report cannot accep
   }
 });
 
-test('HTTP suite rejects non-owned URLs before importing application modules', () => {
-  const source = fs.readFileSync(new URL('../src/__tests__/product-update-http.integration.test.ts', import.meta.url), 'utf8');
+for (const file of ['product-update-http.integration.test.ts', 'stock-reconciliation-http.integration.test.ts']) test(`${file} rejects non-owned URLs before importing application modules`, () => {
+  const source = fs.readFileSync(new URL(`../src/__tests__/${file}`, import.meta.url), 'utf8');
   const guard = source.slice(source.indexOf('const databaseUrl ='), source.indexOf('describe.skipIf'));
   const check = env => vm.runInNewContext(guard, { process: { env } }, { timeout: 1000 });
   check({});
