@@ -1,3 +1,4 @@
+import StockReconciliationPage from './pages/Inventory/StockReconciliationPage';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
 import { useAuth } from './hooks/authContext';
@@ -62,6 +63,7 @@ export default function App() {
                             <Route path="/crm/analytics" element={<PlanGate plan="pro"><CrmAnalyticsPage /></PlanGate>} />
                             <Route path="/crm/:id" element={<CustomerDetailPage />} />
                             {/* Inventory Phase 3 */}
+                            <Route path="/inventory/reconciliation" element={<StockReconciliationPage />} />
                             <Route path="/inventory" element={<ProductListPage />} />
                             <Route path="/inventory/analytics" element={<PlanGate plan="pro"><InventoryAnalyticsPage /></PlanGate>} />
                             <Route path="/suppliers" element={<SupplierListPage />} />

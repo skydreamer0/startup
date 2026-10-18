@@ -47,6 +47,9 @@ export default function AdminLayout() {
                             <span className="icon">📊</span> <span>Inventory Analytics</span>
                         </NavLink>
                     )}
+                    <NavLink to="/inventory/reconciliation" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                        <span className="icon">📋</span> <span>庫存差異對帳</span>
+                    </NavLink>
                     <NavLink to="/inventory/batches" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                         <span className="icon">📦</span> <span>批號管理</span>
                     </NavLink>

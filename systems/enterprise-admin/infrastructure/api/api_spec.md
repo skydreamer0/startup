@@ -185,3 +185,62 @@ HTTP Status Code 需精確映射錯誤類別：
 ### 3.13 POS 精準 SKU 查詢
 
 `GET /pos/products/lookup?code=<literal SKU>` 沿用 auth + `manage:pos`。字串完全相符、tenant 隔離、無商品瀏覽上限，回既有 `PosProduct[]` envelope。既有 SKU 契約見 [pos-product-lookup.md](pos-product-lookup.md)。原廠碼／GTIN 使用獨立明確 namespace 的 `/pos/packages/lookup` 與 `/pos/packages/resolve`；商品對照維護使用 `/inventory/products/:productId/packages`。完整生命週期、權限、換算與錯誤契約見 [product-packages.md](product-packages.md)，架構見 ADR-024。
+
+
+### 3.14 唯讀實體庫存對帳
+
+`GET /inventory/stock-reconciliation?page=1` 沿用 inventory router 的 JWT 認證與
+`read:products` 權限；service 必須取得目前 tenant，所有商品、批次及進貨查詢均限制
+該 tenant，批次／進貨聚合另限本頁商品。不接受查詢參數指定其他 tenant。
+
+- `page` 未提供時為 1；提供時必須是無前導零的正十進位整數字串，範圍
+  1–1000000。空字串、正負號、小數、空白、重複參數陣列及超限值均拒絕。
+  `limit` 固定 50，不能由呼叫者變更。商品依 `name asc, id asc` 排序。
+- 成功回 `200`、`{ success: true, data: { total, page, limit, observedAt, expiryCutoff, data: [...] } }`。
+  `total` 為目前 tenant 商品總數，非本頁列數；超出末頁仍回完整總數及空陣列。
+  分頁欄位在內層 `data`，不是頂層 `meta`。
+- `observedAt` 是請求計算用時間的 ISO 字串，不是資料庫提交時間；
+  `expiryCutoff` 是該時間所在 Asia/Taipei 日期的次日零時，以 ISO UTC 字串表示。
+  到期當天已不可售：`expiryDate < expiryCutoff` 歸入 expired，合格量要求
+  `expiryDate >= expiryCutoff`。
+- 每頁 count、商品與聚合在同一 `RepeatableRead` transaction 中讀取。
+  不同頁／不同請求不是同一全目錄快照；`observedAt` 也不是可續讀的快照憑證。
+
+每列欄位：
+| 欄位 | 型別與語意 |
+| ---- | ---------- |
+| `id`, `sku`, `name` | 商品識別字串與名稱 |
+| `stockUnitLabel` | 商品既有基本庫存單位標籤，string 或 null |
+| `stockQuantity` | 商品既有帳量投影，number |
+| `physicalBatchQuantity` | 所有批次 quantity 合計，包含隔離、阻擋、到期、零與負數，number |
+| `difference` | `stockQuantity - physicalBatchQuantity`，保留正負號 |
+| `batchCount` | 所有批次筆數，包含零／負數批次 |
+| `releasedQuantity`, `quarantineQuantity`, `blockedQuantity` | 各狀態 quantity 合計；不再依效期或正數篩選 |
+| `expiredQuantity` | 所有狀態中早於 cutoff 的 quantity 合計；與狀態欄重疊，不可再相加 |
+| `eligibleReleasedQuantity` | RELEASED、quantity > 0 且 expiryDate >= cutoff 的 quantity 合計 |
+| `negativeBatchCount` | quantity < 0 的批次筆數，不是負數量合計 |
+| `untracedReceiptCount` | 該商品 type=IN 且 batchId=null 的進貨 movement 筆數，不是進貨量 |
+| `reservedQuantity`, `availableQuantity`, `historyComplete` | 固定 null，代表未知，不能解讀為 0、false 或已完成對帳 |
+
+所有數量沿用基本庫存單位，數值／計數以 JSON number 回傳；沒有符合批次的聚合為 0，
+但沒有批次／進貨紀錄不代表歷史完整。聚合、累計或差額無法以 JavaScript safe integer
+精確表示時，整個請求失敗，不回傳四捨五入結果或局部成功。
+
+錯誤沿用全域 error envelope：
+- `400 BAD_REQUEST`：page 格式／範圍錯誤。
+- `401`／`403`：未通過既有認證／讀取權限；不回傳對帳資料。
+- `422 VALIDATION_FAILED`：對帳數量或計數超出安全整數範圍。
+- 既有 rate limit 與非預期資料庫／伺服器錯誤照常處理，不偽裝為成功空清單。
+
+此端點只執行讀取，不新增、更新或刪除業務資料，不執行管理用 SQL diagnostic，
+不修正商品投影、不建立開帳批次、不做庫存過帳／migration。帳量與批次量相等不證明
+實體盤點或歷史完整；eligibleReleasedQuantity 不是預留扣除後的 available-to-promise。
+既有管理用 provenance preflight、完整 ledger／writer cutover、實體退回、multi-bin
+及 #29/#31/#37 的完整 G2 驗收仍是獨立工作。
+
+契約來源：`backend/src/modules/inventory/stock-reconciliation.service.ts`、
+`stock-reconciliation.controller.ts`、`inventory.routes.ts`；
+mocked 邊界測試及隔離 HTTP/PostgreSQL 測試分別為
+`backend/src/modules/inventory/__tests__/stock-reconciliation.test.ts` 與
+`backend/src/__tests__/stock-reconciliation-http.integration.test.ts`。
+

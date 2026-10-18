@@ -1,3 +1,4 @@
+import { StockReconciliationController } from './stock-reconciliation.controller';
 import { Router } from 'express';
 import multer from 'multer';
 import { InventoryController } from './inventory.controller';
@@ -29,6 +30,9 @@ router.get('/suppliers', requirePermission('read:suppliers'), InventoryControlle
 router.get('/suppliers/:id', requirePermission('read:suppliers'), InventoryController.getSupplierById);
 router.post('/suppliers', requirePermission('create:suppliers'), validate({ body: createSupplierSchema }), InventoryController.createSupplier);
 router.put('/suppliers/:id', requirePermission('update:suppliers'), validate({ body: updateSupplierSchema }), InventoryController.updateSupplier);
+
+// Read-only physical reconciliation uses the existing product/batch read permission.
+router.get('/stock-reconciliation', requirePermission('read:products'), StockReconciliationController.list);
 
 // --- Products ---
 router.get('/products/:productId/packages', requirePermission('read:products'), validate({ params: packageProductParams }), ProductPackagesController.list);
