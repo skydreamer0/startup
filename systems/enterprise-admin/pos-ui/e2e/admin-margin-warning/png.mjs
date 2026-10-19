@@ -9,7 +9,7 @@ const crc32 = bytes => {
   }
   return (value ^ 0xffffffff) >>> 0;
 };
-function decodePng(bytes, exactTraceDesktop) {
+function decodePng(bytes, exactTraceDesktop, exactViewport = null) {
   assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
   let offset = 8, header = null, ended = false;
   const data = [];
@@ -28,7 +28,8 @@ function decodePng(bytes, exactTraceDesktop) {
   }
   assert.ok(header && ended && data.length);
   const width = header.readUInt32BE(0), height = header.readUInt32BE(4);
-  if (exactTraceDesktop) { assert.equal(width, 1366); assert.equal(height, 768); }
+  if (exactViewport) { assert.equal(width, exactViewport.width); assert.equal(height, exactViewport.height); }
+  else if (exactTraceDesktop) { assert.equal(width, 1366); assert.equal(height, 768); }
   else assert.ok(width >= 390 && width <= 10000 && height >= 844 && height <= 20000);
   assert.equal(header[8], 8); assert.ok([2, 6].includes(header[9]));
   assert.deepEqual([...header.subarray(10)], [0, 0, 0]);
@@ -40,7 +41,14 @@ function decodePng(bytes, exactTraceDesktop) {
   return { width, height };
 }
 
-// Existing warning/mobile bounds remain unchanged. The only additional entry
-// point admits the exact reviewed desktop-trace viewport, not a lower minimum.
+// Legacy warning/mobile and exact desktop-trace bounds remain unchanged.
 export function validatePng(bytes) { return decodePng(bytes, false); }
 export function validateTraceDesktopPng(bytes) { return decodePng(bytes, true); }
+
+// An opt-in exact-viewport decoder. Callers own their fixed stage/viewport policy;
+// existing warning/mobile and desktop-trace entry points retain their bounds.
+export function validateExactViewportPng(bytes, viewport) {
+  assert.ok(viewport && Number.isInteger(viewport.width) && Number.isInteger(viewport.height));
+  assert.ok(viewport.width >= 1 && viewport.width <= 10000 && viewport.height >= 1 && viewport.height <= 20000);
+  return decodePng(bytes, false, viewport);
+}

@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useOrderDialog } from '../hooks/useOrderDialog';
+import './OrderDialogs.css';
 import { PosOrderSummary } from '../api/pos';
 import { useTodayOrders } from '../hooks/useTodayOrders';
 import { PAYMENT_LABELS, PaymentMethod } from '../constants';
@@ -8,6 +11,7 @@ interface Props {
   shiftId?: string;
   onRefund: (order: PosOrderSummary) => void;
   onClose: () => void;
+  returnFocus?: HTMLElement | null;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -24,8 +28,10 @@ const STATUS_COLOR: Record<string, string> = {
   cancelled: 'var(--text-muted)',
 };
 
-export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onClose }: Props) {
+export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onClose, returnFocus }: Props) {
   const [search, setSearch] = useState('');
+  const titleId = useId();
+  const dialog = useOrderDialog(onClose, false, returnFocus);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data: orders = [], isPending, isError, isFetching, refetch } = useTodayOrders(checkoutScope, shiftId);
@@ -36,21 +42,21 @@ export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onC
     o.items.some((i) => i.product.name.toLowerCase().includes(search.toLowerCase())),
   );
 
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={onClose}>
-      <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', width: 560, maxHeight: '80vh', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }} onClick={(e) => e.stopPropagation()}>
+  return createPortal(
+    <div ref={dialog.overlayRef} data-pos-modal="order-lookup" className="pos-order-overlay" onKeyDown={dialog.onKeyDown} onPointerDown={dialog.onPointerDown} onClick={event => { if (event.target === event.currentTarget) dialog.close(); }}>
+      <div ref={dialog.dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="pos-order-dialog pos-order-lookup-dialog">
         {/* Header */}
         <div style={{ padding: '20px 24px 16px', borderBottom: '1.5px solid var(--border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <h3 style={{ margin: 0, fontSize: 16 }}>今日訂單</h3>
-            <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }}>×</button>
+            <h3 id={titleId} style={{ margin: 0, fontSize: 16 }}>今日訂單</h3>
+            <button type="button" aria-label="關閉今日訂單" onClick={dialog.close} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: 'var(--text-muted)', lineHeight: 1 }}>×</button>
           </div>
           <input
-            autoFocus
+            aria-label="搜尋今日訂單"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="搜尋訂單號或商品名稱..."
-            style={{ width: '100%', boxSizing: 'border-box', padding: '8px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', fontSize: 13, background: 'var(--bg-app)', outline: 'none' }}
+            style={{ width: '100%', boxSizing: 'border-box', padding: '8px 14px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-full)', fontSize: 13, background: 'var(--bg-app)' }}
           />
         </div>
 
@@ -69,34 +75,39 @@ export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onC
           {filtered.map((order) => (
             <div key={order.id} style={{ borderBottom: '1px solid var(--border)' }}>
               {/* Row */}
-              <div
+              <button
+                type="button"
+                aria-expanded={expanded === order.id}
+                aria-controls={`${titleId}-${order.id}`}
+                aria-label={`${expanded === order.id ? '收合' : '展開'}訂單 ${order.orderNumber ?? order.id.slice(0, 8)}`}
+                className="pos-order-disclosure"
                 style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
                 onClick={() => setExpanded(expanded === order.id ? null : order.id)}
               >
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{order.orderNumber ?? order.id.slice(0, 8)}</span>
                     <span style={{ fontSize: 11, color: STATUS_COLOR[order.status] ?? 'var(--text-muted)', background: `${STATUS_COLOR[order.status]}1a`, padding: '1px 8px', borderRadius: 999, fontWeight: 600 }}>
                       {STATUS_LABEL[order.status] ?? order.status}
                     </span>
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3 }}>
+                  </span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3 }}>
                     {new Date(order.createdAt).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}
                     {' · '}
                     {PAYMENT_LABELS[order.paymentMethod as PaymentMethod] ?? order.paymentMethod}
                     {' · '}
                     {order.items.length} 件
-                  </div>
-                </div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--accent)', whiteSpace: 'nowrap' }}>
+                  </span>
+                </span>
+                <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--accent)', whiteSpace: 'nowrap' }}>
                   ${Number(order.totalAmount).toFixed(0)}
-                </div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{expanded === order.id ? '▲' : '▼'}</div>
-              </div>
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{expanded === order.id ? '▲' : '▼'}</span>
+              </button>
 
               {/* Expanded detail */}
               {expanded === order.id && (
-                <div style={{ padding: '0 24px 14px', background: 'var(--bg-app)' }}>
+                <div id={`${titleId}-${order.id}`} style={{ padding: '0 24px 14px', background: 'var(--bg-app)' }}>
                   <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>品項明細</div>
                   {order.items.map((item) => (
                     <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
@@ -119,6 +130,6 @@ export default function OrderLookupModal({ checkoutScope, shiftId, onRefund, onC
           ))}
         </div>
       </div>
-    </div>
+    </div>, document.body
   );
 }

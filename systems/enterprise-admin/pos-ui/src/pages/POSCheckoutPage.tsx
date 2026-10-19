@@ -65,6 +65,7 @@ export default function POSCheckoutPage() {
   const [showSplitModal, setShowSplitModal] = useState(false);
   const [showOrderLookup, setShowOrderLookup] = useState(false);
   const [showShiftReport, setShowShiftReport] = useState(false);
+  const orderLookupButton = useRef<HTMLButtonElement>(null);
   const [refundTarget, setRefundTarget] = useState<PosOrderSummary | null>(null);
   const [refundLoading, setRefundLoading] = useState(false);
   const [toast, setToast] = useState<PosToastMessage | null>(null);
@@ -253,7 +254,7 @@ export default function POSCheckoutPage() {
   }
 
   const handleKeydown = useCallback((event: KeyboardEvent) => {
-    if (pending || showManualScan || showImageScan || showCameraScan || packageLookup) return;
+    if (pending || showOrderLookup || refundTarget || showManualScan || showImageScan || showCameraScan || packageLookup) return;
     if (event.defaultPrevented) return;
     // Backstop modal ownership even if a removed control/backdrop lost focus.
     if ((showPaymentModal || showSplitModal || adminPinPending) && event.key !== 'Escape') {
@@ -319,7 +320,7 @@ export default function POSCheckoutPage() {
         }
         break;
     }
-  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading, showManualScan, showImageScan, showCameraScan, packageLookup]);
+  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading, showOrderLookup, refundTarget, showManualScan, showImageScan, showCameraScan, packageLookup]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -415,7 +416,7 @@ export default function POSCheckoutPage() {
         <OfflineStatus onSync={handleSync} />
         <ReorderForecastBadge forecasts={reorderForecast} />
         <PrinterStatus />
-        <button type="button" onClick={() => setShowOrderLookup(true)} title="訂單查詢 (F7)" className="pos-topbar-action">
+        <button ref={orderLookupButton} type="button" onClick={event => { event.currentTarget.focus(); setShowOrderLookup(true); }} title="訂單查詢 (F7)" className="pos-topbar-action">
           📋 訂單 (F7)
         </button>
         <button type="button" onClick={() => setShowShiftReport(true)} title="班報表 (F8)" className="pos-topbar-action">
@@ -542,6 +543,7 @@ export default function POSCheckoutPage() {
       )}
       {showOrderLookup && checkoutScope && (
         <OrderLookupModal
+          returnFocus={orderLookupButton.current}
           checkoutScope={checkoutScope}
           shiftId={shift.activeShift?.id}
           onRefund={(order) => { setRefundTarget(order); setShowOrderLookup(false); }}
@@ -550,6 +552,7 @@ export default function POSCheckoutPage() {
       )}
       {refundTarget && (
         <RefundModal
+          returnFocus={orderLookupButton.current}
           order={refundTarget}
           onConfirm={handleRefundConfirm}
           onClose={() => setRefundTarget(null)}

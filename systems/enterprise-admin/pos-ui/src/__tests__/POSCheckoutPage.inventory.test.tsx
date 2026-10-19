@@ -573,3 +573,34 @@ describe('POS scanner page wiring (hook mocked; hook safety tested separately)',
     expect(posApi.checkout).not.toHaveBeenCalled();
   });
 });
+
+
+describe('order/refund keyboard handoff (real dialogs; synthetic transport)', () => {
+  it('returns cancellation focus to the surviving order toolbar with zero refund submissions', async () => {
+    renderPage(); await screen.findByText('✓ 3 件');
+    const opener = screen.getByRole('button', { name: '📋 訂單 (F7)' });
+    fireEvent.click(opener);
+    fireEvent.click(await screen.findByRole('button', { name: `展開訂單 ${order.orderNumber}` }));
+    fireEvent.click(screen.getByRole('button', { name: '退款此訂單' }));
+    const dialog = screen.getByRole('dialog', { name: '登記退款' });
+    fireEvent.keyDown(within(dialog).getByLabelText('退款原因（選填）'), { key: 'Escape' });
+    await waitFor(() => expect(opener).toHaveFocus());
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument(); expect(posApi.refundOrder).not.toHaveBeenCalled(); expect(posApi.checkout).not.toHaveBeenCalled();
+    expect(useCartStore.getState().items).toHaveLength(1);
+  });
+  it('pending refund owns Escape/backdrop/F7 until its real parent handler settles once', async () => {
+    const pending = deferred<Awaited<ReturnType<typeof posApi.refundOrder>>>();
+    vi.mocked(posApi.refundOrder).mockReturnValue(pending.promise);
+    renderPage(); await screen.findByText('✓ 3 件'); await openRefund();
+    fireEvent.change(screen.getByLabelText('退款原因（選填）'), { target: { value: '合成退款' } });
+    fireEvent.click(screen.getByRole('button', { name: '確認退款' }));
+    const dialog = screen.getByRole('dialog', { name: '登記退款' }); expect(dialog).toHaveAttribute('aria-busy','true');
+    for (const key of ['Escape','F7','F4','Enter']) fireEvent.keyDown(dialog, { key });
+    fireEvent.keyDown(window, { key: 'F7' }); fireEvent.click(dialog.parentElement!);
+    expect(screen.getByRole('dialog',{name:'登記退款'})).toBeVisible(); expect(screen.queryByRole('dialog',{name:'今日訂單'})).not.toBeInTheDocument();
+    expect(posApi.refundOrder).toHaveBeenCalledTimes(1); expect(posApi.refundOrder).toHaveBeenCalledWith(order.id,'合成退款'); expect(posApi.checkout).not.toHaveBeenCalled();
+    await act(async () => pending.resolve(response({ ...order, status:'refunded' }) as Awaited<ReturnType<typeof posApi.refundOrder>>));
+    await waitFor(() => expect(screen.getByRole('button', { name:'📋 訂單 (F7)' })).toHaveFocus());
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument(); expect(useCartStore.getState().items).toHaveLength(1);
+  });
+});

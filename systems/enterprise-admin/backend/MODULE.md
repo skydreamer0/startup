@@ -48,6 +48,16 @@ constraints beyond Prisma DSL. Existing SKU lookup remains unchanged. Native
 ownership guards, PG15 and current browser evidence are described in
 `../infrastructure/verification/pos-manufacturer-barcode-contract/README.md`.
 
+### Verify existing checkout recovery and refund boundaries
+
+`scripts/pos-recovery-browser-fixture.ts` is test-only and requires the existing
+exact-head owned SKU PostgreSQL service. It mounts the unchanged production app,
+seeds only its recorded synthetic tenants, observes real command/refund results,
+and requires HTTP drain before raw snapshots and FK-ordered cleanup. It creates
+no API, permission, schema or financial policy. See
+`../pos-ui/e2e/recovery-native/README.md` for the finite write allowlist, source
+controls, native NOT_RUN boundary and subsequent database-removal requirement.
+
 ### Add or change a backend endpoint
 
 1. Read `../infrastructure/api/api_spec.md`.

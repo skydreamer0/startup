@@ -1,0 +1,12 @@
+.pos-order-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:1100; }
+.pos-order-dialog { box-sizing:border-box; width:min(420px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); overflow-y:auto; overscroll-behavior:contain; padding:24px; background:var(--bg-card); border-radius:var(--radius-md); box-shadow:var(--shadow-lg); overflow-wrap:anywhere; }
+.pos-order-dialog input, .pos-order-dialog button { min-height:44px; min-width:44px; }
+.pos-order-dialog input:focus-visible, .pos-order-dialog button:focus-visible { outline:2px solid #1d4ed8; outline-offset:2px; }
+.pos-order-dialog button:disabled { cursor:not-allowed; }
+.pos-order-dialog .pos-refund-item { min-width:0; gap:12px; }
+.pos-refund-item > :first-child { min-width:0; }
+.pos-refund-item > :last-child { flex-shrink:0; }
+
+.pos-order-lookup-dialog { width:min(560px,calc(100vw - 32px)); padding:4px; }
+.pos-order-disclosure { box-sizing:border-box; width:100%; border:0; background:transparent; color:inherit; text-align:left; font:inherit; }
+.pos-order-dialog .pos-order-disclosure:focus-visible { outline-offset:-4px; }
