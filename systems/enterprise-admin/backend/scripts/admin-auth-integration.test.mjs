@@ -4,6 +4,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
+import http from 'node:http';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const express = require('express');
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { runAdminAuthNative, assertAuthNativeAcceptance } from './admin-auth-native.mjs';
@@ -119,13 +123,20 @@ test('complete driver rejects a released refresh without browser request settlem
 
 for(const [name,geometry]of[['undersized',{height:43.6}],['invisible ring',{outline:0}],['clipped top',{y:2}],['lost focus',{focused:false}]])test(`actual complete driver rejects ${name} geometry without changing product CSS`,async()=>{const x=await integrated({geometry});try{assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));assert.equal(report.stage,'auth cold entry 1366');assert.equal(report.coldEntries.length,0);}finally{fs.rmSync(x.output,{recursive:true});}});
 
-function parentLedgerPath(requestPath,query='?token=SYNTHETIC_PRIVATE_QUERY',status=200) {
+function actualParentMiddleware(apiLedger, realApp) {
     const parent=fs.readFileSync(new URL('./package-browser-acceptance.mjs',import.meta.url),'utf8');
     const start=parent.indexOf('function packageApiEvidencePath('),end=parent.indexOf('async function capture(',start);
     const projector=start>=0?new Function(`${parent.slice(start,end)};return packageApiEvidencePath;`)():undefined;
+    const middlewareStart=parent.indexOf('app.use((req, res, next) => {',parent.indexOf('async function serve('));
+    const middlewareEnd=parent.indexOf('\n    });',middlewareStart)+7;
+    assert.ok(middlewareStart>0&&middlewareEnd>middlewareStart);
+    let handler;const app={use:callback=>{handler=callback;}};
+    new Function('app','realApp','apiLedger','packageApiEvidencePath',parent.slice(middlewareStart,middlewareEnd))(app,realApp,apiLedger,projector);
+    return handler;
+}
+function parentLedgerPath(requestPath,query='?token=SYNTHETIC_PRIVATE_QUERY',status=200) {
     const apiLedger=[];let finish;const req={method:'GET',path:requestPath,originalUrl:requestPath+query},res={statusCode:status,on:(name,callback)=>{assert.equal(name,'finish');finish=callback;}};
-    const line=parent.split('\n').find(x=>x.includes("res.on('finish', () => apiLedger.push"));
-    new Function('req','res','apiLedger','started','packageApiEvidencePath',line)(req,res,apiLedger,Date.now(),projector);finish();return apiLedger;
+    actualParentMiddleware(apiLedger,()=>finish())(req,res,()=>assert.fail('known API must reach actual parent ledger'));return apiLedger;
 }
 for(const endpoint of ['/api/v1/admin/auth/me','/api/v1/admin/reports/cashflow','/api/v1/admin/analytics/kpis'])test(`actual parent finish callback drops sensitive query for ${endpoint}`,()=>{const rows=parentLedgerPath(endpoint);assert.equal(rows[0].path,endpoint);assert.ok(!JSON.stringify(rows).includes('SYNTHETIC_PRIVATE_QUERY'));});
 test('actual parent finish callback masks unknown paths while retaining only verified literal/UUID routes',()=>{for(const endpoint of ['/api/v1/admin/auth/SYNTHETIC_PRIVATE_PATH','/api/v1/admin/inventory/products/SYNTHETIC_PRIVATE_PATH','/api/v1/adminish/auth/me','/api/v1/admin/auth/%6de']){const rows=parentLedgerPath(endpoint);assert.equal(rows[0].path,'/api/[unrecognized]');assert.ok(!JSON.stringify(rows).includes('SYNTHETIC_PRIVATE'));}const product='/api/v1/admin/inventory/products/00000000-0000-4000-8000-000000000001/packages/00000000-0000-4000-8000-000000000002/retire';assert.equal(parentLedgerPath(product)[0].path,product);assert.equal(parentLedgerPath('/api/v1/admin/pos/packages/resolve')[0].path,'/api/v1/admin/pos/packages/resolve');});
@@ -139,4 +150,65 @@ test('actual auth route and parent finish callback jointly redact a known GET qu
  await createAuthRouteHandler({origin,fixture,tokenActors:new Map([['adapter-only','allowed']]),state,budget:createAuthBudget(),pace:async()=>({admitted:true}),network,responses,forbidden,pending,contextId:1})(route);
  assert.equal(state.transportFailure,false);assert.equal(forbidden.length,0);assert.equal(responses[0].status,200);assert.equal(apiLedger[0].path,pathname);
  assert.ok(!JSON.stringify({network,responses,apiLedger}).includes('SYNTHETIC_PRIVATE_QUERY'));
+});
+
+// Real Express 5 nested routing and loopback HTTP, with synthetic terminal handlers.
+// This checks the parent middleware composition, not JWT/RBAC/database acceptance.
+async function withMountedParent(run,{rewrite=false}={}) {
+    const ledger=[],atTerminal=[];const realApp=express(),api=express.Router();
+    const terminal=(req,res)=>{atTerminal.push({path:req.path,baseUrl:req.baseUrl});if(rewrite)req.url='/api/v1/admin/auth/me?token=SYNTHETIC_LATE_QUERY';setImmediate(()=>res.status(Number(req.headers['x-synthetic-status'])||200).json({synthetic:true}));};
+    for(const group of ['auth','tenants','dashboard','crm','analytics','reports','inventory','product-batches','pos','unknown']){
+        const router=express.Router();
+        if(group==='inventory'){const products=express.Router();products.use(terminal);router.use('/products',products);}
+        if(group==='pos'){const packages=express.Router();packages.use(terminal);router.use('/packages',packages);}
+        router.use(terminal);api.use('/'+group,router);
+    }
+    api.use(terminal);realApp.use('/api/v1/admin',api);realApp.use((_req,res)=>res.status(404).end());
+    const app=express();app.use(actualParentMiddleware(ledger,realApp));app.use((_req,res)=>res.status(404).end());
+    const server=app.listen(0,'127.0.0.1');
+    try{
+        await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});
+        const request=(requestPath,{method='GET',status=200}={})=>new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port:server.address().port,path:requestPath,method,headers:{'x-synthetic-status':String(status)}},res=>{res.resume();res.once('end',()=>resolve(res.statusCode));});req.once('error',reject);req.end();});
+        await run({ledger,atTerminal,request});
+    }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+}
+const sharedLiteralPaths=[
+ '/auth/login','/auth/logout','/auth/refresh','/auth/me','/tenants/me/plan','/dashboard/kpis','/crm/metrics',
+ '/analytics/kpis','/analytics/trends','/analytics/bonus-gate','/analytics/heatmap','/analytics/reorder-forecast',
+ '/analytics/product-abc','/analytics/supplier-ranking','/reports/cashflow','/reports/cashflow/trend',
+ '/reports/margin','/reports/margin/trend','/reports/sales-ranking','/inventory/products','/inventory/suppliers',
+ '/inventory/stock-reconciliation','/product-batches','/pos/categories','/pos/checkout-context','/pos/packages/lookup',
+ '/pos/packages/resolve','/pos/products','/pos/recommendations','/pos/reorder-forecast','/pos/shift/active','/pos/staff',
+];
+const uuidA='00000000-0000-4000-8000-000000000001',uuidB='00000000-0000-4000-8000-000000000002';
+const sharedDynamicPaths=[`/product-batches/${uuidA}`,`/inventory/products/${uuidA}`,`/inventory/products/${uuidA}/packages`,`/inventory/products/${uuidA}/packages/${uuidB}/revisions`,`/inventory/products/${uuidA}/packages/${uuidB}/retire`];
+test('real mounted Express preserves all 37 shared parent literal and UUID paths before nested routing finishes',async()=>{
+ await withMountedParent(async({ledger,atTerminal,request})=>{for(const [index,endpoint] of [...sharedLiteralPaths,...sharedDynamicPaths].entries()){
+  const full='/api/v1/admin'+endpoint,method=index%2?'POST':'GET',status=[200,201,401,403,409,500][index%6];assert.equal(await request(full+'?token=SYNTHETIC_PRIVATE_QUERY',{method,status}),status);
+  assert.equal(ledger.length,index+1);assert.deepEqual({method:ledger.at(-1).method,path:ledger.at(-1).path,status:ledger.at(-1).status},{method,path:full,status});assert.notEqual(atTerminal.at(-1).path,full);assert.ok(ledger.at(-1).elapsedMs>=0);
+ }assert.ok(!JSON.stringify(ledger).includes('SYNTHETIC_PRIVATE_QUERY'));});
+});
+test('real mounted Express ledger preserves actual camera and final package acceptance predicates',async()=>{
+ await withMountedParent(async({ledger,request})=>{
+  const parent=fs.readFileSync(new URL('./package-browser-acceptance.mjs',import.meta.url),'utf8'),camera=fs.readFileSync(new URL('./package-camera-native.mjs',import.meta.url),'utf8');
+  const cameraLine=camera.split('\n').find(line=>line.includes('const packageRequests ='));
+  await request('/api/v1/admin/pos/packages/lookup?namespace=MANUFACTURER&value=00Case-390+');await request('/api/v1/admin/pos/packages/resolve',{method:'POST'});
+  const requests=new Function('apiLedger','apiStart',cameraLine+';return packageRequests();')(ledger,0);assert.equal(requests.filter(row=>row.method==='GET').length,1);assert.equal(requests.filter(row=>row.method==='POST').length,1);
+  await request(`/api/v1/admin/inventory/products/${uuidA}/packages`,{method:'POST',status:201});for(let i=0;i<3;i++)await request('/api/v1/admin/pos/packages/resolve',{method:'POST',status:409});
+  const lines=parent.split('\n').filter(line=>line.includes('assert.equal(apiLedger.')).join('\n');assert.equal(lines.split('\n').length,2);new Function('apiLedger','assert',lines)(ledger,assert);
+ });
+});
+test('real mounted Express masks unknown and encoded paths without copying query data or late router rewrites',async()=>{
+ await withMountedParent(async({ledger,request})=>{
+  for(const endpoint of ['/unknown/SYNTHETIC_PRIVATE_PATH','/auth/SYNTHETIC_PRIVATE_PATH','/inventory/products/SYNTHETIC_PRIVATE_PATH','/auth/%6de','/auth/me/extra','/pos/packages/lookupish']){
+   await request('/api/v1/admin'+endpoint+'?token=SYNTHETIC_PRIVATE_QUERY',{status:403});assert.equal(ledger.at(-1).path,'/api/[unrecognized]');
+  }
+  assert.ok(!JSON.stringify(ledger).includes('SYNTHETIC'));assert.ok(ledger.every(row=>row.status===403));
+ },{rewrite:true});
+});
+test('real mounted Express excludes non-API documents and masks similar API prefixes',async()=>{
+ await withMountedParent(async({ledger,request})=>{
+  for(const document of ['/login?token=SYNTHETIC_PRIVATE_QUERY','/assets/app.js','/apiish/auth/me']){assert.equal(await request(document),404);assert.equal(ledger.length,0);}
+  assert.equal(await request('/api/v1/adminish/auth/me?token=SYNTHETIC_PRIVATE_QUERY'),404);assert.equal(ledger.length,1);assert.equal(ledger[0].path,'/api/[unrecognized]');assert.ok(!JSON.stringify(ledger).includes('SYNTHETIC'));
+ });
 });

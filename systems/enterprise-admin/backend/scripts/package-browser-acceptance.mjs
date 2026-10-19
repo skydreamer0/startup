@@ -126,8 +126,10 @@ try {
     const app = express();
     app.use((req, res, next) => {
       if (!req.path.startsWith('/api/')) return next();
-      const started = Date.now();
-      res.on('finish', () => apiLedger.push({ method: req.method, path: packageApiEvidencePath(req.path), status: res.statusCode, elapsedMs: Date.now() - started }));
+      // Express nested routers temporarily rewrite req.url/path until response finish.
+      // Snapshot only the safe projected identity before entering the real app.
+      const started = Date.now(), requestMethod = req.method, evidencePath = packageApiEvidencePath(req.path);
+      res.on('finish', () => apiLedger.push({ method: requestMethod, path: evidencePath, status: res.statusCode, elapsedMs: Date.now() - started }));
       return realApp(req, res, next);
     });
     app.use(express.static(directory)); app.get('/{*rest}', (_req, res) => res.sendFile(path.join(directory, 'index.html')));
