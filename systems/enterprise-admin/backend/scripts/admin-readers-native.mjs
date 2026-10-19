@@ -68,6 +68,15 @@ export async function waitForReaderFaultShell({ page, subject, adminOrigin, expe
     await expect(root).toBeVisible({ timeout: readerResponseTimeoutMs });
     return { route: subject.route, readerRootMounted: true };
 }
+export async function retryReaderEndpoint({ control, endpoint, retry, expect }) {
+    assert.equal(control.mode, 'fail500');
+    assert.ok(control.paths.includes(endpoint));
+    // Let this endpoint's pending automatic retry finish under its original
+    // fault plan. Other readers stay faulted until their own explicit retry.
+    await expect(retry).toBeEnabled({ timeout: readerResponseTimeoutMs });
+    control.paths = control.paths.filter(path => path !== endpoint);
+    await retry.click();
+}
 export function readerRequestActor(authorization, tokens) {
     if (authorization === undefined || authorization === '') return 'unauthenticated';
     // These are generated fixture tokens already in this process. Never return
@@ -293,6 +302,9 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             const endpoint = url.pathname.startsWith(apiNamespace) ? url.pathname.slice(apiNamespace.length - 1) : null;
             const readerApi = endpoint !== null && readerEndpoints.includes(endpoint)
                 && ['fetch', 'xhr'].includes(entry.resourceType);
+            const faultPlan = readerApi && control.mode === 'fail500' && control.paths.includes(endpoint)
+                ? { beforeFault: control.beforeFault } : null;
+            entry.syntheticTransportPlanned = Boolean(faultPlan);
             try {
                 if (url.pathname.startsWith('/api/'))
                     budget.request(endpoint ?? url.pathname);
@@ -326,9 +338,9 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 finally { hold.done.resolve(); }
                 return;
             }
-            if (readerApi && control.mode === 'fail500' && control.paths.includes(endpoint)) {
-                if (control.beforeFault) {
-                    try { entry.faultUiReady = await control.beforeFault(); }
+            if (faultPlan) {
+                if (faultPlan.beforeFault) {
+                    try { entry.faultUiReady = await faultPlan.beforeFault(); }
                     catch {
                         entry.faultUiReadinessRejected = true; forbidden.push(entry);
                         await route.abort().catch(() => {}); return;
@@ -671,9 +683,9 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     const geometry = await keyboardCapture(page, subject.id, view.width, retry, 'initial-error');
                     emptyCase.views['initial-error'].push({ width: view.width, verified: true, response: responseProof(initialResponse), geometry });
                 });
-                control.mode = 'normal';
+                stage = `${subject.id} initial error recovery ${page.viewportSize().width}`;
                 const recoveryBefore = nextRequestId;
-                await retry.click();
+                await retryReaderEndpoint({ control, endpoint: subject.paths[0], retry, expect });
                 const emptyResponse = await outcome(200, recoveryBefore);
                 await expect(retry).toHaveCount(0);
                 await expect(page.locator('body')).not.toContainText('合成讀取商品');
@@ -684,20 +696,24 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     const trend = page.getByRole('button', { name: '重試趨勢', exact: true });
                     await expect(trend).toBeVisible({ timeout: readerResponseTimeoutMs });
                     const trendBefore = nextRequestId;
-                    await trend.click();
+                    stage = `${subject.id} initial trend recovery ${page.viewportSize().width}`;
+                    await retryReaderEndpoint({ control, endpoint: subject.paths[1], retry: trend, expect });
                     await outcome(200, trendBefore, subject.paths[1]);
                     await expect(trend).toHaveCount(0);
                 }
                 if (subject.id === 'analytics') {
                     await page.getByRole('button', { name: '🏢 Supplier Ranking', exact: true }).click();
                     const ranking = page.getByRole('button', { name: '重試供應商排行', exact: true });
+                    stage = `analytics initial supplier-ranking recovery ${page.viewportSize().width}`;
                     await expect(ranking).toBeVisible({ timeout: readerResponseTimeoutMs });
                     const rankingBefore = nextRequestId;
-                    await ranking.click();
+                    await retryReaderEndpoint({ control, endpoint: subject.paths[1], retry: ranking, expect });
                     await outcome(200, rankingBefore, subject.paths[1]);
                     await expect(ranking).toHaveCount(0);
                     await page.getByRole('button', { name: '📦 ABC Product Analysis', exact: true }).click();
                 }
+                assert.deepEqual(control.paths, []);
+                control.mode = 'normal';
                 if (subject.id === 'sales') await expect(page.getByText('No sales data for this period.', { exact: true })).toBeVisible();
                 if (subject.id === 'suppliers') await expect(page.getByText('No suppliers found', { exact: true })).toBeVisible();
                 if (subject.id === 'analytics') await expect(page.getByText('No product data for this period.', { exact: true })).toBeVisible();

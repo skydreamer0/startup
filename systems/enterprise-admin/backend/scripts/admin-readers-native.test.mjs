@@ -554,3 +554,62 @@ test('fault callback preserves all five front-end navigation documents and their
         await c.request(undefined,{url:'http://127.0.0.1:12345'+route+'?period=2026-01#/api/v1/admin/reports/cashflow',resourceType:'document'});
     assert.equal(c.transport.continued,5);assert.equal(c.transport.fulfilled.length,0);assert.equal(c.budgetCalls.length,0);
 });
+
+for (const initial of ['fail500', 'normal']) test(`queued fault intent is bound before admission: ${initial}`, async () => {
+    let admit;const waiting=new Promise(resolve=>{admit=resolve;});const c=actorCallbacks({pace:()=>waiting});
+    c.control.mode=initial;c.control.paths=['/analytics/supplier-ranking'];
+    const request=c.request(`Bearer ${c.tokens.readerA}`,{endpoint:'/analytics/supplier-ranking'});
+    await new Promise(resolve=>setImmediate(resolve));
+    c.control.mode=initial==='fail500'?'normal':'fail500';
+    admit({admitted:true,at:2150});await request;
+    assert.equal(c.transport.fulfilled.length,initial==='fail500'?1:0);
+    assert.equal(c.transport.continued,initial==='fail500'?0:1);
+});
+
+test('endpoint recovery waits for enabled retry before removing only its own fault',async()=>{
+    const control={mode:'fail500',paths:['/analytics/product-abc','/analytics/supplier-ranking']},events=[];
+    let release;const ready=new Promise(resolve=>{release=resolve;});
+    const retry={async click(){events.push('click');assert.deepEqual(control.paths,['/analytics/supplier-ranking']);}};
+    const run=readerNative.retryReaderEndpoint({control,endpoint:'/analytics/product-abc',retry,expect:target=>({async toBeEnabled(options){assert.equal(target,retry);assert.deepEqual(options,{timeout:25000});events.push('waiting');await ready;events.push('enabled');}})});
+    await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(events,['waiting']);assert.equal(control.paths.length,2);
+    release();await run;assert.deepEqual(events,['waiting','enabled','click']);assert.equal(control.mode,'fail500');
+    await assert.rejects(readerNative.retryReaderEndpoint({control,endpoint:'/analytics/product-abc',retry,expect(){throw Error('already recovered');}}));
+    await assert.rejects(readerNative.retryReaderEndpoint({control:{mode:'normal',paths:[]},endpoint:'/analytics/product-abc',retry,expect(){}}));
+});
+test('endpoint readiness failure preserves all fault paths and never clicks',async()=>{
+    const control={mode:'fail500',paths:['/reports/cashflow','/reports/cashflow/trend']};let clicks=0;
+    await assert.rejects(readerNative.retryReaderEndpoint({control,endpoint:'/reports/cashflow',retry:{async click(){clicks++;}},expect:()=>({async toBeEnabled(){throw Error('still fetching');}})}),/still fetching/);
+    assert.deepEqual(control.paths,['/reports/cashflow','/reports/cashflow/trend']);assert.equal(clicks,0);
+});
+for(const paths of [['/reports/cashflow','/reports/cashflow/trend'],['/reports/margin','/reports/margin/trend'],['/analytics/product-abc','/analytics/supplier-ranking']]) test(`actual callback recovery keeps secondary endpoint faulted: ${paths[0]}`,async()=>{
+    const queued=[];const c=actorCallbacks({pace:()=>new Promise(resolve=>queued.push(resolve))});c.control.mode='fail500';c.control.paths=[...paths];
+    const requests=[];const drain=async()=>{for(let i=0;i<8;i++){await new Promise(resolve=>setImmediate(resolve));for(const admit of queued.splice(0))admit({admitted:true,at:i*2150});}};
+    const oldSecondary=c.request(`Bearer ${c.tokens.readerA}`,{endpoint:paths[1]});await new Promise(resolve=>setImmediate(resolve));
+    const main=readerNative.retryReaderEndpoint({control:c.control,endpoint:paths[0],retry:{async click(){requests.push(c.request(`Bearer ${c.tokens.readerA}`,{endpoint:paths[0]}));}},expect:()=>({async toBeEnabled(){}})});await main;await drain();await Promise.all([oldSecondary,...requests]);
+    assert.equal(c.transport.fulfilled.length,1);assert.equal(c.transport.continued,1);assert.deepEqual(c.control.paths,[paths[1]]);
+    // Even an additional automatic secondary retry remains failed until its own click.
+    const automatic=c.request(`Bearer ${c.tokens.readerA}`,{endpoint:paths[1]});await drain();await automatic;assert.equal(c.transport.fulfilled.length,2);
+    await readerNative.retryReaderEndpoint({control:c.control,endpoint:paths[1],retry:{async click(){requests.push(c.request(`Bearer ${c.tokens.readerA}`,{endpoint:paths[1]}));}},expect:()=>({async toBeEnabled(){}})});
+    await drain();await Promise.all(requests);assert.equal(c.transport.continued,2);assert.deepEqual(c.control.paths,[]);assert.equal(c.budgetCalls.length,4);
+});
+test('queued captured fault keeps original readiness and cancelled attempt never injects',async()=>{
+    let admit;const c=actorCallbacks({pace:()=>new Promise(resolve=>{admit=resolve;})});c.control.mode='fail500';c.control.paths=['/analytics/product-abc'];let called=0;
+    c.control.beforeFault=async()=>{called++;return {route:'/inventory/analytics',readerRootMounted:true};};
+    const request=c.request(undefined,{endpoint:'/analytics/product-abc'});await new Promise(resolve=>setImmediate(resolve));c.control.beforeFault=async()=>{throw Error('replaced callback must not run');};c.control.paths=[];admit({admitted:true,at:2150});await request;
+    assert.equal(called,1);assert.equal(c.network[0].syntheticTransportPlanned,true);assert.equal(c.network[0].syntheticTransport500,true);
+    const cancelled=actorCallbacks({pace:async()=>({admitted:false,at:2150})});cancelled.control.mode='fail500';cancelled.control.paths=['/analytics/product-abc'];await cancelled.request(undefined,{endpoint:'/analytics/product-abc',failed:'net::ERR_ABORTED'});
+    assert.equal(cancelled.network[0].syntheticTransportPlanned,true);assert.equal(cancelled.network[0].syntheticTransport500,undefined);assert.equal(cancelled.transport.aborted,1);assert.equal(cancelled.budgetCalls.length,1);
+});
+for(const paths of [['/reports/cashflow','/reports/cashflow/trend'],['/reports/margin','/reports/margin/trend'],['/analytics/product-abc','/analytics/supplier-ranking']]) test(`actual initial recovery transition preserves pending secondary fault: ${paths[0]}`,async()=>{
+    const source=fs.readFileSync(new URL('./admin-readers-native.mjs',import.meta.url),'utf8');
+    const scope=source.indexOf('stage = `${subject.id} initial error and empty`;');
+    const before=source.indexOf('                const recoveryBefore = nextRequestId;',scope);
+    const start=source.lastIndexOf('\n',before-2)+1,end=source.indexOf('                const emptyResponse =',before);
+    assert.ok(scope>0&&before>scope&&end>before);
+    const c=actorCallbacks();c.control.mode='fail500';c.control.paths=[...paths];
+    const retry={async click(){await c.request(`Bearer ${c.tokens.readerA}`,{endpoint:paths[0]});}};
+    const run=new Function('control','subject','page','retry','expect','retryReaderEndpoint',`return (async()=>{let stage='';const nextRequestId=1;${source.slice(start,end)}})();`);
+    await run(c.control,{id:'synthetic',paths},{viewportSize:()=>({width:390})},retry,()=>({async toBeEnabled(){}}),readerNative.retryReaderEndpoint);
+    await c.request(`Bearer ${c.tokens.readerA}`,{endpoint:paths[1]});
+    assert.equal(c.transport.continued,1);assert.equal(c.transport.fulfilled.length,1);assert.deepEqual(c.control.paths,[paths[1]]);
+});
