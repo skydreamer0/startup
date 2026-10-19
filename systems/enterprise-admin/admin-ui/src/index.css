@@ -698,6 +698,7 @@ select.input-control {
 }
 
 .login-btn {
+  min-height: 44px;
   width: 100%;
   padding: 12px;
   margin-top: 8px;
