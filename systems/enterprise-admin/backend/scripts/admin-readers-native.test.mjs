@@ -10,6 +10,7 @@ import { readerEndpoints } from './admin-readers-oracle.mjs';
 function oldFakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', responseTimeoutMs: 25000, tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, contextId: [1366, 1024, 390].indexOf(width) + 2, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => { const subject = navigationSubjects.find(row => row.id === id); return { id, ...flags, navigation: { route: subject.route, heading: subject.heading, period: id === 'suppliers' ? null : '2026-01', response: { contextId: [1366, 1024, 390].indexOf(width) + 2, requestId: 1, path: '/api/v1/admin' + (id === 'analytics' ? '/analytics/product-abc' : id === 'suppliers' ? '/inventory/suppliers' : subject.route) + (id === 'suppliers' ? '' : '?period=2026-01'), actor: 'readerA', status: 200, sha256: 'c'.repeat(64) } } }; }) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
 function fakeResult() {
     const result = oldFakeResult();
+    result.tableScroll = result.tableScroll.map(row => { const before = { ...row.before, direction: 'ltr' }, forward = { ...row.after, direction: 'ltr' }; return { ...row, status: 'passed', failure: null, before, after: { ...before }, moves: [{ key: 'ArrowRight', before, after: forward }, { key: 'ArrowLeft', before: forward, after: { ...before } }] }; });
     result.coverage = 'one shared lifecycle; three independent five-reader cold entries';
     result.coldEntries = structuredClone(result.cases).map((row, i) => ({ ...row, contextId: i + 3, authenticated: true, authResponse: { contextId: i + 3, requestId: 1, path: '/api/v1/admin/auth/me', actor: 'readerA', status: 200, sha256: 'a'.repeat(64) },
         readers: row.readers.map(reader => ({ id: reader.id, navigation: { ...reader.navigation, response: { ...reader.navigation.response, contextId: i + 3 } } })) }));
@@ -95,14 +96,86 @@ test('whole-flow deadline and request ceilings reject extra work without renewin
 });
 
 test('table keyboard receipt rejects no movement, lost focus, whole-page scroll and overflow', () => {
-    const good = fakeResult().tableScroll[0]; assert.doesNotThrow(() => assertReaderTableScroll(good.before, good.after));
+    const good = fakeResult().tableScroll[0].moves[0]; assert.doesNotThrow(() => assertReaderTableScroll(good.before, good.after));
     for (const delta of [{ scrollLeft: 0 }, { focused: false }, { pageX: 2 }, { pageY: 30 }, { pageWidth: 659 }, { scrollLeft: 500 }, { clientWidth: 0 }])
         assert.throws(() => assertReaderTableScroll(good.before, { ...good.after, ...delta }));
 });
 test('missing or duplicate reader table acceptance cannot pass', () => {
-    for (const change of [result => result.tableScroll.pop(), result => result.tableScroll[0].subject = 'margin', result => result.tableScroll[0].after.scrollLeft = 0]) {
+    for (const change of [result => result.tableScroll.pop(), result => result.tableScroll[0].subject = 'margin', result => result.tableScroll[0].moves[0].after.scrollLeft = 0]) {
         const result = fakeResult(); change(result); assert.throws(() => assertReadersNativeAcceptance(result));
     }
+});
+
+function tableKeyboardAdapter({ start = 402, mode = 'normal', captureFails = false, direction = 'ltr' } = {}) {
+    const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+    const begin = source.indexOf('    async function tableKeyboard(page, subject) {');
+    const end = source.indexOf('\n    try {\n        await seedReaderFixture', begin);
+    assert.ok(begin > 0 && end > begin);
+    const state = { scrollLeft: start, scrollWidth: 640, clientWidth: 238, pageX: 0, pageY: 0, focused: true, viewport: 390, pageWidth: 390, direction };
+    const keys = [], writes = [], accepted = [], events = [];
+    const region = { evaluate: async () => ({ ...state }) };
+    const page = { locator: selector => { assert.equal(selector, '.reader-table-scroll'); return region; }, keyboard: { press: async key => {
+        keys.push(key); events.push(key);
+        if (mode !== 'no-movement') state.scrollLeft = Math.max(0, Math.min(402, state.scrollLeft + (key === 'ArrowRight' ? 32 : -32)));
+        if (mode === 'page-moved') state.pageY++;
+        if (mode === 'focus-lost') state.focused = false;
+    } } };
+    const expect = () => ({ toHaveCount: async count => assert.equal(count, 1) });
+    const settle = (read, before, key, observe) => readerNative.settleReaderTableScroll(read, before, key, observe, async () => {});
+    const run = new Function('expect', 'keyboardCapture', 'readerTableKeys', 'settleReaderTableScroll', 'assertReaderTableJourney', 'safeTraceFailure', 'tableScroll', 'write', 'capture', `let stage=''; ${source.slice(begin, end)};return tableKeyboard;`)(
+        expect, async () => { events.push('keyboard-focus'); }, readerNative.readerTableKeys, settle, readerNative.assertReaderTableJourney,
+        error => ({ kind: error.name, code: error.code ?? null }), accepted,
+        (name, data) => writes.push({ name, data: structuredClone(data) }),
+        async () => { events.push('capture'); if (captureFails) throw new Error('diagnostic capture failure'); });
+    return { run: () => run(page, 'suppliers'), keys, writes, accepted, events, state };
+}
+for (const [label, start, expected] of [
+    ['right boundary', 402, ['ArrowLeft', 'ArrowRight']],
+    ['left boundary', 0, ['ArrowRight', 'ArrowLeft']],
+    ['middle', 201, ['ArrowRight', 'ArrowLeft']],
+]) test(`actual table callback uses both real key directions from ${label}`, async () => {
+    const model = tableKeyboardAdapter({ start }); await model.run();
+    assert.deepEqual(model.keys, expected); assert.equal(model.state.scrollLeft, start);
+    assert.equal(model.accepted.length, 1); readerNative.assertReaderTableJourney(model.accepted[0]);
+    assert.ok(model.accepted[0].moves.every(move => move.samples.length >= 2));
+    assert.equal(model.writes[0].data.before.scrollLeft, start); assert.equal(model.writes[0].data.moves[0].after, null);
+    assert.equal(model.events.at(-1), 'capture');
+});
+for (const mode of ['no-movement', 'page-moved', 'focus-lost']) test(`table callback fails closed and saves samples when ${mode}`, async () => {
+    const model = tableKeyboardAdapter({ mode }); await assert.rejects(model.run());
+    assert.equal(model.accepted.length, 0); const saved = model.writes.at(-1).data;
+    assert.equal(saved.status, 'failed'); assert.ok(saved.moves[0].samples.length > 0);
+    assert.equal(model.events.at(-1), 'capture');
+});
+test('unsupported RTL is preserved in the failed receipt and never silently treated as LTR', async () => {
+    const model = tableKeyboardAdapter({ direction: 'rtl' }); await assert.rejects(model.run());
+    assert.deepEqual(model.keys, []); assert.equal(model.writes.at(-1).data.before.direction, 'rtl');
+    assert.equal(model.accepted.length, 0);
+});
+test('table diagnostic capture failure cannot replace the original movement failure', async () => {
+    const model = tableKeyboardAdapter({ mode: 'no-movement', captureFails: true });
+    await assert.rejects(model.run(), /Reader table movement did not settle/);
+    assert.equal(model.writes.at(-1).data.status, 'failed');
+});
+test('table movement rejects wrong sign, nonfinite or out-of-range positions and changing viewport', () => {
+    const move = fakeResult().tableScroll[0].moves[0];
+    for (const delta of [{ scrollLeft: NaN }, { scrollLeft: -1 }, { scrollLeft: 441 }, { viewport: 391 }, { direction: 'rtl' }, { scrollWidth: 200 }, { focused: false }, { pageX: 1 }, { pageY: 22 }])
+        assert.throws(() => readerNative.assertReaderTableScroll(move.before, { ...move.after, ...delta }, move.key));
+    assert.throws(() => readerNative.assertReaderTableScroll(move.before, move.after, 'ArrowLeft'));
+    assert.throws(() => readerNative.readerTableKeys({ ...move.before, scrollWidth: 200 }));
+});
+test('native receipt requires both ordered table moves with exact continuation and a passed status', () => {
+    for (const change of [row => row.moves.pop(), row => row.moves[1].key = 'ArrowRight', row => row.moves[1].before = { ...row.moves[1].before, scrollLeft: row.moves[1].before.scrollLeft + 1 }, row => row.status = 'failed', row => row.failure = { kind: 'Error' }, row => row.after.scrollLeft++, row => row.moves[1].after.scrollLeft = row.moves[1].before.scrollLeft]) {
+        const result = fakeResult(); const row = structuredClone(result.tableScroll[0]); change(row); result.tableScroll[0] = row;
+        assert.throws(() => assertReadersNativeAcceptance(result));
+    }
+});
+test('table observation deadline also bounds a hung read and discards its late sample', async () => {
+    let release; const rows = [], move = fakeResult().tableScroll[0].moves[0], start = performance.now();
+    const pending = readerNative.settleReaderTableScroll(() => new Promise(resolve => { release = resolve; }), move.before, move.key, row => rows.push(row));
+    await assert.rejects(pending, /Reader table movement timed out/);
+    const elapsed = performance.now() - start; assert.ok(elapsed >= 3100 && elapsed < 5000);
+    release(move.after); await new Promise(resolve => setTimeout(resolve, 0)); assert.deepEqual(rows, []);
 });
 
 // Deterministic Playwright adapter: URL changes before React replaces the old page.

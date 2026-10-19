@@ -113,13 +113,52 @@ export function assertReaderFocusClearance(geometry) {
     assert.ok(geometry.x - ring >= geometry.region.x && geometry.x + geometry.width + ring <= geometry.region.right);
     assert.ok(geometry.y - ring >= 0 && geometry.y + geometry.height + ring <= geometry.viewportHeight);
 }
-export function assertReaderTableScroll(before, after) {
+export function readerTableKeys(before) {
+    assert.equal(before.direction, 'ltr', 'Reader table direction is unsupported');
+    assert.equal(before.focused, true);
+    for (const key of ['scrollLeft', 'scrollWidth', 'clientWidth', 'pageX', 'pageY', 'viewport', 'pageWidth']) assert.ok(Number.isFinite(before[key]));
+    const maximum = before.scrollWidth - before.clientWidth;
+    assert.ok(before.clientWidth > 0 && maximum > 1 && before.scrollLeft >= 0 && before.scrollLeft <= maximum);
+    return maximum - before.scrollLeft >= before.scrollLeft ? ['ArrowRight', 'ArrowLeft'] : ['ArrowLeft', 'ArrowRight'];
+}
+export function assertReaderTableScroll(before, after, key = 'ArrowRight') {
+    readerTableKeys(before); readerTableKeys(after);
+    assert.ok(key === 'ArrowRight' || key === 'ArrowLeft');
     assert.equal(before.focused, true); assert.equal(after.focused, true);
     assert.ok(before.clientWidth > 0 && before.scrollWidth > before.clientWidth);
     assert.equal(after.clientWidth, before.clientWidth); assert.equal(after.scrollWidth, before.scrollWidth);
-    assert.ok(after.scrollLeft > before.scrollLeft && after.scrollLeft <= after.scrollWidth - after.clientWidth + 1);
+    assert.ok(key === 'ArrowRight' ? after.scrollLeft > before.scrollLeft : after.scrollLeft < before.scrollLeft);
     assert.equal(after.pageX, before.pageX); assert.ok(Math.abs(after.pageY - before.pageY) <= 1);
+    assert.equal(after.viewport, before.viewport);
+    assert.ok(before.pageWidth <= before.viewport + 1);
     assert.ok(after.pageWidth <= after.viewport + 1);
+}
+export async function settleReaderTableScroll(read, before, key, observe, pause = ms => new Promise(resolve => setTimeout(resolve, ms))) {
+    let previous, previousValid = false, cancelled = false, timer;
+    const poll = async () => {
+        for (let index = 0; index < 61 && !cancelled; index++) {
+            const after = await read(); if (cancelled) throw new Error('Reader table movement timed out');
+            observe({ index, after });
+            let valid = true;
+            try { assertReaderTableScroll(before, after, key); } catch { valid = false; }
+            const stable = previous && ['scrollLeft', 'pageX', 'pageY', 'clientWidth', 'scrollWidth'].every(field => previous[field] === after[field]);
+            if (valid && previousValid && stable) return after;
+            previous = after; previousValid = valid; await pause(50);
+        }
+        throw new Error('Reader table movement did not settle');
+    };
+    try { return await Promise.race([poll(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Reader table movement timed out')), 3200); })]); }
+    finally { cancelled = true; clearTimeout(timer); }
+}
+export function assertReaderTableJourney(row) {
+    assert.equal(row.status, 'passed'); assert.equal(row.failure, null);
+    assert.deepEqual(row.moves.map(move => move.key), readerTableKeys(row.before));
+    assert.deepEqual(row.moves[0].before, row.before);
+    assert.deepEqual(row.moves[1].before, row.moves[0].after);
+    assert.deepEqual(row.after, row.moves[1].after);
+    for (const move of row.moves) assertReaderTableScroll(move.before, move.after, move.key);
+    assert.equal(row.after.pageX, row.before.pageX);
+    assert.ok(Math.abs(row.after.pageY - row.before.pageY) <= 1);
 }
 export function assertReadersNativeAcceptance(result) {
     assert.equal(result.status, 'passed');
@@ -199,7 +238,7 @@ export function assertReadersNativeAcceptance(result) {
         }
     }
     assert.deepEqual(result.tableScroll.map(row => row.subject).sort(), ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers']);
-    for (const row of result.tableScroll) assertReaderTableScroll(row.before, row.after);
+    for (const row of result.tableScroll) assertReaderTableJourney(row);
 }
 export async function runAdminReadersNative({ db, browser, adminOrigin, signAccessToken, output, nonce, expect, capture }) {
     const origin = new URL(adminOrigin);
@@ -341,19 +380,33 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
         return geometry;
     }
     async function tableKeyboard(page, subject) {
+        stage = `${subject} table keyboard 390`;
         const region = page.locator('.reader-table-scroll');
         await expect(region).toHaveCount(1);
         await keyboardCapture(page, subject, 390, region, 'table-focus');
         const sample = () => region.evaluate(el => ({ scrollLeft: el.scrollLeft, scrollWidth: el.scrollWidth, clientWidth: el.clientWidth,
-            pageX: scrollX, pageY: scrollY, focused: document.activeElement === el, viewport: innerWidth, pageWidth: document.documentElement.scrollWidth }));
-        const before = await sample();
-        await page.keyboard.press('ArrowRight');
-        await expect.poll(async () => (await sample()).scrollLeft, { timeout: 3200 }).toBeGreaterThan(before.scrollLeft);
-        const after = await sample();
-        assertReaderTableScroll(before, after);
-        tableScroll.push({ subject, before, after });
-        write(`admin-readers-${subject}-table-scroll-390.json`, { before, after });
-        await capture(page, `admin-readers-${subject}-table-scroll-390.png`, { width: 390, height: 844 });
+            direction: getComputedStyle(el).direction, pageX: scrollX, pageY: scrollY, focused: document.activeElement === el, viewport: innerWidth, pageWidth: document.documentElement.scrollWidth }));
+        const receipt = { subject, status: 'running', failure: null, before: null, after: null, moves: [] };
+        try {
+            receipt.before = await sample();
+            const keys = readerTableKeys(receipt.before);
+            let before = receipt.before;
+            for (const key of keys) {
+                const move = { key, before, after: null, samples: [] }; receipt.moves.push(move);
+                write(`admin-readers-${subject}-table-scroll-390.json`, receipt);
+                await page.keyboard.press(key);
+                move.after = await settleReaderTableScroll(sample, before, key, row => move.samples.push(row));
+                before = move.after;
+            }
+            receipt.after = before; receipt.status = 'passed';
+            assertReaderTableJourney(receipt);
+            tableScroll.push(receipt);
+        } catch (error) { receipt.status = 'failed'; receipt.failure = safeTraceFailure(error); throw error; }
+        finally {
+            write(`admin-readers-${subject}-table-scroll-390.json`, receipt);
+            try { await capture(page, `admin-readers-${subject}-table-scroll-390.png`, { width: 390, height: 844 }); }
+            catch (error) { if (!receipt.failure) throw error; }
+        }
     }
     try {
         await seedReaderFixture(db, f, value => { budget.check(); stage = value; });
