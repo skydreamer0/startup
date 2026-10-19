@@ -1,3 +1,6 @@
+import {createRequire} from 'node:module';
+// Playwright is owned and locked by pos-ui; backend does not declare it.
+const requirePos=createRequire(new URL('../../pos-ui/package.json',import.meta.url));
 import test from 'node:test';import assert from 'node:assert/strict';import {randomUUID} from 'node:crypto';
 import {buildAuthFixture,authCredential} from './admin-auth-fixture.mjs';
 import {authRequestPolicy,createAuthBudget,authDispatchActor,projectAuthResponse,createAuthRouteHandler} from './admin-auth-transport.mjs';
@@ -57,7 +60,7 @@ test('actual icon route rejects similar paths query hash methods resources and o
 });
 
 test('context closing cancels a queued real APIRequestContext fetch before disposed-context dispatch',async()=>{
- const {request:apiRequest}=await import('@playwright/test');const api=await apiRequest.newContext();
+ const {request:apiRequest}=requirePos('@playwright/test');const api=await apiRequest.newContext();
  const h=await harness(request('/api/v1/admin/analytics/trends',{authorization:'Bearer synthetic-A'}));
  const admitted=defer(),started=defer();h.scope={closing:false,pending:[]};h.pace=async cancelled=>{started.resolve();await admitted.promise;return{admitted:!cancelled(),at:1};};
  let fetches=0;h.route.fetch=async()=>{fetches++;return api.get(origin+'/api/v1/admin/analytics/trends');};
@@ -66,7 +69,7 @@ test('context closing cancels a queued real APIRequestContext fetch before dispo
 });
 
 async function withRealAuthHttp(run){
- const http=await import('node:http'),{request:apiRequest}=await import('@playwright/test');
+ const http=await import('node:http'),{request:apiRequest}=requirePos('@playwright/test');
  const entered=defer(),release=defer(),events=[];let responseMode='ok';
  const server=http.createServer(async(req,res)=>{events.push('server-start');entered.resolve();await release.promise;events.push('server-complete');if(responseMode==='disconnect'){res.destroy();return;}res.statusCode=responseMode==='500'?500:200;res.setHeader('content-type','application/json');res.end(responseMode==='malformed'?'SYNTHETIC_PRIVATE_BODY':JSON.stringify(responseMode==='500'?{error:{code:'RATE_LIMIT_EXCEEDED'}}:{data:{}}));});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${server.address().port}`,api=await apiRequest.newContext();
