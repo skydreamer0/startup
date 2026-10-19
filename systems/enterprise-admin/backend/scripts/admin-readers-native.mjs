@@ -393,7 +393,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             let before = receipt.before;
             for (const key of keys) {
                 const move = { key, before, after: null, samples: [] }; receipt.moves.push(move);
-                write(`admin-readers-${subject}-table-scroll-390.json`, receipt);
+                write(`admin-readers-${subject}-table-scroll-390-move-${receipt.moves.length}-before.json`, receipt);
                 await page.keyboard.press(key);
                 move.after = await settleReaderTableScroll(sample, before, key, row => move.samples.push(row));
                 before = move.after;
@@ -403,9 +403,12 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             tableScroll.push(receipt);
         } catch (error) { receipt.status = 'failed'; receipt.failure = safeTraceFailure(error); throw error; }
         finally {
-            write(`admin-readers-${subject}-table-scroll-390.json`, receipt);
+            let diagnosticError;
+            try { write(`admin-readers-${subject}-table-scroll-390.json`, receipt); }
+            catch (error) { diagnosticError = error; }
             try { await capture(page, `admin-readers-${subject}-table-scroll-390.png`, { width: 390, height: 844 }); }
-            catch (error) { if (!receipt.failure) throw error; }
+            catch (error) { diagnosticError ??= error; }
+            if (!receipt.failure && diagnosticError) throw diagnosticError;
         }
     }
     try {

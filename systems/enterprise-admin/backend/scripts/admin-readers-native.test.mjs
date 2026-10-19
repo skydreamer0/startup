@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
+import { settleTraceFocusGeometry, safeTraceFailure } from './admin-trace-native.mjs';
 import { runAdminReadersNative, assertReadersNativeAcceptance, createReaderBudget, assertReaderTableScroll, navigateReader, readerNavigationResponse } from './admin-readers-native.mjs';
 import { readerEndpoints } from './admin-readers-oracle.mjs';
 function oldFakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', responseTimeoutMs: 25000, tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, contextId: [1366, 1024, 390].indexOf(width) + 2, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => { const subject = navigationSubjects.find(row => row.id === id); return { id, ...flags, navigation: { route: subject.route, heading: subject.heading, period: id === 'suppliers' ? null : '2026-01', response: { contextId: [1366, 1024, 390].indexOf(width) + 2, requestId: 1, path: '/api/v1/admin' + (id === 'analytics' ? '/analytics/product-abc' : id === 'suppliers' ? '/inventory/suppliers' : subject.route) + (id === 'suppliers' ? '' : '?period=2026-01'), actor: 'readerA', status: 200, sha256: 'c'.repeat(64) } } }; }) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
@@ -51,6 +52,8 @@ function fixtureDb({ collision = false, cleanupFailure = false } = {}) {
 for (const scenario of ['partial-seed', 'preexisting-id', 'cleanup-failure'])
     test(`actual runner ${scenario} remains failed with safe receipts and exact-owned cleanup`, async () => {
         const output = fs.mkdtempSync(path.join(os.tmpdir(), 'reader-control-')), fixture = fixtureDb({ collision: scenario === 'preexisting-id', cleanupFailure: scenario === 'cleanup-failure' });
+        const written = [], originalWrite = fs.writeFileSync;
+        fs.writeFileSync = (file, ...args) => { if (typeof file === 'string' && path.dirname(file) === output) written.push(path.basename(file)); return originalWrite(file, ...args); };
         try {
             await assert.rejects(runAdminReadersNative({ db: fixture.db, adminOrigin: 'http://127.0.0.1:12345', output, nonce: randomUUID(), signAccessToken: () => { throw Error('must not issue tokens after seed failure'); } }));
             const result = JSON.parse(fs.readFileSync(path.join(output, 'admin-readers-native.json'))), cleanup = JSON.parse(fs.readFileSync(path.join(output, 'admin-readers-cleanup.json')));
@@ -59,6 +62,10 @@ for (const scenario of ['partial-seed', 'preexisting-id', 'cleanup-failure'])
             assert.equal(result.readOnlySnapshotEqual, false);
             assert.equal(result.cases.length, 0);
             assert.ok(!JSON.stringify(result).includes('DO_NOT_LEAK'));
+            assert.equal(new Set(written).size, written.length);
+            assert.ok(written.indexOf('admin-readers-cleanup.json') < written.indexOf('admin-readers-native.json'));
+            assert.ok(written.indexOf('admin-readers-responses.json') < written.indexOf('admin-readers-native.json'));
+            assert.equal(written.filter(name => name === 'admin-readers-native.json').length, 1);
             if (scenario === 'preexisting-id') {
                 assert.equal(cleanup.status, 'not-required');
                 assert.equal(fixture.calls.some(call => ['createMany', 'deleteMany'].includes(call.op)), false);
@@ -75,6 +82,7 @@ for (const scenario of ['partial-seed', 'preexisting-id', 'cleanup-failure'])
             }
         }
         finally {
+            fs.writeFileSync = originalWrite;
             fs.rmSync(output, { recursive: true, force: true });
         }
     });
@@ -108,6 +116,12 @@ test('missing or duplicate reader table acceptance cannot pass', () => {
 
 function tableKeyboardAdapter({ start = 402, mode = 'normal', captureFails = false, direction = 'ltr' } = {}) {
     const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+    const output = fs.mkdtempSync(path.join(os.tmpdir(), 'reader-table-contract-'));
+    const writeStart = source.indexOf('    const write = (name, value) => fs.writeFileSync(');
+    const writeEnd = source.indexOf('\n', writeStart);
+    assert.ok(writeStart > 0 && writeEnd > writeStart);
+    // Exercise the exact production immutable writer, not a permissive array stub.
+    const immutableWrite = new Function('fs', 'path', 'output', `${source.slice(writeStart, writeEnd)}; return write;`)(fs, path, output);
     const begin = source.indexOf('    async function tableKeyboard(page, subject) {');
     const end = source.indexOf('\n    try {\n        await seedReaderFixture', begin);
     assert.ok(begin > 0 && end > begin);
@@ -125,9 +139,9 @@ function tableKeyboardAdapter({ start = 402, mode = 'normal', captureFails = fal
     const run = new Function('expect', 'keyboardCapture', 'readerTableKeys', 'settleReaderTableScroll', 'assertReaderTableJourney', 'safeTraceFailure', 'tableScroll', 'write', 'capture', `let stage=''; ${source.slice(begin, end)};return tableKeyboard;`)(
         expect, async () => { events.push('keyboard-focus'); }, readerNative.readerTableKeys, settle, readerNative.assertReaderTableJourney,
         error => ({ kind: error.name, code: error.code ?? null }), accepted,
-        (name, data) => writes.push({ name, data: structuredClone(data) }),
+        (name, data) => { immutableWrite(name, data); writes.push({ name, data: structuredClone(data) }); },
         async () => { events.push('capture'); if (captureFails) throw new Error('diagnostic capture failure'); });
-    return { run: () => run(page, 'suppliers'), keys, writes, accepted, events, state };
+    return { run: async () => { try { await run(page, 'suppliers'); } finally { fs.rmSync(output, { recursive: true }); } }, keys, writes, accepted, events, state };
 }
 for (const [label, start, expected] of [
     ['right boundary', 402, ['ArrowLeft', 'ArrowRight']],
@@ -176,6 +190,117 @@ test('table observation deadline also bounds a hung read and discards its late s
     await assert.rejects(pending, /Reader table movement timed out/);
     const elapsed = performance.now() - start; assert.ok(elapsed >= 3100 && elapsed < 5000);
     release(move.after); await new Promise(resolve => setTimeout(resolve, 0)); assert.deepEqual(rows, []);
+});
+
+// End-to-end local driver I/O: exact production callbacks/writer/capture, real
+// temporary files, browser/PNG-header adapters only. This is not Chrome imagery.
+function tableDriverIo({ mode = 'normal', collision = null, missingDirectory = false, captureFailure = false } = {}) {
+    const output = fs.mkdtempSync(path.join(os.tmpdir(), 'reader-table-io-'));
+    const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+    const parent = fs.readFileSync(new URL('./package-browser-acceptance.mjs', import.meta.url), 'utf8');
+    const writeStart = source.indexOf('    const write = (name, value) => fs.writeFileSync(');
+    const write = new Function('fs', 'path', 'output', `${source.slice(writeStart, source.indexOf('\n', writeStart))};return write;`)(fs, path, output);
+    const captureStart = parent.indexOf('async function capture(page, name, viewport) {');
+    const captures = [];
+    const capture = new Function('path', 'output', 'assert', 'captures', 'createHash', `${parent.slice(captureStart, parent.indexOf('\nasync function counts()', captureStart))};return capture;`)(path, output, assert, captures, createHash);
+    const start = source.indexOf('    async function keyboardCapture(page, subject, width, target, name) {');
+    const end = source.indexOf('\n    try {\n        await seedReaderFixture', start);
+    const accepted = [], keys = [], writes = [];
+    let state;
+    const region = { evaluate: async callback => {
+        if (callback.toString().includes('getBoundingClientRect')) return { x: 112, y: 200, width: 238, height: 197, region: { x: 72, right: 390 }, viewport: 390, pageWidth: 390, scrollLeft: 0, outline: '3px', outlineOffset: '3px', color: 'rgb(61, 43, 31)', focused: state.focused, centerHit: true, viewportHeight: 844 };
+        if (callback.toString().includes('scrollWidth')) return { ...state };
+        return state.focused;
+    } };
+    const page = { locator: selector => { assert.equal(selector, '.reader-table-scroll'); return region; }, keyboard: { press: async key => {
+        keys.push(key); if (key === 'Tab') { state.focused = true; return; }
+        if (mode !== 'no-movement') state.scrollLeft = Math.max(0, Math.min(402, state.scrollLeft + (key === 'ArrowRight' ? 32 : -32)));
+    } }, screenshot: async options => {
+        assert.equal(options.fullPage, false); assert.equal(path.dirname(options.path), output);
+        if (captureFailure && options.path.endsWith('table-scroll-390.png')) throw new Error('capture adapter failure');
+        const bytes = Buffer.alloc(24); Buffer.from([137,80,78,71,13,10,26,10]).copy(bytes); bytes.writeUInt32BE(390,16); bytes.writeUInt32BE(844,20);
+        fs.writeFileSync(options.path, bytes, { flag: 'wx' }); return bytes;
+    } };
+    const expect = () => ({ toHaveCount: async count => assert.equal(count, 1) });
+    const run = new Function('expect', 'settleTraceFocusGeometry', 'assertReaderFocusClearance', 'readerTableKeys', 'settleReaderTableScroll', 'assertReaderTableJourney', 'safeTraceFailure', 'tableScroll', 'write', 'capture', `let stage='';${source.slice(start,end)};return tableKeyboard;`)(expect,
+        (read, observe) => settleTraceFocusGeometry(read, observe, async () => {}), readerNative.assertReaderFocusClearance,
+        readerNative.readerTableKeys, (read, before, key, observe) => readerNative.settleReaderTableScroll(read, before, key, observe, async () => {}), readerNative.assertReaderTableJourney,
+        safeTraceFailure, accepted, (name, value) => { write(name, value); writes.push(name); }, capture);
+    if (collision !== null) fs.writeFileSync(path.join(output, `admin-readers-suppliers-table-scroll-390${collision}.json`), 'OWNED_COLLISION_SENTINEL', { flag: 'wx' });
+    if (missingDirectory) fs.rmdirSync(output);
+    return { output, captures, accepted, keys, writes, run: async (subject = 'suppliers', position = 402) => {
+        state = { scrollLeft: position, scrollWidth: 640, clientWidth: 238, direction: 'ltr', pageX: 0, pageY: 0, focused: false, viewport: 390, pageWidth: 390 };
+        return run(page, subject);
+    }, cleanup: () => fs.rmSync(output, { recursive: true, force: true }) };
+}
+test('actual table focus/capture/writer integration preserves thirty unique files for all five tables', async () => {
+    const io = tableDriverIo();
+    try {
+        for (const [i, subject] of ['margin','sales','analytics','supplier-ranking','suppliers'].entries()) await io.run(subject, [0,402,201][i % 3]);
+        const names = fs.readdirSync(io.output); assert.equal(names.length, 30); assert.equal(new Set(io.writes).size, io.writes.length);
+        assert.equal(io.accepted.length, 5); assert.equal(io.captures.length, 10);
+        for (const row of io.accepted) {
+            readerNative.assertReaderTableJourney(row);
+            const prefix = `admin-readers-${row.subject}-table-scroll-390`;
+            for (const suffix of ['-move-1-before.json','-move-2-before.json','.json','.png']) assert.ok(names.includes(prefix+suffix));
+            assert.equal(io.writes.filter(name => name === prefix+'.json').length, 1);
+            assert.deepEqual(JSON.parse(fs.readFileSync(path.join(io.output,prefix+'.json'))), row);
+        }
+        for (const capture of io.captures) assert.equal(createHash('sha256').update(fs.readFileSync(path.join(io.output,capture.name))).digest('hex'), capture.sha256);
+        const workflow = fs.readFileSync(new URL('../../../../.github/workflows/ci.yml', import.meta.url), 'utf8');
+        const block = workflow.slice(workflow.indexOf('      - name: Preserve quiescent package browser API database evidence'), workflow.indexOf('      - name: Preserve separate PostgreSQL and current POS evidence'));
+        assert.match(block, /path: \$\{\{ steps\.package_native\.outputs\.evidence_dir \}\}/);
+        assert.match(block, /if-no-files-found: error/); assert.ok(!block.includes('*.'));
+    } finally { io.cleanup(); }
+});
+for (const captureFailure of [false,true]) test(`actual driver I/O retains failed samples and original movement error with capture failure=${captureFailure}`, async () => {
+    const io = tableDriverIo({ mode: 'no-movement', captureFailure });
+    try {
+        await assert.rejects(io.run(), /Reader table movement did not settle/);
+        const result = JSON.parse(fs.readFileSync(path.join(io.output,'admin-readers-suppliers-table-scroll-390.json')));
+        assert.equal(result.status,'failed'); assert.ok(result.moves[0].samples.length > 0);
+        assert.equal(io.writes.filter(name => name.endsWith('table-scroll-390.json')).length,1);
+        assert.equal(fs.existsSync(path.join(io.output,'admin-readers-suppliers-table-scroll-390.png')), !captureFailure);
+    } finally { io.cleanup(); }
+});
+for (const collision of ['-move-1-before','-move-2-before','']) test(`immutable driver I/O rejects and preserves collision at ${collision || 'final'}`, async () => {
+    const io = tableDriverIo({ collision });
+    try {
+        await assert.rejects(io.run(), { code: 'EEXIST' });
+        assert.equal(fs.readFileSync(path.join(io.output,`admin-readers-suppliers-table-scroll-390${collision}.json`),'utf8'), 'OWNED_COLLISION_SENTINEL');
+        assert.ok(fs.existsSync(path.join(io.output,'admin-readers-suppliers-table-scroll-390.png')));
+    } finally { io.cleanup(); }
+});
+test('missing output directory fails closed without silently creating or redirecting evidence', async () => {
+    const io = tableDriverIo({ missingDirectory: true });
+    try { await assert.rejects(io.run(), { code: 'ENOENT' }); assert.equal(fs.existsSync(io.output),false); }
+    finally { io.cleanup(); }
+});
+test('final summary collision cannot replace an earlier movement error or prevent the failure PNG', async () => {
+    const io = tableDriverIo({ mode: 'no-movement', collision: '' });
+    try {
+        await assert.rejects(io.run(), /Reader table movement did not settle/);
+        assert.equal(fs.readFileSync(path.join(io.output,'admin-readers-suppliers-table-scroll-390.json'),'utf8'),'OWNED_COLLISION_SENTINEL');
+        assert.ok(fs.existsSync(path.join(io.output,'admin-readers-suppliers-table-scroll-390.png')));
+    } finally { io.cleanup(); }
+});
+test('successful movement cannot turn a missing final PNG into a green driver result', async () => {
+    const io = tableDriverIo({ captureFailure: true });
+    try {
+        await assert.rejects(io.run(), /capture adapter failure/);
+        assert.equal(JSON.parse(fs.readFileSync(path.join(io.output,'admin-readers-suppliers-table-scroll-390.json'))).status,'passed');
+        assert.equal(fs.existsSync(path.join(io.output,'admin-readers-suppliers-table-scroll-390.png')), false);
+    } finally { io.cleanup(); }
+});
+test('replaying a completed subject cannot overwrite any immutable evidence or final summary', async () => {
+    const io = tableDriverIo();
+    try {
+        await io.run();
+        const before = Object.fromEntries(fs.readdirSync(io.output).map(name => [name, fs.readFileSync(path.join(io.output,name)).toString('base64')]));
+        await assert.rejects(io.run(), { code: 'EEXIST' });
+        const after = Object.fromEntries(fs.readdirSync(io.output).map(name => [name, fs.readFileSync(path.join(io.output,name)).toString('base64')]));
+        assert.deepEqual(after,before); assert.equal(io.writes.filter(name => name.endsWith('table-scroll-390.json')).length,1);
+    } finally { io.cleanup(); }
 });
 
 // Deterministic Playwright adapter: URL changes before React replaces the old page.
