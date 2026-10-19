@@ -69,11 +69,17 @@ for (const scenario of cases) test(scenario.title, async ({ page, guard }, info)
       const reopening = guard.stage === 'refund-reopen';
       await toolbar.focus(); await page.keyboard.press('Enter');
       const lookup = page.getByRole('dialog', { name: '今日訂單', exact: true }); await expect(lookup).toBeVisible();
-      const row = lookup.getByRole('button', { name: /^展開訂單 / }); await expect(row).toHaveCount(1);
+      const collapsed = lookup.getByRole('button', { name: /^展開訂單 / }); await expect(collapsed).toHaveCount(1);
+      // The accessible name changes on expansion. Bind the same order via its
+      // immutable disclosure target, and keep strict state/name assertions.
+      const controls = await collapsed.getAttribute('aria-controls'); expect(controls).toBeTruthy();
+      const row = lookup.locator(`button[aria-controls=${JSON.stringify(controls)}]`);
+      await expect(row).toHaveCount(1); await expect(row).toHaveAttribute('aria-expanded', 'false');
       await expect(lookup.getByRole('textbox', { name: '搜尋今日訂單' })).toBeFocused();
       await page.keyboard.press('Tab'); await expect(row).toBeFocused(); const geometry = await focusedControl(row, 'lookup-row-390');
       if (!reopening) await record('lookup-keyboard-390', '[data-pos-modal="order-lookup"] h3', { geometry });
       await page.keyboard.press('Enter'); await expect(row).toHaveAttribute('aria-expanded', 'true');
+      await expect(row).toHaveAccessibleName(/^收合訂單 /);
       await page.keyboard.press('Tab'); const select = lookup.getByRole('button', { name: '退款此訂單', exact: true }); await expect(select).toBeFocused(); await focusedControl(select, 'lookup-refund-390'); await page.keyboard.press('Enter');
       await expect(page.getByRole('dialog', { name: '登記退款', exact: true })).toBeVisible(); await expect(page.getByLabel('退款原因（選填）')).toBeFocused();
     };

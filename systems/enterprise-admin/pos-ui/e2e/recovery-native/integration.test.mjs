@@ -54,3 +54,9 @@ test('actual native initial boundary awaits exact dispatch plus persisted termin
  assert.ok(spec.includes(wait));assert.ok(spec.indexOf(wait)<spec.indexOf('const frozen = await saved(page, scope)'));
  assert.ok(spec.includes("expect(frozen.status).toBe(scenario.mode === 'conflict' ? 'conflict' : 'unknown')"));
 });
+
+test('native lookup binds one immutable disclosure target while preserving collapsed, expanded and keyboard gates',()=>{
+ const spec=source('./recovery.spec.ts');
+ for(const text of ["const collapsed = lookup.getByRole('button', { name: /^展開訂單 / })","const controls = await collapsed.getAttribute('aria-controls'); expect(controls).toBeTruthy()",'const row = lookup.locator(`button[aria-controls=${JSON.stringify(controls)}]`)','await expect(row).toHaveCount(1)',"await expect(row).toHaveAttribute('aria-expanded', 'false')","await expect(row).toHaveAttribute('aria-expanded', 'true')","await expect(row).toHaveAccessibleName(/^收合訂單 /)","await page.keyboard.press('Tab'); await expect(row).toBeFocused()","await page.keyboard.press('Tab'); const select = lookup.getByRole('button', { name: '退款此訂單', exact: true }); await expect(select).toBeFocused()"]){assert.ok(spec.includes(text),text);}
+ assert.ok(!spec.includes("const row = lookup.getByRole('button', { name: /^展開訂單 / })"));
+});
