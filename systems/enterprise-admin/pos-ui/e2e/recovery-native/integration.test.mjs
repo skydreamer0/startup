@@ -39,7 +39,7 @@ test('actual workflow preserves selected SKU execution and captures only quiesce
 });
 test('actual runner verifies full report, exact source and raw evidence before acceptance and publishes after cleanup', () => {
   const runner = source('./run.mjs');
-  for (const guard of ['assertSource();','assertReport(read(\'report.json\'))','assertEvidence(database, ledgers, api)','assert.equal(receipt.nonce, nonce)','stagesByCase[scenario.id]','validatePng(bytes)','cleanupRunProcesses(scope)','fs.rmSync(path.join(output, \'.bootstrap.json\'), { force: true })']) assert.ok(runner.includes(guard));
+  for (const guard of ['assertSource();','assertReport(read(\'report.json\'))','assertEvidence(database, ledgers, api)','assert.equal(receipt.nonce, nonce)','stagesByCase[scenario.id]','validatePng(bytes, receipt)','cleanupRunProcesses(scope)','fs.rmSync(path.join(output, \'.bootstrap.json\'), { force: true })']) assert.ok(runner.includes(guard));
   assert.ok(runner.indexOf("write('accepted.json', accepted)") > runner.indexOf("write('run-cleanup.json', cleanup)"));
   assert.ok(runner.indexOf('publishEvidence(state, output') > runner.indexOf("write('completion.json'"));
 });

@@ -11,7 +11,7 @@ import { assertFonts, completionOutcome } from '../category-native/contract.mjs'
 import { runOwnedPhase, publishEvidence } from '../category-native/run.mjs';
 import { assertOwnership, assertService, databaseName } from '../../../backend/scripts/pos-product-lookup-ci.mjs';
 import { assertControlGeometry } from './evidence.mjs';
-import { validatePng } from '../admin-margin-warning/png.mjs';
+import { validatePng } from './png.mjs';
 import { assertBrandSources } from '../dialog-acceptance/brand-assets.mjs';
 
 async function main() {
@@ -90,7 +90,7 @@ async function main() {
       assert.equal(receipt.nonce, nonce); assert.ok(cases.some(row => row.id === receipt.caseId));
       assert.ok(stagesByCase[receipt.caseId].includes(stage)); assert.equal(receipt.stage, stage);
       assertFonts(receipt.fonts); if (receipt.geometry) assertControlGeometry(receipt.geometry);
-      const bytes = fs.readFileSync(path.join(output, 'tests', file)), png = validatePng(bytes);
+      const bytes = fs.readFileSync(path.join(output, 'tests', file)), png = validatePng(bytes, receipt);
       assert.equal(png.width, receipt.viewport.width); assert.equal(png.height, receipt.viewport.height);
       assert.equal(receipt.sha256, createHash('sha256').update(bytes).digest('hex'));
       return { file, ...receipt, ...png };
