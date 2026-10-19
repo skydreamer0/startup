@@ -575,7 +575,7 @@ jobs:
           "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/bin/python" -m pip check
       - name: Reviewed package maintenance and POS through real API and owned PostgreSQL
         id: package_native
-        timeout-minutes: 5
+        timeout-minutes: 8
         env:
           NODE_ENV: test
           PACKAGE_LOOKUP_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci

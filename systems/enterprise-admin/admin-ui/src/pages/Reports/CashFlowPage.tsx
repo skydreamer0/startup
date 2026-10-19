@@ -1,6 +1,7 @@
+import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { reportsApi, CashFlowStatement } from '../../api/reports';
 import { expensesApi } from '../../api/expenses';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -10,14 +11,14 @@ export default function CashFlowPage() {
     const [showExpenseModal, setShowExpenseModal] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data, isLoading, isError, error, isFetching, refetch } = useQuery<CashFlowStatement>({
+    const { data, isLoading, isError, error, isFetching, refetch } = useGuardedRead<CashFlowStatement>({
         queryKey: ['reports', 'cashflow', period],
-        queryFn: () => reportsApi.getCashFlowStatement(period),
+        queryFn: ({ signal }) => reportsApi.getCashFlowStatement(period, signal),
     });
 
-    const { data: trend, isError: trendIsError, error: trendError, isLoading: trendIsLoading, isFetching: trendIsFetching, refetch: refetchTrend } = useQuery({
+    const { data: trend, isError: trendIsError, error: trendError, isLoading: trendIsLoading, isFetching: trendIsFetching, refetch: refetchTrend } = useGuardedRead({
         queryKey: ['reports', 'cashflow-trend', period],
-        queryFn: () => reportsApi.getCashFlowTrend(period),
+        queryFn: ({ signal }) => reportsApi.getCashFlowTrend(period, signal),
     });
 
     const estimateNotice = (

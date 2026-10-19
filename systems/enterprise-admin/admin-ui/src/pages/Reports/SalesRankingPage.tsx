@@ -1,6 +1,7 @@
+import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { reportsApi, SalesRankingProduct } from '../../api/reports';
 import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -9,9 +10,9 @@ export default function SalesRankingPage() {
     const [sortBy, setSortBy] = useState<'revenue' | 'quantity'>('revenue');
     const queryClient = useQueryClient();
 
-    const { data, isLoading, isError, error, isFetching, refetch } = useQuery({
+    const { data, isLoading, isError, error, isFetching, refetch } = useGuardedRead({
         queryKey: ['reports', 'sales-ranking', period, sortBy],
-        queryFn: () => reportsApi.getSalesRanking(period, sortBy, 20),
+        queryFn: ({ signal }) => reportsApi.getSalesRanking(period, sortBy, 20, signal),
     });
 
     const products: SalesRankingProduct[] = data?.topProducts ?? [];

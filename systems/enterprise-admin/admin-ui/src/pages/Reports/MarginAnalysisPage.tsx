@@ -1,6 +1,7 @@
+import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { reportsApi, MarginAnalysis } from '../../api/reports';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -8,14 +9,14 @@ export default function MarginAnalysisPage() {
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7));
     const queryClient = useQueryClient();
 
-    const { data, isLoading, isError, error, isFetching, refetch } = useQuery<MarginAnalysis>({
+    const { data, isLoading, isError, error, isFetching, refetch } = useGuardedRead<MarginAnalysis>({
         queryKey: ['reports', 'margin', period],
-        queryFn: () => reportsApi.getMarginAnalysis(period),
+        queryFn: ({ signal }) => reportsApi.getMarginAnalysis(period, signal),
     });
 
-    const { data: trend, isError: trendIsError, error: trendError, isLoading: trendIsLoading, isFetching: trendIsFetching, refetch: refetchTrend } = useQuery({
+    const { data: trend, isError: trendIsError, error: trendError, isLoading: trendIsLoading, isFetching: trendIsFetching, refetch: refetchTrend } = useGuardedRead({
         queryKey: ['reports', 'margin-trend', period],
-        queryFn: () => reportsApi.getMarginTrend(period),
+        queryFn: ({ signal }) => reportsApi.getMarginTrend(period, signal),
     });
 
     const estimateNotice = (

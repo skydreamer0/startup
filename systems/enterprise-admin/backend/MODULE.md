@@ -56,6 +56,18 @@ ownership guards, PG15 and current browser evidence are described in
 4. Open the nearest tests for that module.
 5. Update API spec and context if the contract meaning changes.
 
+### Read isolated financial and inventory analytics
+
+`reports/{margin,sales-ranking,cashflow}.service.ts` and
+`analytics/product-analytics.service.ts` require the existing actor tenant.
+OrderItem is not auto-scoped: both its order and product relations must constrain
+that tenant. Supplier raw SQL also constrains the joined supplier; every share,
+median, count and sort stays inside the actor cohort. Foreign legacy relation
+labels are unavailable, never copied into a reader result. Current-cost and cash
+estimates remain estimates; this does not approve refund or historical-cost policy.
+The five-reader real-API/owned-PG fixture, all migration constraints and fail-closed
+cleanup are in `../infrastructure/verification/admin-readers-native/README.md`.
+
 ### Read split-payment totals
 
 Daily settlement and shift report share `src/lib/order-payment-totals.ts` for
