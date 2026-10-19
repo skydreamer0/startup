@@ -247,3 +247,13 @@ the separate proposal reader must not infer missing metadata.
 See ADR-022 and the `ImageScanDialog`, `POSCheckoutPage.image-scan`, and image
 decoder/evidence tests. Actual WASM, browser asset routing and hardware/performance
 evidence must be reported separately; mocked UI tests do not establish decoding.
+
+
+### Reviewed browser provenance
+
+`e2e/ui-evidence/provenance-proof.mjs` is the metadata-only CI preflight.
+Its existing read-only ephemeral token is step-scoped; `run.mjs` accepts only the
+verified run/attempt-bound proof and never receives that token. Keep immutable
+API corroboration, local source/setup checks and failure diagnostics fail-closed.
+See `../infrastructure/adr/ci-reliability-and-selection.md` before changing this
+contract or the required-job aggregation in `.github/workflows/ci.yml`.

@@ -20,7 +20,7 @@ before(() => {
   execution = git('commit-tree', tree, '-p', base, '-p', head, '-m', 'test: fixed merge');
   git('checkout', '-q', '--detach', execution);
   env = { UI_QA_SOURCE_SHA: head, UI_QA_EXECUTION_SHA: execution, UI_QA_EXECUTION_MODE: 'pr-merge',
-    UI_QA_EVENT_BASE_SHA: base, GITHUB_REPOSITORY: 'owner/repo' };
+    UI_QA_EVENT_BASE_SHA: base, GITHUB_REPOSITORY: 'owner/repo', UI_QA_METADATA_TOKEN: 'synthetic-readonly-token' };
   api = { sha: execution, commit: { tree: { sha: tree } }, parents: [base, head].map(sha => ({ sha })) };
 });
 after(() => { globalThis.fetch = previousFetch; rmSync(cwd, { recursive: true, force: true }); });
@@ -30,7 +30,7 @@ async function failure(response) {
     await resolveProvenance({ cwd, env, fetchCommit: async (url, options) => {
       calls++;
       assert.equal(url, `https://api.github.com/repos/owner/repo/commits/${execution}`);
-      assert.deepEqual(Object.keys(options.headers).sort(), ['Accept', 'X-GitHub-Api-Version']);
+      assert.deepEqual(Object.keys(options.headers).sort(), ['Accept', 'Authorization', 'X-GitHub-Api-Version']);
       assert.ok(options.signal instanceof AbortSignal);
       return response;
     } });

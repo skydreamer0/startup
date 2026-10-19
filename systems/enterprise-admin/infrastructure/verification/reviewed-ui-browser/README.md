@@ -61,8 +61,10 @@ set the following explicit provenance values before running:
 Head mode requires source and execution SHA/tree equality. PR-merge mode requires
 exactly two ordered execution parents: fixed execution base, then submitted QA head.
 The runner locks `github.sha`, requires checkout HEAD equality, and cross-checks
-that exact SHA, tree and ordered parents with the public GitHub commit API
-(without a token or new permissions). API errors/mismatches fail closed. It never
+that exact SHA, tree and ordered parents with the GitHub commit API in a separate
+metadata step using the existing ephemeral contents:read workflow token. Only
+that step receives the token; browser execution receives its run/attempt-bound
+proof and output digest. Redirects, API errors and mismatches fail closed. It never
 reads current master. An older event base is recorded as a difference, not used
 as the execution base. `provenance.json` records both bases and API verification
 and is included in the existing hashed manifest. The unchanged setup independently
@@ -71,7 +73,12 @@ A merge may change other files but cannot silently change the submitted UI evide
 its config or typecheck input. Both source and execution trees are recorded separately.
 Run the synthetic Git/setup regressions with
 `node --test e2e/ui-evidence/provenance.test.mjs` from POS UI.
-For a local exact-source checkout:
+For a local exact-source checkout outside CI (no CI, GITHUB_*, RUNNER_* or
+UI_QA_PROOF_* environment keys), the runner preserves the original no-API head
+path with commitApiVerified:false. Any such CI/runner/proof context requires the
+complete CI proof; missing proof never falls back to local mode. Do not remove
+CI identity variables to bypass this requirement. No fabricated GitHub run ID
+is needed for genuine local runs. The local command remains:
 
 ```sh
 export UI_QA_SOURCE_SHA="$(git rev-parse HEAD)"

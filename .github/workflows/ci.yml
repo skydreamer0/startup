@@ -18,6 +18,28 @@ concurrency:
 
 jobs:
 
+  plan:
+    name: CI change plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.select.outputs.backend }}
+      admin: ${{ steps.select.outputs.admin }}
+      pos: ${{ steps.select.outputs.pos }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Verify conservative planner and required gate controls
+        run: node --test scripts/ci/plan.test.mjs scripts/ci/workflow.test.mjs
+      - id: select
+        name: Bind change plan to exact execution parents
+        run: node scripts/ci/plan.mjs
+
   agent-context:
     name: Agent Context Validation
     runs-on: ubuntu-latest
@@ -37,7 +59,9 @@ jobs:
       run: python3 -I scripts/ocr-evaluation/verify.py --output-dir "$RUNNER_TEMP/ocr-evaluation"
 
   backend:
-    name: Backend CI
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
+    name: Backend CI worker
     runs-on: ubuntu-latest
 
     services:
@@ -150,7 +174,9 @@ jobs:
         retention-days: 7
 
   admin-ui:
-    name: Admin UI CI
+    needs: plan
+    if: ${{ needs.plan.outputs.admin == 'true' }}
+    name: Admin UI CI worker
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -225,7 +251,9 @@ jobs:
         retention-days: 7
 
   pos-ui:
-    name: POS UI CI
+    needs: plan
+    if: ${{ needs.plan.outputs.pos == 'true' }}
+    name: POS UI CI worker
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -314,10 +342,23 @@ jobs:
         pnpm --dir "$GITHUB_WORKSPACE/.ui-evidence-subjects/scanner/systems/enterprise-admin" install --frozen-lockfile
         pnpm --dir "$GITHUB_WORKSPACE/.ui-evidence-subjects/suppliers/systems/enterprise-admin" install --frozen-lockfile
 
+    - name: Authenticate fixed execution metadata only
+      id: provenance_metadata
+      shell: bash
+      env:
+        UI_QA_METADATA_TOKEN: ${{ github.token }}
+        UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      run: node pos-ui/e2e/ui-evidence/provenance-proof.mjs
+
     - name: Reviewed scanner and supplier browser evidence
       id: reviewed_ui
       shell: bash
       env:
+        UI_QA_PROOF_PATH: ${{ steps.provenance_metadata.outputs.proof_path }}
+        UI_QA_PROOF_SHA256: ${{ steps.provenance_metadata.outputs.proof_sha256 }}
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         UI_QA_EXECUTION_SHA: ${{ github.sha }}
         UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
@@ -343,6 +384,8 @@ jobs:
           systems/enterprise-admin/pos-ui/http-recovery-ci.txt
 
   products-pagination:
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
     name: Product pagination PostgreSQL acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -415,6 +458,8 @@ jobs:
           retention-days: 7
 
   pos-sku-acceptance:
+    needs: plan
+    if: ${{ needs.plan.outputs.pos == 'true' }}
     name: Exact SKU PostgreSQL and current POS browser acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -573,6 +618,8 @@ jobs:
           retention-days: 7
 
   batch-audit:
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
     name: Batch audit PostgreSQL acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -645,6 +692,8 @@ jobs:
           retention-days: 7
 
   order-sequence:
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
     name: Order sequence PostgreSQL acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -717,6 +766,8 @@ jobs:
           retention-days: 7
 
   pos-dialog-acceptance:
+    needs: plan
+    if: ${{ needs.plan.outputs.pos == 'true' }}
     name: Exact-head POS dialog Chrome acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -761,3 +812,60 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+
+  backend-required:
+    name: Backend CI
+    if: ${{ always() }}
+    needs: [plan, backend, products-pagination, batch-audit, order-sequence]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Fail closed on every selected worker
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+          CI_GROUP: backend
+        run: node scripts/ci/gate.mjs
+
+  admin-required:
+    name: Admin UI CI
+    if: ${{ always() }}
+    needs: [plan, admin-ui]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Fail closed on every selected worker
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+          CI_GROUP: admin
+        run: node scripts/ci/gate.mjs
+
+  pos-required:
+    name: POS UI CI
+    if: ${{ always() }}
+    needs: [plan, pos-ui, pos-sku-acceptance, pos-dialog-acceptance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Fail closed on every selected worker
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+          CI_GROUP: pos
+        run: node scripts/ci/gate.mjs

@@ -31,3 +31,5 @@ Each ADR should follow the standard format:
 - [ADR-016: Reviewed Product Master-Data Import](adr_016_reviewed_master_data_import.md)
 - [ADR-017: Atomic Batch Receipts and Quantity Bypasses](adr_017_atomic_batch_receipts.md)
 - [ADR-023: Local BLE Medicine Label Bridge](adr_023_local_ble_medicine_label_bridge.md)
+
+- [CI reliability and conservative selection](ci-reliability-and-selection.md) — proposed immutable authenticated preflight and fail-closed required gates.

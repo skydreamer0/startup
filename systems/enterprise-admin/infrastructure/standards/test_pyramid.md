@@ -131,3 +131,32 @@ Additional workflows:
 - Business acceptance, real payment-provider behavior, physical scanner/touch,
   Safari/iPad, OS keyboard, native zoom, and screen-reader checks remain separate
   when relevant. CI success does not close those gates or authorize deployment.
+
+
+## Conservative pull-request CI selection
+
+The CI change plan uses the checked-out immutable execution commit and its ordered
+parents. It diffs the actual first parent against the submitted second parent,
+including stacked PRs, with NUL-delimited local Git output (no API file-count cap).
+Only modified root README.md/LICENSE can omit heavy workers. Modified Admin source
+or the Admin browser harness selects Admin; modified POS source selects Backend,
+POS, native PostgreSQL/API and dialog workers. Backend, shared types, dependency
+metadata, infrastructure, other harnesses and unknown paths run all workers.
+Added/deleted/renamed files, empty/unreadable diff, malformed event, master pushes
+and manual dispatch also run all. Agent Context Validation always executes.
+
+Required names Backend CI, Admin UI CI and POS UI CI are always-running aggregates.
+They require a successful plan and success from every selected child; unselected
+children must be explicitly skipped. Missing, cancelled, failed or unexpected
+skipped results fail closed. A not-applicable aggregate is not test execution.
+Checkout-abort and FEFO remain separate workflows with PR-only concurrency; this
+change does not claim they are included in the four required status contexts.
+Dependency/security workflows and repository rules are unchanged.
+
+The reviewed POS evidence preflight authenticates only the fixed execution commit
+metadata request with the existing short-lived contents:read workflow token.
+Browser execution receives a run/attempt/commit/tree/ordered-parent/QA-blob-bound
+proof plus its preflight output digest, never the token. API errors still fail;
+there is no anonymous fallback, moving-ref lookup, or cross-run proof cache.
+This is CI provenance and scheduling validation, not additional product, native
+PostgreSQL, physical-device, or screenshot acceptance. See the CI reliability ADR.
