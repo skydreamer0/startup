@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { assertTraceNativeAcceptance } from './admin-trace-native.mjs';
 const sample = () => ({ status: 'passed', readOnlySnapshotEqual: true, fixtureCleaned: true, forbidden: [],
-  cases: [1366, 1024, 390].map(width => ({ viewport: { width }, status: 'passed', totalAllocations: 132, shownAllocations: 100, exactOrderedRows: true, nullAndNumberedOrders: true, receiptLinked: true, keyboardQuantityRevealed: true, keyboardTraceOpened: true, focusRestored: true, lateScopeSuppressed: true, backForwardReload: true, paginationPreserved: true })),
+  cases: [1366, 1024, 390].map(width => ({ viewport: { width }, status: 'passed', totalAllocations: 132, shownAllocations: 100, exactOrderedRows: true, nullAndNumberedOrders: true, receiptLinked: true, keyboardQuantityRevealed: true, keyboardTraceOpened: true, focusRestored: true, lateScopeSuppressed: true, cancelledTraceRequests: [{id:1,ready:true,aborted:true,settled:true,fulfilled:false}], backForwardReload: true, paginationPreserved: true })),
   realStatuses: { unauthenticated: 401, deniedRole: 403, foreignBatch: 404, missingBatch: 404, crossTenantTrace: 404 }, injectedTransport500Recovered: true, databaseGrantLookup: true,
   beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), rawSnapshotTables: 33 });
 test('accepts only complete synthetic native scope', () => assert.doesNotThrow(() => assertTraceNativeAcceptance(sample())));
@@ -146,4 +146,66 @@ test('focus observation has a real finite deadline even when a geometry read nev
   const pending=new Promise(resolve=>{release=resolve;});
   await assert.rejects(settleTraceFocusGeometry(()=>pending,()=>observations++),/timed out/);
   release(focusGeometry());await new Promise(resolve=>setImmediate(resolve));assert.equal(observations,0);
+});
+
+// Actual driver route callback with deterministic transport/event adapters.
+// Browser cancellation is explicit; these cases are not native Chrome proof.
+const traceDeferred=()=>{let resolve;const promise=new Promise(done=>{resolve=done;});return{promise,resolve};};
+const traceTick=()=>new Promise(resolve=>setImmediate(resolve));
+async function traceHoldHarness() {
+ const {createTraceRequestHold}=await import('./admin-trace-native.mjs');
+ const adminOrigin='http://127.0.0.1:4321',tracePath='/api/v1/admin/product-batches/00000000-0000-4000-8000-000000000001',hold=createTraceRequestHold({origin:adminOrigin,pathname:tracePath});
+ const source=fs.readFileSync(new URL('./admin-trace-native.mjs',import.meta.url),'utf8');const start=source.indexOf("await context.route('**/*', async route => {"),end=source.indexOf('\n      const page =',start);
+ const network=[],forbidden=[];let callback;const context={route:(_glob,handler)=>{callback=handler;}};
+ const ready=traceDeferred(),release=traceDeferred(),handled=traceDeferred();
+ // Exact old callback remains executable for a true prior-source negative.
+ const factory=new Function('context','adminOrigin','tracePath','network','forbidden','hold','ready','release','handled','assert','hash','bounded',`const viewport={width:1366};let mode='hold',held=false,heldError;return (async()=>{${source.slice(start,end)};})();`);
+ await factory(context,adminOrigin,tracePath,network,forbidden,hold,ready,release,handled,assert,value=>String(value),async promise=>promise);
+ const tasks=[],routes=[];
+ function request({url=adminOrigin+tracePath,method='GET',resourceType='xhr',fetchGate,status=200,error}={}) {
+  let failure=null;const req={url:()=>url,method:()=>method,resourceType:()=>resourceType,failure:()=>failure};const record={request:req,fetches:0,fulfilled:0,continued:0,aborted:0};
+  const route={request:()=>req,fetch:async()=>{record.fetches++;if(fetchGate)await fetchGate.promise;if(error)throw error;return{status:()=>status,text:async()=>'synthetic actual-body-adapter'};},fulfill:async()=>{record.fulfilled++;},continue:async()=>{record.continued++;},abort:async()=>{record.aborted++;}};
+  routes.push(record);const task=callback(route);tasks.push(task);return{...record,record,task,cancel:(text='net::ERR_ABORTED')=>{failure={errorText:text};hold.aborted(req);}};
+ }
+ return{hold,request,network,forbidden,routes,close:async()=>{hold.release();release.resolve();await Promise.all(tasks);await hold.settle();}};
+}
+test('actual trace callback holds the replacement request after an aborted probe instead of allowing an unheld200',async()=>{
+ const x=await traceHoldHarness();try{const first=x.request();await traceTick();first.cancel();await traceTick();const live=x.request();await traceTick();
+  assert.equal(live.record.continued,0);assert.equal(live.record.fetches,1);assert.equal(x.hold.activeRequests().has(live.record.request),true);assert.equal(x.hold.activeRequests().has(first.record.request),false);
+  assert.equal(first.record.fulfilled,0);live.cancel();await traceTick();assert.equal(x.hold.wasAborted(live.record.request),true);assert.equal(x.hold.activeRequests().size,0);
+ }finally{await x.close();}assert.ok(x.routes.every(row=>row.fulfilled===0));assert.ok(x.network.every(row=>row.cancelledBeforeFulfill===true));
+});
+test('actual trace callback holds every live same-scope request and releases only after explicit decision',async()=>{
+ const x=await traceHoldHarness();try{const a=x.request(),b=x.request();await traceTick();assert.equal(x.hold.activeRequests().size,2);assert.ok(x.routes.every(row=>row.fulfilled===0&&row.continued===0));x.hold.release();await Promise.all([a.task,b.task]);assert.ok(x.routes.every(row=>row.fulfilled===1));}finally{await x.close();}
+});
+test('actual trace callback cancellation before fetch completion cannot satisfy later readiness or replay bytes',async()=>{
+ const x=await traceHoldHarness(),gate=traceDeferred();try{const old=x.request({fetchGate:gate});old.cancel();const live=x.request();await traceTick();assert.equal(x.hold.activeRequests().size,1);assert.equal(x.hold.activeRequests().has(live.record.request),true);gate.resolve();await traceTick();assert.equal(old.record.fulfilled,0);assert.equal(x.hold.wasAborted(old.record.request),true);live.cancel();}finally{gate.resolve();await x.close();}assert.ok(x.routes.every(row=>row.fulfilled===0));
+});
+test('actual trace callback never holds other batches documents origins or methods',async()=>{
+ const x=await traceHoldHarness();try{
+  for(const url of ['http://127.0.0.1:4321/inventory','http://127.0.0.1:4321/api/v1/admin/auth/me','http://127.0.0.1:4321/api/v1/admin/product-batches/other','http://127.0.0.1:4321/api/v1/admin/product-batches/00000000-0000-4000-8000-000000000001/extra']){const r=x.request({url});await r.task;assert.equal(r.record.continued,1);assert.equal(r.record.fetches,0);}
+  for(const args of [{url:'http://127.0.0.1:9999/api/v1/admin/product-batches/00000000-0000-4000-8000-000000000001'},{method:'POST'}]){const r=x.request(args);await r.task;assert.equal(r.record.aborted,1);assert.equal(r.record.fetches,0);}
+  for(const resourceType of ['document','script','stylesheet','image']){const r=x.request({resourceType});await r.task;assert.equal(r.record.continued,1);assert.equal(r.record.fetches,0);}
+  assert.equal(x.hold.receipt().length,0);assert.equal(x.forbidden.length,2);
+ }finally{await x.close();}
+});
+test('trace hold rejects duplicate capture replay and non-abort failure cannot certify cancellation',async()=>{
+ const x=await traceHoldHarness();try{const r=x.request();await traceTick();assert.throws(()=>x.hold.capture({request:()=>r.record.request},{}),/replayed/);r.cancel('net::ERR_CONNECTION_RESET');assert.equal(x.hold.wasAborted(r.record.request),false);assert.throws(()=>x.hold.assertHealthy(),/without browser abort/);}finally{await assert.rejects(x.close(),/without browser abort/);}
+});
+for(const status of [401,403,500])test(`actual trace hold fails closed on authentic unexpected status${status}`,async()=>{
+ const x=await traceHoldHarness();const r=x.request({status});await r.task;assert.throws(()=>x.hold.assertHealthy(),/Authentic held/);assert.equal(r.record.fulfilled,0);await assert.rejects(x.close());
+});
+test('trace hold deadline failure cannot become ready success or replay a held response',async()=>{
+ const {createTraceRequestHold}=await import('./admin-trace-native.mjs');const hold=createTraceRequestHold({origin:'http://127.0.0.1:4321',pathname:'/trace',wait:async()=>{throw new Error('synthetic bounded deadline');}});let fulfilled=0;
+ await hold.capture({request:()=>({url:()=> 'http://127.0.0.1:4321/trace',method:()=> 'GET',resourceType:()=> 'xhr',failure:()=>null}),fetch:async()=>({status:()=>200,text:async()=> 'body'}),fulfill:async()=>{fulfilled++;}},{});assert.throws(()=>hold.assertHealthy());assert.equal(fulfilled,0);assert.equal(hold.activeRequests().size,0);
+});
+for(const phase of ['settle','write','close'])test(`trace held context preserves primary failure and still closes after ${phase} diagnostic failure`,async()=>{
+ const {finishTraceHeldContext}=await import('./admin-trace-native.mjs');const events=[],primary=new Error('original'),error=new Error('secondary');
+ const args={hold:{release:()=>events.push('release'),settle:async()=>{events.push('settle');if(phase==='settle')throw error;},receipt:()=>[]},page:{off:()=>events.push('off')},context:{close:async()=>{events.push('close');if(phase==='close')throw error;}},write:()=>{events.push('write');if(phase==='write')throw error;},name:'safe.json',primaryError:primary};
+ await finishTraceHeldContext(args);assert.deepEqual(events,['release','settle','write','off','close']);events.length=0;await assert.rejects(finishTraceHeldContext({...args,primaryError:undefined}),e=>e===error);assert.equal(events.at(-1),'close');
+});
+
+test('trace cancellation acceptance rejects absent unready uncancelled replayed or duplicated request proof',async()=>{
+ const {assertTraceCancelledRequests}=await import('./admin-trace-native.mjs');const valid=[{id:1,ready:true,aborted:true,settled:true,fulfilled:false}];assert.doesNotThrow(()=>assertTraceCancelledRequests(valid));
+ for(const rows of [[],[{...valid[0],ready:false}],[{...valid[0],aborted:false}],[{...valid[0],settled:false}],[{...valid[0],fulfilled:true}],[valid[0],valid[0]]])assert.throws(()=>assertTraceCancelledRequests(rows));
 });

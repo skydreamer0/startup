@@ -12,6 +12,65 @@ async function bounded(promise, label) {
   try { return await Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`Trace wait failed: ${label}`)), 10000); })]); }
   finally { clearTimeout(timer); }
 }
+// One hold belongs to one exact GET trace scope. Requests are keyed by the
+// actual Playwright Request object; a cancelled probe cannot release or stand
+// in for a later live request. No headers/body/token enter this receipt.
+export function createTraceRequestHold({ origin, pathname, wait = bounded }) {
+  const rows = [], tasks = [], release = deferred(); let failure;
+  const matches = request => { const url = new URL(request.url()); return request.method() === 'GET' && ['fetch', 'xhr'].includes(request.resourceType()) && url.origin === origin && url.pathname === pathname; };
+  const byRequest = new Map();
+  function aborted(request) {
+    const row = byRequest.get(request); if (!row) return;
+    const detail = request.failure()?.errorText;
+    if (!detail || !/ABORTED/.test(detail)) { failure ??= new Error('Held trace failed without browser abort proof'); return; }
+    row.aborted = true; row.cancel.resolve();
+  }
+  function capture(route, entry) {
+    const request = route.request(); assert.equal(matches(request), true, 'Only the exact trace GET can be held');
+    assert.equal(byRequest.has(request), false, 'A held request cannot be replayed');
+    const row = { id: rows.length + 1, request, cancel: deferred(), ready: false, aborted: false, settled: false, fulfilled: false };
+    rows.push(row); byRequest.set(request, row);
+    const task = (async () => {
+      try {
+        const response = await route.fetch({ timeout: 10000 }); assert.equal(response.status(), 200);
+        entry.heldBodySha256 = hash(await response.text()); row.ready = true;
+        if (request.failure()) aborted(request);
+        await wait(Promise.race([release.promise, row.cancel.promise]), 'old scope release');
+        if (request.failure()) aborted(request);
+        // Never replay a response to a request whose real browser abort was observed.
+        if (row.aborted) { entry.cancelledBeforeFulfill = true; return; }
+        await route.fulfill({ response }); row.fulfilled = true;
+      } catch { failure ??= new Error('Authentic held trace response failed'); }
+      finally { row.settled = true; }
+    })(); tasks.push(task); return task;
+  }
+  return {
+    matches, capture, aborted, release: () => release.resolve(),
+    activeRequests: () => new Set(rows.filter(row => row.ready && !row.aborted && !row.settled).map(row => row.request)),
+    wasAborted: request => byRequest.get(request)?.aborted === true,
+    assertHealthy: () => { if (failure) throw failure; },
+    settle: async () => { await wait(Promise.all(tasks), 'held trace cleanup'); if (failure) throw failure; },
+    receipt: () => rows.map(({ id, ready, aborted, settled, fulfilled }) => ({ id, ready, aborted, settled, fulfilled })),
+  };
+}
+export function assertTraceCancelledRequests(rows) {
+  assert.ok(Array.isArray(rows) && rows.length > 0);
+  assert.equal(new Set(rows.map(row => row.id)).size, rows.length);
+  for (const row of rows) {
+    assert.ok(Number.isSafeInteger(row.id) && row.id > 0);
+    assert.equal(row.ready, true); assert.equal(row.aborted, true);
+    assert.equal(row.settled, true); assert.equal(row.fulfilled, false);
+  }
+}
+export async function finishTraceHeldContext({ hold, page, context, write, name, primaryError }) {
+  let cleanupError;
+  hold.release();
+  try { await hold.settle(); } catch (error) { cleanupError = error; }
+  try { write(name, { requests: hold.receipt() }); } catch (error) { cleanupError ??= error; }
+  page.off('requestfailed', hold.aborted);
+  try { await context.close(); } catch (error) { cleanupError ??= error; }
+  if (!primaryError && cleanupError) throw cleanupError;
+}
 // Fixed vocabulary only: never serialize exception messages, stacks, request
 // config or Prisma metadata, which may contain credentials or response bodies.
 export function safeTraceFailure(error) {
@@ -58,6 +117,7 @@ export function assertTraceNativeAcceptance(result) {
   assert.equal(result.fixtureCleaned, true); assert.equal(result.forbidden.length, 0);
   assert.deepEqual(result.cases.map(row => row.viewport.width), [1366, 1024, 390]);
   for (const row of result.cases) {
+    assertTraceCancelledRequests(row.cancelledTraceRequests);
     assert.equal(row.status, 'passed'); assert.equal(row.totalAllocations, 132); assert.equal(row.shownAllocations, 100);
     for (const key of ['exactOrderedRows', 'nullAndNumberedOrders', 'receiptLinked', 'keyboardQuantityRevealed', 'keyboardTraceOpened', 'focusRestored', 'lateScopeSuppressed', 'backForwardReload', 'paginationPreserved']) assert.equal(row[key], true, key);
   }
@@ -159,8 +219,9 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
     for (const viewport of [{ width: 1366, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }]) {
       const context = await browser.newContext({ viewport }); contexts.push(context);
       await context.addInitScript(value => localStorage.setItem('accessToken', value), tokens.reader);
-      let mode = 'normal', held = false, heldError;
-      const ready = deferred(), release = deferred(), handled = deferred(); releases.push(release);
+      let mode = 'normal';
+      const hold = createTraceRequestHold({ origin: adminOrigin, pathname: tracePath });
+      releases.push({ resolve: hold.release });
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
         if (['fonts.googleapis.com', 'fonts.gstatic.com'].includes(url.hostname)) { await route.abort(); return; }
@@ -170,22 +231,11 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
           entry.syntheticTransport500 = true;
           await route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ success: false, error: { message: 'SYNTHETIC_TRACE_TRANSPORT_500' } }) }); return;
         }
-        if (url.pathname === tracePath && mode === 'hold' && !held) {
-          held = true;
-          try {
-            const response = await route.fetch({ timeout: 10000 }); assert.equal(response.status(), 200);
-            entry.heldBodySha256 = hash(await response.text()); ready.resolve();
-            await bounded(release.promise, 'old scope release');
-            // The browser aborted this old-scope read; route completion may
-            // legitimately reject, but only after the explicit cancellation.
-            try { await route.fulfill({ response }); } catch { entry.cancelledFulfill = true; }
-          } catch { heldError = new Error('Authentic held trace response failed'); ready.resolve(); }
-          finally { handled.resolve(); }
-          return;
-        }
+        if (mode === 'hold' && hold.matches(req)) { await hold.capture(route, entry); return; }
         await route.continue();
       });
       const page = await context.newPage();
+      page.on('requestfailed', hold.aborted);
       page.on('response', response => {
         const url = new URL(response.url()); if (url.origin !== adminOrigin || !url.pathname.startsWith('/api/')) return;
         const task = (async () => {
@@ -223,6 +273,7 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
         await expect(dialog()).toContainText(`進貨紀錄：${ids.receipt}`); await expect(dialog()).toContainText('實收數量 264');
         await expect(dialog()).not.toContainText('TRACE-FOREIGN');
       }
+      let primaryError;
       try {
         stage = `catalog and pagination ${viewport.width}`;
         await page.goto(`${adminOrigin}/inventory?page=1`);
@@ -279,16 +330,23 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
         await page.keyboard.press('Escape'); await expect(dialog()).toHaveCount(0); await expect(opener()).toBeFocused();
         await page.goBack(); await expect(page).toHaveURL(/page=1$/);
         await page.goForward(); await aLoaded(); await page.reload(); await aLoaded();
-        stage = `cancel and late scope ${viewport.width}`;
-        mode = 'hold'; await opener().click(); await bounded(ready.promise, 'authentic old-scope body'); if (heldError) throw heldError;
+        stage = `cancel authentic live trace readiness ${viewport.width}`;
+        mode = 'hold'; await opener().click();
+        await expect.poll(() => { hold.assertHealthy(); return hold.activeRequests().size; }, { timeout: 10000 }).toBeGreaterThan(0);
+        stage = `cancel loading state ${viewport.width}`;
         await expect(dialog().getByRole('status')).toContainText('正在載入');
-        const aborted = page.waitForEvent('requestfailed', req => new URL(req.url()).pathname === tracePath);
-        await page.keyboard.press('Escape'); assert.match((await bounded(aborted, 'aborted request')).failure().errorText, /ABORTED/);
+        const activeRequests = hold.activeRequests(); assert.ok(activeRequests.size > 0);
+        stage = `cancel exact live browser requests ${viewport.width}`;
+        await page.keyboard.press('Escape');
+        await expect.poll(() => { hold.assertHealthy(); return [...activeRequests].every(request => hold.wasAborted(request)) && hold.receipt().every(row => row.aborted); }, { timeout: 10000 }).toBe(true);
+        for (const request of activeRequests) assert.match(request.failure()?.errorText ?? '', /ABORTED/);
+        stage = `late scope new product ${viewport.width}`;
         await page.getByRole('button', { name: '返回商品清單', exact: true }).click();
         await page.getByRole('button', { name: `查看 ${names.b} 的批次`, exact: true }).click();
         await table.getByRole('button', { name: '查看批次 TRACE-NATIVE-B 的來源與售出分攤' }).click();
         await expect(dialog()).toContainText('顯示 0 / 0 筆分攤');
-        mode = 'normal'; release.resolve(); await bounded(handled.promise, 'old scope settled'); if (heldError) throw heldError;
+        stage = `late scope original response settlement ${viewport.width}`;
+        mode = 'normal'; hold.release(); await hold.settle(); assertTraceCancelledRequests(hold.receipt());
         await expect(dialog()).not.toContainText(ids.receipt); await expect(dialog()).not.toContainText('顯示 100 / 132');
         await page.keyboard.press('Escape');
         if (viewport.width === 390) {
@@ -322,8 +380,15 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
           realStatuses.foreignBatch = negatives.foreignBatch; realStatuses.unauthenticated = negatives.unauthenticated; realStatuses.missingBatch = negatives.missingBatch;
           write('admin-trace-negative-http.json', negatives);
         }
-        cases.push({ viewport, status: 'passed', totalAllocations: 132, shownAllocations: 100, exactOrderedRows: true, nullAndNumberedOrders: true, receiptLinked: true, keyboardQuantityRevealed: true, keyboardTraceOpened: true, focusRestored: true, lateScopeSuppressed: true, backForwardReload: true, paginationPreserved: true, geometry });
-      } finally { release.resolve(); if (held) await bounded(handled.promise, 'held cleanup'); await context.close(); }
+        cases.push({ viewport, status: 'passed', totalAllocations: 132, shownAllocations: 100, exactOrderedRows: true, nullAndNumberedOrders: true, receiptLinked: true, keyboardQuantityRevealed: true, keyboardTraceOpened: true, focusRestored: true, lateScopeSuppressed: true, cancelledTraceRequests: hold.receipt(), backForwardReload: true, paginationPreserved: true, geometry });
+      } catch (error) {
+        primaryError = error;
+        // Preserve the primary error; diagnostics cannot make an invalid journey pass.
+        try { await capture(page, `admin-trace-failed-${viewport.width}.png`, viewport); } catch {}
+        throw error;
+      } finally {
+        await finishTraceHeldContext({ hold, page, context, write, name: `admin-trace-cancel-${viewport.width}.json`, primaryError });
+      }
     }
     assert.ok((await Promise.all(settled)).every(Boolean), 'API evidence body capture failed');
     after = await snapshot(); write('admin-trace-after.json', after);
