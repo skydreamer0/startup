@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { authActorKeys, authCredential, authReadResources } from './admin-auth-fixture.mjs';
 export const authApiPrefix = '/api/v1/admin';
+// Exact current Admin index.html icon paths only; this is not a brand-directory wildcard.
+export const authStaticIconPaths = ['/brand/flow-capsule-v1/favicon.svg','/brand/flow-capsule-v1/favicon.ico','/brand/flow-capsule-v1/favicon-32.png','/brand/flow-capsule-v1/favicon-16.png','/brand/flow-capsule-v1/apple-touch-icon-180.png'];
 export const authGetEndpoints = ['/auth/me','/tenants/me/plan','/dashboard/kpis','/crm/metrics','/analytics/kpis','/analytics/trends','/analytics/bonus-gate','/analytics/heatmap','/analytics/reorder-forecast','/reports/cashflow','/reports/cashflow/trend'];
 export function authRequestPolicy(request, origin) {
     const url = new URL(request.url());
@@ -12,10 +14,11 @@ export function authRequestPolicy(request, origin) {
     const knownEndpoint = authGetEndpoints.includes(endpoint) || ['/auth/login','/auth/logout','/auth/refresh'].includes(endpoint);
     const pagePath = ['/login','/dashboard','/reports/cashflow'].includes(url.pathname);
     const assetPath = /^\/assets\/[A-Za-z0-9_.-]+$/.test(url.pathname) || url.pathname === '/favicon.ico';
-    const frontEnd = (resourceType === 'document' && pagePath) || (['script','stylesheet','image','font','other'].includes(resourceType) && assetPath);
+    const iconPath = authStaticIconPaths.includes(url.pathname);
+    const frontEnd = (resourceType === 'document' && pagePath) || (['script','stylesheet','image','font','other'].includes(resourceType) && assetPath) || (iconPath && ['image','other'].includes(resourceType) && !url.search && !url.hash);
     const allowed = local && (api ? transport && ((method === 'GET' && authGetEndpoints.includes(endpoint)) || (method === 'POST' && ['/auth/login','/auth/logout','/auth/refresh'].includes(endpoint) && !url.search)) : method === 'GET' && frontEnd);
     // Query strings and unknown paths are never copied into auth artifacts.
-    const safePath = api ? (knownEndpoint ? url.pathname : authApiPrefix + '/[unrecognized]') : ((pagePath || assetPath) ? url.pathname : '/[unrecognized]');
+    const safePath = api ? (knownEndpoint ? url.pathname : authApiPrefix + '/[unrecognized]') : ((pagePath || assetPath || iconPath) ? url.pathname : '/[unrecognized]');
     return { allowed, api, method, endpoint: api ? (knownEndpoint ? endpoint : '[unrecognized]') : null, path: safePath + (url.search ? '?[redacted]' : ''), resourceType };
 }
 export function createAuthBudget(now = () => performance.now()) {

@@ -36,3 +36,22 @@ test('actual callback cancellation during fetch is an accepted cancellation in f
 test('safe response projection rejects unseeded grants and never copies unknown error codes',async()=>{const f=await fixture();assert.throws(()=>projectAuthResponse('/auth/me',200,{data:{id:f.ids.allowed,permissions:['synthetic-private']}},'allowed',f,new Map()));assert.equal(projectAuthResponse('/auth/login',401,{error:{code:'synthetic-private',message:'synthetic-private'}},'allowed',f,new Map()).errorCode,'UNRECOGNIZED');});
 
 test('auth metadata redacts unknown path and query values while excluding non-API fetches',async()=>{for(const req of [request('/api/v1/admin/auth/me?token=synthetic-private'),request('/api/v1/admin/synthetic-private'),request('/synthetic-private?password=synthetic-private',{resource:'document'}),request('/api/other',{resource:'fetch'})]){const p=authRequestPolicy(req,origin);assert.ok(!JSON.stringify(p).includes('synthetic-private'));if(!req.url().includes('/auth/me?'))assert.equal(p.allowed,false);}const h=await harness(request('/api/v1/admin/synthetic-private?token=synthetic-private'));await h.run();assert.equal(h.forbidden.length,1);assert.ok(!JSON.stringify(h.network).includes('synthetic-private'));assert.deepEqual(h.calls,['abort']);});
+
+test('actual auth callback admits every exact icon declared by the real Admin HTML without spending API budget',async()=>{
+ const fs=await import('node:fs');const html=fs.readFileSync(new URL('../../admin-ui/index.html',import.meta.url),'utf8');
+ const paths=[...html.matchAll(/href="%BASE_URL%(brand\/[^"]+)"/g)].map(match=>'/'+match[1]);assert.equal(paths.length,5);
+ for(const path of paths)for(const resource of ['image','other']){
+  const h=await harness(request(path,{resource}));h.state.faultOnce=true;await h.run();
+  assert.deepEqual(h.calls,['continue']);assert.equal(h.forbidden.length,0);assert.equal(h.network[0].path,path);assert.equal(h.budget.receipt().apiRequests,0);assert.equal(h.state.faultOnce,true);
+ }
+});
+test('actual icon route rejects similar paths query hash methods resources and origin changes with safe metadata',async()=>{
+ const path='/brand/flow-capsule-v1/favicon.svg';
+ for(const [value,options]of[
+  [path+'x',{resource:'other'}],[path+'/extra',{resource:'other'}],[path.replace('favicon','%66avicon'),{resource:'other'}],
+  [path+'?token=synthetic-private',{resource:'other'}],[path+'#synthetic-private',{resource:'other'}],
+  [path,{method:'POST',resource:'other'}],[path,{resource:'document'}],[path,{resource:'fetch'}],[path,{resource:'xhr'}],[path,{resource:'script'}],[path,{resource:'stylesheet'}],[path,{resource:'font'}],
+  [path,{base:'http://127.0.0.1:4322',resource:'other'}],[path,{base:'https://127.0.0.1:4321',resource:'other'}],[path,{base:'http://localhost:4321',resource:'other'}],
+  ['/brand/flow-capsule-v1/synthetic-private.svg',{resource:'other'}],
+ ]){const h=await harness(request(value,options));await h.run();assert.deepEqual(h.calls,['abort']);assert.equal(h.forbidden.length,1);assert.ok(!JSON.stringify(h.network).includes('synthetic-private'));assert.equal(h.budget.receipt().apiRequests,0);}
+});

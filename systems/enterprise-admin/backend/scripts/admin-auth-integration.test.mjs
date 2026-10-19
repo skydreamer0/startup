@@ -83,7 +83,7 @@ function modelBrowser(database,options={}) {
                 if(name==='Refresh'){page.pendingRefresh=(async()=>{const reply=await request('/reports/cashflow?period=2026-01');if(reply.status===401){const prior=page.refresh;const refreshed=await request('/auth/refresh',{method:'POST',body:{refreshToken:prior}});if(page.refresh===prior&&refreshed?.status===200)page.access=refreshed.body.data.accessToken;}})();return;}
                 assert.fail('unexpected click '+kind+'/'+name);
             },
-            evaluate:async()=>({x:24,y:200,width:viewport.width-48,height:44,outline:2,offset:2,color:'rgb(10, 90, 180)',focused:page.focus==='Sign In',centerHit:true,viewport:viewport.width,viewportHeight:viewport.height,pageWidth:viewport.width,...options.geometry}),
+            evaluate:async()=>{if(options.geometryReadFailure)throw new Error('synthetic-private geometry read');return{x:24,y:200,width:viewport.width-48,height:44,outline:2,offset:2,color:'rgb(10, 90, 180)',focused:page.focus==='Sign In',centerHit:true,viewport:viewport.width,viewportHeight:viewport.height,pageWidth:viewport.width,...options.geometry};},
         };}
         Object.assign(page,{on:(event,callback)=>{const set=listeners.get(event)??new Set();set.add(callback);listeners.set(event,set);},off:(event,callback)=>listeners.get(event)?.delete(callback),goto:async url=>{page.url=!page.access&&url.endsWith('/reports/cashflow')?origin+'/login':url;},getByRole:(role,args={})=>locator(role,args.name),getByLabel:(name)=>locator('label',name),getByText:()=>locator('denied'),locator:selector=>{assert.ok(['a[href="/reports/cashflow"]','.admin-reader-page'].includes(selector));return locator(selector.startsWith('a[')?'link':'root');},evaluate:async()=>page.access===null&&page.refresh===null,isClosed:()=>context.closed,keyboard:{press:async key=>{assert.equal(key,'Tab');assert.equal(page.focus,'Password');page.focus='Sign In';}}});
         context.newPage=async()=>page;context.page=page;return context;
@@ -121,7 +121,7 @@ test('full-flow capture error records original stage/code, attempts failed image
 
 test('complete driver rejects a released refresh without browser request settlement proof',async()=>{const x=await integrated({omitSettlement:true});try{assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));assert.equal(report.status,'failed');assert.equal(report.stage,'auth held actual refresh');assert.equal(report.lifecycle.lateRefreshSuppressed,undefined);}finally{fs.rmSync(x.output,{recursive:true});}});
 
-for(const [name,geometry]of[['undersized',{height:43.6}],['invisible ring',{outline:0}],['clipped top',{y:2}],['lost focus',{focused:false}]])test(`actual complete driver rejects ${name} geometry without changing product CSS`,async()=>{const x=await integrated({geometry});try{assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));assert.equal(report.stage,'auth cold entry 1366');assert.equal(report.coldEntries.length,0);}finally{fs.rmSync(x.output,{recursive:true});}});
+for(const [name,geometry]of[['undersized',{height:43.6}],['invisible ring',{outline:0}],['clipped top',{y:2}],['lost focus',{focused:false}]])test(`actual complete driver rejects ${name} geometry without changing product CSS`,async()=>{const x=await integrated({geometry});try{assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));assert.equal(report.stage,'auth cold focus 1366');assert.equal(report.coldEntries.length,0);}finally{fs.rmSync(x.output,{recursive:true});}});
 
 function actualParentMiddleware(apiLedger, realApp) {
     const parent=fs.readFileSync(new URL('./package-browser-acceptance.mjs',import.meta.url),'utf8');
@@ -211,4 +211,28 @@ test('real mounted Express excludes non-API documents and masks similar API pref
   for(const document of ['/login?token=SYNTHETIC_PRIVATE_QUERY','/assets/app.js','/apiish/auth/me']){assert.equal(await request(document),404);assert.equal(ledger.length,0);}
   assert.equal(await request('/api/v1/adminish/auth/me?token=SYNTHETIC_PRIVATE_QUERY'),404);assert.equal(ledger.length,1);assert.equal(ledger[0].path,'/api/[unrecognized]');assert.ok(!JSON.stringify(ledger).includes('SYNTHETIC'));
  });
+});
+
+for(const [name,geometry]of[['undersized',{height:43.6}],['transparent',{color:'rgba(0, 0, 0, 0)'}],['clipped bottom',{y:740}],['obscured',{centerHit:false}]])test(`auth failed focus persists actual geometry samples before close: ${name}`,async()=>{
+ const x=await integrated({geometry});try{
+  assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));
+  const proof=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-cold-login-1366-geometry.json')));
+  assert.ok(proof.samples.length>0);assert.deepEqual(proof.geometry,proof.samples.at(-1));
+  for(const[key,value]of Object.entries(geometry))assert.equal(proof.geometry[key],value);
+  assert.equal(report.stage,'auth cold focus 1366');assert.equal(report.budget.apiRequests,0);assert.ok(x.captures.some(row=>row.name==='admin-auth-failed-1366.png'));
+ }finally{fs.rmSync(x.output,{recursive:true});}
+});
+test('auth failed focus keeps primary error when its immutable diagnostic already exists',async()=>{
+ const x=await integrated({geometry:{height:43.6},collision:'admin-auth-cold-login-1366-geometry.json'});try{
+  assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));
+  assert.equal(report.stage,'auth cold focus 1366');assert.equal(report.failureDetail.code,'ERR_ASSERTION');assert.equal(fs.readFileSync(path.join(x.output,'admin-auth-cold-login-1366-geometry.json'),'utf8'),'IMMUTABLE-PRIOR');
+ }finally{fs.rmSync(x.output,{recursive:true});}
+});
+
+for(const [name,options]of[['read failure',{geometryReadFailure:true}],['image failure',{captureFailure:'cold-login'}]])test(`auth focus diagnostics survive ${name} and still clean exact fixtures`,async()=>{
+ const x=await integrated(options);try{
+  assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));const proof=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-cold-login-1366-geometry.json')));
+  assert.equal(report.stage,'auth cold focus 1366');assert.ok(!JSON.stringify(report).includes('synthetic-private'));assert.ok(x.captures.some(row=>row.name==='admin-auth-failed-1366.png'));
+  if(options.geometryReadFailure){assert.deepEqual(proof.samples,[]);assert.equal(proof.geometry,null);}else{assert.ok(proof.samples.length>=2);assert.equal(proof.geometry.height,44);}
+ }finally{fs.rmSync(x.output,{recursive:true});}
 });
