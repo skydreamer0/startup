@@ -167,3 +167,19 @@ sandboxed Chrome, CJK glyph/PNG evidence and owned-process cleanup. The extensio
 adds no job/service/environment and does not validate real API/DB, 1024px, native
 200% zoom or physical devices. Native CI evidence remains subject to independent
 artifact review; the separate local browser route was blocked by socket policy.
+
+
+## Authentication intent and cache handover
+
+`hooks/useAuth.tsx` binds each profile/login operation to an abortable process-local
+identity generation (`api/authSession.ts`). Logout, a new login, demo selection and
+unmount invalidate old results. `api/requestLifecycle.ts` captures request identity
+synchronously and keeps token snapshots in a private WeakMap, so superseded401 or
+refresh responses cannot replace/clear the current actor or replay an old request
+with a new actor's credentials. Session endpoint401s are not automatically replayed.
+`hooks/AuthCacheBoundary.tsx` clears and cancels the shared QueryClient at identity
+transitions; query-local denied-read guards remain in force. LoginPage keeps its
+submitting/error UI mounted and provides associated field labels and an error alert.
+This is a client lifecycle boundary, not JWT revocation, a new permission grant or
+a rollback of server writes. See the exact-source evidence and synthetic native
+limits in `../infrastructure/verification/admin-auth-handover/README.md`.

@@ -1,6 +1,7 @@
 // GitHub-hosted, synthetic-only built Admin/POS -> production HTTP API -> PG15.
 import assert from 'node:assert/strict';
 import { runAdminReadersNative } from './admin-readers-native.mjs';
+import { runAdminAuthNative } from './admin-auth-native.mjs';
 import { runAdminTraceNative } from './admin-trace-native.mjs';
 import { prepareNativeCamera, runNativeCamera } from './package-camera-native.mjs';
 import { runStockReconciliationJourney } from './stock-reconciliation-browser.mjs';
@@ -55,12 +56,31 @@ const cases = [], captures = [], networkLedger = [], forbidden = [], apiLedger =
 const servers = [], contexts = [];
 let browser, failure = null, cleanup, fixtureOwned = false;
 const syntheticTenant = randomUUID();
+function packageApiEvidencePath(requestPath) {
+  const prefix = '/api/v1/admin';
+  const known = new Set([
+    '/auth/login', '/auth/logout', '/auth/refresh', '/auth/me', '/tenants/me/plan', '/dashboard/kpis', '/crm/metrics',
+    '/analytics/kpis', '/analytics/trends', '/analytics/bonus-gate', '/analytics/heatmap', '/analytics/reorder-forecast',
+    '/analytics/product-abc', '/analytics/supplier-ranking', '/reports/cashflow', '/reports/cashflow/trend',
+    '/reports/margin', '/reports/margin/trend', '/reports/sales-ranking', '/inventory/products', '/inventory/suppliers',
+    '/inventory/stock-reconciliation', '/product-batches', '/pos/categories', '/pos/checkout-context', '/pos/packages/lookup',
+    '/pos/packages/resolve', '/pos/products', '/pos/recommendations', '/pos/reorder-forecast', '/pos/shift/active', '/pos/staff',
+  ]);
+  if (typeof requestPath !== 'string' || !requestPath.startsWith(prefix + '/')) return '/api/[unrecognized]';
+  const endpoint = requestPath.slice(prefix.length);
+  const uuid = '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
+  const dynamic = new RegExp(`^(?:/product-batches/${uuid}|/inventory/products/${uuid}(?:/packages(?:/${uuid}/(?:revisions|retire))?)?)$`);
+  return known.has(endpoint) || dynamic.test(endpoint) ? requestPath : '/api/[unrecognized]';
+}
 async function capture(page, name, viewport) {
   // Full-page capture can resize a native dialog against the document height.
   // Preserve the actual accepted viewport and record the original PNG identity.
-  const bytes = await page.screenshot({ path: path.join(output, name), fullPage: false });
+  assert.equal(path.basename(name), name); assert.ok(name.endsWith('.png'));
+  const bytes = await page.screenshot({ fullPage: false });
+  assert.ok(bytes.length >= 24); assert.ok(bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])));
   const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);
   assert.equal(width, viewport.width); assert.equal(height, viewport.height);
+  fs.writeFileSync(path.join(output, name), bytes, { flag: 'wx' });
   captures.push({ name, width, height, sha256: createHash('sha256').update(bytes).digest('hex') });
 }
 async function counts() {
@@ -86,6 +106,7 @@ try {
   }
   const realApp = requireBackend('./dist/app.js').default;
   const { signAccessToken } = requireBackend('./dist/lib/jwt.js');
+  const { hashPassword } = requireBackend('./dist/lib/password.js');
   await db.tenant.create({ data: { id: syntheticTenant, slug: syntheticTenant, name: '合成包裝瀏覽器租戶', plan: 'pro' } });
   const user = await db.user.create({ data: { tenantId: syntheticTenant, email: `${syntheticTenant}@package.example.test`, fullName: '合成覆核收銀員', passwordHash: 'not-a-login-hash' } });
   const permissions = ['read:products', 'update:products', 'read:suppliers', 'manage:pos'];
@@ -106,7 +127,7 @@ try {
     app.use((req, res, next) => {
       if (!req.path.startsWith('/api/')) return next();
       const started = Date.now();
-      res.on('finish', () => apiLedger.push({ method: req.method, path: req.originalUrl, status: res.statusCode, elapsedMs: Date.now() - started }));
+      res.on('finish', () => apiLedger.push({ method: req.method, path: packageApiEvidencePath(req.path), status: res.statusCode, elapsedMs: Date.now() - started }));
       return realApp(req, res, next);
     });
     app.use(express.static(directory)); app.get('/{*rest}', (_req, res) => res.sendFile(path.join(directory, 'index.html')));
@@ -228,9 +249,11 @@ try {
   execFileSync(process.execPath, ['--test', path.join(backend, 'scripts/admin-trace-native.test.mjs')], { cwd: backend, stdio: 'inherit', timeout: 30000 });
   const trace = await runAdminTraceNative({ db, tenantId: syntheticTenant, browser, adminOrigin, signAccessToken, output, nonce, expect, capture });
   assert.equal(trace.status, 'passed');
-  execFileSync(process.execPath, ['--test', path.join(backend, 'scripts/admin-readers-fixture.test.mjs'), path.join(backend, 'scripts/admin-readers-oracle.test.mjs'), path.join(backend, 'scripts/admin-readers-native.test.mjs')], { cwd: backend, stdio: 'inherit', timeout: 30000 });
+  execFileSync(process.execPath, ['--test', path.join(backend, 'scripts/admin-readers-fixture.test.mjs'), path.join(backend, 'scripts/admin-readers-oracle.test.mjs'), path.join(backend, 'scripts/admin-readers-native.test.mjs'), path.join(backend, 'scripts/admin-auth-fixture.test.mjs'), path.join(backend, 'scripts/admin-auth-transport.test.mjs'), path.join(backend, 'scripts/admin-auth-native.test.mjs'), path.join(backend, 'scripts/admin-auth-integration.test.mjs')], { cwd: backend, stdio: 'inherit', timeout: 30000 });
   const readers = await runAdminReadersNative({ db, browser, adminOrigin, signAccessToken, output, nonce, expect, capture });
   assert.equal(readers.status, 'passed');
+  const auth = await runAdminAuthNative({ db, browser, adminOrigin, output, nonce, expect, capture, hashPassword });
+  assert.equal(auth.status, 'passed');
   const reconciliation = await runStockReconciliationJourney({ db, tenantId: syntheticTenant, browser, adminOrigin, token, signAccessToken, output, expect, capture });
   assert.equal(reconciliation.status, 'passed');
   const medicine = await runMedicineLabelJourney({ db, tenantId: syntheticTenant, browser, adminOrigin, token, system, output, nonce, expect, capture });
@@ -261,7 +284,7 @@ finally {
 }
 assert.equal(cleanup.quiescent, true); assert.equal(git('status', '--porcelain'), ''); assert.equal(git('rev-parse', 'HEAD'), identity.head);
 const sourceFiles = git('ls-files', '-z', '--', 'systems/enterprise-admin/backend', 'systems/enterprise-admin/admin-ui', 'systems/enterprise-admin/pos-ui', 'systems/enterprise-admin/packages', 'systems/enterprise-admin/local-print-agent', '.github/workflows/ci.yml').split('\0').filter(Boolean);
-write('source.json', { ...identity, nonce, scope: 'Built Admin/POS → real production HTTP API → owned synthetic PostgreSQL15; fixture-issued JWT, login UI/hardware not tested' });
+write('source.json', { ...identity, nonce, scope: 'Built Admin/POS → real production HTTP API → owned synthetic PostgreSQL15; fixture-issued JWT for POS/readers; Admin login form uses real synthetic credentials; physical hardware not tested' });
 write('source-hashes.json', Object.fromEntries(sourceFiles.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
 write('network.json', { networkLedger, forbidden, apiLedger });
 write('captures.json', captures);

@@ -38,11 +38,11 @@ export default function LoginPage() {
                 </h1>
                 <p className="login-subtitle">Enterprise Management Console</p>
 
-                {error && <div className="login-error">{error}</div>}
+                {error && <div className="login-error" role="alert">{error}</div>}
 
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label className="input-label">Email</label>
+                        <label className="input-label" htmlFor="login-email">Email</label>
                         <input
                             id="login-email"
                             className="input-field"
@@ -55,7 +55,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="input-group">
-                        <label className="input-label">Password</label>
+                        <label className="input-label" htmlFor="login-password">Password</label>
                         <input
                             id="login-password"
                             className="input-field"

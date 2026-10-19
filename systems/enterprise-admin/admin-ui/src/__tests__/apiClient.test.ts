@@ -10,7 +10,8 @@ const createdClient = Object.assign(vi.fn(), {
 });
 const axiosPost = vi.fn();
 
-vi.mock('axios', () => ({
+vi.mock('axios', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('axios')>()),
     default: {
         create: vi.fn(() => createdClient),
         post: axiosPost,
@@ -56,9 +57,12 @@ describe('admin api client', () => {
         }) => Promise<unknown>;
         const originalRequest: { headers: Record<string, string>; _retry?: boolean } = { headers: {} };
 
+        // Error handlers receive the configuration already stamped by the real request interceptor.
+        requestUse.mock.calls[0][0](originalRequest);
+
         await onRejected({ config: originalRequest, response: { status: 401 } });
 
-        expect(axiosPost).toHaveBeenCalledWith('/api/v1/admin/auth/refresh', { refreshToken: 'refresh-token' });
+        expect(axiosPost).toHaveBeenCalledWith('/api/v1/admin/auth/refresh', { refreshToken: 'refresh-token' }, { signal: undefined });
         expect(localStorage.getItem('accessToken')).toBe('new-token');
         expect(originalRequest.headers.Authorization).toBe('Bearer new-token');
         expect(createdClient).toHaveBeenCalledWith(originalRequest);
