@@ -4,9 +4,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { runAdminReadersNative, assertReadersNativeAcceptance, createReaderBudget } from './admin-readers-native.mjs';
+import { runAdminReadersNative, assertReadersNativeAcceptance, createReaderBudget, assertReaderTableScroll } from './admin-readers-native.mjs';
 import { readerEndpoints } from './admin-readers-oracle.mjs';
-function fakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => ({ id, ...flags })) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
+function fakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => ({ id, ...flags })) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
 test('acceptance contract requires every actual reader and all original boundaries', () => assert.doesNotThrow(() => assertReadersNativeAcceptance(fakeResult())));
 for (const key of ['fixtureCleaned', 'databaseGrantLookup', 'readOnlySnapshotEqual', 'lateScopeSuppressed'])
     test(`cannot pass without ${key}`, () => { const r = fakeResult(); r[key] = false; assert.throws(() => assertReadersNativeAcceptance(r)); });
@@ -79,4 +79,15 @@ test('whole-flow deadline and request ceilings reject extra work without renewin
     for (let i = 0; i < 120; i++)
         analytics.request('/analytics/product-abc');
     assert.throws(() => analytics.request('/analytics/product-abc'));
+});
+
+test('table keyboard receipt rejects no movement, lost focus, whole-page scroll and overflow', () => {
+    const good = fakeResult().tableScroll[0]; assert.doesNotThrow(() => assertReaderTableScroll(good.before, good.after));
+    for (const delta of [{ scrollLeft: 0 }, { focused: false }, { pageX: 2 }, { pageY: 30 }, { pageWidth: 659 }, { scrollLeft: 500 }, { clientWidth: 0 }])
+        assert.throws(() => assertReaderTableScroll(good.before, { ...good.after, ...delta }));
+});
+test('missing or duplicate reader table acceptance cannot pass', () => {
+    for (const change of [result => result.tableScroll.pop(), result => result.tableScroll[0].subject = 'margin', result => result.tableScroll[0].after.scrollLeft = 0]) {
+        const result = fakeResult(); change(result); assert.throws(() => assertReadersNativeAcceptance(result));
+    }
 });

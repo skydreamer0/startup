@@ -1,0 +1,74 @@
+/* Opt-in for the five financial/inventory reader pages only. Reuse the existing
+   product toolbar's 44px/wrapping contract and trace button's keyboard ring. */
+.admin-reader-page {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.admin-reader-page .btn,
+.admin-reader-page .reader-toolbar .input-field {
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.admin-reader-page .btn:focus-visible,
+.admin-reader-page .reader-toolbar .input-field:focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: 3px;
+}
+
+.admin-reader-page .page-header {
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.admin-reader-page .page-header > div {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.admin-reader-page .reader-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.admin-reader-page .reader-toolbar .input-field {
+    min-width: 0;
+}
+
+/* The old inline four-column reports overflowed the actual 390px page.
+   Keep all values visible in wrapping cards; never hide whole-page overflow. */
+.admin-reader-page .reader-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.admin-reader-page .stat-card,
+.admin-reader-page .card {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-reader-page .reader-table-scroll {
+    min-width: 0;
+    max-width: 100%;
+    overflow: auto;
+}
+
+.admin-reader-page .reader-table-scroll .table {
+    min-width: 640px;
+}
+
+.admin-reader-page .reader-table-scroll:focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: 3px;
+}

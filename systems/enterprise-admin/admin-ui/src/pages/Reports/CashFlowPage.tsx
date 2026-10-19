@@ -1,3 +1,4 @@
+import '../ReaderControls.css';
 import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
@@ -41,14 +42,14 @@ export default function CashFlowPage() {
         hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
 
     if (isError && (data === undefined || isReportAccessDenied(error))) {
-        return <div className="admin-page report-page cashflow-report-page">
+        return <div className="admin-page report-page admin-reader-page cashflow-report-page">
             {estimateNotice}
             {reportNotice}
         </div>;
     }
 
     if (isLoading && !data) {
-        return <div className="admin-page report-page cashflow-report-page">
+        return <div className="admin-page report-page admin-reader-page cashflow-report-page">
             {estimateNotice}
             <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading cash flow data...</div>
         </div>;
@@ -57,13 +58,13 @@ export default function CashFlowPage() {
     const opCfsColor = (data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0) >= 0 ? '#10b981' : '#f87171';
 
     return (
-        <div className="admin-page report-page cashflow-report-page">
+        <div className="admin-page report-page admin-reader-page cashflow-report-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Cash Flow Statement（估算）</h1>
                     <p className="page-subtitle">示範收支估算與趨勢</p>
                 </div>
-                <div className="flex gap-12" style={{ alignItems: 'center' }}>
+                <div className="flex gap-12 reader-toolbar" style={{ alignItems: 'center' }}>
                     <input
                         type="month"
                         value={period}
@@ -79,7 +80,7 @@ export default function CashFlowPage() {
             {reportNotice}
 
             {/* Top Summary Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
+            <div className="reader-summary-grid">
                 <div className="stat-card">
                     <div className="stat-label">Beginning Cash（示範期初）</div>
                     <div className="stat-value price-md" style={{ marginTop: '12px', color: 'var(--text-muted)' }}>

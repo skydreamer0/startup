@@ -129,3 +129,13 @@ Node 22 locked build, actual HTTP middleware, PostgreSQL or hosted Chrome.
 Login/logout UI, store roles, actual store data, physical scanner/printer/camera,
 Safari/iPad, native browser zoom, financial reconciliation and release acceptance
 remain outside this synthetic package.
+
+## First hosted head and scoped R2 correction
+
+Head `8d7dd54456ffe1a122b9e4f84348bab4bc020fc0`, [run39226904375 attempt1](https://github.com/skydreamer0/startup/actions/runs/39226904375), remains **FAILED**. All eight endpoints × seven actor cases reached actual HTTP/PG with their expected statuses and numeric oracles. The actual old relation predicate produced17844 against scoped67; supplier denominator62, same-SKU2 and legacy cross-link checks passed. Raw33-table before/after equality, exact fixture0, parent33zero, process quiescence and ownedDatabaseAbsent were retained. No complete reader viewport case passed.
+
+The first1366 cash-flow Refresh focus had60 observations, all at height36.1875px below44px. The first outline sample was3px; the following59 were2px, with a stable final segment below the unchanged3px guard. Focus and center hit were true. The original PNG agrees. Separately, the same head's existing Admin synthetic-HTTP margin390 original full-page PNG is659px wide: the inline four-column summary and clipped table show a genuine narrow-layout gap.
+
+R2 uses a five-page `.admin-reader-page` opt-in stylesheet, reusing the existing product toolbar's44px/wrapping contract and trace control's3px keyboard ring. It changes no global button/disabled/permission behavior. Month/sort controls wrap; cash/margin summaries use container-bounded auto-fit cards. Five named table regions scroll only their own content and enter keyboard navigation, preserving all columns rather than hiding page overflow. The native390 journey requires real Tab/ArrowRight movement for margin, sales, ABC, supplier ranking and supplier list, with actual focus, stable page position and no whole-page overflow. No driver assigns scrollLeft or scrolls to satisfy a gate.
+
+Local CSS/DOM controls first failed12/12 on R1; seven additional grid/table controls failed before their fix. The19 controls plus76 affected reader/disclosure tests pass; TypeScript passes. These are supplemental DOM/CSS contracts, with chart doubles in the new layout test, not native layout proof.43 native fixture/oracle/runner controls include rejected stationary/unfocused/page-scrolling/overflowing table receipts. The new exact head still requires hosted Node22/Chrome/PG and independent original-image review; previous successful probes are preserved as bounded historical evidence, not a new-head PASS.

@@ -1,3 +1,4 @@
+import '../ReaderControls.css';
 import { useState } from 'react';
 import { useGuardedRead } from '../../hooks/useGuardedRead';
 import api from '../../api/client';
@@ -80,13 +81,13 @@ export default function InventoryAnalyticsPage() {
     }
 
     return (
-        <div>
+        <div className="admin-reader-page">
             <header className="page-header">
                 <div>
                     <h1 className="page-title">Inventory Analytics</h1>
                     <p className="page-subtitle">Product performance and supplier evaluation</p>
                 </div>
-                <div>
+                <div className="reader-toolbar">
                     <input
                         type="month"
                         className="input-field"
@@ -156,7 +157,7 @@ export default function InventoryAnalyticsPage() {
                                     Median Revenue: ${abcData?.medianRevenue?.toLocaleString() ?? 0} | Median Margin: {abcData?.medianMargin ?? 0}%
                                 </p>
 
-                                <div className="table-container">
+                                <div className="table-container reader-table-scroll" role="region" aria-label="商品分析表" tabIndex={0}>
                                     <table className="table">
                                         <thead>
                                             <tr>
@@ -232,7 +233,7 @@ export default function InventoryAnalyticsPage() {
                                 Ranked by Composite Score (Revenue 40%, Margin 30%, Reliability 20%, Defect 10%).
                             </p>
 
-                            <div className="table-container">
+                            <div className="table-container reader-table-scroll" role="region" aria-label="供應商排行表" tabIndex={0}>
                                 <table className="table">
                                     <thead>
                                         <tr>

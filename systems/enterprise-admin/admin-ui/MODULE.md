@@ -81,6 +81,8 @@ tracked in `../infrastructure/verification/pos-manufacturer-barcode-contract/REA
 
 ### Change financial or inventory reader lifecycle
 
+The five reader pages opt into `pages/ReaderControls.css`: 44px controls, visible keyboard focus, wrapping period/sort controls, responsive cash/margin summaries and named keyboard-scrollable tables. Keep these selectors under `.admin-reader-page`; do not apply them globally or hide page overflow. `readerControls.test.tsx` checks CSS/DOM contracts; the native reader package separately proves real geometry and ArrowRight scrolling.
+
 The three `pages/Reports/` pages, `InventoryAnalyticsPage` and `SupplierListPage`
 use the existing `useGuardedRead` cache-owner contract. Query keys include the
 current reader ID and all HTTP reads consume AbortSignal. A 401/403 latches data

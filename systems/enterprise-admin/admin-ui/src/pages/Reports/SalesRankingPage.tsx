@@ -1,3 +1,4 @@
+import '../ReaderControls.css';
 import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
@@ -37,14 +38,14 @@ export default function SalesRankingPage() {
         hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
 
     if (isError && (data === undefined || isReportAccessDenied(error))) {
-        return <div className="admin-page report-page sales-ranking-page">
+        return <div className="admin-page report-page admin-reader-page sales-ranking-page">
             {estimateNotice}
             {reportNotice}
         </div>;
     }
 
     if (isLoading && products.length === 0) {
-        return <div className="admin-page report-page sales-ranking-page">
+        return <div className="admin-page report-page admin-reader-page sales-ranking-page">
             {estimateNotice}
             <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading sales ranking...</div>
         </div>;
@@ -53,13 +54,13 @@ export default function SalesRankingPage() {
     const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#f87171', '#14b8a6', '#6366f1'];
 
     return (
-        <div className="admin-page report-page sales-ranking-page">
+        <div className="admin-page report-page admin-reader-page sales-ranking-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                     <h1 className="page-title">Product Sales Ranking</h1>
                     <p className="page-subtitle">Analyze top performing SKUs and category distributions</p>
                 </div>
-                <div className="flex gap-12" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
+                <div className="flex gap-12 reader-toolbar" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
                     <select
                         value={sortBy}
                         onChange={e => setSortBy(e.target.value as 'revenue' | 'quantity')}
@@ -117,7 +118,7 @@ export default function SalesRankingPage() {
                 {/* Top Products Table */}
                 <section className="card" style={{ padding: '24px', maxHeight: '500px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>Top 20 Products</h3>
-                    <div className="table-container" style={{ flex: 1, overflowY: 'auto' }}>
+                    <div className="table-container reader-table-scroll" role="region" aria-label="銷售排行表" tabIndex={0} style={{ flex: 1, overflowY: 'auto' }}>
                         <table className="table">
                             <thead>
                                 <tr>

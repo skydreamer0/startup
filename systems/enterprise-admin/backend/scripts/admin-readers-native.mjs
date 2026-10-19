@@ -31,6 +31,14 @@ export function createReaderBudget(now = () => performance.now()) {
             assert.ok(analyticsRequests <= 120, 'Reader analytics request ceiling exceeded');
         } }, receipt() { return { elapsedMs: now() - started, deadlineMs: 300000, apiRequests, maxApiRequests: 320, analyticsRequests, maxAnalyticsRequests: 120 }; } };
 }
+export function assertReaderTableScroll(before, after) {
+    assert.equal(before.focused, true); assert.equal(after.focused, true);
+    assert.ok(before.clientWidth > 0 && before.scrollWidth > before.clientWidth);
+    assert.equal(after.clientWidth, before.clientWidth); assert.equal(after.scrollWidth, before.scrollWidth);
+    assert.ok(after.scrollLeft > before.scrollLeft && after.scrollLeft <= after.scrollWidth - after.clientWidth + 1);
+    assert.equal(after.pageX, before.pageX); assert.ok(Math.abs(after.pageY - before.pageY) <= 1);
+    assert.ok(after.pageWidth <= after.viewport + 1);
+}
 export function assertReadersNativeAcceptance(result) {
     assert.equal(result.status, 'passed');
     assert.equal(result.fixtureCleaned, true);
@@ -60,12 +68,14 @@ export function assertReadersNativeAcceptance(result) {
     }
     assert.deepEqual(result.initialErrorRecovered, subjects.map(s => s.id));
     assert.deepEqual(result.authorizedEmpty, subjects.map(s => s.id));
+    assert.deepEqual(result.tableScroll.map(row => row.subject).sort(), ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers']);
+    for (const row of result.tableScroll) assertReaderTableScroll(row.before, row.after);
 }
 export async function runAdminReadersNative({ db, browser, adminOrigin, signAccessToken, output, nonce, expect, capture }) {
     const origin = new URL(adminOrigin);
     assert.equal(origin.protocol, 'http:');
     assert.equal(origin.hostname, '127.0.0.1');
-    const f = buildReaderFixture(nonce), contexts = [], network = [], forbidden = [], responses = [], pending = [], cases = [], httpStatuses = {}, initialErrorRecovered = [], authorizedEmpty = [], holds = [];
+    const f = buildReaderFixture(nonce), contexts = [], network = [], forbidden = [], responses = [], pending = [], cases = [], httpStatuses = {}, initialErrorRecovered = [], authorizedEmpty = [], holds = [], tableScroll = [];
     const expected = Object.fromEntries(['readerA', 'readerB', 'readerEmpty'].map(actor => [actor, readerExpected(f, actor)])), tokens = {};
     let stage = 'fixture', failure = null, failureDetail = null, before, after, fixtureCleaned = false, databaseGrantLookup = false, lateScopeSuppressed = false, pgNegativeControls;
     const budget = createReaderBudget();
@@ -192,6 +202,21 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
         }
         return geometry;
     }
+    async function tableKeyboard(page, subject) {
+        const region = page.locator('.reader-table-scroll');
+        await expect(region).toHaveCount(1);
+        await keyboardCapture(page, subject, 390, region, 'table-focus');
+        const sample = () => region.evaluate(el => ({ scrollLeft: el.scrollLeft, scrollWidth: el.scrollWidth, clientWidth: el.clientWidth,
+            pageX: scrollX, pageY: scrollY, focused: document.activeElement === el, viewport: innerWidth, pageWidth: document.documentElement.scrollWidth }));
+        const before = await sample();
+        await page.keyboard.press('ArrowRight');
+        await expect.poll(async () => (await sample()).scrollLeft, { timeout: 3200 }).toBeGreaterThan(before.scrollLeft);
+        const after = await sample();
+        assertReaderTableScroll(before, after);
+        tableScroll.push({ subject, before, after });
+        write(`admin-readers-${subject}-table-scroll-390.json`, { before, after });
+        await capture(page, `admin-readers-${subject}-table-scroll-390.png`, { width: 390, height: 844 });
+    }
     try {
         await seedReaderFixture(db, f, value => { budget.check(); stage = value; });
         for (const actor of f.actors)
@@ -276,9 +301,11 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                         await expect(page.getByText('合成同名供應商', { exact: true })).toBeVisible();
                         await expect(page.getByRole('row').filter({ hasText: '合成同名供應商' })).toContainText('—');
                         await keyboardCapture(page, 'supplier-ranking', viewport.width, page.getByRole('button', { name: '📦 ABC Product Analysis', exact: true }), 'success');
+                        if (viewport.width === 390) await tableKeyboard(page, 'supplier-ranking');
                         await page.getByRole('button', { name: '📦 ABC Product Analysis', exact: true }).click();
                     }
                     const geometry = await keyboardCapture(page, subject.id, viewport.width, page.getByRole('button', { name: subject.focus, exact: true }), 'success');
+                    if (viewport.width === 390 && subject.id !== 'cashflow') await tableKeyboard(page, subject.id);
                     stage = `${subject.id} stale transport ${viewport.width}`;
                     control.mode = 'fail500';
                     await refresh(subject);
@@ -443,7 +470,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
         else
             write('admin-readers-cleanup.json', { status: 'not-required', reason: 'no absent-ID ownership acquired' });
     }
-    const result = { nonce, status: failure ? 'failed' : 'passed', failure, failureDetail, cases, httpStatuses, initialErrorRecovered, authorizedEmpty, pgNegativeControls, databaseGrantLookup, lateScopeSuppressed, fixtureCleaned, network, forbidden, readOnlySnapshotEqual: !!before && !!after && isDeepStrictEqual(before, after), beforeSha256: before ? hash(before) : null, afterSha256: after ? hash(after) : null, rawSnapshotTables: before ? Object.keys(before).length : 0, scope: 'Built five Admin reader entries -> actual GET/JWT/persisted role permissions -> owned synthetic PG. Current estimates only. No login UI, physical equipment, native zoom or financial-policy approval.', analyticsPacingMs: 2150, budget: budget.receipt() };
+    const result = { nonce, status: failure ? 'failed' : 'passed', failure, failureDetail, cases, httpStatuses, initialErrorRecovered, authorizedEmpty, tableScroll, pgNegativeControls, databaseGrantLookup, lateScopeSuppressed, fixtureCleaned, network, forbidden, readOnlySnapshotEqual: !!before && !!after && isDeepStrictEqual(before, after), beforeSha256: before ? hash(before) : null, afterSha256: after ? hash(after) : null, rawSnapshotTables: before ? Object.keys(before).length : 0, scope: 'Built five Admin reader entries -> actual GET/JWT/persisted role permissions -> owned synthetic PG. Current estimates only. No login UI, physical equipment, native zoom or financial-policy approval.', analyticsPacingMs: 2150, budget: budget.receipt() };
     if (!failure) {
         try { assertReadersNativeAcceptance(result); }
         catch (error) { result.status = 'failed'; result.failure = 'Reader acceptance contract failed'; result.failureDetail = safeTraceFailure(error); }

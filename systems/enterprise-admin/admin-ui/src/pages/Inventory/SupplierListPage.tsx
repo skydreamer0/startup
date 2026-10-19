@@ -1,3 +1,4 @@
+import '../ReaderControls.css';
 import { useEffect, useState } from 'react';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useQueryClient } from '@tanstack/react-query';
@@ -123,7 +124,7 @@ export default function SupplierListPage() {
     const modalTitle = editSupplier ? 'Edit Supplier' : 'Add Supplier';
 
     return (
-        <div>
+        <div className="admin-reader-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Suppliers Management</h1>
@@ -139,7 +140,7 @@ export default function SupplierListPage() {
             <ReportReadNotice label="供應商清單" isError={failed} error={error}
                 hasData={visibleData !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />
 
-            <div className="table-container">
+            <div className="table-container reader-table-scroll" role="region" aria-label="供應商清單表" tabIndex={0}>
                 {loading ? (
                     <div role="status">Loading suppliers...</div>
                 ) : visibleData === undefined || (failed && suppliers.length === 0) ? null : (
