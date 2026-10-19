@@ -20,6 +20,39 @@ export function safeTraceFailure(error) {
   const code = error && typeof error === 'object' ? error.code : undefined;
   return { kind: kinds.includes(name) ? name : 'UnknownError', code: typeof code === 'string' && (/^P[0-9]{4}$/.test(code) || code === 'ERR_ASSERTION') ? code : null };
 }
+// Observe the browser's native focus/scroll/style settlement; never move the
+// viewport or force a click to satisfy these unchanged geometry thresholds.
+export function traceFocusGeometryIssues(g) {
+  const issues = [];
+  const numbers = [g.x, g.y, g.width, g.height, g.region?.x, g.region?.right, g.pageWidth, g.viewport, g.scrollLeft];
+  if (!numbers.every(Number.isFinite)) issues.push('nonfinite-geometry');
+  if (!(g.x >= g.region?.x - 1 && g.x + g.width <= g.region?.right + 1)) issues.push('clipped-horizontal');
+  if (!(Number.parseFloat(g.outline) >= 3)) issues.push('outline-under-3px');
+  if (g.color === 'rgba(0, 0, 0, 0)') issues.push('transparent-outline');
+  if (!(g.width >= 44 && g.height >= 44)) issues.push('target-under-44px');
+  if (!(g.pageWidth <= g.viewport)) issues.push('page-overflow');
+  if (g.focused !== true) issues.push('focus-lost');
+  if (g.centerHit !== true) issues.push('center-obscured');
+  return issues;
+}
+export async function settleTraceFocusGeometry(read, observe, pause = ms => new Promise(resolve => setTimeout(resolve, ms))) {
+  let previous, cancelled = false, timer;
+  const poll = async () => {
+    for (let index = 0; index < 61 && !cancelled; index++) {
+      const geometry = await read(); if (cancelled) throw new Error('Trace focus geometry timed out');
+      const issues = traceFocusGeometryIssues(geometry);
+      observe({ index, geometry, issues });
+      const stable = previous && ['x', 'y', 'width', 'height', 'scrollLeft'].every(key => Math.abs(previous[key] - geometry[key]) <= 0.5)
+        && previous.outline === geometry.outline && previous.color === geometry.color;
+      if (issues.length === 0 && stable && traceFocusGeometryIssues(previous).length === 0) return geometry;
+      previous = geometry;
+      await pause(50);
+    }
+    throw new Error('Trace focus geometry did not settle');
+  };
+  try { return await Promise.race([poll(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Trace focus geometry timed out')), 3200); })]); }
+  finally { cancelled = true; clearTimeout(timer); }
+}
 export function assertTraceNativeAcceptance(result) {
   assert.equal(result.status, 'passed'); assert.equal(result.readOnlySnapshotEqual, true);
   assert.equal(result.fixtureCleaned, true); assert.equal(result.forbidden.length, 0);
@@ -217,10 +250,25 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
         assert.equal(await quantityVisible(), true, 'Signed quantity must be visible after native keyboard scroll');
         await capture(page, `admin-trace-batch-quantity-${viewport.width}.png`, viewport);
         await page.keyboard.press('Tab'); await expect(opener()).toBeFocused();
-        const geometry = await opener().evaluate(el => { const r = el.getBoundingClientRect(), region = el.closest('[role=region]').getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, region: { x: region.x, right: region.right }, pageWidth: document.documentElement.scrollWidth, viewport: innerWidth, color: getComputedStyle(el).outlineColor, outline: getComputedStyle(el).outlineWidth }; });
-        assert.ok(geometry.x >= geometry.region.x - 1 && geometry.x + geometry.width <= geometry.region.right + 1);
-        assert.ok(Number.parseFloat(geometry.outline) >= 3); assert.notEqual(geometry.color, 'rgba(0, 0, 0, 0)');
-        assert.ok(geometry.width >= 44 && geometry.height >= 44); assert.ok(geometry.pageWidth <= geometry.viewport);
+        stage = `trace entry focus geometry ${viewport.width}`;
+        const observations = []; let geometry;
+        try {
+          geometry = await settleTraceFocusGeometry(() => opener().evaluate(el => {
+            const r = el.getBoundingClientRect(), container = el.closest('[role=region]'), region = container.getBoundingClientRect(), style = getComputedStyle(el);
+            const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+            return { x: r.x, y: r.y, width: r.width, height: r.height, region: { x: region.x, right: region.right }, pageWidth: document.documentElement.scrollWidth, viewport: innerWidth,
+              scrollLeft: container.scrollLeft, scrollWidth: container.scrollWidth, clientWidth: container.clientWidth,
+              color: style.outlineColor, outline: style.outlineWidth, transition: style.transitionProperty, transitionDuration: style.transitionDuration,
+              scrollBehavior: getComputedStyle(container).scrollBehavior, scrollMargin: style.scrollMargin, focused: document.activeElement === el, centerHit: !!hit && (hit === el || el.contains(hit)) };
+          }), value => observations.push(value));
+        } catch (error) {
+          write(`admin-trace-focus-${viewport.width}.json`, { status: 'failed', observations });
+          // Capture before context closure. A capture failure cannot pass the gate.
+          await capture(page, `admin-trace-focus-failed-${viewport.width}.png`, viewport);
+          throw error;
+        }
+        write(`admin-trace-focus-${viewport.width}.json`, { status: 'passed', observations });
+        assert.deepEqual(traceFocusGeometryIssues(geometry), []);
         await capture(page, `admin-trace-batch-right-${viewport.width}.png`, viewport);
         stage = `trace API and DB rows ${viewport.width}`;
         await page.keyboard.press('Enter'); await traced(); databaseGrantLookup = true;

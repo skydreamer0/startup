@@ -105,3 +105,45 @@ test('safe failure diagnostics expose only fixed exception class/code, never mes
   assert.deepEqual(safeTraceFailure(new Error(secret)),{kind:'Error',code:null});
   assert.deepEqual(safeTraceFailure(secret),{kind:'UnknownError',code:null});
 });
+
+const focusGeometry = () => ({ x: 193, y: 470, width: 129, height: 44, region: { x: 112, right: 350 }, pageWidth: 390, viewport: 390, scrollLeft: 664, outline: '3px', color: 'rgb(61, 43, 31)', focused: true, centerHit: true });
+test('focus observation waits for native scroll and outline transition without moving the page', async () => {
+  const { settleTraceFocusGeometry } = await import('./admin-trace-native.mjs');
+  const samples = [{ ...focusGeometry(), x: 328, scrollLeft: 529, outline: '1px' }, { ...focusGeometry(), outline: '2px' }, focusGeometry(), focusGeometry()];
+  const observed = []; let reads = 0, waits = 0;
+  const result = await settleTraceFocusGeometry(async () => samples[reads++], value => observed.push(value), async ms => { assert.equal(ms, 50); waits++; });
+  assert.equal(result, samples[3]); assert.equal(reads, 4); assert.equal(waits, 3);
+  assert.deepEqual(observed[0].issues, ['clipped-horizontal','outline-under-3px']);
+  assert.deepEqual(observed.at(-1).issues, []);
+});
+test('focus observation rejects persistent original geometry failures and new focus/hit-test failures', async () => {
+  const { settleTraceFocusGeometry } = await import('./admin-trace-native.mjs');
+  for (const patch of [{x:328},{outline:'2px'},{color:'rgba(0, 0, 0, 0)'},{width:43},{height:43},{pageWidth:391},{focused:false},{centerHit:false},{x:NaN}]) {
+    let reads=0;const observations=[];
+    await assert.rejects(settleTraceFocusGeometry(async()=>{reads++;return {...focusGeometry(),...patch};},x=>observations.push(x),async()=>{}));
+    assert.equal(reads,61);assert.ok(observations.every(x=>x.issues.length>0));
+  }
+});
+test('focus observation rejects unstable or briefly-valid geometry and preserves samples', async () => {
+  const { settleTraceFocusGeometry } = await import('./admin-trace-native.mjs');
+  for(const transient of [false,true]){
+    let reads=0;const observations=[];
+    await assert.rejects(settleTraceFocusGeometry(async()=>{reads++;return transient&&reads%2?{...focusGeometry(),outline:'1px'}:{...focusGeometry(),x:193+reads%2};},x=>observations.push(x),async()=>{}));
+    assert.equal(reads,61);assert.equal(observations.length,61);
+  }
+});
+test('driver records focus observations and failure PNG before closing context; no forced scroll substitute', () => {
+  const source=fs.readFileSync(new URL('./admin-trace-native.mjs',import.meta.url),'utf8');
+  const block=source.slice(source.indexOf('stage = `trace entry focus geometry'),source.indexOf('stage = `trace API and DB rows'));
+  assert.match(block,/await settleTraceFocusGeometry/);assert.match(block,/admin-trace-focus-failed-/);
+  assert.match(block,/status: 'failed', observations/);assert.match(block,/status: 'passed', observations/);
+  assert.match(block,/document.elementFromPoint/);assert.match(block,/scrollLeft: container.scrollLeft/);
+  assert.doesNotMatch(block,/scrollIntoView\(|scrollLeft\s*=|force:\s*true|style\.[a-zA-Z]+\s*=/);
+});
+test('focus observation has a real finite deadline even when a geometry read never settles', async () => {
+  const { settleTraceFocusGeometry } = await import('./admin-trace-native.mjs');
+  let release, observations=0;
+  const pending=new Promise(resolve=>{release=resolve;});
+  await assert.rejects(settleTraceFocusGeometry(()=>pending,()=>observations++),/timed out/);
+  release(focusGeometry());await new Promise(resolve=>setImmediate(resolve));assert.equal(observations,0);
+});
