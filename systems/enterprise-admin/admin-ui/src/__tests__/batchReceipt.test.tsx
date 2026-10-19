@@ -78,7 +78,7 @@ describe('initial receipt release through real auth and API clients', () => {
     });
     it('does not open receipt for a reader even when that reader has release permission', async () => {
         profile.permissions = ['read:products', 'release:product_batches']; setup();
-        await waitFor(() => expect(http.get).toHaveBeenCalledWith('/auth/me'));
+        await waitFor(() => expect(http.get).toHaveBeenCalledWith('/auth/me', expect.objectContaining({ signal: expect.any(AbortSignal) })));
         expect(screen.getByRole('button', { name: '+ 登記批次進貨' })).toBeDisabled();
         expect(screen.getByText(/缺少登記進貨權限/)).toBeVisible();
         fireEvent.click(screen.getByRole('button', { name: '+ 登記批次進貨' }));

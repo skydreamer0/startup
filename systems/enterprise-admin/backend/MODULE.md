@@ -206,3 +206,18 @@ then drops only its preflight-proven empty owned synthetic DB.
 Append-only fixture rows remain until that DROP. Handoff and result provenance live
 in `../infrastructure/verification/product-batch-change-integration.md`. UI receipt
 reason/browser, store roles and independent review remain separate gates.
+
+
+## Synthetic Admin auth acceptance
+
+The existing exact-head package native runner also invokes
+`scripts/admin-auth-native.mjs` after reader acceptance. It uses the production
+email/password/Argon2/JWT/RBAC endpoints with owned fixture identities, one complete
+auth lifecycle and three independent cold form entries. No auth-service policy,
+tenant selector, JWT setting or migration changes. Fixture setup refuses an
+existing default tenant before acquiring cleanup ownership. Only exact owned
+LOGIN/LOGOUT audit additions and allowed login bookkeeping fields may change;
+all31 other raw tables stay equal, credentials/hashes remain memory-only, and
+cleanup is bounded to absent-before IDs. The fixture, transport and failure-path
+controls are separate from real API/PG/browser acceptance. See
+`../infrastructure/verification/admin-auth-handover/README.md`.

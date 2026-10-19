@@ -203,7 +203,7 @@ function tableDriverIo({ mode = 'normal', collision = null, missingDirectory = f
     const write = new Function('fs', 'path', 'output', `${source.slice(writeStart, source.indexOf('\n', writeStart))};return write;`)(fs, path, output);
     const captureStart = parent.indexOf('async function capture(page, name, viewport) {');
     const captures = [];
-    const capture = new Function('path', 'output', 'assert', 'captures', 'createHash', `${parent.slice(captureStart, parent.indexOf('\nasync function counts()', captureStart))};return capture;`)(path, output, assert, captures, createHash);
+    const capture = new Function('fs', 'path', 'output', 'assert', 'captures', 'createHash', `${parent.slice(captureStart, parent.indexOf('\nasync function counts()', captureStart))};return capture;`)(fs, path, output, assert, captures, createHash);
     const start = source.indexOf('    async function keyboardCapture(page, subject, width, target, name) {');
     const end = source.indexOf('\n    try {\n        await seedReaderFixture', start);
     const accepted = [], keys = [], writes = [];
@@ -217,10 +217,10 @@ function tableDriverIo({ mode = 'normal', collision = null, missingDirectory = f
         keys.push(key); if (key === 'Tab') { state.focused = true; return; }
         if (mode !== 'no-movement') state.scrollLeft = Math.max(0, Math.min(402, state.scrollLeft + (key === 'ArrowRight' ? 32 : -32)));
     } }, screenshot: async options => {
-        assert.equal(options.fullPage, false); assert.equal(path.dirname(options.path), output);
-        if (captureFailure && options.path.endsWith('table-scroll-390.png')) throw new Error('capture adapter failure');
+        assert.equal(options.fullPage, false); assert.equal(options.path, undefined);
+        if (captureFailure && captures.length > 0) throw new Error('capture adapter failure');
         const bytes = Buffer.alloc(24); Buffer.from([137,80,78,71,13,10,26,10]).copy(bytes); bytes.writeUInt32BE(390,16); bytes.writeUInt32BE(844,20);
-        fs.writeFileSync(options.path, bytes, { flag: 'wx' }); return bytes;
+        return bytes;
     } };
     const expect = () => ({ toHaveCount: async count => assert.equal(count, 1) });
     const run = new Function('expect', 'settleTraceFocusGeometry', 'assertReaderFocusClearance', 'readerTableKeys', 'settleReaderTableScroll', 'assertReaderTableJourney', 'safeTraceFailure', 'tableScroll', 'write', 'capture', `let stage='';${source.slice(start,end)};return tableKeyboard;`)(expect,
