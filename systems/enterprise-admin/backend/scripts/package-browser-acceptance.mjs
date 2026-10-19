@@ -1,5 +1,6 @@
 // GitHub-hosted, synthetic-only built Admin/POS -> production HTTP API -> PG15.
 import assert from 'node:assert/strict';
+import { prepareNativeCamera, runNativeCamera } from './package-camera-native.mjs';
 import { runStockReconciliationJourney } from './stock-reconciliation-browser.mjs';
 import { runMedicineLabelJourney } from './medicine-label-cloud.ts';
 import { runPackageBrowserInteractions } from './package-browser-interactions.mjs';
@@ -72,6 +73,7 @@ async function business() {
     batches: await db.productBatch.count(), orders: await db.order.count(), payments: await db.orderPayment.count(), movements: await db.inventoryTransaction.count() };
 }
 try {
+  execFileSync(process.execPath, ['--test', path.join(backend, 'scripts/package-camera-native.test.mjs')], { cwd: backend, stdio: 'inherit', timeout: 30000 });
   const before = await counts(); assertZeroRows(before); write('before-counts.json', before);
   const dbIdentity = await db.$queryRaw`SELECT current_database() AS name, current_user AS username, version() AS version`;
   assert.equal(dbIdentity[0].name, databaseName); assert.equal(dbIdentity[0].username, 'test'); assert.match(dbIdentity[0].version, /^PostgreSQL 15\./);
@@ -112,7 +114,10 @@ try {
   }
   const adminOrigin = await serve(path.join(system, 'admin-ui/dist'));
   const posOrigin = await serve(path.join(system, 'pos-ui/dist'));
+  const cameraFixture = await prepareNativeCamera(output, requirePos);
+  write('camera-native-fixture.json', cameraFixture);
   browser = await chromium.launch({ channel: 'chrome', headless: true, chromiumSandbox: true,
+    args: ['--use-fake-device-for-media-stream', `--use-file-for-fake-video-capture=${cameraFixture.file}`],
     env: { PATH: env.PATH, HOME: env.HOME, TMPDIR: env.TMPDIR, CATEGORY_UI_NONCE: nonce } });
   for (const viewport of [{ width: 1366, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }]) {
     const context = await browser.newContext({ viewport }); contexts.push(context);
@@ -210,8 +215,11 @@ try {
     const interactions = viewport.width === 390 ? await runPackageBrowserInteractions({
       admin, pos, context, adminOrigin, posOrigin, maintenance, product, code, prefix, viewport, expect, requirePos, capture, networkLedger,
     }) : undefined;
+    const camera = viewport.width === 390 ? await runNativeCamera({
+      pos, context, posOrigin, viewport, expect, capture, db, tenantId: syntheticTenant, business, output, nonce, apiLedger, networkLedger,
+    }) : undefined;
     assert.deepEqual(await business(), baseline);
-    cases.push({ viewport, interactions, status: 'passed', manualConfirmation: true, unknownConversionBlocked: true, ambiguity: 3,
+    cases.push({ viewport, interactions, camera, status: 'passed', manualConfirmation: true, unknownConversionBlocked: true, ambiguity: 3,
       confirmedBaseQuantity: 3, staleRevisionRejected: true, manualHandoff: true, handoffFocusRestored: true, backendBusinessUnchanged: true, geometry, adminGeometry });
     await context.close();
   }
