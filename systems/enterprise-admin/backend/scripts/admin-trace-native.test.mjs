@@ -64,8 +64,44 @@ for (const cleanupFails of [false, true]) test(`runner failure preserves failed 
     await assert.rejects(runAdminTraceNative({ db, tenantId: '00000000-0000-4000-8000-999999999999', browser: {}, adminOrigin: 'http://127.0.0.1:1234', nonce: '00000000-0000-4000-8000-111111111111', output }));
     const result = JSON.parse(fs.readFileSync(join(output, 'admin-trace-native.json'), 'utf8'));
     const cleanup = JSON.parse(fs.readFileSync(join(output, 'admin-trace-fixture-cleanup.json'), 'utf8'));
-    assert.equal(result.status, 'failed'); assert.equal(result.readOnlySnapshotEqual, false);
+    assert.equal(result.status, 'failed'); assert.equal(result.readOnlySnapshotEqual, false); assert.equal(result.databaseGrantLookup, false);
     assert.equal(result.fixtureCleaned, !cleanupFails); assert.equal(cleanup.status, cleanupFails ? 'failed' : 'passed');
     assert.deepEqual(result.cases, []); assert.doesNotMatch(JSON.stringify(result), /synthetic (fixture setup|teardown) failure/);
   } finally { rmSync(output, { recursive: true, force: true }); }
+});
+
+test('actual fixture linked receipt satisfies the unchanged SQL cost constraint', async () => {
+  const { runAdminTraceNative } = await import('./admin-trace-native.mjs');
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const sql = fs.readFileSync(new URL('../prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql', import.meta.url), 'utf8');
+  assert.match(sql, /inventory_transactions_receipt_check/);
+  assert.match(sql, /"cost_price_at_receipt" IS NOT NULL AND "cost_price_at_receipt" >= 0/);
+  const output = mkdtempSync(join(tmpdir(), 'synthetic-trace-receipt-')); let recorded;
+  const db = {};
+  for (const name of ['saleBatchAllocation','orderItem','order','inventoryTransaction','productBatch','product','customer','rolePermission','userRole','role','user','tenant']) db[name] = {
+    create: async ({ data }) => data, createMany: async ({ data }) => ({ count: data.length }), deleteMany: async () => ({ count: 0 }), count: async () => 0,
+  };
+  db.inventoryTransaction.createMany = async ({ data }) => { recorded = data; throw new Error('Stop mocked execution after recording exact fixture input'); };
+  try {
+    await assert.rejects(runAdminTraceNative({ db, tenantId: '00000000-0000-4000-8000-999999999999', browser: {}, adminOrigin: 'http://127.0.0.1:1234', nonce: '00000000-0000-4000-8000-111111111111', output }));
+    assert.equal(recorded.length,133);
+    const linked = recorded.filter(row => row.batchId != null); assert.equal(linked.length,1);
+    for (const row of linked) {
+      assert.equal(row.type,'IN'); assert.ok(row.quantity>0);
+      assert.ok(row.costPriceAtReceipt != null && row.costPriceAtReceipt >= 0, 'Linked receipt requires explicit nonnegative cost, per unchanged SQL CHECK');
+      assert.equal(row.costPriceAtReceipt,1);
+    }
+    const receipt=JSON.parse(fs.readFileSync(join(output,'admin-trace-native.json'),'utf8'));
+    assert.equal(receipt.status,'failed'); assert.equal(receipt.databaseGrantLookup,false); assert.equal(receipt.fixtureCleaned,true); assert.deepEqual(receipt.cases,[]);
+  } finally { rmSync(output,{recursive:true,force:true}); }
+});
+test('safe failure diagnostics expose only fixed exception class/code, never message/meta/stack/token', async () => {
+  const { safeTraceFailure } = await import('./admin-trace-native.mjs');
+  const secret='synthetic-do-not-record-this-value';
+  assert.deepEqual(safeTraceFailure({name:'PrismaClientKnownRequestError',code:'P2004',message:secret,stack:secret,meta:{token:secret}}),{kind:'PrismaClientKnownRequestError',code:'P2004'});
+  assert.deepEqual(safeTraceFailure({name:secret,code:secret,message:secret}),{kind:'UnknownError',code:null});
+  assert.deepEqual(safeTraceFailure(new Error(secret)),{kind:'Error',code:null});
+  assert.deepEqual(safeTraceFailure(secret),{kind:'UnknownError',code:null});
 });

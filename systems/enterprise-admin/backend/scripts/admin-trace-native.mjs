@@ -12,6 +12,14 @@ async function bounded(promise, label) {
   try { return await Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`Trace wait failed: ${label}`)), 10000); })]); }
   finally { clearTimeout(timer); }
 }
+// Fixed vocabulary only: never serialize exception messages, stacks, request
+// config or Prisma metadata, which may contain credentials or response bodies.
+export function safeTraceFailure(error) {
+  const kinds = ['Error', 'AssertionError', 'PrismaClientKnownRequestError', 'PrismaClientValidationError', 'PrismaClientInitializationError'];
+  const name = error && typeof error === 'object' ? error.name : undefined;
+  const code = error && typeof error === 'object' ? error.code : undefined;
+  return { kind: kinds.includes(name) ? name : 'UnknownError', code: typeof code === 'string' && (/^P[0-9]{4}$/.test(code) || code === 'ERR_ASSERTION') ? code : null };
+}
 export function assertTraceNativeAcceptance(result) {
   assert.equal(result.status, 'passed'); assert.equal(result.readOnlySnapshotEqual, true);
   assert.equal(result.fixtureCleaned, true); assert.equal(result.forbidden.length, 0);
@@ -55,8 +63,8 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
   const cases = [], network = [], forbidden = [], responses = [], settled = [];
   const contexts = [], releases = [], tokens = {};
   let stage = 'fixture setup';
-  let failure = null, before, after, fixtureCleaned = false, started = false, injectedTransport500Recovered = false;
-  const realStatuses = {}; let expectedRows, expectedReceipt;
+  let failure = null, failureDetail = null, before, after, fixtureCleaned = false, started = false, injectedTransport500Recovered = false;
+  const realStatuses = {}; let expectedRows, expectedReceipt; let databaseGrantLookup = false;
   const write = (name, value) => fs.writeFileSync(path.join(output, name), JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
   async function snapshot() {
     const tables = await db.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename<>'_prisma_migrations' ORDER BY tablename`;
@@ -70,11 +78,13 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
   try {
     started = true;
     await db.tenant.create({ data: { id: ids.foreignTenant, slug: ids.foreignTenant, name: '合成隔離追溯租戶', plan: 'pro' } });
+    stage = 'fixture products';
     await db.product.createMany({ data: [
       { id: ids.a, tenantId, sku: 'TRACE-NATIVE-A', name: names.a, stockQuantity: 130, costPrice: 1, retailPrice: 2 },
       { id: ids.b, tenantId, sku: 'TRACE-NATIVE-B', name: names.b, stockQuantity: 4, costPrice: 1, retailPrice: 2 },
       { id: ids.foreignProduct, tenantId: ids.foreignTenant, sku: 'TRACE-FOREIGN', name: '不可洩漏的合成外租戶商品', stockQuantity: 1, costPrice: 1, retailPrice: 2 },
     ] });
+    stage = 'fixture batches';
     await db.productBatch.createMany({ data: [
       { id: ids.batchA, tenantId, productId: ids.a, batchNumber: 'TRACE-NATIVE-A', quantity: 132, status: 'QUARANTINE', expiryDate: new Date('2099-01-01'), costPrice: 1 },
       { id: ids.negative, tenantId, productId: ids.a, batchNumber: 'TRACE-NEGATIVE', quantity: -2, status: 'BLOCKED', expiryDate: new Date('2099-01-02'), costPrice: 1 },
@@ -82,14 +92,20 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
       { id: ids.batchB, tenantId, productId: ids.b, batchNumber: 'TRACE-NATIVE-B', quantity: 4, status: 'QUARANTINE', expiryDate: new Date('2099-01-04'), costPrice: 1 },
       { id: ids.foreignBatch, tenantId: ids.foreignTenant, productId: ids.foreignProduct, batchNumber: 'TRACE-FOREIGN', quantity: 1, status: 'QUARANTINE', expiryDate: new Date('2099-01-05'), costPrice: 1 },
     ] });
+    stage = 'fixture customer';
     await db.customer.create({ data: { id: ids.customer, tenantId, name: '合成追溯顧客' } });
     const stamp = Date.parse('2026-01-01T16:00:00Z');
     const rows = Array.from({ length: 132 }, (_, index) => ({ orderId: randomUUID(), itemId: randomUUID(), movementId: randomUUID(), id: randomUUID(), index, createdAt: new Date(stamp + (index === 131 ? 132 : Math.floor(index / 2)) * 1000) }));
+    stage = 'fixture orders';
     await db.order.createMany({ data: rows.map(row => ({ id: row.orderId, tenantId, customerId: ids.customer, orderNumber: row.index === 131 ? null : `TRACE-${nonce}-${row.index}`, status: 'completed', paymentStatus: 'paid', totalAmount: 2, createdAt: row.createdAt })) });
+    stage = 'fixture order items';
     await db.orderItem.createMany({ data: rows.map(row => ({ id: row.itemId, orderId: row.orderId, productId: ids.a, quantity: 1, unitPrice: 2 })) });
-    await db.inventoryTransaction.createMany({ data: [{ id: ids.receipt, tenantId, productId: ids.a, batchId: ids.batchA, type: 'IN', quantity: 264, createdAt: new Date(stamp - 1000) }, ...rows.map(row => ({ id: row.movementId, tenantId, productId: ids.a, type: 'OUT', quantity: 1, referenceId: row.orderId, createdAt: row.createdAt }))] });
+    stage = 'fixture receipt and movements';
+    await db.inventoryTransaction.createMany({ data: [{ id: ids.receipt, tenantId, productId: ids.a, batchId: ids.batchA, type: 'IN', quantity: 264, costPriceAtReceipt: 1, createdAt: new Date(stamp - 1000) }, ...rows.map(row => ({ id: row.movementId, tenantId, productId: ids.a, type: 'OUT', quantity: 1, referenceId: row.orderId, createdAt: row.createdAt }))] });
+    stage = 'fixture allocations';
     await db.saleBatchAllocation.createMany({ data: rows.map(row => ({ id: row.id, tenantId, orderId: row.orderId, orderItemId: row.itemId, productId: ids.a, batchId: ids.batchA, movementId: row.movementId, quantity: 1, expiryDateAtSale: new Date('2099-01-01'), createdAt: row.createdAt })) });
     for (const [userKey, roleKey, grants, userTenant] of [['reader', 'readerRole', ['products', 'suppliers'], tenantId], ['denied', 'deniedRole', [], tenantId], ['foreignReader', 'foreignReaderRole', ['products', 'suppliers'], ids.foreignTenant]]) {
+      stage = `fixture role ${userKey}`;
       await db.user.create({ data: { id: ids[userKey], tenantId: userTenant, email: `${ids[userKey]}@trace.example.test`, fullName: '合成唯讀追溯人員', passwordHash: 'synthetic-non-login-placeholder' } });
       await db.role.create({ data: { id: ids[roleKey], tenantId: userTenant, name: `Synthetic trace ${userKey}` } });
       await db.userRole.create({ data: { userId: ids[userKey], roleId: ids[roleKey] } });
@@ -101,6 +117,7 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
       // the persisted synthetic role grants. No login UI/credential claim.
       tokens[userKey] = signAccessToken({ userId: ids[userKey], email: `${ids[userKey]}@trace.example.test`, tenantId: userTenant, plan: 'pro' });
     }
+    stage = 'fixture expected rows';
     expectedRows = await db.saleBatchAllocation.findMany({ where: { tenantId, batchId: ids.batchA }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: 100, include: { order: { select: { id: true, orderNumber: true } } } });
     expectedReceipt = await db.inventoryTransaction.findUnique({ where: { id: ids.receipt } });
     assert.equal(expectedRows.length, 100); assert.equal(expectedRows[0].order.orderNumber, null);
@@ -206,7 +223,7 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
         assert.ok(geometry.width >= 44 && geometry.height >= 44); assert.ok(geometry.pageWidth <= geometry.viewport);
         await capture(page, `admin-trace-batch-right-${viewport.width}.png`, viewport);
         stage = `trace API and DB rows ${viewport.width}`;
-        await page.keyboard.press('Enter'); await traced();
+        await page.keyboard.press('Enter'); await traced(); databaseGrantLookup = true;
         await expect(dialog().getByRole('heading', { level: 2 })).toBeFocused();
         await capture(page, `admin-trace-source-${viewport.width}.png`, viewport);
         await page.keyboard.press('Shift+Tab'); await expect(dialog().getByRole('button', { name: '重新載入來源' })).toBeFocused();
@@ -263,7 +280,7 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
     assert.ok((await Promise.all(settled)).every(Boolean), 'API evidence body capture failed');
     after = await snapshot(); write('admin-trace-after.json', after);
     assert.equal(isDeepStrictEqual(before, after), true, 'Read-only trace changed persisted tables');
-  } catch { failure = `Admin trace native acceptance failed at ${stage}`; }
+  } catch (error) { failure = `Admin trace native acceptance failed at ${stage}`; failureDetail = safeTraceFailure(error); }
   finally {
     releases.forEach(item => item.resolve());
     for (const context of contexts) await context.close().catch(() => {});
@@ -277,7 +294,7 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
       }
     }
   }
-  const result = { nonce, status: failure ? 'failed' : 'passed', failure, cases, network, forbidden, realStatuses, databaseGrantLookup: true, injectedTransport500Recovered,
+  const result = { nonce, status: failure ? 'failed' : 'passed', failure, failureDetail, cases, network, forbidden, realStatuses, databaseGrantLookup, injectedTransport500Recovered,
     readOnlySnapshotEqual: !!before && !!after && isDeepStrictEqual(before, after), beforeSha256: before ? hash(before) : null, afterSha256: after ? hash(after) : null, rawSnapshotTables: before ? Object.keys(before).length : 0, fixtureCleaned,
     scope: 'Built Admin actual entry -> unchanged real GET/JWT/DB-role middleware -> owned synthetic PG; no login UI, physical devices, native zoom or writes accepted' };
   write('admin-trace-responses.json', responses); write('admin-trace-native.json', result);
