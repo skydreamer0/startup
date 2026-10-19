@@ -92,6 +92,19 @@ SKU cleanup separately proves owned DB removal. See
 `../infrastructure/verification/pos-confirmed-stock/README.md`. Login, unknown/conflict
 native recovery, narrow-phone and physical-device acceptance remain separate.
 
+### Verify frozen recovery and narrow refund dialogs
+
+`e2e/recovery-native/README.md` describes the separate exact-head owned-PG path
+for real lost-response query/replay, real conflicting checkout and a 390px
+money-only refund. Its three journeys do not replace every viewport/device gate.
+`useOrderDialog` is scoped to order lookup/refund: named native controls, keyboard
+ownership, pending cancellation protection, background leases and return focus
+through the surviving order toolbar. Financial, identity and frozen intent
+semantics are unchanged. Source controls are supplemental; only a successful
+new-head native run plus raw API/DB, geometry, original pixels and final owned
+cleanup establishes this slice. Employee login, full POS responsive layout,
+200% zoom, touch and actual devices remain separate.
+
 ### Change scanner matching or asynchronous scan behavior
 
 1. Start with `src/hooks/useBarcodeScanner.ts`, its nearest test, `POSCheckoutPage` and `cartStore`. Automatic additions require one exact string match on SKU or a barcode already present in supplied candidates. Do not treat a single fuzzy search result as exact.
