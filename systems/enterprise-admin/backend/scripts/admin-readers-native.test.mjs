@@ -7,7 +7,19 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { runAdminReadersNative, assertReadersNativeAcceptance, createReaderBudget, assertReaderTableScroll, navigateReader, readerNavigationResponse } from './admin-readers-native.mjs';
 import { readerEndpoints } from './admin-readers-oracle.mjs';
-function fakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, contextId: [1366, 1024, 390].indexOf(width) + 2, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => { const subject = navigationSubjects.find(row => row.id === id); return { id, ...flags, navigation: { route: subject.route, heading: subject.heading, period: id === 'suppliers' ? null : '2026-01', response: { contextId: [1366, 1024, 390].indexOf(width) + 2, requestId: 1, path: '/api/v1/admin' + (id === 'analytics' ? '/analytics/product-abc' : id === 'suppliers' ? '/inventory/suppliers' : subject.route) + (id === 'suppliers' ? '' : '?period=2026-01'), actor: 'readerA', status: 200, sha256: 'c'.repeat(64) } } }; }) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
+function oldFakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', responseTimeoutMs: 25000, tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, contextId: [1366, 1024, 390].indexOf(width) + 2, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => { const subject = navigationSubjects.find(row => row.id === id); return { id, ...flags, navigation: { route: subject.route, heading: subject.heading, period: id === 'suppliers' ? null : '2026-01', response: { contextId: [1366, 1024, 390].indexOf(width) + 2, requestId: 1, path: '/api/v1/admin' + (id === 'analytics' ? '/analytics/product-abc' : id === 'suppliers' ? '/inventory/suppliers' : subject.route) + (id === 'suppliers' ? '' : '?period=2026-01'), actor: 'readerA', status: 200, sha256: 'c'.repeat(64) } } }; }) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
+function fakeResult() {
+    const result = oldFakeResult();
+    result.coverage = 'one shared lifecycle; three independent five-reader cold entries';
+    result.coldEntries = structuredClone(result.cases).map((row, i) => ({ ...row, contextId: i + 3, authenticated: true, authResponse: { contextId: i + 3, requestId: 1, path: '/api/v1/admin/auth/me', actor: 'readerA', status: 200, sha256: 'a'.repeat(64) },
+        readers: row.readers.map(reader => ({ id: reader.id, navigation: { ...reader.navigation, response: { ...reader.navigation.response, contextId: i + 3 } } })) }));
+    for (const row of result.cases) { row.contextId = 2; for (const reader of row.readers) {
+        reader.navigation.response.contextId = 2;
+        reader.states = Object.fromEntries(readerNative.readerStates.map((state, i) => [state, { width: row.width, verified: true, response: { ...reader.navigation.response, requestId: i + 1, actor: ['denied', 'failed-retry'].includes(state) ? 'denied' : 'readerA', status: state === 'denied' ? 403 : ['stale', 'failed-retry'].includes(state) ? 500 : 200 } }]));
+    } }
+    result.emptyCases = result.cases[0].readers.map(reader => ({ id: reader.id, contextId: 6, period: '2026-01', views: Object.fromEntries([['initial-error', 500], ['empty', 200]].map(([state, status]) => [state, [1366, 1024, 390].map(width => ({ width, verified: true, response: { ...reader.navigation.response, contextId: 6, actor: 'readerEmpty', status } }))])) }));
+    return result;
+}
 test('acceptance contract requires every actual reader and all original boundaries', () => assert.doesNotThrow(() => assertReadersNativeAcceptance(fakeResult())));
 for (const key of ['fixtureCleaned', 'databaseGrantLookup', 'readOnlySnapshotEqual', 'lateScopeSuppressed'])
     test(`cannot pass without ${key}`, () => { const r = fakeResult(); r[key] = false; assert.throws(() => assertReadersNativeAcceptance(r)); });
@@ -160,7 +172,7 @@ test('initial unavailable entry waits for its own named alert root without filli
 });
 
 // Execute the actual dispatch/response callbacks, not a reimplementation of their actor assignment.
-function actorCallbacks() {
+function actorCallbacks({ pace = async () => ({ admitted: true, at: 0 }) } = {}) {
     const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
     const routeMarker = "await context.route('**/*', async (route) => {";
     const routeStart = source.indexOf(routeMarker) + routeMarker.length;
@@ -170,14 +182,15 @@ function actorCallbacks() {
     const responseEnd = source.indexOf('\n        });\n        return { context, page, control, contextId };', responseStart);
     assert.ok(routeStart >= routeMarker.length && routeEnd > routeStart && responseStart >= responseMarker.length && responseEnd > responseStart);
     const tokens = { readerA: 'SYNTHETIC_READER_A_ONLY', denied: 'SYNTHETIC_DENIED_ONLY', readerB: 'SYNTHETIC_READER_B_ONLY' };
-    const control = { actor: 'readerA', mode: 'normal', paths: [] }, network = [], responses = [], pending = [], dispatched = new WeakMap();
-    const dispatch = new Function('contextId', 'control', 'network', 'dispatched', 'forbidden', 'adminOrigin', 'budget', 'pace', 'tokens', 'readerRequestActor', `let nextRequestId=0; const viewport={width:1366}; return async route => {${source.slice(routeStart, routeEnd)}\n}`)(2, control, network, dispatched, [], 'http://127.0.0.1:12345', { request() {} }, async () => {}, tokens, readerNative.readerRequestActor);
+    const control = { actor: 'readerA', mode: 'normal', paths: [] }, network = [], responses = [], pending = [], dispatched = new WeakMap(), transport = { continued: 0, aborted: 0 };
+    const budgetCalls = [];
+    const dispatch = new Function('contextId', 'control', 'network', 'dispatched', 'forbidden', 'adminOrigin', 'budget', 'pace', 'tokens', 'readerRequestActor', `let nextRequestId=0; const viewport={width:1366}; return async route => {${source.slice(routeStart, routeEnd)}\n}`)(2, control, network, dispatched, [], 'http://127.0.0.1:12345', { request(endpoint) { budgetCalls.push(endpoint); } }, pace, tokens, readerNative.readerRequestActor);
     const receive = new Function('contextId', 'control', 'dispatched', 'responses', 'pending', 'adminOrigin', 'readerEndpoints', 'expected', 'assertReaderResponse', 'hash', 'readerPeriod', `const viewport={width:1366}; return response => {${source.slice(responseStart, responseEnd)}\n}`)(2, control, dispatched, responses, pending, 'http://127.0.0.1:12345', ['/reports/margin'], { readerA: { actor: 'readerA' }, readerB: { actor: 'readerB' } }, (_endpoint, _data, expected) => assert.equal(expected.actor, 'readerA'), () => 'a'.repeat(64), '2026-01');
-    async function request(authorization) {
-        const req = { url: () => 'http://127.0.0.1:12345/api/v1/admin/reports/margin?period=2026-01', method: () => 'GET', headers: () => authorization === undefined ? {} : { authorization }, failure: () => null };
-        await dispatch({ request: () => req, continue: async () => {} }); return req;
+    async function request(authorization, { endpoint = '/reports/margin', failed = null, detached = false } = {}) {
+        const req = { url: () => 'http://127.0.0.1:12345/api/v1/admin' + endpoint + '?period=2026-01', method: () => 'GET', headers: () => authorization === undefined ? {} : { authorization }, failure: () => failed, frame: () => ({ isDetached: () => detached }) };
+        await dispatch({ request: () => req, continue: async () => { transport.continued++; }, abort: async () => { transport.aborted++; } }); return req;
     }
-    return { control, tokens, network, responses, pending, dispatched, receive, request };
+    return { control, tokens, network, responses, pending, dispatched, receive, request, transport, budgetCalls };
 }
 test('actual dispatch records denied, recovered, other-actor, missing and unknown credentials without trusting control.actor', async () => {
     const c = actorCallbacks();
@@ -197,4 +210,66 @@ test('actual late response keeps its dispatch actor across credential recovery w
     const denied = c.responses.find(row => row.status === 403), good = c.responses.find(row => row.status === 200);
     assert.equal(denied.actor, 'denied'); assert.equal(good.actor, 'readerA'); assert.notEqual(denied.requestId, good.requestId);
     assert.ok(!JSON.stringify(c.responses).includes('SYNTHETIC_')); assert.ok(!JSON.stringify(c.responses).includes('authorization'));
+});
+
+
+test('cancelled analytics requests do not consume future pacing slots; live requests remain spaced', async () => {
+    let now = 0; const waits = [], pace = readerNative.createReaderPacer({ check() {}, now: () => now, wait: async ms => { waits.push(ms); now += ms; } });
+    const first = await pace(() => false), cancelled = await pace(() => true), next = await pace(() => false);
+    assert.deepEqual(first, { admitted: true, at: 0 }); assert.deepEqual(cancelled, { admitted: false, at: 0 }); assert.deepEqual(next, { admitted: true, at: 2150 }); assert.deepEqual(waits, [0, 2150]);
+});
+test('cancellation during a queue wait does not reserve another slot and deadlines still reject', async () => {
+    let now = 0, cancelled = false, checks = 0;
+    const pace = readerNative.createReaderPacer({ check() { checks++; }, now: () => now, wait: async ms => { now += ms; if (ms) cancelled = true; } });
+    await pace(() => false); assert.deepEqual(await pace(() => cancelled), { admitted: false, at: 2150 });
+    assert.deepEqual(await pace(() => false), { admitted: true, at: 2150 }); assert.ok(checks >= 5);
+    await assert.rejects(readerNative.createReaderPacer({ check() { throw Error('bounded deadline'); } })(() => true));
+});
+test('data outcome waits require a newer matching actor/month/status and keep explicit 25-second bound', async () => {
+    const scope = { contextId: 2, endpoint: '/analytics/product-abc', period: '2026-01', actor: 'denied', status: 403, afterRequestId: 10 };
+    const old = { contextId: 2, requestId: 9, path: '/api/v1/admin/analytics/product-abc?period=2026-01', actor: 'denied', status: 403, sha256: 'a'.repeat(64) };
+    const current = { ...old, requestId: 11 };
+    for (const delta of [{}, { requestId: 11, actor: 'readerA' }, { requestId: 11, path: '/api/v1/admin/analytics/product-abc?period=2026-10' }, { requestId: 11, status: 500 }, { requestId: 11, contextId: 1 }])
+        assert.equal(readerNative.readerOutcomeResponse([{ ...old, ...delta }], scope), undefined);
+    let options;
+    const expect = { poll(fn, supplied) { options = supplied; return { async toBe(expected) { assert.equal(fn(), expected); } }; } };
+    assert.equal(await readerNative.waitForReaderOutcome({ expect, responses: [old, current], ...scope }), current); assert.deepEqual(options, { timeout: 25000 });
+    await assert.rejects(readerNative.waitForReaderOutcome({ expect, responses: [old], ...scope }));
+});
+
+
+test('actual analytics callback aborts a cancelled queue entry before any HTTP dispatch', async () => {
+    const c = actorCallbacks({ pace: async cancelled => { assert.equal(cancelled(), true); return { admitted: false, at: 2150 }; } });
+    const request = await c.request(`Bearer ${c.tokens.readerA}`, { endpoint: '/analytics/product-abc', failed: 'net::ERR_ABORTED' });
+    assert.deepEqual(c.transport, { continued: 0, aborted: 1 }); assert.equal(c.dispatched.get(request).cancelledBeforeDispatch, true); assert.equal(c.dispatched.get(request).analyticsCancelledAt, 2150);
+    assert.equal(c.dispatched.get(request).analyticsAdmittedAt, undefined); assert.deepEqual(c.budgetCalls, ['/analytics/product-abc']);
+});
+
+test('shared lifecycle requires every state at all three widths plus independent cold auth/entries', () => {
+    for (const change of [r => delete r.cases[1].readers[2].states.stale, r => r.cases[2].readers[0].states.denied.verified = false,
+        r => r.cases[1].readers[4].states.recovered.width = 1366, r => r.coldEntries.pop(),
+        r => r.coldEntries[1].contextId = r.coldEntries[0].contextId, r => r.coldEntries[0].contextId = 2,
+        r => r.coldEntries[0].authenticated = false, r => r.emptyCases[2].views.empty.pop(), r => r.emptyCases[0].views['initial-error'][0].response.actor = 'readerA', r => r.coldEntries[0].authResponse.contextId = 2, r => r.cases[1].readers[0].states.denied.response.actor = 'readerA', r => r.cases[0].readers[0].states.stale.response.requestId = 1, r => r.coldEntries[2].readers.pop(),
+        r => r.coldEntries[0].readers[1].navigation.response.actor = 'denied',
+        r => r.coldEntries[0].readers[1].navigation.response.contextId = 2]) {
+        const result = fakeResult(); change(result); assert.throws(() => assertReadersNativeAcceptance(result));
+    }
+});
+test('shared viewport traversal really resizes before each state assertion and stops on a bad size or state', async () => {
+    let current; const calls = [];
+    const page = { setViewportSize: async view => { calls.push(['resize', view.width]); current = view; }, viewportSize: () => current };
+    await readerNative.visitReaderViewports(page, async view => { assert.deepEqual(current, view); calls.push(['verify', view.width]); });
+    assert.deepEqual(calls, [1366, 1024, 390].flatMap(width => [['resize', width], ['verify', width]]));
+    await assert.rejects(readerNative.visitReaderViewports({ ...page, viewportSize: () => ({ width: 1, height: 1 }) }, () => assert.fail('wrong size must not verify')));
+    calls.length = 0;
+    await assert.rejects(readerNative.visitReaderViewports(page, async view => { if (view.width === 1024) throw Error('state not visible'); }));
+    assert.deepEqual(calls, [['resize', 1366], ['resize', 1024]]);
+});
+
+for (const captureFails of [false, true]) test(`failure diagnostic preserves original error and actual viewport even when capture fails: ${captureFails}`, async () => {
+    const original = new Error('original bounded failure'), calls = [];
+    await assert.rejects(readerNative.preserveReaderFailure({ viewportSize: () => ({ width: 390, height: 844 }) }, async (_page, name, viewport) => {
+        calls.push({ name, viewport }); if (captureFails) throw Error('capture unavailable');
+    }, 'reader-failed', original), error => error === original);
+    assert.deepEqual(calls, [{ name: 'reader-failed-390.png', viewport: { width: 390, height: 844 } }]);
 });
