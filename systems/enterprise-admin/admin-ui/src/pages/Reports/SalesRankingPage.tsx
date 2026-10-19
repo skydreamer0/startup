@@ -1,3 +1,4 @@
+import { useReaderFocusReveal } from '../useReaderFocusReveal';
 import '../ReaderControls.css';
 import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
@@ -7,6 +8,7 @@ import { reportsApi, SalesRankingProduct } from '../../api/reports';
 import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function SalesRankingPage() {
+    const readerFocus = useReaderFocusReveal();
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7));
     const [sortBy, setSortBy] = useState<'revenue' | 'quantity'>('revenue');
     const queryClient = useQueryClient();
@@ -38,14 +40,14 @@ export default function SalesRankingPage() {
         hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
 
     if (isError && (data === undefined || isReportAccessDenied(error))) {
-        return <div className="admin-page report-page admin-reader-page sales-ranking-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page sales-ranking-page">
             {estimateNotice}
             {reportNotice}
         </div>;
     }
 
     if (isLoading && products.length === 0) {
-        return <div className="admin-page report-page admin-reader-page sales-ranking-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page sales-ranking-page">
             {estimateNotice}
             <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading sales ranking...</div>
         </div>;
@@ -54,7 +56,7 @@ export default function SalesRankingPage() {
     const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#f87171', '#14b8a6', '#6366f1'];
 
     return (
-        <div className="admin-page report-page admin-reader-page sales-ranking-page">
+        <div {...readerFocus} className="admin-page report-page admin-reader-page sales-ranking-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                     <h1 className="page-title">Product Sales Ranking</h1>

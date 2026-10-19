@@ -1,3 +1,4 @@
+import { useReaderFocusReveal } from '../useReaderFocusReveal';
 import '../ReaderControls.css';
 import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
@@ -8,6 +9,7 @@ import { expensesApi } from '../../api/expenses';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function CashFlowPage() {
+    const readerFocus = useReaderFocusReveal();
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7));
     const [showExpenseModal, setShowExpenseModal] = useState(false);
     const queryClient = useQueryClient();
@@ -42,14 +44,14 @@ export default function CashFlowPage() {
         hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
 
     if (isError && (data === undefined || isReportAccessDenied(error))) {
-        return <div className="admin-page report-page admin-reader-page cashflow-report-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page cashflow-report-page">
             {estimateNotice}
             {reportNotice}
         </div>;
     }
 
     if (isLoading && !data) {
-        return <div className="admin-page report-page admin-reader-page cashflow-report-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page cashflow-report-page">
             {estimateNotice}
             <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading cash flow data...</div>
         </div>;
@@ -58,7 +60,7 @@ export default function CashFlowPage() {
     const opCfsColor = (data?.operatingInflows ?? 0) - (data?.operatingOutflows ?? 0) >= 0 ? '#10b981' : '#f87171';
 
     return (
-        <div className="admin-page report-page admin-reader-page cashflow-report-page">
+        <div {...readerFocus} className="admin-page report-page admin-reader-page cashflow-report-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Cash Flow Statement（估算）</h1>

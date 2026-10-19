@@ -107,6 +107,12 @@ export function createReaderBudget(now = () => performance.now()) {
             assert.ok(analyticsRequests <= 120, 'Reader analytics request ceiling exceeded');
         } }, receipt() { return { elapsedMs: now() - started, deadlineMs: 300000, apiRequests, maxApiRequests: 320, analyticsRequests, maxAnalyticsRequests: 120 }; } };
 }
+export function assertReaderFocusClearance(geometry) {
+    const ring = Number.parseFloat(geometry.outline) + Math.max(0, Number.parseFloat(geometry.outlineOffset));
+    assert.ok(Number.isFinite(ring) && ring >= 6);
+    assert.ok(geometry.x - ring >= geometry.region.x && geometry.x + geometry.width + ring <= geometry.region.right);
+    assert.ok(geometry.y - ring >= 0 && geometry.y + geometry.height + ring <= geometry.viewportHeight);
+}
 export function assertReaderTableScroll(before, after) {
     assert.equal(before.focused, true); assert.equal(after.focused, true);
     assert.ok(before.clientWidth > 0 && before.scrollWidth > before.clientWidth);
@@ -325,8 +331,8 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
         const samples = [];
         let geometry;
         try {
-            geometry = await settleTraceFocusGeometry(() => target.evaluate(el => { const b = el.getBoundingClientRect(), style = getComputedStyle(el), sidebar = document.querySelector('.sidebar')?.getBoundingClientRect(), hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { x: b.x, y: b.y, width: b.width, height: b.height, region: { x: Math.max(0, sidebar?.right ?? 0), right: innerWidth }, viewport: innerWidth, pageWidth: document.documentElement.scrollWidth, scrollLeft: scrollX, outline: style.outlineWidth, color: style.outlineColor, focused: document.activeElement === el, centerHit: !!hit && (hit === el || el.contains(hit)), viewportHeight: innerHeight }; }), row => samples.push(row));
-            assert.ok(geometry.y >= 0 && geometry.y + geometry.height <= geometry.viewportHeight + 1);
+            geometry = await settleTraceFocusGeometry(() => target.evaluate(el => { const b = el.getBoundingClientRect(), style = getComputedStyle(el), sidebar = document.querySelector('.sidebar')?.getBoundingClientRect(), hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { x: b.x, y: b.y, width: b.width, height: b.height, region: { x: Math.max(0, sidebar?.right ?? 0), right: innerWidth }, viewport: innerWidth, pageWidth: document.documentElement.scrollWidth, scrollLeft: scrollX, outline: style.outlineWidth, outlineOffset: style.outlineOffset, color: style.outlineColor, focused: document.activeElement === el, centerHit: !!hit && (hit === el || el.contains(hit)), viewportHeight: innerHeight }; }), row => samples.push(row));
+            assertReaderFocusClearance(geometry);
         }
         finally {
             write(`admin-readers-${subject}-${name}-${width}-geometry.json`, { samples, geometry: geometry ?? null });

@@ -1,3 +1,4 @@
+import { useReaderFocusReveal } from '../useReaderFocusReveal';
 import '../ReaderControls.css';
 import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
@@ -7,6 +8,7 @@ import { reportsApi, MarginAnalysis } from '../../api/reports';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function MarginAnalysisPage() {
+    const readerFocus = useReaderFocusReveal();
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7));
     const queryClient = useQueryClient();
 
@@ -39,14 +41,14 @@ export default function MarginAnalysisPage() {
         hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
 
     if (isError && (data === undefined || isReportAccessDenied(error))) {
-        return <div className="admin-page report-page admin-reader-page margin-report-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page margin-report-page">
             {estimateNotice}
             {reportNotice}
         </div>;
     }
 
     if (isLoading && !data) {
-        return <div className="admin-page report-page admin-reader-page margin-report-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page margin-report-page">
             {estimateNotice}
             <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading margin data...</div>
         </div>;
@@ -57,7 +59,7 @@ export default function MarginAnalysisPage() {
     const isTargetMet = currentMargin >= targetMargin;
 
     return (
-        <div className="admin-page report-page admin-reader-page margin-report-page">
+        <div {...readerFocus} className="admin-page report-page admin-reader-page margin-report-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Gross Margin Analysis（目前成本估算）</h1>

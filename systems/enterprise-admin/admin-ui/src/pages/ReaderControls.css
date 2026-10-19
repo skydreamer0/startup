@@ -9,6 +9,7 @@
 .admin-reader-page .reader-toolbar .input-field {
     min-width: 44px;
     min-height: 44px;
+    scroll-margin: 8px;
     max-width: 100%;
     white-space: normal;
     overflow-wrap: anywhere;
@@ -59,6 +60,7 @@
 }
 
 .admin-reader-page .reader-table-scroll {
+    scroll-margin: 8px;
     min-width: 0;
     max-width: 100%;
     overflow: auto;

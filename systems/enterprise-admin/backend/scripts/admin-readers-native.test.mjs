@@ -273,3 +273,10 @@ for (const captureFails of [false, true]) test(`failure diagnostic preserves ori
     }, 'reader-failed', original), error => error === original);
     assert.deepEqual(calls, [{ name: 'reader-failed-390.png', viewport: { width: 390, height: 844 } }]);
 });
+
+test('reader geometry preserves the entire outline at all four viewport edges', () => {
+    const good = { x: 300, y: 6, width: 84, height: 44, region: { x: 260, right: 1366 }, viewportHeight: 900, outline: '3px', outlineOffset: '3px' };
+    assert.doesNotThrow(() => readerNative.assertReaderFocusClearance(good));
+    for (const change of [{ y: -0.21875 }, { y: 4 }, { y: 852 }, { x: 264 }, { x: 1278 }, { outlineOffset: undefined }])
+        assert.throws(() => readerNative.assertReaderFocusClearance({ ...good, ...change }));
+});

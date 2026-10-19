@@ -1,3 +1,4 @@
+import { useReaderFocusReveal } from '../useReaderFocusReveal';
 import '../ReaderControls.css';
 import { useEffect, useState } from 'react';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
@@ -36,6 +37,7 @@ const emptySupplierForm: SupplierForm = {
 };
 
 export default function SupplierListPage() {
+    const readerFocus = useReaderFocusReveal();
     const [showCreate, setShowCreate] = useState(false);
     const [editSupplier, setEditSupplier] = useState<Supplier | null>(null);
     const [supplierForm, setSupplierForm] = useState<SupplierForm>(emptySupplierForm);
@@ -124,7 +126,7 @@ export default function SupplierListPage() {
     const modalTitle = editSupplier ? 'Edit Supplier' : 'Add Supplier';
 
     return (
-        <div className="admin-reader-page">
+        <div {...readerFocus} className="admin-reader-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Suppliers Management</h1>

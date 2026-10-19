@@ -1,3 +1,4 @@
+import { useReaderFocusReveal } from '../useReaderFocusReveal';
 import '../ReaderControls.css';
 import { useState } from 'react';
 import { useGuardedRead } from '../../hooks/useGuardedRead';
@@ -52,6 +53,7 @@ const QUADRANT_DESCRIPTIONS: Record<AbcQuadrant, string> = {
 };
 
 export default function InventoryAnalyticsPage() {
+    const readerFocus = useReaderFocusReveal();
     const [activeTab, setActiveTab] = useState<'products' | 'suppliers'>('products');
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7)); // YYYY-MM
 
@@ -81,7 +83,7 @@ export default function InventoryAnalyticsPage() {
     }
 
     return (
-        <div className="admin-reader-page">
+        <div {...readerFocus} className="admin-reader-page">
             <header className="page-header">
                 <div>
                     <h1 className="page-title">Inventory Analytics</h1>

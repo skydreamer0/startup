@@ -81,6 +81,8 @@ tracked in `../infrastructure/verification/pos-manufacturer-barcode-contract/REA
 
 ### Change financial or inventory reader lifecycle
 
+The five reader roots also use `pages/useReaderFocusReveal.ts` to reveal only their current enabled control after focus/resize, preserving the full 3px outline plus 3px offset with nearest, clamped movement through its own scroll ancestors. No already-visible/unrelated control moves; unmount cancels pending work. Native checks require all four ring edges to remain visible.
+
 The five reader pages opt into `pages/ReaderControls.css`: 44px controls, visible keyboard focus, wrapping period/sort controls, responsive cash/margin summaries and named keyboard-scrollable tables. Keep these selectors under `.admin-reader-page`; do not apply them globally or hide page overflow. `readerControls.test.tsx` checks CSS/DOM contracts; the native reader package separately proves real geometry and ArrowRight scrolling.
 
 The three `pages/Reports/` pages, `InventoryAnalyticsPage` and `SupplierListPage`
