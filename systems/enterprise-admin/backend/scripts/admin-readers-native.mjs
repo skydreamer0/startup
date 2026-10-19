@@ -16,12 +16,48 @@ async function boundedReaderWait(promise) {
     finally { clearTimeout(timer); }
 }
 const subjects = [
-    { id: 'cashflow', route: '/reports/cashflow', paths: ['/reports/cashflow', '/reports/cashflow/trend'], label: '現金流報表', text: '300,055', focus: 'Refresh' },
-    { id: 'margin', route: '/reports/margin', paths: ['/reports/margin', '/reports/margin/trend'], label: '毛利報表', text: '合成讀取商品甲', focus: 'Refresh' },
-    { id: 'sales', route: '/reports/sales-ranking', paths: ['/reports/sales-ranking'], label: '銷售排行', text: '合成讀取商品甲', focus: 'Refresh' },
-    { id: 'analytics', route: '/inventory/analytics', paths: ['/analytics/product-abc', '/analytics/supplier-ranking'], label: '商品分析', text: '合成讀取商品甲', focus: '🏢 Supplier Ranking' },
-    { id: 'suppliers', route: '/suppliers', paths: ['/inventory/suppliers'], label: '供應商清單', text: '合成甲聯絡', focus: 'Add Supplier' },
+    { id: 'cashflow', heading: 'Cash Flow Statement（估算）', route: '/reports/cashflow', paths: ['/reports/cashflow', '/reports/cashflow/trend'], label: '現金流報表', text: '300,055', focus: 'Refresh' },
+    { id: 'margin', heading: 'Gross Margin Analysis（目前成本估算）', route: '/reports/margin', paths: ['/reports/margin', '/reports/margin/trend'], label: '毛利報表', text: '合成讀取商品甲', focus: 'Refresh' },
+    { id: 'sales', heading: 'Product Sales Ranking', route: '/reports/sales-ranking', paths: ['/reports/sales-ranking'], label: '銷售排行', text: '合成讀取商品甲', focus: 'Refresh' },
+    { id: 'analytics', heading: 'Inventory Analytics', route: '/inventory/analytics', paths: ['/analytics/product-abc', '/analytics/supplier-ranking'], label: '商品分析', text: '合成讀取商品甲', focus: '🏢 Supplier Ranking' },
+    { id: 'suppliers', heading: 'Suppliers Management', route: '/suppliers', paths: ['/inventory/suppliers'], label: '供應商清單', text: '合成甲聯絡', focus: 'Add Supplier' },
 ];
+export async function navigateReader({ page, subject, adminOrigin, expect, period = readerPeriod, unavailable = false }) {
+    const link = page.locator(`a[href="${subject.route}"]`);
+    if (await link.count()) await link.click();
+    else await page.goto(adminOrigin + subject.route);
+    // A completed click/URL change can precede React replacing the previous page.
+    await expect(page).toHaveURL(adminOrigin + subject.route);
+    const root = page.locator('.admin-reader-page').filter({
+        has: unavailable ? page.getByRole('alert', { name: `${subject.label}讀取狀態`, exact: true })
+            : page.getByRole('heading', { level: 1, name: subject.heading, exact: true }),
+    });
+    await expect(root).toBeVisible();
+    if (!unavailable && subject.id !== 'suppliers' && period !== null) {
+        const month = root.locator('input[type="month"]');
+        await expect(month).toBeVisible();
+        await month.fill(period);
+        await expect(month).toHaveValue(period);
+    }
+    return { route: subject.route, heading: unavailable ? null : subject.heading, period: unavailable || subject.id === 'suppliers' ? null : period };
+}
+export function readerRequestActor(authorization, tokens) {
+    if (authorization === undefined || authorization === '') return 'unauthenticated';
+    // These are generated fixture tokens already in this process. Never return
+    // or serialize the header/token, only the matched fixture actor key.
+    return Object.entries(tokens).find(([, token]) => typeof token === 'string' && token.length > 0 && authorization === `Bearer ${token}`)?.[0] ?? 'unrecognized';
+}
+export function readerNavigationResponse(rows, { contextId, subject, period = readerPeriod }) {
+    // A valid same-context cached response is allowed. It is not called a fresh
+    // response, and a late different-route/month/context response cannot qualify.
+    return rows.findLast(row => {
+        const url = new URL(row.path, 'http://127.0.0.1');
+        return row.contextId === contextId && row.actor === 'readerA' && row.status === 200 && !row.cancelledBody
+            && Number.isSafeInteger(row.requestId) && row.requestId > 0 && /^[a-f0-9]{64}$/.test(row.sha256 ?? '')
+            && url.pathname === '/api/v1/admin' + subject.paths[0]
+            && (subject.id === 'suppliers' || url.searchParams.get('period') === period);
+    });
+}
 export function createReaderBudget(now = () => performance.now()) {
     const started = now();
     let apiRequests = 0, analyticsRequests = 0;
@@ -53,11 +89,19 @@ export function assertReadersNativeAcceptance(result) {
     assert.match(result.beforeSha256, /^[a-f0-9]{64}$/);
     assert.equal(result.beforeSha256, result.afterSha256);
     assert.deepEqual(result.cases.map(row => row.width), [1366, 1024, 390]);
+    assert.equal(new Set(result.cases.map(row => row.contextId)).size, 3);
     for (const row of result.cases) {
+        assert.ok(Number.isSafeInteger(row.contextId) && row.contextId > 0);
         assert.deepEqual(row.readers.map(reader => reader.id), subjects.map(s => s.id));
-        for (const reader of row.readers)
+        for (const reader of row.readers) {
+            const subject = subjects.find(s => s.id === reader.id);
+            assert.equal(reader.navigation.route, subject.route);
+            assert.equal(reader.navigation.heading, subject.heading);
+            assert.equal(reader.navigation.period, subject.id === 'suppliers' ? null : readerPeriod);
+            assert.ok(readerNavigationResponse([reader.navigation.response], { contextId: row.contextId, subject }));
             for (const key of ['actualEntry', 'authorizedData', 'stale500Retained', 'real403Hidden', 'failedRetryStillHidden', 'recovered', 'keyboardGeometry'])
                 assert.equal(reader[key], true, `${reader.id}:${key}`);
+        }
     }
     assert.equal(result.pgNegativeControls.oldOrderItemRevenue, 17844);
     assert.equal(result.pgNegativeControls.scopedRevenue, 67);
@@ -79,7 +123,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
     const expected = Object.fromEntries(['readerA', 'readerB', 'readerEmpty'].map(actor => [actor, readerExpected(f, actor)])), tokens = {};
     let stage = 'fixture', failure = null, failureDetail = null, before, after, fixtureCleaned = false, databaseGrantLookup = false, lateScopeSuppressed = false, pgNegativeControls;
     const budget = createReaderBudget();
-    let expired = false;
+    let expired = false, nextRequestId = 0;
     const deadline = setTimeout(() => { expired = true; for (const context of contexts)
         void context.close().catch(() => { }); }, 300000);
     let nextAnalytics = 0;
@@ -95,15 +139,17 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
         budget.check();
         const context = await browser.newContext({ viewport });
         contexts.push(context);
+        const contextId = contexts.length, dispatched = new WeakMap();
         await context.addInitScript(value => localStorage.setItem('accessToken', value), tokens[actor]);
-        const control = { mode: 'normal', paths: [], actor };
+        const control = { mode: 'normal', paths: [] };
         await context.route('**/*', async (route) => {
             const req = route.request(), url = new URL(req.url());
             if (['fonts.googleapis.com', 'fonts.gstatic.com'].includes(url.hostname)) {
                 await route.abort();
                 return;
             }
-            const entry = { width: viewport.width, method: req.method(), path: url.pathname + url.search, allowed: url.origin === adminOrigin && req.method() === 'GET' };
+            const entry = { contextId, requestId: ++nextRequestId, actor: readerRequestActor(req.headers().authorization, tokens), width: viewport.width, method: req.method(), path: url.pathname + url.search, allowed: url.origin === adminOrigin && req.method() === 'GET' };
+            dispatched.set(req, entry);
             network.push(entry);
             if (!entry.allowed) {
                 forbidden.push(entry);
@@ -161,7 +207,8 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             const url = new URL(response.url());
             if (url.origin !== adminOrigin || !url.pathname.startsWith('/api/'))
                 return;
-            const actorAtResponse = control.actor;
+            const request = dispatched.get(response.request());
+            const actorAtResponse = request?.actor;
             const task = (async () => {
                 let bytes;
                 try {
@@ -169,7 +216,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 }
                 catch (error) {
                     if (response.request().failure()) {
-                        responses.push({ width: viewport.width, path: url.pathname + url.search, status: response.status(), cancelledBody: true });
+                        responses.push({ contextId, requestId: request?.requestId, width: viewport.width, path: url.pathname + url.search, status: response.status(), cancelledBody: true });
                         return;
                     }
                     throw error;
@@ -178,11 +225,11 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 const endpoint = url.pathname.replace(/^\/api\/v1\/admin/, '');
                 if (response.status() === 200 && readerEndpoints.includes(endpoint) && (endpoint === '/inventory/suppliers' || url.searchParams.get('period') === readerPeriod || url.searchParams.get('to') === readerPeriod))
                     assertReaderResponse(endpoint, body.data, expected[actorAtResponse], { sort: url.searchParams.get('sort') ?? 'revenue', limit: Number(url.searchParams.get('limit') ?? 20) });
-                responses.push({ width: viewport.width, actor: actorAtResponse, path: url.pathname + url.search, status: response.status(), sha256: hash(bytes.toString()), body });
+                responses.push({ contextId, requestId: request?.requestId, width: viewport.width, actor: actorAtResponse, path: url.pathname + url.search, status: response.status(), sha256: hash(bytes.toString()), body });
             })();
             pending.push(task.then(() => true, () => false));
         });
-        return { context, page, control };
+        return { context, page, control, contextId };
     }
     async function keyboardCapture(page, subject, width, target, name) {
         for (let i = 0; i < 100; i++) {
@@ -246,7 +293,6 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             httpStatuses[endpoint] = {};
             for (const actor of ['readerA', 'readerB', 'readerEmpty', 'unauthenticated', 'denied', 'inactive', 'crossTenantHeader']) {
                 const token = actor === 'unauthenticated' ? null : tokens[actor === 'crossTenantHeader' ? 'readerB' : actor];
-                probe.control.actor = actor in expected ? actor : 'readerA';
                 const result = await probe.page.evaluate(async ({ url, token, tenant }) => { const headers = {}; if (token)
                     headers.Authorization = `Bearer ${token}`; if (tenant)
                     headers['x-tenant-id'] = tenant; const response = await fetch(url, { headers }); return { status: response.status, body: await response.json() }; }, { url: adminOrigin + '/api/v1/admin' + query(endpoint), token, tenant: ['unauthenticated', 'crossTenantHeader'].includes(actor) ? f.ids.tenantA : null });
@@ -259,7 +305,6 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 }
             }
         }
-        probe.control.actor = 'readerA';
         for (const sort of ['revenue', 'quantity']) {
             const value = await probe.page.evaluate(async ({ url, token }) => { const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } }); return { status: response.status, body: await response.json() }; }, { url: adminOrigin + '/api/v1/admin' + query('/reports/sales-ranking', sort), token: tokens.readerA });
             assert.equal(value.status, 200);
@@ -267,20 +312,12 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
         }
         await probe.context.close();
         for (const viewport of [{ width: 1366, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }]) {
-            const { context, page, control } = await contextFor(viewport), readers = [];
-            async function navigate(subject) { const link = page.locator(`a[href="${subject.route}"]`); if (await link.count())
-                await link.click();
-            else
-                await page.goto(adminOrigin + subject.route); if (subject.id !== 'suppliers') {
-                const month = page.locator('input[type="month"]');
-                await expect(month).toBeVisible();
-                await month.fill(readerPeriod);
-            } }
+            const { context, page, control, contextId } = await contextFor(viewport), readers = [];
+            async function navigate(subject) { return navigateReader({ page, subject, adminOrigin, expect }); }
             async function loaded(subject) { await expect(page.getByText(subject.text, { exact: subject.id !== 'cashflow' }).first()).toBeVisible(); await expect(page.locator('body')).not.toContainText('FOREIGN_READER_'); if(['cashflow','margin','sales'].includes(subject.id))await expect(page.getByRole('note')).toContainText(subject.id==='cashflow'?'非實際現金流':'非歷史實際毛利'); }
             async function refresh(subject, token = tokens.readerA) { if (subject.id === 'analytics' || subject.id === 'suppliers') {
                 await page.evaluate(value => localStorage.setItem('accessToken', value), tokens.readerA);
-                await page.locator('a[href="/reports/cashflow"]').click();
-                await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeVisible();
+                await navigateReader({ page, subject: subjects[0], adminOrigin, expect, period: null });
                 await page.evaluate(value => localStorage.setItem('accessToken', value), token);
                 await page.getByRole('button', { name: 'Refresh', exact: true }).click();
                 await navigate(subject);
@@ -294,8 +331,12 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     stage = `${subject.id} actual entry ${viewport.width}`;
                     control.paths = subject.paths;
                     control.mode = 'normal';
-                    await navigate(subject);
+                    const navigation = await navigate(subject);
                     await loaded(subject);
+                    await expect.poll(() => Boolean(readerNavigationResponse(responses, { contextId, subject })), { timeout: 25000 }).toBe(true);
+                    const response = readerNavigationResponse(responses, { contextId, subject });
+                    navigation.response = { contextId, requestId: response.requestId, path: response.path, status: response.status, actor: response.actor, sha256: response.sha256 };
+                    write(`admin-readers-${subject.id}-navigation-${viewport.width}.json`, navigation);
                     if (subject.id === 'analytics') {
                         await page.getByRole('button', { name: '🏢 Supplier Ranking', exact: true }).click();
                         await expect(page.getByText('合成同名供應商', { exact: true })).toBeVisible();
@@ -365,7 +406,9 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                         holds.push(hold); control.hold = hold;
                         await page.getByRole('button', { name: 'Refresh', exact: true }).click();
                         await boundedReaderWait(hold.ready.promise); assert.equal(hold.failed, undefined); assert.match(hold.bodySha256, /^[a-f0-9]{64}$/);
-                        await page.locator('input[type="month"]').fill('2025-12');
+                        const currentMonth = page.locator('.admin-reader-page').filter({ has: page.getByRole('heading', { level: 1, name: subject.heading, exact: true }) }).locator('input[type="month"]');
+                        await currentMonth.fill('2025-12');
+                        await expect(currentMonth).toHaveValue('2025-12');
                         await expect(page.locator('.stat-value').first()).toContainText('$0');
                         await expect(page.getByText(subject.text, { exact: true })).toHaveCount(0);
                         await expect.poll(() => Boolean(hold.request.failure()), { timeout: 5000 }).toBe(true);
@@ -374,9 +417,9 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                         write('admin-readers-late-scope.json', { oldPeriod: readerPeriod, currentPeriod: '2025-12', actualBodySha256: hold.bodySha256, actualBody: hold.body, browserAborted: true, oldDataSuppressed: true, cancelledFulfill: !!hold.cancelledFulfill });
                         lateScopeSuppressed = true; control.hold = null;
                     }
-                    readers.push({ id: subject.id, actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true, geometry });
+                    readers.push({ id: subject.id, navigation, actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true, geometry });
                 }
-                cases.push({ width: viewport.width, readers });
+                cases.push({ width: viewport.width, contextId, readers });
             }
             catch (error) {
                 await capture(page, `admin-readers-failed-${viewport.width}.png`, viewport);
@@ -393,7 +436,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             control.paths = subject.paths;
             control.mode = 'fail500';
             try {
-                await page.goto(adminOrigin + subject.route);
+                await navigateReader({ page, subject, adminOrigin, expect, unavailable: true });
                 const retry = page.getByRole('button', { name: `重試${subject.label}`, exact: true });
                 await expect(retry).toBeVisible();
                 await expect(page.getByText('資料尚不可用', { exact: false }).first()).toBeVisible();

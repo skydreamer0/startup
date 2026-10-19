@@ -1,12 +1,13 @@
 import { test } from 'node:test';
+import * as readerNative from './admin-readers-native.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { runAdminReadersNative, assertReadersNativeAcceptance, createReaderBudget, assertReaderTableScroll } from './admin-readers-native.mjs';
+import { runAdminReadersNative, assertReadersNativeAcceptance, createReaderBudget, assertReaderTableScroll, navigateReader, readerNavigationResponse } from './admin-readers-native.mjs';
 import { readerEndpoints } from './admin-readers-oracle.mjs';
-function fakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => ({ id, ...flags })) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
+function fakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, contextId: [1366, 1024, 390].indexOf(width) + 2, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => { const subject = navigationSubjects.find(row => row.id === id); return { id, ...flags, navigation: { route: subject.route, heading: subject.heading, period: id === 'suppliers' ? null : '2026-01', response: { contextId: [1366, 1024, 390].indexOf(width) + 2, requestId: 1, path: '/api/v1/admin' + (id === 'analytics' ? '/analytics/product-abc' : id === 'suppliers' ? '/inventory/suppliers' : subject.route) + (id === 'suppliers' ? '' : '?period=2026-01'), actor: 'readerA', status: 200, sha256: 'c'.repeat(64) } } }; }) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
 test('acceptance contract requires every actual reader and all original boundaries', () => assert.doesNotThrow(() => assertReadersNativeAcceptance(fakeResult())));
 for (const key of ['fixtureCleaned', 'databaseGrantLookup', 'readOnlySnapshotEqual', 'lateScopeSuppressed'])
     test(`cannot pass without ${key}`, () => { const r = fakeResult(); r[key] = false; assert.throws(() => assertReadersNativeAcceptance(r)); });
@@ -90,4 +91,110 @@ test('missing or duplicate reader table acceptance cannot pass', () => {
     for (const change of [result => result.tableScroll.pop(), result => result.tableScroll[0].subject = 'margin', result => result.tableScroll[0].after.scrollLeft = 0]) {
         const result = fakeResult(); change(result); assert.throws(() => assertReadersNativeAcceptance(result));
     }
+});
+
+// Deterministic Playwright adapter: URL changes before React replaces the old page.
+// These controls are driver tests, not native browser evidence.
+function navigationAdapter(subject, { lateRoute = false, lateHeading = false, ignoresFill = false, noLink = false } = {}) {
+    const state = { route: '/reports/cashflow', mounted: 'Cash Flow Statement（估算）', oldMonth: '2026-01', targetMonth: '2026-10', fills: [], events: [] };
+    const link = { kind: 'link', count: async () => noLink ? 0 : 1, click: async () => { state.events.push('click'); } };
+    const month = scoped => ({ kind: 'month', scoped, fill: async value => { state.fills.push({ scoped, mounted: state.mounted, value }); if (!ignoresFill) { if (scoped) state.targetMonth = value; else state.oldMonth = value; } } });
+    const root = { kind: 'root', heading: null, locator: selector => { assert.equal(selector, 'input[type="month"]'); return month(true); }, filter: ({ has }) => { root.heading = has.name; return root; } };
+    const page = { kind: 'page', goto: async () => { state.events.push('goto'); }, locator: selector => selector.startsWith('a[') ? link : selector === '.admin-reader-page' ? root : month(false), getByRole: (role, options) => { assert.equal(role, 'heading'); assert.equal(options.level, 1); assert.equal(options.exact, true); return { kind: 'heading', name: options.name }; } };
+    const expect = value => ({
+        toHaveURL: async url => { assert.equal(value, page); assert.equal(url, 'http://127.0.0.1:12345' + subject.route); if (lateRoute) throw Error('route wait expired'); state.route = subject.route; state.events.push('url'); },
+        toBeVisible: async () => { if (value.kind === 'root') { assert.equal(state.route, subject.route); assert.equal(value.heading, subject.heading); if (lateHeading) throw Error('heading wait expired'); state.mounted = subject.heading; state.events.push('heading'); } },
+        toHaveValue: async expected => { assert.equal(value.kind, 'month'); assert.equal(state.targetMonth, expected); state.events.push('value'); },
+    });
+    return { page, expect, state };
+}
+const navigationSubjects = [
+    { id: 'cashflow', route: '/reports/cashflow', heading: 'Cash Flow Statement（估算）' },
+    { id: 'margin', route: '/reports/margin', heading: 'Gross Margin Analysis（目前成本估算）' },
+    { id: 'sales', route: '/reports/sales-ranking', heading: 'Product Sales Ranking' },
+    { id: 'analytics', route: '/inventory/analytics', heading: 'Inventory Analytics' },
+    { id: 'suppliers', route: '/suppliers', heading: 'Suppliers Management' },
+];
+for (const subject of navigationSubjects) test(`navigation ${subject.id} waits for its own route and mounted heading before filling its own month`, async () => {
+    const adapter = navigationAdapter(subject); const receipt = await navigateReader({ ...adapter, subject, adminOrigin: 'http://127.0.0.1:12345' });
+    assert.equal(adapter.state.route, subject.route); assert.equal(adapter.state.mounted, subject.heading);
+    assert.equal(adapter.state.oldMonth, '2026-01');
+    if (subject.id !== 'suppliers') { assert.equal(adapter.state.targetMonth, '2026-01'); assert.deepEqual(adapter.state.fills, [{ scoped: true, mounted: subject.heading, value: '2026-01' }]); }
+    else assert.equal(adapter.state.fills.length, 0);
+    assert.deepEqual(receipt, { route: subject.route, heading: subject.heading, period: subject.id === 'suppliers' ? null : '2026-01' });
+});
+for (const scenario of ['lateRoute', 'lateHeading', 'ignoresFill']) test(`navigation ${scenario} fails closed instead of accepting the still-mounted old page`, async () => {
+    const subject = navigationSubjects[1], adapter = navigationAdapter(subject, { [scenario]: true });
+    await assert.rejects(navigateReader({ ...adapter, subject, adminOrigin: 'http://127.0.0.1:12345' }));
+    if (scenario !== 'ignoresFill') assert.equal(adapter.state.fills.length, 0);
+});
+test('direct navigation and intermediate refresh navigation use the same route/root guard', async () => {
+    const subject = navigationSubjects[0], adapter = navigationAdapter(subject, { noLink: true });
+    const receipt = await navigateReader({ ...adapter, subject, adminOrigin: 'http://127.0.0.1:12345', period: null });
+    assert.deepEqual(adapter.state.events, ['goto', 'url', 'heading']); assert.equal(adapter.state.fills.length, 0); assert.equal(receipt.period, null);
+});
+
+
+test('navigation proof ignores delayed old-month, old-context, wrong-route and non-authorized responses', () => {
+    const subject = { ...navigationSubjects[1], paths: ['/reports/margin', '/reports/margin/trend'] };
+    const good = { contextId: 2, requestId: 7, actor: 'readerA', status: 200, path: '/api/v1/admin/reports/margin?period=2026-01', sha256: 'a'.repeat(64) };
+    assert.equal(readerNavigationResponse([good], { contextId: 2, subject }), good);
+    for (const delta of [{ contextId: 1 }, { actor: 'readerB' }, { status: 403 }, { requestId: undefined }, { cancelledBody: true }, { sha256: 'bad' }, { path: '/api/v1/admin/reports/margin?period=2026-10' }, { path: '/api/v1/admin/reports/margin/trend?to=2026-01' }, { path: '/api/v1/admin/reports/cashflow?period=2026-01' }]) {
+        const stale = { ...good, ...delta };
+        assert.equal(readerNavigationResponse([stale], { contextId: 2, subject }), undefined);
+        assert.equal(readerNavigationResponse([good, stale], { contextId: 2, subject }), good);
+    }
+});
+test('acceptance rejects missing navigation, wrong target month and replay from another context', () => {
+    for (const change of [reader => delete reader.navigation, reader => reader.navigation.period = '2026-10', reader => reader.navigation.heading = 'Cash Flow Statement（估算）', reader => reader.navigation.response.contextId = 1, reader => reader.navigation.response.path = '/api/v1/admin/reports/margin?period=2026-10']) {
+        const result = fakeResult(); change(result.cases[0].readers[1]); assert.throws(() => assertReadersNativeAcceptance(result));
+    }
+});
+
+
+test('initial unavailable entry waits for its own named alert root without filling a hidden month', async () => {
+    const subject = { ...navigationSubjects[1], label: '毛利報表' }, adapter = navigationAdapter(subject, { noLink: true });
+    adapter.page.getByRole = (role, options) => { assert.equal(role, 'alert'); assert.equal(options.name, '毛利報表讀取狀態'); assert.equal(options.exact, true); return { name: subject.heading }; };
+    const receipt = await navigateReader({ ...adapter, subject, adminOrigin: 'http://127.0.0.1:12345', unavailable: true });
+    assert.deepEqual(adapter.state.events, ['goto', 'url', 'heading']); assert.equal(adapter.state.fills.length, 0); assert.equal(receipt.period, null); assert.equal(receipt.heading, null);
+});
+
+// Execute the actual dispatch/response callbacks, not a reimplementation of their actor assignment.
+function actorCallbacks() {
+    const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+    const routeMarker = "await context.route('**/*', async (route) => {";
+    const routeStart = source.indexOf(routeMarker) + routeMarker.length;
+    const routeEnd = source.indexOf('\n        });\n        const page = await context.newPage();', routeStart);
+    const responseMarker = "page.on('response', response => {";
+    const responseStart = source.indexOf(responseMarker) + responseMarker.length;
+    const responseEnd = source.indexOf('\n        });\n        return { context, page, control, contextId };', responseStart);
+    assert.ok(routeStart >= routeMarker.length && routeEnd > routeStart && responseStart >= responseMarker.length && responseEnd > responseStart);
+    const tokens = { readerA: 'SYNTHETIC_READER_A_ONLY', denied: 'SYNTHETIC_DENIED_ONLY', readerB: 'SYNTHETIC_READER_B_ONLY' };
+    const control = { actor: 'readerA', mode: 'normal', paths: [] }, network = [], responses = [], pending = [], dispatched = new WeakMap();
+    const dispatch = new Function('contextId', 'control', 'network', 'dispatched', 'forbidden', 'adminOrigin', 'budget', 'pace', 'tokens', 'readerRequestActor', `let nextRequestId=0; const viewport={width:1366}; return async route => {${source.slice(routeStart, routeEnd)}\n}`)(2, control, network, dispatched, [], 'http://127.0.0.1:12345', { request() {} }, async () => {}, tokens, readerNative.readerRequestActor);
+    const receive = new Function('contextId', 'control', 'dispatched', 'responses', 'pending', 'adminOrigin', 'readerEndpoints', 'expected', 'assertReaderResponse', 'hash', 'readerPeriod', `const viewport={width:1366}; return response => {${source.slice(responseStart, responseEnd)}\n}`)(2, control, dispatched, responses, pending, 'http://127.0.0.1:12345', ['/reports/margin'], { readerA: { actor: 'readerA' }, readerB: { actor: 'readerB' } }, (_endpoint, _data, expected) => assert.equal(expected.actor, 'readerA'), () => 'a'.repeat(64), '2026-01');
+    async function request(authorization) {
+        const req = { url: () => 'http://127.0.0.1:12345/api/v1/admin/reports/margin?period=2026-01', method: () => 'GET', headers: () => authorization === undefined ? {} : { authorization }, failure: () => null };
+        await dispatch({ request: () => req, continue: async () => {} }); return req;
+    }
+    return { control, tokens, network, responses, pending, dispatched, receive, request };
+}
+test('actual dispatch records denied, recovered, other-actor, missing and unknown credentials without trusting control.actor', async () => {
+    const c = actorCallbacks();
+    for (const [header, expectedActor] of [[`Bearer ${c.tokens.denied}`, 'denied'], [`Bearer ${c.tokens.readerA}`, 'readerA'], [`Bearer ${c.tokens.readerB}`, 'readerB'], [undefined, 'unauthenticated'], ['Bearer UNRECOGNIZED_SYNTHETIC_ONLY', 'unrecognized']]) {
+        c.control.actor = expectedActor === 'readerA' ? 'denied' : 'readerA';
+        const request = await c.request(header); assert.equal(c.dispatched.get(request).actor, expectedActor);
+    }
+    assert.ok(!JSON.stringify(c.network).includes('SYNTHETIC_')); assert.ok(!JSON.stringify(c.network).includes('authorization'));
+});
+test('actual late response keeps its dispatch actor across credential recovery without emitting tokens', async () => {
+    const c = actorCallbacks(), deniedRequest = await c.request(`Bearer ${c.tokens.denied}`);
+    let release; const lateBody = new Promise(resolve => { release = resolve; });
+    c.receive({ url: deniedRequest.url, request: () => deniedRequest, status: () => 403, body: () => lateBody });
+    c.control.actor = 'readerA'; const recovered = await c.request(`Bearer ${c.tokens.readerA}`);
+    c.receive({ url: recovered.url, request: () => recovered, status: () => 200, body: async () => Buffer.from('{"success":true,"data":{}}') });
+    release(Buffer.from('{"success":false}')); assert.ok((await Promise.all(c.pending)).every(Boolean));
+    const denied = c.responses.find(row => row.status === 403), good = c.responses.find(row => row.status === 200);
+    assert.equal(denied.actor, 'denied'); assert.equal(good.actor, 'readerA'); assert.notEqual(denied.requestId, good.requestId);
+    assert.ok(!JSON.stringify(c.responses).includes('SYNTHETIC_')); assert.ok(!JSON.stringify(c.responses).includes('authorization'));
 });
