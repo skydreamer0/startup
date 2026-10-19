@@ -79,6 +79,23 @@ tracked in `../infrastructure/verification/pos-manufacturer-barcode-contract/REA
 3. Product navigation stores the existing `page`/`lowStock` and selected `productId` in the `/inventory` URL. `ProductBatchesView` reads only that product through the existing batch-list API; `api/productBatches.ts` checks the wire envelope and product identity. Read-only batch quantities retain safe signed integers, including anomalous negatives; negative rows and a visible count warning require manual investigation without changing stock or relaxing receipt/write rules. Back/Forward and return preserve the list location, while user-scoped abortable queries discard old reads. A focused trace control reveals itself by the nearest bounded horizontal movement of its own table container, preserving page/vertical position and the visible focus ring; disabled or already-visible controls do not scroll. Each current batch row can open the existing read-only `BatchTraceDialog`; selected details are discarded on product/user/permission changes, batch refetch or error. No receipt, correction, stock or money mutation is part of this view. The actual-entry/API/owned-PG driver and evidence limits are in `../infrastructure/verification/admin-trace-native/README.md`. See `src/__tests__/productBatchNavigation.test.tsx` and `../infrastructure/verification/product-batch-navigation/README.md`.
 4. `src/__tests__/productPagination.test.tsx` uses real clients with synthetic HTTP-boundary fixtures, deferred responses and BatchList cross-page options. Evidence/union checkpoint and reproduction are in `../infrastructure/verification/product-ui-pagination/README.md`. JSDOM is not browser/real HTTP acceptance.
 
+### Change financial or inventory reader lifecycle
+
+The five reader roots also use `pages/useReaderFocusReveal.ts` to reveal only their current enabled control after focus/resize, preserving the full 3px outline plus 3px offset with nearest, clamped movement through its own scroll ancestors. No already-visible/unrelated control moves; unmount cancels pending work. Native checks require all four ring edges to remain visible.
+
+The five reader pages opt into `pages/ReaderControls.css`: 44px controls, visible keyboard focus, wrapping period/sort controls, responsive cash/margin summaries and named keyboard-scrollable tables. Keep these selectors under `.admin-reader-page`; do not apply them globally or hide page overflow. `readerControls.test.tsx` checks CSS/DOM contracts; the native reader package separately proves real geometry and ArrowRight scrolling.
+
+The three `pages/Reports/` pages, `InventoryAnalyticsPage` and `SupplierListPage`
+use the existing `useGuardedRead` cache-owner contract. Query keys include the
+current reader ID and all HTTP reads consume AbortSignal. A 401/403 latches data
+unavailable for that query until a non-aborted authorized success; generic errors,
+remounts, actor changes and late canceled success cannot revive denied data.
+Ordinary failed refreshes may retain previously authorized data with the stale
+notice. Retry is query-local, including separate trends and supplier ranking.
+Estimate disclosures and existing amounts/ranking formulas remain unchanged.
+Actual-entry/real-API/owned-PG scope and unverified operational limits are in
+`../infrastructure/verification/admin-readers-native/README.md`.
+
 ### Change supplier list consumption
 
 1. `inventoryApi.getSuppliers()` unwraps the existing `ApiSuccess<Supplier[]>` wire envelope once and returns `Promise<Supplier[]>`. `ProductListPage` options and `SupplierListPage` rows consume that array directly.

@@ -130,13 +130,15 @@ export class ProductAnalyticsService {
      * Thresholds use the median of all products as the dividing line.
      */
     static async getProductAbcAnalysis(startDate: Date, endDate: Date): Promise<AbcResult> {
-        requireTenantId();
+        const tenantId = requireTenantId();
         const orderItems = await prisma.orderItem.findMany({
             where: {
                 order: {
+                    tenantId,
                     status: 'completed',
                     createdAt: { gte: startDate, lte: endDate },
                 },
+                product: { tenantId },
             },
             include: {
                 product: {
@@ -211,8 +213,8 @@ export class ProductAnalyticsService {
                 id: e.product.id,
                 name: e.product.name,
                 sku: e.product.sku,
-                categoryName: e.product.category?.name ?? null,
-                supplierName: e.product.supplier?.name ?? null,
+                categoryName: e.product.category?.tenantId === tenantId ? e.product.category.name : null,
+                supplierName: e.product.supplier?.tenantId === tenantId ? e.product.supplier.name : null,
                 totalRevenue: Number(e.totalRevenue.toFixed(2)),
                 totalQuantity: e.totalQuantity,
                 marginPct: e.marginPct,
@@ -243,7 +245,7 @@ export class ProductAnalyticsService {
      * aggregate API without verifying query count stays O(1).
      */
     static async getSupplierRanking(startDate: Date, endDate: Date): Promise<RankedSupplier[]> {
-        requireTenantId();
+        const tenantId = requireTenantId();
         const suppliers = await prisma.supplier.findMany();
         const [productCounts, revenueRows] = await Promise.all([
             prisma.product.groupBy({
@@ -263,7 +265,10 @@ export class ProductAnalyticsService {
                 FROM order_items oi
                 INNER JOIN products p ON p.id = oi.product_id
                 INNER JOIN orders o ON o.id = oi.order_id
-                WHERE p.supplier_id IS NOT NULL
+                INNER JOIN suppliers s ON s.id = p.supplier_id
+                WHERE o.tenant_id = ${tenantId}
+                    AND p.tenant_id = ${tenantId}
+                    AND s.tenant_id = ${tenantId}
                     AND o.status = 'completed'
                     AND o.created_at >= ${startDate}
                     AND o.created_at <= ${endDate}

@@ -1,0 +1,270 @@
+[
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+    "sha256": "6b0060dc422813b62c27abb2386cb4f5948ec064bb71053fcfbdcfd6c5b2babd",
+    "statements": [
+      "-- CreateTable\nCREATE TABLE \"tenants\" (\n    \"id\" TEXT NOT NULL,\n    \"name\" TEXT NOT NULL,\n    \"slug\" TEXT NOT NULL,\n    \"plan\" TEXT NOT NULL DEFAULT 'free',\n    \"settings\" TEXT,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"tenants_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"users\" (\n    \"id\" TEXT NOT NULL,\n    \"email\" TEXT NOT NULL,\n    \"password_hash\" TEXT NOT NULL,\n    \"full_name\" TEXT NOT NULL,\n    \"status\" TEXT NOT NULL DEFAULT 'active',\n    \"last_login_at\" TIMESTAMP(3),\n    \"failed_login_attempts\" INTEGER NOT NULL DEFAULT 0,\n    \"totp_secret\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n    \"deleted_at\" TIMESTAMP(3),\n\n    CONSTRAINT \"users_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"roles\" (\n    \"id\" TEXT NOT NULL,\n    \"name\" TEXT NOT NULL,\n    \"description\" TEXT,\n    \"is_system\" BOOLEAN NOT NULL DEFAULT false,\n    \"tenant_id\" TEXT,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n    \"deleted_at\" TIMESTAMP(3),\n\n    CONSTRAINT \"roles_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"permissions\" (\n    \"id\" TEXT NOT NULL,\n    \"action\" TEXT NOT NULL,\n    \"resource\" TEXT NOT NULL,\n    \"description\" TEXT,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n\n    CONSTRAINT \"permissions_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"role_permissions\" (\n    \"role_id\" TEXT NOT NULL,\n    \"permission_id\" TEXT NOT NULL,\n\n    CONSTRAINT \"role_permissions_pkey\" PRIMARY KEY (\"role_id\",\"permission_id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"user_roles\" (\n    \"user_id\" TEXT NOT NULL,\n    \"role_id\" TEXT NOT NULL,\n\n    CONSTRAINT \"user_roles_pkey\" PRIMARY KEY (\"user_id\",\"role_id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"audit_logs\" (\n    \"id\" TEXT NOT NULL,\n    \"user_id\" TEXT,\n    \"action\" TEXT NOT NULL,\n    \"resource_type\" TEXT NOT NULL,\n    \"resource_id\" TEXT NOT NULL,\n    \"old_value\" TEXT,\n    \"new_value\" TEXT,\n    \"ip_address\" TEXT,\n    \"user_agent\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"audit_logs_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"customers\" (\n    \"id\" TEXT NOT NULL,\n    \"name\" TEXT,\n    \"phone\" TEXT,\n    \"line_uid\" TEXT,\n    \"gender\" TEXT,\n    \"birthday\" TIMESTAMP(3),\n    \"tenant_id\" TEXT NOT NULL,\n    \"total_spent\" INTEGER NOT NULL DEFAULT 0,\n    \"purchase_count\" INTEGER NOT NULL DEFAULT 0,\n    \"last_purchase_date\" TIMESTAMP(3),\n    \"last_interaction_date\" TIMESTAMP(3),\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n\n    CONSTRAINT \"customers_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"tags\" (\n    \"id\" TEXT NOT NULL,\n    \"name\" TEXT NOT NULL,\n    \"color\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"tags_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"customer_tags\" (\n    \"customer_id\" TEXT NOT NULL,\n    \"tag_id\" TEXT NOT NULL,\n\n    CONSTRAINT \"customer_tags_pkey\" PRIMARY KEY (\"customer_id\",\"tag_id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"interactions\" (\n    \"id\" TEXT NOT NULL,\n    \"customer_id\" TEXT NOT NULL,\n    \"type\" TEXT NOT NULL,\n    \"content\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"interacted_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"interactions_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"suppliers\" (\n    \"id\" TEXT NOT NULL,\n    \"name\" TEXT NOT NULL,\n    \"contact_name\" TEXT,\n    \"email\" TEXT,\n    \"phone\" TEXT,\n    \"address\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"rating\" INTEGER,\n    \"delivery_reliability\" DOUBLE PRECISION,\n    \"defect_rate\" DOUBLE PRECISION,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n\n    CONSTRAINT \"suppliers_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"product_categories\" (\n    \"id\" TEXT NOT NULL,\n    \"name\" TEXT NOT NULL,\n    \"description\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n\n    CONSTRAINT \"product_categories_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"products\" (\n    \"id\" TEXT NOT NULL,\n    \"sku\" TEXT NOT NULL,\n    \"name\" TEXT NOT NULL,\n    \"description\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"category_id\" TEXT,\n    \"supplier_id\" TEXT,\n    \"cost_price\" DOUBLE PRECISION NOT NULL,\n    \"retail_price\" DOUBLE PRECISION NOT NULL,\n    \"stock_quantity\" INTEGER NOT NULL DEFAULT 0,\n    \"safety_stock\" INTEGER NOT NULL DEFAULT 10,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n\n    CONSTRAINT \"products_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"orders\" (\n    \"id\" TEXT NOT NULL,\n    \"customer_id\" TEXT NOT NULL,\n    \"status\" TEXT NOT NULL DEFAULT 'pending',\n    \"total_amount\" DOUBLE PRECISION NOT NULL,\n    \"payment_status\" TEXT NOT NULL DEFAULT 'unpaid',\n    \"shipping_address\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"updated_at\" TIMESTAMP(3) NOT NULL,\n\n    CONSTRAINT \"orders_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"order_items\" (\n    \"id\" TEXT NOT NULL,\n    \"order_id\" TEXT NOT NULL,\n    \"product_id\" TEXT NOT NULL,\n    \"quantity\" INTEGER NOT NULL,\n    \"unit_price\" DOUBLE PRECISION NOT NULL,\n\n    CONSTRAINT \"order_items_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"inventory_transactions\" (\n    \"id\" TEXT NOT NULL,\n    \"product_id\" TEXT NOT NULL,\n    \"type\" TEXT NOT NULL,\n    \"quantity\" INTEGER NOT NULL,\n    \"reference_id\" TEXT,\n    \"notes\" TEXT,\n    \"tenant_id\" TEXT NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"inventory_transactions_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"expenses\" (\n    \"id\" TEXT NOT NULL,\n    \"type\" TEXT NOT NULL,\n    \"amount\" DOUBLE PRECISION NOT NULL,\n    \"description\" TEXT,\n    \"period\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"expenses_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"tenants_slug_key\" ON \"tenants\"(\"slug\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"users_email_key\" ON \"users\"(\"email\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"roles_name_key\" ON \"roles\"(\"name\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"permissions_action_resource_key\" ON \"permissions\"(\"action\", \"resource\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"customers_phone_key\" ON \"customers\"(\"phone\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"customers_line_uid_key\" ON \"customers\"(\"line_uid\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"tags_name_key\" ON \"tags\"(\"name\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_categories_name_key\" ON \"product_categories\"(\"name\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"products_sku_key\" ON \"products\"(\"sku\");",
+      "-- AddForeignKey\nALTER TABLE \"users\" ADD CONSTRAINT \"users_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"roles\" ADD CONSTRAINT \"roles_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"role_permissions\" ADD CONSTRAINT \"role_permissions_role_id_fkey\" FOREIGN KEY (\"role_id\") REFERENCES \"roles\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"role_permissions\" ADD CONSTRAINT \"role_permissions_permission_id_fkey\" FOREIGN KEY (\"permission_id\") REFERENCES \"permissions\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"user_roles\" ADD CONSTRAINT \"user_roles_user_id_fkey\" FOREIGN KEY (\"user_id\") REFERENCES \"users\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"user_roles\" ADD CONSTRAINT \"user_roles_role_id_fkey\" FOREIGN KEY (\"role_id\") REFERENCES \"roles\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"audit_logs\" ADD CONSTRAINT \"audit_logs_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"audit_logs\" ADD CONSTRAINT \"audit_logs_user_id_fkey\" FOREIGN KEY (\"user_id\") REFERENCES \"users\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"customers\" ADD CONSTRAINT \"customers_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"tags\" ADD CONSTRAINT \"tags_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"customer_tags\" ADD CONSTRAINT \"customer_tags_customer_id_fkey\" FOREIGN KEY (\"customer_id\") REFERENCES \"customers\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"customer_tags\" ADD CONSTRAINT \"customer_tags_tag_id_fkey\" FOREIGN KEY (\"tag_id\") REFERENCES \"tags\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"interactions\" ADD CONSTRAINT \"interactions_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"interactions\" ADD CONSTRAINT \"interactions_customer_id_fkey\" FOREIGN KEY (\"customer_id\") REFERENCES \"customers\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"suppliers\" ADD CONSTRAINT \"suppliers_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"product_categories\" ADD CONSTRAINT \"product_categories_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"products\" ADD CONSTRAINT \"products_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"products\" ADD CONSTRAINT \"products_category_id_fkey\" FOREIGN KEY (\"category_id\") REFERENCES \"product_categories\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"products\" ADD CONSTRAINT \"products_supplier_id_fkey\" FOREIGN KEY (\"supplier_id\") REFERENCES \"suppliers\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"orders\" ADD CONSTRAINT \"orders_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"orders\" ADD CONSTRAINT \"orders_customer_id_fkey\" FOREIGN KEY (\"customer_id\") REFERENCES \"customers\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"order_items\" ADD CONSTRAINT \"order_items_order_id_fkey\" FOREIGN KEY (\"order_id\") REFERENCES \"orders\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"order_items\" ADD CONSTRAINT \"order_items_product_id_fkey\" FOREIGN KEY (\"product_id\") REFERENCES \"products\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"inventory_transactions\" ADD CONSTRAINT \"inventory_transactions_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"inventory_transactions\" ADD CONSTRAINT \"inventory_transactions_product_id_fkey\" FOREIGN KEY (\"product_id\") REFERENCES \"products\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"expenses\" ADD CONSTRAINT \"expenses_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+    "sha256": "c23777946c2449bfc65bb10ed5a0fcf3afb0ae23b445c6dc9cad9fccdd9bb882",
+    "statements": [
+      "-- AlterTable\nALTER TABLE \"order_items\" ADD COLUMN     \"discount_rate\" DOUBLE PRECISION NOT NULL DEFAULT 0,\nADD COLUMN     \"final_unit_price\" DOUBLE PRECISION;",
+      "-- AlterTable\nALTER TABLE \"orders\" ADD COLUMN     \"discount_amount\" DOUBLE PRECISION NOT NULL DEFAULT 0,\nADD COLUMN     \"discount_note\" TEXT,\nADD COLUMN     \"sales_staff_id\" TEXT;",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"users_employee_code_key\" ON \"users\"(\"employee_code\");",
+      "-- AddForeignKey\nALTER TABLE \"orders\" ADD CONSTRAINT \"orders_sales_staff_id_fkey\" FOREIGN KEY (\"sales_staff_id\") REFERENCES \"users\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+    "sha256": "10b818024a8eebae2b942ecb9394a90199f4e522393d48a20a21a5cb98e96bf2",
+    "statements": [
+      "-- DropForeignKey\nALTER TABLE \"roles\" DROP CONSTRAINT \"roles_tenant_id_fkey\";",
+      "-- DropIndex\nDROP INDEX \"customers_line_uid_key\";",
+      "-- DropIndex\nDROP INDEX \"customers_phone_key\";",
+      "-- DropIndex\nDROP INDEX \"product_categories_name_key\";",
+      "-- DropIndex\nDROP INDEX \"products_sku_key\";",
+      "-- DropIndex\nDROP INDEX \"roles_name_key\";",
+      "-- DropIndex\nDROP INDEX \"tags_name_key\";",
+      "-- AlterTable\nALTER TABLE \"orders\" ADD COLUMN     \"order_number\" TEXT,\nADD COLUMN     \"order_type\" TEXT NOT NULL DEFAULT 'WALK_IN',\nADD COLUMN     \"payment_method\" TEXT NOT NULL DEFAULT 'CASH',\nADD COLUMN     \"shift_id\" TEXT;",
+      "-- AlterTable\nALTER TABLE \"roles\" ALTER COLUMN \"tenant_id\" SET NOT NULL;",
+      "-- CreateTable\nCREATE TABLE \"shifts\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"staff_id\" TEXT NOT NULL,\n    \"status\" TEXT NOT NULL DEFAULT 'OPEN',\n    \"opening_cash\" DOUBLE PRECISION NOT NULL DEFAULT 0,\n    \"closing_cash\" DOUBLE PRECISION,\n    \"opened_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"closed_at\" TIMESTAMP(3),\n    \"notes\" TEXT,\n\n    CONSTRAINT \"shifts_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"product_batches\" (\n    \"id\" TEXT NOT NULL,\n    \"product_id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"batch_number\" TEXT NOT NULL,\n    \"expiry_date\" TIMESTAMP(3) NOT NULL,\n    \"quantity\" INTEGER NOT NULL DEFAULT 0,\n    \"cost_price\" DOUBLE PRECISION NOT NULL,\n    \"received_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"product_batches_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"daily_settlements\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"shift_id\" TEXT NOT NULL,\n    \"date\" TIMESTAMP(3) NOT NULL,\n    \"total_sales\" DOUBLE PRECISION NOT NULL DEFAULT 0,\n    \"total_orders\" INTEGER NOT NULL DEFAULT 0,\n    \"cash_amount\" DOUBLE PRECISION NOT NULL DEFAULT 0,\n    \"card_amount\" DOUBLE PRECISION NOT NULL DEFAULT 0,\n    \"line_pay_amount\" DOUBLE PRECISION NOT NULL DEFAULT 0,\n    \"other_amount\" DOUBLE PRECISION NOT NULL DEFAULT 0,\n    \"confirmed_at\" TIMESTAMP(3),\n    \"notes\" TEXT,\n\n    CONSTRAINT \"daily_settlements_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_batches_product_id_batch_number_tenant_id_key\" ON \"product_batches\"(\"product_id\", \"batch_number\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"daily_settlements_shift_id_date_key\" ON \"daily_settlements\"(\"shift_id\", \"date\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"customers_phone_tenant_id_key\" ON \"customers\"(\"phone\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"customers_line_uid_tenant_id_key\" ON \"customers\"(\"line_uid\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_categories_name_tenant_id_key\" ON \"product_categories\"(\"name\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"products_sku_tenant_id_key\" ON \"products\"(\"sku\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"roles_name_tenant_id_key\" ON \"roles\"(\"name\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"tags_name_tenant_id_key\" ON \"tags\"(\"name\", \"tenant_id\");",
+      "-- AddForeignKey\nALTER TABLE \"roles\" ADD CONSTRAINT \"roles_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"orders\" ADD CONSTRAINT \"orders_shift_id_fkey\" FOREIGN KEY (\"shift_id\") REFERENCES \"shifts\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"shifts\" ADD CONSTRAINT \"shifts_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"shifts\" ADD CONSTRAINT \"shifts_staff_id_fkey\" FOREIGN KEY (\"staff_id\") REFERENCES \"users\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"product_batches\" ADD CONSTRAINT \"product_batches_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"product_batches\" ADD CONSTRAINT \"product_batches_product_id_fkey\" FOREIGN KEY (\"product_id\") REFERENCES \"products\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"daily_settlements\" ADD CONSTRAINT \"daily_settlements_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"daily_settlements\" ADD CONSTRAINT \"daily_settlements_shift_id_fkey\" FOREIGN KEY (\"shift_id\") REFERENCES \"shifts\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+    "sha256": "c346a40f40b63130ada9d9e46d74cc31fa2195f7a7c696a59de25a8b43ff512a",
+    "statements": [
+      "-- CreateTable\nCREATE TABLE \"accounting_sync_logs\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"provider\" TEXT NOT NULL,\n    \"entity_type\" TEXT NOT NULL,\n    \"entity_id\" TEXT NOT NULL,\n    \"external_id\" TEXT,\n    \"status\" TEXT NOT NULL DEFAULT 'pending',\n    \"error_message\" TEXT,\n    \"synced_at\" TIMESTAMP(3),\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"accounting_sync_logs_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- AddForeignKey\nALTER TABLE \"accounting_sync_logs\" ADD CONSTRAINT \"accounting_sync_logs_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+    "sha256": "c586f4d1d3374ead74e6e87ca7513b8e204c5f4d62588cb0018ad33113728c0e",
+    "statements": [
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"customers_line_user_id_key\" ON \"customers\"(\"line_user_id\");",
+      "-- CreateTable\nCREATE TABLE \"message_broadcasts\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"title\" TEXT NOT NULL,\n    \"content\" TEXT NOT NULL,\n    \"target_segment\" TEXT NOT NULL,\n    \"sent_count\" INTEGER NOT NULL DEFAULT 0,\n    \"status\" TEXT NOT NULL DEFAULT 'pending',\n    \"sent_at\" TIMESTAMP(3),\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"created_by\" TEXT NOT NULL,\n\n    CONSTRAINT \"message_broadcasts_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- AddForeignKey\nALTER TABLE \"message_broadcasts\" ADD CONSTRAINT \"message_broadcasts_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+    "sha256": "3af6bfbed2cf592131abe741d02b8f33d9bdec90f56bf9a91b354be88fea9e1e",
+    "statements": [
+      "-- AF-15: Migrate all monetary fields from DOUBLE PRECISION (Float) to DECIMAL(12,4)\n-- Rationale: IEEE 754 floating-point arithmetic causes rounding errors in POS checkout,\n-- daily settlement, and financial reports. DECIMAL(12,4) stores exact values up to\n-- 99,999,999.9999 — sufficient for TWD amounts at 4 decimal places of precision.\n-- See ADR-010 (Float → Decimal migration).\n\n-- products: cost_price, retail_price\nALTER TABLE \"products\"\n  ALTER COLUMN \"cost_price\"   TYPE DECIMAL(12,4) USING \"cost_price\"::DECIMAL(12,4),\n  ALTER COLUMN \"retail_price\" TYPE DECIMAL(12,4) USING \"retail_price\"::DECIMAL(12,4);",
+      "-- orders: total_amount, discount_amount\nALTER TABLE \"orders\"\n  ALTER COLUMN \"total_amount\"    TYPE DECIMAL(12,4) USING \"total_amount\"::DECIMAL(12,4),\n  ALTER COLUMN \"discount_amount\" TYPE DECIMAL(12,4) USING \"discount_amount\"::DECIMAL(12,4);",
+      "-- order_items: unit_price, final_unit_price\nALTER TABLE \"order_items\"\n  ALTER COLUMN \"unit_price\"       TYPE DECIMAL(12,4) USING \"unit_price\"::DECIMAL(12,4),\n  ALTER COLUMN \"final_unit_price\" TYPE DECIMAL(12,4) USING \"final_unit_price\"::DECIMAL(12,4);",
+      "-- expenses: amount\nALTER TABLE \"expenses\"\n  ALTER COLUMN \"amount\" TYPE DECIMAL(12,4) USING \"amount\"::DECIMAL(12,4);",
+      "-- shifts: opening_cash, closing_cash\nALTER TABLE \"shifts\"\n  ALTER COLUMN \"opening_cash\" TYPE DECIMAL(12,4) USING \"opening_cash\"::DECIMAL(12,4),\n  ALTER COLUMN \"closing_cash\" TYPE DECIMAL(12,4) USING \"closing_cash\"::DECIMAL(12,4);",
+      "-- product_batches: cost_price\nALTER TABLE \"product_batches\"\n  ALTER COLUMN \"cost_price\" TYPE DECIMAL(12,4) USING \"cost_price\"::DECIMAL(12,4);",
+      "-- daily_settlements: total_sales, cash_amount, card_amount, line_pay_amount, other_amount\nALTER TABLE \"daily_settlements\"\n  ALTER COLUMN \"total_sales\"     TYPE DECIMAL(12,4) USING \"total_sales\"::DECIMAL(12,4),\n  ALTER COLUMN \"cash_amount\"     TYPE DECIMAL(12,4) USING \"cash_amount\"::DECIMAL(12,4),\n  ALTER COLUMN \"card_amount\"     TYPE DECIMAL(12,4) USING \"card_amount\"::DECIMAL(12,4),\n  ALTER COLUMN \"line_pay_amount\" TYPE DECIMAL(12,4) USING \"line_pay_amount\"::DECIMAL(12,4),\n  ALTER COLUMN \"other_amount\"    TYPE DECIMAL(12,4) USING \"other_amount\"::DECIMAL(12,4);"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+    "sha256": "177b99d569521c9cca3c7483b528eb3b49355d592200441fab51168e41cadf56",
+    "statements": [
+      "-- CreateTable\nCREATE TABLE \"order_payments\" (\n    \"id\" TEXT NOT NULL,\n    \"order_id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"method\" TEXT NOT NULL,\n    \"amount\" DECIMAL(12,4) NOT NULL,\n\n    CONSTRAINT \"order_payments_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- AddForeignKey\nALTER TABLE \"order_payments\" ADD CONSTRAINT \"order_payments_order_id_fkey\" FOREIGN KEY (\"order_id\") REFERENCES \"orders\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"order_payments\" ADD CONSTRAINT \"order_payments_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+    "sha256": "ab3f07660a2427ddff453f5e4565e1c1fdd7a7c6060aa42709c670ec9f1ac4ea",
+    "statements": [
+      "-- AlterTable\nALTER TABLE \"product_batches\" ADD COLUMN     \"status\" \"BatchStockStatus\" NOT NULL DEFAULT 'QUARANTINE';",
+      "-- CreateTable\nCREATE TABLE \"sale_batch_allocations\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"order_id\" TEXT NOT NULL,\n    \"order_item_id\" TEXT NOT NULL,\n    \"product_id\" TEXT NOT NULL,\n    \"batch_id\" TEXT NOT NULL,\n    \"movement_id\" TEXT NOT NULL,\n    \"quantity\" INTEGER NOT NULL,\n    \"expiry_date_at_sale\" TIMESTAMP(3) NOT NULL,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"sale_batch_allocations_pkey\" PRIMARY KEY (\"id\")\n);",
+      "ALTER TABLE \"sale_batch_allocations\" ADD CONSTRAINT \"sale_batch_allocations_positive_quantity\" CHECK (\"quantity\" > 0);",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"sale_batch_allocations_order_item_id_batch_id_key\" ON \"sale_batch_allocations\"(\"order_item_id\", \"batch_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"orders_id_tenant_id_key\" ON \"orders\"(\"id\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"order_items_id_order_id_product_id_key\" ON \"order_items\"(\"id\", \"order_id\", \"product_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"inventory_transactions_id_product_id_tenant_id_key\" ON \"inventory_transactions\"(\"id\", \"product_id\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_batches_id_product_id_tenant_id_key\" ON \"product_batches\"(\"id\", \"product_id\", \"tenant_id\");",
+      "-- AddForeignKey\nALTER TABLE \"sale_batch_allocations\" ADD CONSTRAINT \"sale_batch_allocations_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"sale_batch_allocations\" ADD CONSTRAINT \"sale_batch_allocations_order_id_tenant_id_fkey\" FOREIGN KEY (\"order_id\", \"tenant_id\") REFERENCES \"orders\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"sale_batch_allocations\" ADD CONSTRAINT \"sale_batch_allocations_order_item_id_order_id_product_id_fkey\" FOREIGN KEY (\"order_item_id\", \"order_id\", \"product_id\") REFERENCES \"order_items\"(\"id\", \"order_id\", \"product_id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"sale_batch_allocations\" ADD CONSTRAINT \"sale_batch_allocations_batch_id_product_id_tenant_id_fkey\" FOREIGN KEY (\"batch_id\", \"product_id\", \"tenant_id\") REFERENCES \"product_batches\"(\"id\", \"product_id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"sale_batch_allocations\" ADD CONSTRAINT \"sale_batch_allocations_movement_id_product_id_tenant_id_fkey\" FOREIGN KEY (\"movement_id\", \"product_id\", \"tenant_id\") REFERENCES \"inventory_transactions\"(\"id\", \"product_id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+    "sha256": "c2f15be427ac1bfb0a325148703497013eca50913c5a90bfb0e6dc7ee98c47fb",
+    "statements": [
+      "ALTER TABLE \"inventory_transactions\"\nADD CONSTRAINT \"inventory_transactions_receipt_batch_fkey\"\nFOREIGN KEY (\"batch_id\", \"product_id\", \"tenant_id\")\nREFERENCES \"product_batches\"(\"id\", \"product_id\", \"tenant_id\")\nON DELETE RESTRICT ON UPDATE CASCADE;",
+      "ALTER TABLE \"inventory_transactions\"\nADD CONSTRAINT \"inventory_transactions_receipt_check\"\nCHECK (\"batch_id\" IS NULL OR\n  (\"type\" = 'IN' AND \"quantity\" > 0 AND \"cost_price_at_receipt\" IS NOT NULL AND \"cost_price_at_receipt\" >= 0));"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+    "sha256": "84609ab16f74d3a12ed4ea843b872c6891b6d6e97304b4e9431bb197e44637f1",
+    "statements": [
+      "-- CreateTable\nCREATE TABLE \"checkout_commands\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"kind\" TEXT NOT NULL,\n    \"command_id\" TEXT NOT NULL,\n    \"payload_hash\" TEXT NOT NULL,\n    \"status\" \"CheckoutCommandStatus\" NOT NULL DEFAULT 'PENDING',\n    \"order_id\" TEXT,\n    \"result\" JSONB,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"completed_at\" TIMESTAMP(3),\n\n    CONSTRAINT \"checkout_commands_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"checkout_commands_tenant_id_kind_command_id_key\" ON \"checkout_commands\"(\"tenant_id\", \"kind\", \"command_id\");",
+      "-- AddForeignKey\nALTER TABLE \"checkout_commands\" ADD CONSTRAINT \"checkout_commands_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"checkout_commands\" ADD CONSTRAINT \"checkout_commands_order_id_tenant_id_fkey\" FOREIGN KEY (\"order_id\", \"tenant_id\") REFERENCES \"orders\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "ALTER TABLE \"checkout_commands\" ADD CONSTRAINT \"checkout_commands_result_state_check\" CHECK (\n    (\"status\" = 'PENDING' AND \"order_id\" IS NULL AND \"result\" IS NULL AND \"completed_at\" IS NULL)\n    OR (\"status\" = 'SUCCEEDED' AND \"order_id\" IS NOT NULL AND \"completed_at\" IS NOT NULL\n        AND \"result\" IS NOT NULL AND jsonb_typeof(\"result\") = 'object'\n        AND \"result\"->>'id' IS NOT NULL AND \"result\"->>'id' = \"order_id\")\n);"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+    "sha256": "df6e3de02052c08874c4adc307bca65d0383d86bd692653793948a99a1f3d553",
+    "statements": [
+      "BEGIN\n  SELECT jsonb_agg(to_jsonb(d)) INTO duplicates FROM (\n    SELECT tenant_id, order_number, count(*) AS occurrences, array_agg(id ORDER BY id) AS order_ids\n    FROM orders WHERE order_number IS NOT NULL\n    GROUP BY tenant_id, order_number HAVING count(*) > 1\n  ) d;",
+      "IF duplicates IS NOT NULL THEN\n    RAISE EXCEPTION 'Duplicate tenant/order numbers prevent migration;",
+      "CREATE UNIQUE INDEX \"orders_tenant_id_order_number_key\" ON \"orders\"(\"tenant_id\", \"order_number\");",
+      "CREATE TABLE \"order_number_counters\" (\n  \"tenant_id\" TEXT NOT NULL,\n  \"business_date\" DATE NOT NULL,\n  \"last_sequence\" INTEGER NOT NULL DEFAULT 0,\n  CONSTRAINT \"order_number_counters_pkey\" PRIMARY KEY (\"tenant_id\", \"business_date\"),\n  CONSTRAINT \"order_number_counters_sequence_check\" CHECK (\"last_sequence\" BETWEEN 0 AND 99999),\n  CONSTRAINT \"order_number_counters_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\")\n    REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE\n);"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+    "sha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4",
+    "statements": [
+      "-- CreateTable\nCREATE TABLE \"product_batch_changes\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"product_id\" TEXT NOT NULL,\n    \"batch_id\" TEXT NOT NULL,\n    \"actor_id\" TEXT NOT NULL,\n    \"operation\" \"ProductBatchChangeOperation\" NOT NULL,\n    \"before\" JSONB NOT NULL,\n    \"after\" JSONB NOT NULL,\n    \"reason\" VARCHAR(1000) NOT NULL,\n    \"created_at\" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"product_batch_changes_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"users_id_tenant_id_key\" ON \"users\"(\"id\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"products_id_tenant_id_key\" ON \"products\"(\"id\", \"tenant_id\");",
+      "-- AddForeignKey\nALTER TABLE \"product_batch_changes\" ADD CONSTRAINT \"product_batch_changes_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- AddForeignKey\nALTER TABLE \"product_batch_changes\" ADD CONSTRAINT \"product_batch_changes_product_id_tenant_id_fkey\" FOREIGN KEY (\"product_id\", \"tenant_id\") REFERENCES \"products\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- AddForeignKey\nALTER TABLE \"product_batch_changes\" ADD CONSTRAINT \"product_batch_changes_batch_id_product_id_tenant_id_fkey\" FOREIGN KEY (\"batch_id\", \"product_id\", \"tenant_id\") REFERENCES \"product_batches\"(\"id\", \"product_id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- AddForeignKey\nALTER TABLE \"product_batch_changes\" ADD CONSTRAINT \"product_batch_changes_actor_id_tenant_id_fkey\" FOREIGN KEY (\"actor_id\", \"tenant_id\") REFERENCES \"users\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "strings preserve decimal precision and UTC ISO dates.\nCREATE FUNCTION batch_change_valid_snapshot(snapshot JSONB) RETURNS BOOLEAN\nLANGUAGE sql IMMUTABLE STRICT AS $$\n  SELECT COALESCE(\n    jsonb_typeof(snapshot) = 'object'\n    AND snapshot ?& ARRAY['status', 'expiryDate', 'costPrice']\n    AND snapshot - ARRAY['status', 'expiryDate', 'costPrice'] = '{}'::jsonb\n    AND jsonb_typeof(snapshot->'status') = 'string'\n    AND snapshot->>'status' IN ('RELEASED', 'QUARANTINE', 'BLOCKED')\n    AND jsonb_typeof(snapshot->'expiryDate') = 'string'\n    AND snapshot->>'expiryDate' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$'\n    AND jsonb_typeof(snapshot->'costPrice') = 'string'\n    AND snapshot->>'costPrice' ~ '^(0|[1-9][0-9]{0,7})([.][0-9]{1,4})?$'\n  , false)\n$$;",
+      "ALTER TABLE \"product_batch_changes\"\n  ADD CONSTRAINT \"product_batch_changes_reason_check\" CHECK (\n    char_length(reason) BETWEEN 1 AND 1000 AND reason = btrim(reason)\n    AND reason ~ '[^[:space:]]'\n  ),\n  ADD CONSTRAINT \"product_batch_changes_snapshots_check\" CHECK (\n    batch_change_valid_snapshot(\"after\") AND\n    CASE operation\n      WHEN 'INITIAL_RELEASE' THEN \"before\" = '{\"exists\":false}'::jsonb AND \"after\"->>'status' = 'RELEASED'\n      WHEN 'STATUS' THEN batch_change_valid_snapshot(\"before\")\n        AND \"before\"->'status' <> \"after\"->'status'\n        AND \"before\" - 'status' = \"after\" - 'status'\n      WHEN 'EXPIRY' THEN batch_change_valid_snapshot(\"before\")\n        AND \"before\"->'expiryDate' <> \"after\"->'expiryDate'\n        AND \"before\" - 'expiryDate' = \"after\" - 'expiryDate'\n      WHEN 'COST' THEN batch_change_valid_snapshot(\"before\")\n        AND (\"before\"->>'costPrice')::numeric <> (\"after\"->>'costPrice')::numeric\n        AND \"before\" - 'costPrice' = \"after\" - 'costPrice'\n      ELSE false\n    END\n  );",
+      "CREATE FUNCTION reject_product_batch_change_mutation() RETURNS trigger\nLANGUAGE plpgsql AS $$\nBEGIN\n  RAISE EXCEPTION 'ProductBatchChange is append-only: % rejected', TG_OP\n    USING ERRCODE = '23514';",
+      "CREATE TRIGGER product_batch_changes_no_update_delete\nBEFORE UPDATE OR DELETE ON \"product_batch_changes\"\nFOR EACH ROW EXECUTE FUNCTION reject_product_batch_change_mutation();",
+      "CREATE TRIGGER product_batch_changes_no_truncate\nBEFORE TRUNCATE ON \"product_batch_changes\"\nFOR EACH STATEMENT EXECUTE FUNCTION reject_product_batch_change_mutation();"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+    "sha256": "b5d751f54c935de55461e4f45eab73a688a7e361c2d013d10e194de53c42d5e6",
+    "statements": []
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+    "sha256": "706fb801d756441bdb19bba29bf82adc3f91cf91cd6e807297c67b40fd959423",
+    "statements": []
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+    "sha256": "bb867d580feb54f554502d2a02d5602f7d8ea873dd1629eb3d63b462c64850c6",
+    "statements": [
+      "-- CreateTable\nCREATE TABLE \"product_packages\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"product_id\" TEXT NOT NULL,\n    \"revision\" INTEGER NOT NULL DEFAULT 1,\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n\n    CONSTRAINT \"product_packages_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"product_package_revisions\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"package_id\" TEXT NOT NULL,\n    \"revision\" INTEGER NOT NULL,\n    \"label\" TEXT NOT NULL,\n    \"contents\" TEXT NOT NULL,\n    \"units_per_package\" INTEGER,\n    \"identifier_count\" INTEGER NOT NULL,\n    \"source\" TEXT NOT NULL,\n    \"reason\" TEXT NOT NULL,\n    \"valid_from\" TIMESTAMP(3) NOT NULL,\n    \"valid_until\" TIMESTAMP(3),\n    \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    \"actor_id\" TEXT NOT NULL,\n    \"retired_at\" TIMESTAMP(3),\n    \"retired_by_id\" TEXT,\n    \"retirement_reason\" TEXT,\n\n    CONSTRAINT \"product_package_revisions_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateTable\nCREATE TABLE \"product_package_identifiers\" (\n    \"id\" TEXT NOT NULL,\n    \"tenant_id\" TEXT NOT NULL,\n    \"revision_id\" TEXT NOT NULL,\n    \"namespace\" TEXT NOT NULL,\n    \"value\" TEXT NOT NULL,\n\n    CONSTRAINT \"product_package_identifiers_pkey\" PRIMARY KEY (\"id\")\n);",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_packages_id_tenant_id_key\" ON \"product_packages\"(\"id\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_package_revisions_id_tenant_id_key\" ON \"product_package_revisions\"(\"id\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_package_revisions_package_id_revision_tenant_id_key\" ON \"product_package_revisions\"(\"package_id\", \"revision\", \"tenant_id\");",
+      "-- CreateIndex\nCREATE UNIQUE INDEX \"product_package_identifiers_revision_id_namespace_value_ten_key\" ON \"product_package_identifiers\"(\"revision_id\", \"namespace\", \"value\", \"tenant_id\");",
+      "-- AddForeignKey\nALTER TABLE \"product_packages\" ADD CONSTRAINT \"product_packages_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"product_packages\" ADD CONSTRAINT \"product_packages_product_id_tenant_id_fkey\" FOREIGN KEY (\"product_id\", \"tenant_id\") REFERENCES \"products\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- AddForeignKey\nALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revisions_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revisions_package_id_tenant_id_fkey\" FOREIGN KEY (\"package_id\", \"tenant_id\") REFERENCES \"product_packages\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- AddForeignKey\nALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revisions_actor_id_tenant_id_fkey\" FOREIGN KEY (\"actor_id\", \"tenant_id\") REFERENCES \"users\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- AddForeignKey\nALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revisions_retired_by_id_tenant_id_fkey\" FOREIGN KEY (\"retired_by_id\", \"tenant_id\") REFERENCES \"users\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- AddForeignKey\nALTER TABLE \"product_package_identifiers\" ADD CONSTRAINT \"product_package_identifiers_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "-- AddForeignKey\nALTER TABLE \"product_package_identifiers\" ADD CONSTRAINT \"product_package_identifiers_revision_id_tenant_id_fkey\" FOREIGN KEY (\"revision_id\", \"tenant_id\") REFERENCES \"product_package_revisions\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "-- A package has at most one unretired revision. Separate packages may share an\n-- identifier: that is ambiguity to display, never an arbitrary first match.\nCREATE UNIQUE INDEX \"product_package_one_unretired_revision\"\nON \"product_package_revisions\" (\"tenant_id\", \"package_id\") WHERE \"retired_at\" IS NULL;",
+      "ALTER TABLE \"product_packages\" ADD CONSTRAINT \"product_package_current_revision_fkey\"\nFOREIGN KEY (\"id\", \"revision\", \"tenant_id\")\nREFERENCES \"product_package_revisions\" (\"package_id\", \"revision\", \"tenant_id\")\nDEFERRABLE INITIALLY DEFERRED;",
+      "ALTER TABLE \"products\" ADD CONSTRAINT \"product_reviewed_stock_unit_label\"\nCHECK (\"stock_unit_label\" IS NULL OR length(btrim(\"stock_unit_label\")) BETWEEN 1 AND 80);",
+      "ALTER TABLE \"product_packages\" ADD CONSTRAINT \"product_package_positive_revision\" CHECK (\"revision\" > 0);",
+      "ALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revision_values\" CHECK (\n  \"revision\" > 0 AND \"identifier_count\" BETWEEN 1 AND 50 AND (\"units_per_package\" IS NULL OR \"units_per_package\" > 0)\n  AND (\"valid_until\" IS NULL OR \"valid_until\" > \"valid_from\")\n  AND length(btrim(\"label\")) > 0 AND length(btrim(\"contents\")) > 0\n  AND length(btrim(\"source\")) > 0 AND length(btrim(\"reason\")) > 0\n  AND ((\"retired_at\" IS NULL AND \"retired_by_id\" IS NULL AND \"retirement_reason\" IS NULL)\n    OR (\"retired_at\" IS NOT NULL AND \"retired_by_id\" IS NOT NULL AND \"retirement_reason\" IS NOT NULL AND length(btrim(\"retirement_reason\")) > 0))\n);",
+      "ALTER TABLE \"product_package_identifiers\" ADD CONSTRAINT \"product_package_identifier_values\" CHECK (\n  \"namespace\" IN ('MANUFACTURER', 'GTIN') AND length(\"value\") BETWEEN 1 AND 256\n);",
+      "CREATE FUNCTION guard_package_revision_history() RETURNS trigger LANGUAGE plpgsql AS $$\nBEGIN\n  IF TG_OP = 'DELETE' THEN RAISE EXCEPTION 'Package revision history cannot be deleted';",
+      "IF OLD.retired_at IS NOT NULL OR NEW.retired_at IS NULL\n    OR (to_jsonb(NEW) - ARRAY['retired_at','retired_by_id','retirement_reason'])\n       IS DISTINCT FROM (to_jsonb(OLD) - ARRAY['retired_at','retired_by_id','retirement_reason'])\n  THEN RAISE EXCEPTION 'Package revisions are immutable except one-way retirement';",
+      "CREATE TRIGGER product_package_revision_history BEFORE UPDATE OR DELETE ON \"product_package_revisions\"\nFOR EACH ROW EXECUTE FUNCTION guard_package_revision_history();",
+      "CREATE FUNCTION guard_package_identity() RETURNS trigger LANGUAGE plpgsql AS $$\nBEGIN\n  IF TG_OP = 'DELETE' THEN RAISE EXCEPTION 'Package identity history cannot be deleted';",
+      "CREATE TRIGGER product_package_identity BEFORE UPDATE OR DELETE ON \"product_packages\"\nFOR EACH ROW EXECUTE FUNCTION guard_package_identity();",
+      "CREATE FUNCTION guard_package_identifier_history() RETURNS trigger LANGUAGE plpgsql AS $$\nBEGIN\n  RAISE EXCEPTION 'Package identifiers are immutable;",
+      "CREATE TRIGGER product_package_identifier_history BEFORE UPDATE OR DELETE ON \"product_package_identifiers\"\nFOR EACH ROW EXECUTE FUNCTION guard_package_identifier_history();",
+      "-- Seal the whole identifier set in the revision's creation transaction. A later\n-- insert cannot quietly extend an already reviewed revision.\nCREATE FUNCTION guard_package_identifier_set() RETURNS trigger LANGUAGE plpgsql AS $$\nDECLARE revision_key TEXT;",
+      "CREATE CONSTRAINT TRIGGER package_revision_identifier_set AFTER INSERT ON \"product_package_revisions\"\nDEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION guard_package_identifier_set();",
+      "CREATE CONSTRAINT TRIGGER package_identifier_set AFTER INSERT ON \"product_package_identifiers\"\nDEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION guard_package_identifier_set();",
+      "CREATE FUNCTION guard_product_stock_unit() RETURNS trigger LANGUAGE plpgsql AS $$\nBEGIN\n  IF OLD.stock_unit_label IS NOT NULL AND NEW.stock_unit_label IS DISTINCT FROM OLD.stock_unit_label\n  THEN RAISE EXCEPTION 'Reviewed stock unit cannot be changed by product metadata updates';",
+      "CREATE TRIGGER product_stock_unit BEFORE UPDATE ON \"products\"\nFOR EACH ROW EXECUTE FUNCTION guard_product_stock_unit();"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+    "sha256": "62b8f47494273707eac8ce05f67d7b62ecb6cfc11f140ad18c1df94639dc9b35",
+    "statements": [
+      "-- Draft-only additive storage. No inventory backfill, release or posting.\nCREATE TABLE \"receiving_drafts\" (\n  \"id\" UUID NOT NULL, \"tenant_id\" TEXT NOT NULL, \"owner_id\" TEXT NOT NULL,\n  \"title\" TEXT NOT NULL, \"revision\" INTEGER NOT NULL CHECK (\"revision\" > 0),\n  \"payload\" JSONB NOT NULL, \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  \"updated_at\" TIMESTAMP(3) NOT NULL,\n  CONSTRAINT \"receiving_drafts_pkey\" PRIMARY KEY (\"id\"),\n  CONSTRAINT \"receiving_drafts_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE,\n  CONSTRAINT \"receiving_drafts_owner_id_tenant_id_fkey\" FOREIGN KEY (\"owner_id\",\"tenant_id\") REFERENCES \"users\"(\"id\",\"tenant_id\") ON DELETE RESTRICT ON UPDATE CASCADE\n);",
+      "CREATE UNIQUE INDEX \"receiving_drafts_id_tenant_id_owner_id_key\" ON \"receiving_drafts\"(\"id\",\"tenant_id\",\"owner_id\");",
+      "CREATE TABLE \"receiving_draft_revisions\" (\n  \"draft_id\" UUID NOT NULL, \"tenant_id\" TEXT NOT NULL, \"owner_id\" TEXT NOT NULL,\n  \"revision\" INTEGER NOT NULL CHECK (\"revision\" > 0), \"payload\" JSONB NOT NULL,\n  \"created_at\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  CONSTRAINT \"receiving_draft_revisions_pkey\" PRIMARY KEY (\"draft_id\",\"revision\"),\n  CONSTRAINT \"receiving_draft_revisions_draft_id_tenant_id_owner_id_fkey\" FOREIGN KEY (\"draft_id\",\"tenant_id\",\"owner_id\") REFERENCES \"receiving_drafts\"(\"id\",\"tenant_id\",\"owner_id\") ON DELETE RESTRICT ON UPDATE CASCADE\n);",
+      "corrections are new CAS revisions.\nCREATE FUNCTION \"reject_receiving_draft_revision_change\"() RETURNS trigger LANGUAGE plpgsql AS $$\nBEGIN\n  RAISE EXCEPTION 'Receiving draft revisions are append-only';",
+      "CREATE TRIGGER \"receiving_draft_revisions_append_only\" BEFORE UPDATE OR DELETE ON \"receiving_draft_revisions\"\nFOR EACH ROW EXECUTE FUNCTION \"reject_receiving_draft_revision_change\"();"
+    ]
+  }
+]

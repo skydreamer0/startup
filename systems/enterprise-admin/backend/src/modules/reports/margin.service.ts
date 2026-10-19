@@ -1,4 +1,5 @@
 import { prisma } from '../../lib/prisma';
+import { requireTenantId } from '../../lib/tenant.context';
 import { startOfMonth, endOfMonth, parseISO, isValid, format } from 'date-fns';
 
 export class MarginService {
@@ -6,6 +7,7 @@ export class MarginService {
      * Get Margin Analysis per Product for a specific period (YYYY-MM)
      */
     static async getMarginByProduct(periodStr: string) {
+        const tenantId = requireTenantId();
         const date = parseISO(`${periodStr}-01`);
         if (!isValid(date)) throw new Error('Invalid period');
 
@@ -16,9 +18,11 @@ export class MarginService {
         const orderItems = await prisma.orderItem.findMany({
             where: {
                 order: {
+                    tenantId,
                     status: 'completed',
                     createdAt: { gte: startDate, lte: endDate }
-                }
+                },
+                product: { tenantId }
             },
             include: { product: true }
         });

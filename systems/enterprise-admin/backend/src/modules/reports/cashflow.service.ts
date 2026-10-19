@@ -1,4 +1,5 @@
 import { prisma } from '../../lib/prisma';
+import { requireTenantId } from '../../lib/tenant.context';
 import { startOfMonth, endOfMonth, parseISO, isValid, format } from 'date-fns';
 
 export class CashFlowService {
@@ -6,6 +7,7 @@ export class CashFlowService {
      * Compute cash flow metrics for a given period (YYYY-MM)
      */
     static async getCashFlowStatement(periodStr: string) {
+        const tenantId = requireTenantId();
         const date = parseISO(`${periodStr}-01`);
         if (!isValid(date)) throw new Error('Invalid period');
 
@@ -38,6 +40,7 @@ export class CashFlowService {
         const inventoryIns = await prisma.inventoryTransaction.findMany({
             where: {
                 type: 'IN',
+                product: { tenantId },
                 createdAt: { gte: startDate, lte: endDate }
             },
             include: { product: { select: { costPrice: true } } }

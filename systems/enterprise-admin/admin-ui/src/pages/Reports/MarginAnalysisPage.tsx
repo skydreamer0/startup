@@ -1,21 +1,25 @@
+import { useReaderFocusReveal } from '../useReaderFocusReveal';
+import '../ReaderControls.css';
+import { useGuardedRead } from '../../hooks/useGuardedRead';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { reportsApi, MarginAnalysis } from '../../api/reports';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function MarginAnalysisPage() {
+    const readerFocus = useReaderFocusReveal();
     const [period, setPeriod] = useState(new Date().toISOString().substring(0, 7));
     const queryClient = useQueryClient();
 
-    const { data, isLoading, isError, error, isFetching, refetch } = useQuery<MarginAnalysis>({
+    const { data, isLoading, isError, error, isFetching, refetch } = useGuardedRead<MarginAnalysis>({
         queryKey: ['reports', 'margin', period],
-        queryFn: () => reportsApi.getMarginAnalysis(period),
+        queryFn: ({ signal }) => reportsApi.getMarginAnalysis(period, signal),
     });
 
-    const { data: trend, isError: trendIsError, error: trendError, isLoading: trendIsLoading, isFetching: trendIsFetching, refetch: refetchTrend } = useQuery({
+    const { data: trend, isError: trendIsError, error: trendError, isLoading: trendIsLoading, isFetching: trendIsFetching, refetch: refetchTrend } = useGuardedRead({
         queryKey: ['reports', 'margin-trend', period],
-        queryFn: () => reportsApi.getMarginTrend(period),
+        queryFn: ({ signal }) => reportsApi.getMarginTrend(period, signal),
     });
 
     const estimateNotice = (
@@ -37,14 +41,14 @@ export default function MarginAnalysisPage() {
         hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
 
     if (isError && (data === undefined || isReportAccessDenied(error))) {
-        return <div className="admin-page report-page margin-report-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page margin-report-page">
             {estimateNotice}
             {reportNotice}
         </div>;
     }
 
     if (isLoading && !data) {
-        return <div className="admin-page report-page margin-report-page">
+        return <div {...readerFocus} className="admin-page report-page admin-reader-page margin-report-page">
             {estimateNotice}
             <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading margin data...</div>
         </div>;
@@ -55,13 +59,13 @@ export default function MarginAnalysisPage() {
     const isTargetMet = currentMargin >= targetMargin;
 
     return (
-        <div className="admin-page report-page margin-report-page">
+        <div {...readerFocus} className="admin-page report-page admin-reader-page margin-report-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Gross Margin Analysis（目前成本估算）</h1>
                     <p className="page-subtitle">SKU 毛利與六個月趨勢均按目前成本估算</p>
                 </div>
-                <div className="flex gap-12" style={{ alignItems: 'center' }}>
+                <div className="flex gap-12 reader-toolbar" style={{ alignItems: 'center' }}>
                     <input
                         type="month"
                         value={period}
@@ -77,7 +81,7 @@ export default function MarginAnalysisPage() {
             {reportNotice}
 
             {/* Top Summary Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
+            <div className="reader-summary-grid">
                 <div className="stat-card">
                     <div className="stat-label">Total Revenue（明細收入）</div>
                     <div className="stat-value price" style={{ marginTop: '12px' }}>
@@ -133,7 +137,7 @@ export default function MarginAnalysisPage() {
                 {/* SKU Breakdown Table */}
                 <section className="card" style={{ padding: '24px', overflowY: 'auto', maxHeight: '500px' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>SKU Margin Breakdown（目前成本估算）</h3>
-                    <div className="table-container">
+                    <div className="table-container reader-table-scroll" role="region" aria-label="毛利明細表" tabIndex={0}>
                         <table className="table">
                             <thead>
                                 <tr>

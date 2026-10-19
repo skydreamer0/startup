@@ -1,3 +1,5 @@
+import { useReaderFocusReveal } from '../useReaderFocusReveal';
+import '../ReaderControls.css';
 import { useEffect, useState } from 'react';
 import ReportReadNotice, { isReportAccessDenied } from '../../components/ReportReadNotice';
 import { useQueryClient } from '@tanstack/react-query';
@@ -35,6 +37,7 @@ const emptySupplierForm: SupplierForm = {
 };
 
 export default function SupplierListPage() {
+    const readerFocus = useReaderFocusReveal();
     const [showCreate, setShowCreate] = useState(false);
     const [editSupplier, setEditSupplier] = useState<Supplier | null>(null);
     const [supplierForm, setSupplierForm] = useState<SupplierForm>(emptySupplierForm);
@@ -123,7 +126,7 @@ export default function SupplierListPage() {
     const modalTitle = editSupplier ? 'Edit Supplier' : 'Add Supplier';
 
     return (
-        <div>
+        <div {...readerFocus} className="admin-reader-page">
             <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Suppliers Management</h1>
@@ -139,7 +142,7 @@ export default function SupplierListPage() {
             <ReportReadNotice label="供應商清單" isError={failed} error={error}
                 hasData={visibleData !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />
 
-            <div className="table-container">
+            <div className="table-container reader-table-scroll" role="region" aria-label="供應商清單表" tabIndex={0}>
                 {loading ? (
                     <div role="status">Loading suppliers...</div>
                 ) : visibleData === undefined || (failed && suppliers.length === 0) ? null : (
@@ -171,14 +174,14 @@ export default function SupplierListPage() {
                                             <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{s.email || '--'}</div>
                                         </td>
                                         <td>
-                                            {s.deliveryReliability !== undefined ? (
+                                            {s.deliveryReliability != null ? (
                                                 <span className={`badge ${s.deliveryReliability < 90 ? 'badge-danger' : 'badge-success'}`}>
                                                     {s.deliveryReliability}%
                                                 </span>
                                             ) : <span className="text-muted">--</span>}
                                         </td>
                                         <td>
-                                            {s.defectRate !== undefined ? (
+                                            {s.defectRate != null ? (
                                                 <span className={`badge ${s.defectRate > 2 ? 'badge-danger' : 'badge-success'}`}>
                                                     {s.defectRate}%
                                                 </span>

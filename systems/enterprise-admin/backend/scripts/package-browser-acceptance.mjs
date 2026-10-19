@@ -1,5 +1,6 @@
 // GitHub-hosted, synthetic-only built Admin/POS -> production HTTP API -> PG15.
 import assert from 'node:assert/strict';
+import { runAdminReadersNative } from './admin-readers-native.mjs';
 import { runAdminTraceNative } from './admin-trace-native.mjs';
 import { prepareNativeCamera, runNativeCamera } from './package-camera-native.mjs';
 import { runStockReconciliationJourney } from './stock-reconciliation-browser.mjs';
@@ -227,6 +228,9 @@ try {
   execFileSync(process.execPath, ['--test', path.join(backend, 'scripts/admin-trace-native.test.mjs')], { cwd: backend, stdio: 'inherit', timeout: 30000 });
   const trace = await runAdminTraceNative({ db, tenantId: syntheticTenant, browser, adminOrigin, signAccessToken, output, nonce, expect, capture });
   assert.equal(trace.status, 'passed');
+  execFileSync(process.execPath, ['--test', path.join(backend, 'scripts/admin-readers-fixture.test.mjs'), path.join(backend, 'scripts/admin-readers-oracle.test.mjs'), path.join(backend, 'scripts/admin-readers-native.test.mjs')], { cwd: backend, stdio: 'inherit', timeout: 30000 });
+  const readers = await runAdminReadersNative({ db, browser, adminOrigin, signAccessToken, output, nonce, expect, capture });
+  assert.equal(readers.status, 'passed');
   const reconciliation = await runStockReconciliationJourney({ db, tenantId: syntheticTenant, browser, adminOrigin, token, signAccessToken, output, expect, capture });
   assert.equal(reconciliation.status, 'passed');
   const medicine = await runMedicineLabelJourney({ db, tenantId: syntheticTenant, browser, adminOrigin, token, system, output, nonce, expect, capture });
