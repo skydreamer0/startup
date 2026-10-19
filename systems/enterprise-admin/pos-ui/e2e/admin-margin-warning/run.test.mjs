@@ -8,7 +8,7 @@ import { randomUUID } from 'node:crypto';
 import { deflateSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { assertCjkFonts, assertTraceCjkFonts } from './cjk.mjs';
-import { assertReaderGeometry, assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
+import { assertReaderGeometry, assertReport, assertAttachment, childEnvironment, validateEvidence, canPublishEvidence, sourceInputs, assertInputIdentity, completionOutcome, validateScreenshot } from './run.mjs';
 import { expectedCases } from './cases.mjs';
 import { validatePng } from './png.mjs';
 import { importRequestAllowed, readImportRequest, files, assertImportNetwork } from './import-contract.mjs';
@@ -16,10 +16,10 @@ import { cleanupRunProcesses, findRunProcesses, signalRunProcess, createRunScope
 
 const report = () => ({ errors: [], suites: [{ specs: expectedCases.map(title => ({ title, ok: true,
   tests: [{ expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', errors: [], duration: 1, attachments: [] }] }] })) }] });
-test('registry retains 33 existing cases and adds 13 reader flows', () => {
-  assert.equal(expectedCases.length, 46); assert.equal(new Set(expectedCases).size, 46);
-  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ') && !name.startsWith('import ') && !name.startsWith('reader-')).length, 22);
-  assert.equal(assertReport(report()).length, 46);
+test('registry retains all 46 existing cases and adds seven receiving flows', () => {
+  assert.equal(expectedCases.length, 53); assert.equal(new Set(expectedCases).size, 53);
+  assert.equal(expectedCases.filter(name => !name.startsWith('batch-trace ') && !name.startsWith('import ') && !name.startsWith('reader-') && !name.startsWith('receiving ')).length, 22);
+  assert.equal(assertReport(report()).length, 53);
 });
 test('synthetic import allowance never admits another origin, path, query or method', () => {
   const origin = 'http://127.0.0.1:4287', target = `${origin}/api/v1/admin/excel/import/products/preview`;
@@ -189,7 +189,7 @@ test('locked Playwright loader collects all cases without launching a browser', 
       'test', '--config=e2e/admin-margin-warning/playwright.config.mts', '--list'], {
       cwd: pos, env: childEnvironment(process.env, output, randomUUID()), encoding: 'utf8', timeout: 20000,
     });
-    assert.match(listed, /Total: 46 tests in 4 files/);
+    assert.match(listed, /Total: 53 tests in 5 files/);
     for (const name of expectedCases) assert.ok(listed.includes(name), name);
   } finally { fs.rmSync(output, { recursive: true, force: true }); }
 });
@@ -285,4 +285,18 @@ test('reader geometry rejects fixed-sidebar occlusion and horizontal page scroll
   for (const mutate of [g=>g.scrollX=88,g=>g.documentWidth=478,g=>g.target.x=41,g=>g.hitTest[0]=false,g=>g.sidebarRight=undefined,g=>g.edgePoints[0].owned=false,g=>g.edgePoints[0].x=170]) {
     const bad=structuredClone(good);mutate(bad);assert.throws(()=>assertReaderGeometry(bad));
   }
+});
+
+test('proof-only source mutation rejects submitted/execution identity',()=>{
+ const proof='systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance-proof.mjs';
+ assert.ok(sourceInputs.includes(proof));
+ const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'admin-proof-identity-'));
+ const git=(...args)=>execFileSync('git',args,{cwd,encoding:'utf8'}).trim();
+ try{
+  git('init','-q');git('config','user.name','Synthetic');git('config','user.email','synthetic@example.invalid');
+  fs.mkdirSync(path.dirname(path.join(cwd,proof)),{recursive:true});fs.writeFileSync(path.join(cwd,proof),'original');
+  git('add','.');git('commit','-qm','submitted');const head=git('rev-parse','HEAD');
+  assertInputIdentity(git,head,head);fs.writeFileSync(path.join(cwd,proof),'changed');git('commit','-qam','execution');
+  assert.throws(()=>assertInputIdentity(git,head,git('rev-parse','HEAD')),/Execution inputs differ/);
+ }finally{fs.rmSync(cwd,{recursive:true,force:true});}
 });

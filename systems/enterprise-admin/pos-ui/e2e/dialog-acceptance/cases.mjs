@@ -1,5 +1,11 @@
+export const cameraLiteral = '  001aBc\u001dhttps://example.invalid/camera  ';
 export const viewports = [{ width: 1366, height: 768 }, { width: 1024, height: 768 }, { width: 390, height: 520 }];
+export const cameraCases = [
+  ...viewports.map(v => `camera local decode and explicit package handoff at ${v.width}x${v.height}`),
+  'camera denied retry and stale permission cleanup',
+];
 export const expectedCases = [
+  ...cameraCases,
   ...viewports.map(v => `manual literal and no-effects at ${v.width}x${v.height}`),
   'manual native keyboard focus and control activation',
   'manual repeated boundary cancels partials and resumes min3 scanner',

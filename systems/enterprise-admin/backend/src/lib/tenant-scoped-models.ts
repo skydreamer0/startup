@@ -25,6 +25,8 @@ export const TENANT_SCOPED_MODELS = [
     'InventoryTransaction',
     'Expense',
     'Shift',
+    'ReceivingDraft',
+    'ReceivingDraftRevision',
     'ProductBatch',
     'ProductBatchChange',
     'SaleBatchAllocation',
@@ -38,3 +40,4 @@ export type TenantScopedModel = typeof TENANT_SCOPED_MODELS[number];
 export function isTenantScopedModel(model: string | undefined): model is TenantScopedModel {
     return typeof model === 'string' && (TENANT_SCOPED_MODELS as readonly string[]).includes(model);
 }
+

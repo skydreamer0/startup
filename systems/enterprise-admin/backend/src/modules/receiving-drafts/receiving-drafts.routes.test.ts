@@ -1,0 +1,22 @@
+// @vitest-environment node
+import express from 'express';
+import request from 'supertest';
+import { beforeEach, expect, it, vi } from 'vitest';
+import { tenantContext } from '../../lib/tenant.context';
+const mocks=vi.hoisted(()=>({verify:vi.fn(),user:vi.fn(),list:vi.fn(),get:vi.fn(),save:vi.fn(),history:vi.fn(),version:vi.fn()}));
+vi.mock('../../lib/jwt',()=>({verifyAccessToken:mocks.verify}));
+vi.mock('../../lib/prisma',()=>({prisma:{user:{findUnique:mocks.user}}}));
+vi.mock('./receiving-drafts.service',()=>({ReceivingDraftService:mocks}));
+import router from './receiving-drafts.routes';
+const app=express(); app.use(express.json()); app.use((req,res,next)=>tenantContext.run({tenantId:'tenant-a',plan:'synthetic'},next)); app.use('/receiving-drafts',router);
+app.use((error:{statusCode?:number},req:express.Request,res:express.Response,_next:express.NextFunction)=>{res.status(error.statusCode??500).json({success:false});});
+const id='11111111-1111-4111-8111-111111111111';
+beforeEach(()=>{vi.resetAllMocks();mocks.verify.mockReturnValue({userId:'actor-a',email:'synthetic@example.test',permissions:['read:products','create:products']});mocks.user.mockResolvedValue({id:'actor-a',status:'active'});mocks.list.mockResolvedValue({data:[]});mocks.save.mockResolvedValue({id});});
+it('rejects a missing session before any draft service read',async()=>{expect((await request(app).get('/receiving-drafts')).status).toBe(401);expect(mocks.list).not.toHaveBeenCalled();});
+it('rejects inactive users with real authentication middleware',async()=>{mocks.user.mockResolvedValue({id:'actor-a',status:'inactive'});expect((await request(app).get('/receiving-drafts').auth('synthetic',{type:'bearer'})).status).toBe(401);expect(mocks.list).not.toHaveBeenCalled();});
+it('checks read:products and uses only the authenticated actor',async()=>{const r=await request(app).get('/receiving-drafts?ownerId=actor-b&tenantId=other&page=2').auth('synthetic',{type:'bearer'});expect(r.status).toBe(200);expect(r.headers['cache-control']).toBe('no-store');expect(mocks.list).toHaveBeenCalledWith('actor-a',2);});
+it('rejects a reader without create:products on save',async()=>{mocks.verify.mockReturnValue({userId:'actor-a',permissions:['read:products']});expect((await request(app).put('/receiving-drafts/'+id).auth('synthetic',{type:'bearer'}).send({})).status).toBe(403);expect(mocks.save).not.toHaveBeenCalled();});
+it('does not allow write-only credentials to read or save',async()=>{mocks.verify.mockReturnValue({userId:'actor-a',permissions:['create:products']});expect((await request(app).put('/receiving-drafts/'+id).auth('synthetic',{type:'bearer'}).send({})).status).toBe(403);expect(mocks.save).not.toHaveBeenCalled();});
+it('passes CAS request unchanged with the backend actor',async()=>{const body={expectedRevision:3,payload:{title:'test',lines:[]}};expect((await request(app).put('/receiving-drafts/'+id).auth('synthetic',{type:'bearer'}).send(body)).status).toBe(200);expect(mocks.save).toHaveBeenCalledWith(id,'actor-a',body);});
+it('rejects malformed identifiers and pagination before reading',async()=>{for(const path of ['/receiving-drafts/bad','/receiving-drafts?page=-1','/receiving-drafts?page=1e2']) expect((await request(app).get(path).auth('synthetic',{type:'bearer'})).status).toBe(400);expect(mocks.get).not.toHaveBeenCalled();expect(mocks.list).not.toHaveBeenCalled();});
+it('routes exact history revision under the same actor and no-store response',async()=>{mocks.version.mockResolvedValue({revision:2});const r=await request(app).get('/receiving-drafts/'+id+'/history/2').auth('synthetic',{type:'bearer'});expect(r.status).toBe(200);expect(r.headers['cache-control']).toBe('no-store');expect(mocks.version).toHaveBeenCalledWith(id,'actor-a',2);});

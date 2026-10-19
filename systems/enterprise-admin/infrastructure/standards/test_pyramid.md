@@ -29,19 +29,20 @@ To maintain a high deployment velocity without sacrificing stability, we follow 
 
 The execution source of truth is `.github/workflows/ci.yml` at repository root.
 It runs for every PR, including stacked PRs, plus pushes to `master` / `main`
-and manual dispatch. It currently has nine jobs:
+and manual dispatch. It has fourteen jobs when all groups are selected: one change planner, one unconditional context check, eight existing product workers plus the receiving worker, and three required aggregates. The coverage table groups those workers under their stable required names:
 
 | Job | Coverage and important limits |
 | --- | --- |
 | Agent Context Validation | Context links/tracking, canonical dependency-lock boundaries, and the Python-standard-library synthetic OCR evaluator contract (unit tests, control/negative CLI exit checks, and repeat-byte determinism). No OCR engine or real-image accuracy. |
 | Backend CI | npm audit, Prisma generation, lint/build, final Docker image and migration CLI, PostgreSQL migrations/seed/tests, and isolated final-Alpine readiness acceptance with cleanup evidence. Individual tests may still mock dependencies; a PostgreSQL service alone does not prove every feature has native DB coverage. |
-| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin margin/ranking warning browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
+| Admin UI CI | pnpm audit, ESLint, unit/render tests, production build/type-check, Docker image, and current Admin 53-case report/trace/import/reader/private-receiving browser acceptance in the runner's official sandboxed Chrome with synthetic HTTP and no backend/DB. |
 | POS UI CI | Unit/component tests, build/type-check, Docker image, real HTTP restart/lost-response recovery with isolated PostgreSQL, and fixed-subject scanner/supplier Chromium evidence. The fixed subjects are historical versions, not the current UI. |
 | Product pagination PostgreSQL acceptance | Exact-head pagination regression and native PostgreSQL cases, ownership guards, and cleanup evidence. |
-| Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU/category/provenance plus ten reviewed package cases and current POS Chromium with synthetic HTTP retain their separate scopes. A dedicated stable-category Chrome slice also follows the real built POS through the unchanged HTTP/JWT/RBAC API to the same owned PostgreSQL fixture, at 1366/1024/390px; a separate stock slice at 1366/1024px verifies confirmed checkout/refund quantity, test-injected product-read 500s, manual retry and cart preservation. A package slice also follows built Admin maintenance → real production API → owned PG15 → built POS at 1366/1024/390px, covering manual confirmation, unknown conversion, stale revision and manual-input handoff/focus; fixture-issued JWT excludes login UI. Native evidence and independent review are required; whole POS layout and hardware remain separate. |
+| Exact SKU PostgreSQL and current POS browser acceptance | Exact-head native SKU/category/provenance plus ten reviewed package cases and current POS Chromium with synthetic HTTP retain their separate scopes. A dedicated stable-category Chrome slice also follows the real built POS through the unchanged HTTP/JWT/RBAC API to the same owned PostgreSQL fixture, at 1366/1024/390px; a separate stock slice at 1366/1024px verifies confirmed checkout/refund quantity, test-injected product-read 500s, manual retry and cart preservation. A package slice also follows built Admin maintenance → real production API → owned PG15 → built POS at 1366/1024/390px, covering manual confirmation, unknown conversion, stale revision and manual-input handoff/focus; fixture-issued JWT excludes login UI. Its camera extension follows generated fake video through real canvas/local WASM, explicit package lookup and revision confirmation to the same real API/owned PG fixture; it does not use physical camera hardware. Native evidence and independent review are required; whole POS layout and hardware remain separate. |
 | Batch audit PostgreSQL acceptance | Exact-head append-only batch audit cases and schema contracts, with owned fixture evidence. |
 | Order sequence PostgreSQL acceptance | Exact-head numbering, legacy-upgrade, and checkout regression cases with owned DB cleanup. |
-| Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 14 split/PIN/ordinary-payment native-input cases, locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. |
+| Private receiving PostgreSQL acceptance | Exact-head ten native PostgreSQL/real-auth HTTP cases for private actor/tenant drafts, competing creates/CAS, composite FK, append-only history, failed snapshot rollback and GET readback. Dedicated owned empty PG15 service; retained synthetic row counts and removal of only the owned database. No production migration, posting or devices. |
+| Exact-head POS dialog Chrome acceptance | Official installed Google Chrome with sandbox enabled, exact-head built POS, 19 existing split/PIN/ordinary-payment/manual-input cases plus four camera cases in this candidate (23 total), locally fulfilled synthetic HTTP and sealed per-case ledgers; not real API/DB or hardware acceptance. Camera cases use generated fake Y4M with real video/canvas/pinned local WASM; physical media/permissions remain separate. |
 
 The OCR step runs `python3 -I scripts/ocr-evaluation/verify.py` against the existing
 job checkout (the PR merge commit on pull requests), using the runner's installed
@@ -74,7 +75,7 @@ Additional workflows:
   slice and does not complete #30 or any production gate.
 - `.github/workflows/dependency-review.yml` runs Dependency Review on PRs and rejects
   newly introduced high/critical vulnerable dependencies. Keep the existing audits
-  and security checks; their results are separate from the nine-job pipeline.
+  and security checks; their results are separate from the ten-job pipeline.
 - `.github/workflows/argon2-compat.yml` is intentionally restricted to the named
   Argon2 compatibility branches. A skip on another branch is not fresh Argon2
   compatibility evidence and is not a general backend regression pass.
@@ -101,6 +102,13 @@ Additional workflows:
   prior local socket denial remains NOT RUN and is never retried or bypassed.
   The bounded dialog runner installs Ubuntu `fonts-noto-cjk` and verifies CJK
   font availability; screenshots still require independent actual-pixel review.
+  Camera additions retain the same owned process, sealed network/keyboard, CJK,
+  exact-case and no-retry guards. Fake Y4M generation/reader checks and camera
+  cleanup/provenance/geometry guards run in run.test.mjs. Four camera journeys
+  require ten affected captures: live video, confirmed evidence and explicit
+  package choice at three widths, plus denied-camera recovery. Browser counts
+  are planned until the submitted head actually runs; unit success is not Chrome
+  or physical-camera acceptance. No new API/schema or native PG gate is added.
 - Browser downloads require access to the relevant Playwright/CDN hosts or a valid
   pre-populated cache. A denied launch or unavailable prerequisite is BLOCKED / NOT
   RUN. Do not bypass security restrictions or relabel it as successful verification.
@@ -118,8 +126,16 @@ Additional workflows:
   no API proxy, clean child environment and owned loopback process bounds are
   explicit. Google font CSS is stubbed rather than downloaded. Screenshots and
   geometry are retained; actual pixels need independent review before claiming
-  visual acceptance. Existing zero/empty error fallback and whole-report overflow
-  are not repaired or certified by this disclosure-only slice. Physical devices,
+  visual acceptance. The integrated cases.mjs declares 53 cases: the 46 cases retained from merged
+  master c4e6307 plus seven private receiving journeys. The retained baseline is
+  24 original report/batch-trace cases, nine import-dialog cases and 13
+  Supplier/InventoryAnalytics reader cases from #148. The reader cases cover
+  initial retry, 401/403 cached-data hiding, both analytics tabs and supplier
+  identity changes; they use synthetic HTTP and cannot establish real RBAC/PG.
+  This is no longer a disclosure-only suite. Whole-report layout and financial
+  correctness are not globally certified by these bounded flows. The seven receiving
+  browser cases and ten separate native PostgreSQL cases remain distinct slices;
+  they must not be counted as one browser-to-database end-to-end run. Physical devices,
   native zoom, screen readers, Safari and financial reconciliation remain separate.
 - `e2e/category-native/run.mjs` covers the bounded Issue #49 category slice: single-SKU/empty searches and category switching retain every category entry; real keyboard/pointer activation preserves the cart and makes no checkout/write request. A synthetic active shift and signed test JWT avoid unrelated login/shift-opening writes. Browser/API response hashes and all business rows are compared before/after; exact fixture rows are removed before the existing owned-DB cleanup. Chrome sandbox, CJK glyphs, sealed ledgers and quiescent-only artifact publication are required. Independent raw/pixel review is still needed; the seven-case matrix additionally covers initial loading/error/retry, real empty
   tenant, injected 403/500, stale refetch failure/recovery and delayed real product
@@ -131,3 +147,50 @@ Additional workflows:
 - Business acceptance, real payment-provider behavior, physical scanner/touch,
   Safari/iPad, OS keyboard, native zoom, and screen-reader checks remain separate
   when relevant. CI success does not close those gates or authorize deployment.
+
+### Private receiving acceptance scope
+
+`backend/scripts/receiving-drafts-ci.mjs` guards the dedicated Actions-owned PG15 fixture before deploying candidate migrations. The ten cases in `backend/src/__tests__/receiving-drafts.integration.test.ts` use production Prisma/services/auth routes. Append-only snapshots are retained until the verified disposable database is dropped; triggers are never disabled. Seeded product rows are compared in full; initially empty order/batch/movement/payment tables remain empty. This does not prove preservation of every kind of pre-existing financial row.
+
+Seven receiving journeys extend `pos-ui/e2e/admin-margin-warning/receiving-drafts.spec.ts` while retaining the prior 46 cases. They use the real built Admin UI and synthetic HTTP Map persistence: ten-line editing, explicit saving/reopening/history, product paging, review invalidation, dirty/pending/unknown navigation protection, lost-response GET recovery/canonical URL, explicit CAS choice, list-refresh failure and identity clearing. Fourteen receiving PNGs require independent CJK/focus/geometry review. The separate native PG and synthetic browser slices are complementary, not combined browser-to-real-API-to-PG end-to-end acceptance. Original #31/#37 posting/OCR/device gates remain open.
+
+
+## Conservative pull-request CI selection
+
+The CI change plan uses the checked-out immutable execution commit and its ordered
+parents. It diffs the actual first parent against the submitted second parent,
+including stacked PRs, with NUL-delimited local Git output (no API file-count cap).
+Only modified root README.md/LICENSE can omit heavy workers. Modified ordinary Admin source selects Admin. Receiving UI/domain/API and the
+shared Admin browser harness select Admin plus Backend, including the native
+receiving PostgreSQL worker; modified POS source selects Backend,
+POS, native PostgreSQL/API and dialog workers. Backend, shared types, dependency
+metadata, infrastructure, other harnesses and unknown paths run all workers.
+Added/deleted/renamed files, empty/unreadable diff, malformed event, master pushes
+and manual dispatch also run all. Agent Context Validation always executes.
+
+Required names Backend CI, Admin UI CI and POS UI CI are always-running aggregates.
+They require a successful plan and success from every selected child; unselected
+children must be explicitly skipped. Missing, cancelled, failed or unexpected
+skipped results fail closed. A not-applicable aggregate is not test execution.
+Checkout-abort and FEFO remain separate workflows with PR-only concurrency; this
+change does not claim they are included in the four required status contexts.
+Dependency/security workflows and repository rules are unchanged.
+
+The reviewed POS evidence preflight authenticates only the fixed execution commit
+metadata request with the existing short-lived contents:read workflow token.
+Browser execution receives a run/attempt/commit/tree/ordered-parent/QA-blob-bound
+proof plus its preflight output digest, never the token. API errors still fail;
+there is no anonymous fallback, moving-ref lookup, or cross-run proof cache.
+This is CI provenance and scheduling validation, not additional product, native
+PostgreSQL, physical-device, or screenshot acceptance. See the CI reliability ADR.
+
+### Combined receiving/camera/CI integration
+
+The receiving worker uses the Backend selection output and is an explicit child
+of required Backend CI. Its failure, cancellation, missing result or unexpected
+skip cannot produce a successful aggregate. The original worker commands,
+exact-head ownership checks and cleanup are retained. Package acceptance enumerates
+all public tables dynamically, so the two additive receiving tables participate
+in both the empty-fixture and cleanup checks; historical table counts are not
+integrated evidence. New integrated native acceptance must use the combined
+schema and source, rather than reusing separate PR artifacts.

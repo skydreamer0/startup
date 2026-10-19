@@ -5,6 +5,14 @@
 
 ## Current Status
 
+Camera M0-A continuation (#37/#31/#48) is under bounded software review: explicit
+video enable/capture, local pinned decoder, human evidence confirmation and the
+existing package lookup handoff. Its exact-head dialog CI plan uses fake Y4M,
+synthetic business HTTP and affected screenshots; pending CI is not a pass.
+Physical devices/permissions, LAN HTTPS, cold offline assets, 8 GB CPU/RAM,
+Safari/iPad and native zoom remain open. No mother issue or G0–G7 gate is closed.
+
+
 The earlier product and architecture phases are complete. New single-pharmacy reliability and workflow requirements are active below; historical completion does not mean these issues or production acceptance gates are complete.
 
 Use this file as the active status source of truth. Use ADRs, standards, health reports, and git history for historical evidence.

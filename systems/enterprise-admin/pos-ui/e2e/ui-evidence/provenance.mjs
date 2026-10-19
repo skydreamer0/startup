@@ -68,7 +68,7 @@ async function rejectionDiagnostics(response) {
 
 // Resolve only the immutable execution object. Never query a moving base ref.
 // setup.mjs independently enforces the resolved base, QA input equality and clean sources.
-export async function resolveProvenance({ cwd, env = process.env, fetchCommit = fetch }) {
+export function inspectProvenance({ cwd, env = process.env }) {
   const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
   const qaHead = sha(env.UI_QA_SOURCE_SHA, 'QA source');
   const executionHead = sha(env.UI_QA_EXECUTION_SHA, 'QA execution');
@@ -92,11 +92,23 @@ export async function resolveProvenance({ cwd, env = process.env, fetchCommit = 
   if (env.UI_QA_BASE_SHA && env.UI_QA_BASE_SHA !== record.baseHead) throw new Error('Supplied QA base differs from the fixed execution parent');
   record.eventBaseMismatch = record.eventBaseHead !== record.baseHead;
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(env.GITHUB_REPOSITORY ?? '')) throw new Error('Explicit GitHub repository is required');
-  // Public repo, existing contents:read permissions only; no credential is needed.
+  return record;
+}
+
+export async function resolveProvenance({ cwd, env = process.env, fetchCommit = fetch }) {
+  const record = inspectProvenance({ cwd, env });
+  if (record.executionMode === 'head') return record;
+  const { executionHead, checkoutTree } = record;
+  const token = env.UI_QA_METADATA_TOKEN;
+  if (typeof token !== 'string' || !token || /[\r\n]/.test(token)) throw new Error('Metadata token is required');
+
   const url = `https://api.github.com/repos/${env.GITHUB_REPOSITORY}/commits/${executionHead}`;
-  const response = await fetchCommit(url, { headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, signal: AbortSignal.timeout(15_000) });
+  let response;
+  try { response = await fetchCommit(url, { redirect: 'error', headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, signal: AbortSignal.timeout(15_000) }); }
+  catch { throw new Error('Fixed execution commit API transport failed'); }
   if (!response.ok) throw new Error(`Fixed execution commit API failed: HTTP ${response.status}${await rejectionDiagnostics(response)}`);
-  const remote = await response.json();
+  let remote;
+  try { remote = await response.json(); } catch { throw new Error('Fixed execution commit API invalid JSON'); }
   if (remote.sha !== executionHead || remote.commit?.tree?.sha !== checkoutTree ||
       !Array.isArray(remote.parents) || remote.parents.length !== 2 ||
       remote.parents.some((parent, index) => parent.sha !== record.executionParents[index])) {

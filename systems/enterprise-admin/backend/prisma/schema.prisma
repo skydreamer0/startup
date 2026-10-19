@@ -47,6 +47,7 @@ model Tenant {
   productPackages ProductPackage[]
   packageRevisions ProductPackageRevision[]
   packageIdentifiers ProductPackageIdentifier[]
+  receivingDrafts ReceivingDraft[]
 
   @@map("tenants")
 }
@@ -79,6 +80,7 @@ model User {
   batchChanges ProductBatchChange[] @relation("BatchChangeActor")
   packageRevisions ProductPackageRevision[] @relation("PackageRevisionActor")
   packageRetirements ProductPackageRevision[] @relation("PackageRetirementActor")
+  receivingDrafts ReceivingDraft[] @relation("ReceivingDraftOwner")
 
   @@unique([id, tenantId])
   @@index([tenantId])
@@ -724,4 +726,35 @@ model MessageBroadcast {
   @@index([tenantId])
   @@index([createdAt])
   @@map("message_broadcasts")
+}
+
+
+// Private manual work-in-progress. Never a stock posting or release authority.
+model ReceivingDraft {
+  id String @id @db.Uuid
+  tenantId String @map("tenant_id")
+  ownerId String @map("owner_id")
+  title String
+  revision Int
+  payload Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  owner User @relation("ReceivingDraftOwner", fields: [ownerId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  revisions ReceivingDraftRevision[]
+  @@unique([id, tenantId, ownerId])
+  @@index([tenantId, ownerId, updatedAt])
+  @@map("receiving_drafts")
+}
+model ReceivingDraftRevision {
+  draftId String @db.Uuid @map("draft_id")
+  tenantId String @map("tenant_id")
+  ownerId String @map("owner_id")
+  revision Int
+  payload Json
+  createdAt DateTime @default(now()) @map("created_at")
+  draft ReceivingDraft @relation(fields: [draftId, tenantId, ownerId], references: [id, tenantId, ownerId], onDelete: Restrict)
+  @@id([draftId, revision])
+  @@index([tenantId, ownerId, draftId])
+  @@map("receiving_draft_revisions")
 }

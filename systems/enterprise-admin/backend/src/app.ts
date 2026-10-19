@@ -18,6 +18,7 @@ import analyticsRoutes from './modules/analytics/analytics.routes';
 import expensesRoutes from './modules/expenses/expenses.routes';
 import reportsRoutes from './modules/reports/reports.routes';
 import shiftsRoutes from './modules/shifts/shifts.routes';
+import receivingDraftRoutes from './modules/receiving-drafts/receiving-drafts.routes';
 import productBatchesRoutes from './modules/product-batches/product-batches.routes';
 import dailySettlementsRoutes from './modules/daily-settlements/daily-settlements.routes';
 import posRoutes from './modules/pos/pos.routes';
@@ -66,6 +67,7 @@ apiRouter.use('/expenses', expensesRoutes);
 apiRouter.use('/reports', reportsRoutes);
 apiRouter.use('/shifts', shiftsRoutes);
 apiRouter.use('/product-batches', productBatchesRoutes);
+apiRouter.use('/receiving-drafts', receivingDraftRoutes);
 apiRouter.use('/daily-settlements', dailySettlementsRoutes);
 apiRouter.use('/pos', posRoutes);
 apiRouter.use('/tenants', tenantsRoutes);
@@ -87,3 +89,4 @@ app.use((_req, res) => {
 app.use(errorMiddleware);
 
 export default app;
+

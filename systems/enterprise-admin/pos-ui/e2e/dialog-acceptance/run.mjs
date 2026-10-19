@@ -6,6 +6,8 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { expectedCases } from './cases.mjs';
+import { assertCameraEvidence } from './camera-evidence.mjs';
+import { generateCameraFixture } from './camera-fixture.mjs';
 import { createRunScope, cleanupRunProcesses } from './owned-run.mjs';
 import { assertBrandSources, assertBrandEvidence } from './brand-assets.mjs';
 
@@ -39,7 +41,13 @@ export function assertEvidence(ledgers, nonce) {
     assert.ok(entry.keyboardEvents.every(event => event.trusted === true));
     assert.match(entry.browserVersion, /^\d+\.\d+\.\d+\.\d+$/);
     const submits = entry.test.includes('submits exactly once') || entry.test.includes('preserves payload');
-    assert.equal(entry.expectedWrites.length, submits ? 2 : 1);
+    const cameraHandoff = entry.test.startsWith('camera local decode and explicit package handoff at ');
+    assert.equal(entry.expectedWrites.length, submits || cameraHandoff ? 2 : 1);
+    if (cameraHandoff) {
+      assert.equal(entry.expectedWrites[1].method, 'POST');
+      assert.equal(entry.expectedWrites[1].path, '/api/v1/admin/pos/packages/resolve');
+      assert.deepEqual(entry.expectedWrites[1].body, { identifier: { namespace: 'MANUFACTURER', value: '  001aBc\u001dhttps://example.invalid/camera  ' }, packageId: 'synthetic-camera-package', revision: 1 });
+    }
     assert.deepEqual(entry.expectedWrites[0], { method: 'POST', path: '/api/v1/admin/pos/staff-login', body: { employeeCode: 'SYNTHETIC-CASHIER' } });
     if (submits) {
       assert.equal(entry.expectedWrites[1].method, 'POST');
@@ -106,12 +114,14 @@ async function main() {
     node: process.version, chromeVersion, chromeSandbox: true, apiProxy: false, serviceWorkers: 'blocked', webSockets: 'closed by fixture',
     brandAssets: assertBrandSources(app) };
   write('source.json', identity);
+  const cameraFixture = await generateCameraFixture(path.join(output, 'synthetic-camera.y4m'));
+  write('camera-fixture.json', cameraFixture);
   const sourceFiles = git('ls-files', '--', 'systems/enterprise-admin/pos-ui', 'systems/enterprise-admin/packages/types', 'systems/enterprise-admin/pnpm-lock.yaml', '.github/workflows/ci.yml').split('\n');
   write('source-hashes.json', Object.fromEntries(sourceFiles.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
   // Snapshot before any child receives this new nonce; never inspect baseline environments.
   const processScope = await createRunScope(identity.nonce);
   const env = Object.fromEntries(['PATH', 'HOME', 'TMPDIR', 'RUNNER_TEMP', 'CI'].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
-  Object.assign(env, { DIALOG_UI_OUTPUT: output, DIALOG_UI_NONCE: identity.nonce, BROWSER: 'none' });
+  Object.assign(env, { DIALOG_UI_OUTPUT: output, DIALOG_UI_NONCE: identity.nonce, DIALOG_CAMERA_Y4M: cameraFixture.file, BROWSER: 'none' });
   const owner = processOwner();
   const log = fs.openSync(path.join(output, 'raw.log'), 'wx');
   const phases = {};
@@ -135,10 +145,21 @@ async function main() {
     const sealedLedgers = assertEvidence(ledgers, identity.nonce);
     const fonts = fs.readdirSync(path.join(output, 'tests'), { recursive: true }).filter(file => file.endsWith('.fonts.json')).map(file => JSON.parse(fs.readFileSync(path.join(output, 'tests', file), 'utf8')));
     const fontReceipts = assertFontEvidence(fonts, identity.nonce);
+    const artifacts = fs.readdirSync(path.join(output, 'tests'), { recursive: true });
+    const readArtifacts = suffix => artifacts.filter(file => file.endsWith(suffix)).map(file => JSON.parse(fs.readFileSync(path.join(output, 'tests', file), 'utf8')));
+    const cameraReceipts = readArtifacts('camera-evidence.json');
+    const cameraGeometry = readArtifacts('.geometry.json');
+    const cameraEvidence = assertCameraEvidence(cameraReceipts, cameraGeometry, identity.nonce);
+    for (const row of cameraGeometry) {
+      const matching = artifacts.filter(file => file.endsWith(row.name + '.geometry.json')).filter(file => JSON.parse(fs.readFileSync(path.join(output, 'tests', file), 'utf8')).test === row.test);
+      assert.equal(matching.length, 1);
+      const png = fs.readFileSync(path.join(output, 'tests', matching[0].replace('.geometry.json', '.png')));
+      assert.deepEqual(png.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+    }
     assert.equal(owner.cancelled, null);
-    accepted = { ...identity, status: 'passed', cases, sealedLedgers, fontReceipts, phases,
+    accepted = { ...identity, status: 'passed', cases, sealedLedgers, fontReceipts, cameraFixture, cameraEvidence, phases,
       visualReview: 'Screenshots and measured controls require independent visual review; no whole-page visual acceptance claimed',
-      notRun: ['tenant switch through UI (no entry point in current POS)', 'native browser zoom at 200%' , 'physical scanner', 'iPad/Safari', 'real API to database through UI', 'whole POS layout and release gates'] };
+      notRun: ['tenant switch through UI (no entry point in current POS)', 'native browser zoom at 200%' , 'physical camera/permissions/LAN HTTPS', '8 GB CPU memory/performance', 'cold offline assets', 'physical scanner', 'iPad/Safari', 'real API to database through UI', 'whole POS layout and release gates'] };
   } catch (problem) { error = problem; }
   finally {
     try {
