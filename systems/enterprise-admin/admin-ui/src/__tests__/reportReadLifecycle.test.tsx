@@ -7,6 +7,8 @@ import { AuthContext, type AuthContextType } from '../hooks/authContext';
 import CashFlowPage from '../pages/Reports/CashFlowPage';
 import MarginAnalysisPage from '../pages/Reports/MarginAnalysisPage';
 import SalesRankingPage from '../pages/Reports/SalesRankingPage';
+import InventoryAnalyticsPage from '../pages/Inventory/InventoryAnalyticsPage';
+import SupplierListPage from '../pages/Inventory/SupplierListPage';
 const { get, write } = vi.hoisted(() => ({ get: vi.fn(), write: vi.fn() }));
 vi.mock('../api/client', () => ({ default: { get, post: write, put: write, delete: write } }));
 vi.mock('recharts', () => {
@@ -95,4 +97,29 @@ describe('actual QueryClient report authorization recovery', () => {
         await waitFor(() => expect(client.getQueryCache().getAll().find(query => query.queryKey[1] === `${subject.slug}-trend`)?.state.error).toMatchObject({ response: { status: 500 } }));
         expect(screen.queryByText(/TREND_PRIVATE_SENTINEL/)).not.toBeInTheDocument();
     });
+});
+
+// Readiness used by the native initial-fault route must precede every API reply.
+// Real components, useGuardedRead and QueryClient; only HTTP is controlled here.
+describe('initial fault shell exists before data and survives errors', () => {
+    for (const { slug, label, Component } of [...subjects,
+        { slug: 'analytics', label: '商品分析', Component: InventoryAnalyticsPage },
+        { slug: 'suppliers', label: '供應商清單', Component: SupplierListPage }]) {
+        for (const status of [500, 403]) it(`${slug}: pending shell then ${status} is independent of held transport`, async () => {
+            const rejects: ((reason: unknown) => void)[] = [];
+            get.mockImplementation(() => new Promise((_resolve, reject) => { rejects.push(reject); }));
+            client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+            const auth: AuthContextType = { user: { id: 'reader-a', email: 'synthetic@example.test', fullName: 'Reader', roles: [], permissions: [] }, loading: false, login: vi.fn(), demoLogin: vi.fn(), logout: vi.fn(), hasPermission: () => true };
+            const view = render(<AuthContext.Provider value={auth}><QueryClientProvider client={client}><Component /></QueryClientProvider></AuthContext.Provider>);
+            await waitFor(() => expect(rejects.length).toBeGreaterThan(0));
+            expect(client.isFetching()).toBeGreaterThan(0);
+            expect(client.getQueryCache().getAll().every(query => query.state.data === undefined)).toBe(true);
+            expect(view.container.querySelectorAll('.admin-reader-page')).toHaveLength(1);
+            expect(view.container.querySelector('.admin-reader-page')).toBeVisible();
+            await act(async () => { rejects.forEach(reject => reject({ response: { status } })); });
+            await screen.findByRole('button', { name: `重試${label}` });
+            expect(view.container.querySelectorAll('.admin-reader-page')).toHaveLength(1);
+            expect(view.container.querySelector('.admin-reader-page')).toBeVisible();
+        });
+    }
 });

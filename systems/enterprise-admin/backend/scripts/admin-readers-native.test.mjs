@@ -20,6 +20,7 @@ function fakeResult() {
         reader.states = Object.fromEntries(readerNative.readerStates.map((state, i) => [state, { width: row.width, verified: true, response: { ...reader.navigation.response, requestId: i + 1, actor: ['denied', 'failed-retry'].includes(state) ? 'denied' : 'readerA', status: state === 'denied' ? 403 : ['stale', 'failed-retry'].includes(state) ? 500 : 200 } }]));
     } }
     result.emptyCases = result.cases[0].readers.map(reader => ({ id: reader.id, contextId: 6, period: '2026-01', views: Object.fromEntries([['initial-error', 500], ['empty', 200]].map(([state, status]) => [state, [1366, 1024, 390].map(width => ({ width, verified: true, response: { ...reader.navigation.response, contextId: 6, actor: 'readerEmpty', status } }))])) }));
+    for (const row of result.emptyCases) row.initialFaultReady = { route: navigationSubjects.find(subject => subject.id === row.id).route, readerRootMounted: true, contextId: row.contextId, requestId: row.views['initial-error'][0].response.requestId };
     return result;
 }
 test('acceptance contract requires every actual reader and all original boundaries', () => assert.doesNotThrow(() => assertReadersNativeAcceptance(fakeResult())));
@@ -380,16 +381,21 @@ function actorCallbacks({ pace = async () => ({ admitted: true, at: 0 }) } = {})
     const responseEnd = source.indexOf('\n        });\n        return { context, page, control, contextId };', responseStart);
     assert.ok(routeStart >= routeMarker.length && routeEnd > routeStart && responseStart >= responseMarker.length && responseEnd > responseStart);
     const tokens = { readerA: 'SYNTHETIC_READER_A_ONLY', denied: 'SYNTHETIC_DENIED_ONLY', readerB: 'SYNTHETIC_READER_B_ONLY' };
-    const control = { actor: 'readerA', mode: 'normal', paths: [] }, network = [], responses = [], pending = [], dispatched = new WeakMap(), transport = { continued: 0, aborted: 0 };
+    const control = { actor: 'readerA', mode: 'normal', paths: [] }, network = [], responses = [], pending = [], dispatched = new WeakMap(), transport = { continued: 0, aborted: 0, fulfilled: [], fetched: 0 };
     const budgetCalls = [];
-    const dispatch = new Function('contextId', 'control', 'network', 'dispatched', 'forbidden', 'adminOrigin', 'budget', 'pace', 'tokens', 'readerRequestActor', `let nextRequestId=0; const viewport={width:1366}; return async route => {${source.slice(routeStart, routeEnd)}\n}`)(2, control, network, dispatched, [], 'http://127.0.0.1:12345', { request(endpoint) { budgetCalls.push(endpoint); } }, pace, tokens, readerNative.readerRequestActor);
+    const dispatch = new Function('contextId', 'control', 'network', 'dispatched', 'forbidden', 'adminOrigin', 'budget', 'pace', 'tokens', 'readerRequestActor', 'readerEndpoints', 'readerPeriod', 'assert', 'assertReaderResponse', 'expected', 'hash', `let nextRequestId=0; const viewport={width:1366}; return async route => {${source.slice(routeStart, routeEnd)}\n}`)(2, control, network, dispatched, [], 'http://127.0.0.1:12345', { request(endpoint) { budgetCalls.push(endpoint); } }, pace, tokens, readerNative.readerRequestActor, readerEndpoints, '2026-01', assert, () => {}, {readerA:{}}, () => 'a'.repeat(64));
     const receive = new Function('contextId', 'control', 'dispatched', 'responses', 'pending', 'adminOrigin', 'readerEndpoints', 'expected', 'assertReaderResponse', 'hash', 'readerPeriod', `const viewport={width:1366}; return response => {${source.slice(responseStart, responseEnd)}\n}`)(2, control, dispatched, responses, pending, 'http://127.0.0.1:12345', ['/reports/margin'], { readerA: { actor: 'readerA' }, readerB: { actor: 'readerB' } }, (_endpoint, _data, expected) => assert.equal(expected.actor, 'readerA'), () => 'a'.repeat(64), '2026-01');
-    async function request(authorization, { endpoint = '/reports/margin', failed = null, detached = false } = {}) {
-        const req = { url: () => 'http://127.0.0.1:12345/api/v1/admin' + endpoint + '?period=2026-01', method: () => 'GET', headers: () => authorization === undefined ? {} : { authorization }, failure: () => failed, frame: () => ({ isDetached: () => detached }) };
-        await dispatch({ request: () => req, continue: async () => { transport.continued++; }, abort: async () => { transport.aborted++; } }); return req;
+    async function request(authorization, { endpoint = '/reports/margin', failed = null, detached = false, url: overrideUrl, method = 'GET', resourceType = 'fetch' } = {}) {
+        const req = { url: () => overrideUrl ?? 'http://127.0.0.1:12345/api/v1/admin' + endpoint + '?period=2026-01', method: () => method, resourceType: () => resourceType, headers: () => authorization === undefined ? {} : { authorization }, failure: () => failed, frame: () => ({ isDetached: () => detached }) };
+        await dispatch({ request: () => req, continue: async () => { transport.continued++; }, abort: async () => { transport.aborted++; }, fulfill: async value => { transport.fulfilled.push(value); }, fetch: async () => { transport.fetched++; return { status: () => 200, text: async () => JSON.stringify({ data: {} }) }; } }); return req;
     }
     return { control, tokens, network, responses, pending, dispatched, receive, request, transport, budgetCalls };
 }
+test('actual initial-error callback must never replace a reader document with its synthetic API500', async () => {
+    const c = actorCallbacks(); c.control.mode = 'fail500'; c.control.paths = ['/reports/cashflow'];
+    await c.request(undefined, { url: 'http://127.0.0.1:12345/reports/cashflow', resourceType: 'document' });
+    assert.equal(c.transport.continued,1); assert.deepEqual(c.transport.fulfilled,[]);
+});
 test('actual dispatch records denied, recovered, other-actor, missing and unknown credentials without trusting control.actor', async () => {
     const c = actorCallbacks();
     for (const [header, expectedActor] of [[`Bearer ${c.tokens.denied}`, 'denied'], [`Bearer ${c.tokens.readerA}`, 'readerA'], [`Bearer ${c.tokens.readerB}`, 'readerB'], [undefined, 'unauthenticated'], ['Bearer UNRECOGNIZED_SYNTHETIC_ONLY', 'unrecognized']]) {
@@ -439,7 +445,7 @@ test('data outcome waits require a newer matching actor/month/status and keep ex
 test('actual analytics callback aborts a cancelled queue entry before any HTTP dispatch', async () => {
     const c = actorCallbacks({ pace: async cancelled => { assert.equal(cancelled(), true); return { admitted: false, at: 2150 }; } });
     const request = await c.request(`Bearer ${c.tokens.readerA}`, { endpoint: '/analytics/product-abc', failed: 'net::ERR_ABORTED' });
-    assert.deepEqual(c.transport, { continued: 0, aborted: 1 }); assert.equal(c.dispatched.get(request).cancelledBeforeDispatch, true); assert.equal(c.dispatched.get(request).analyticsCancelledAt, 2150);
+    assert.deepEqual(c.transport, { continued: 0, aborted: 1, fulfilled: [], fetched: 0 }); assert.equal(c.dispatched.get(request).cancelledBeforeDispatch, true); assert.equal(c.dispatched.get(request).analyticsCancelledAt, 2150);
     assert.equal(c.dispatched.get(request).analyticsAdmittedAt, undefined); assert.deepEqual(c.budgetCalls, ['/analytics/product-abc']);
 });
 
@@ -477,4 +483,74 @@ test('reader geometry preserves the entire outline at all four viewport edges', 
     assert.doesNotThrow(() => readerNative.assertReaderFocusClearance(good));
     for (const change of [{ y: -0.21875 }, { y: 4 }, { y: 852 }, { x: 264 }, { x: 1278 }, { outlineOffset: undefined }])
         assert.throws(() => readerNative.assertReaderFocusClearance({ ...good, ...change }));
+});
+
+// Replay the production route callback across transport and URL boundaries.
+for (const resourceType of ['document', 'script', 'stylesheet', 'image', 'font', 'media', 'other']) {
+    test(`fault boundary: ${resourceType} cannot receive API500 or an analytics pacing slot`, async () => {
+        let paced=0; const c=actorCallbacks({pace: async()=>{paced++;return {admitted:true,at:0};}});
+        c.control.mode='fail500';c.control.paths=[...readerEndpoints];
+        for(const endpoint of readerEndpoints) await c.request(undefined,{endpoint,resourceType});
+        assert.equal(c.transport.continued,readerEndpoints.length);assert.deepEqual(c.transport.fulfilled,[]);assert.equal(paced,0);
+        assert.equal(c.budgetCalls.length,readerEndpoints.length); // All /api attempts still count.
+    });
+}
+for (const method of ['POST','PUT','DELETE','PATCH','OPTIONS','HEAD']) test(`fault boundary: ${method} is forbidden before injection`,async()=>{
+    const c=actorCallbacks();c.control.mode='fail500';c.control.paths=[...readerEndpoints];
+    await c.request(undefined,{method});assert.equal(c.transport.aborted,1);assert.equal(c.transport.continued,0);assert.deepEqual(c.transport.fulfilled,[]);
+});
+for(const origin of ['https://127.0.0.1:12345','http://127.0.0.1:12346','http://localhost:12345','http://example.test:12345']) test(`fault boundary: origin ${origin} is forbidden`,async()=>{
+    const c=actorCallbacks();c.control.mode='fail500';c.control.paths=[...readerEndpoints];
+    await c.request(undefined,{url:origin+'/api/v1/admin/reports/cashflow'});assert.equal(c.transport.aborted,1);assert.deepEqual(c.transport.fulfilled,[]);
+});
+for(const pathname of ['/reports/cashflow','/analytics/product-abc','/api/v1/administrator/reports/cashflow','/api/v1/admin/reports/cashflow/','/api/v1/admin/reports/cashflow-extra','/api/v1/admin//reports/cashflow','/api/v1/admin/reports/%63ashflow','/api/v1/admin/auth/me','/api/v1/admin/unknown','/api/v1/admin','/api/v1/admin?path=/reports/cashflow','/index.html#/api/v1/admin/reports/cashflow']) test(`fault boundary: exact namespace/allowlist rejects ${pathname}`,async()=>{
+    let paced=0;const c=actorCallbacks({pace:async()=>{paced++;return {admitted:true,at:0};}});c.control.mode='fail500';
+    c.control.paths=[...readerEndpoints,'/auth/me','/unknown'];
+    await c.request(undefined,{url:'http://127.0.0.1:12345'+pathname});assert.equal(c.transport.continued,1);assert.deepEqual(c.transport.fulfilled,[]);assert.equal(paced,0);
+});
+for(const resourceType of ['fetch','xhr']) test(`fault boundary: all eight exact ${resourceType} APIs with query/hash get only synthetic500`,async()=>{
+    const c=actorCallbacks();c.control.mode='fail500';c.control.paths=[...readerEndpoints];
+    for(const endpoint of readerEndpoints) await c.request(`Bearer ${c.tokens.readerA}`,{resourceType,url:'http://127.0.0.1:12345/api/v1/admin'+endpoint+'?period=2026-01&next=/other#fragment'});
+    assert.equal(c.transport.fulfilled.length,8);assert.equal(c.transport.continued,0);assert.equal(c.budgetCalls.length,8);
+    assert.ok(c.transport.fulfilled.every(row=>row.status===500));assert.ok(c.network.every(row=>row.syntheticTransport500===true));
+});
+test('fault callback honors selected paths and does not change normal API or auth',async()=>{
+    const c=actorCallbacks();c.control.mode='fail500';c.control.paths=['/reports/cashflow','/auth/me'];
+    await c.request(undefined,{endpoint:'/reports/margin'});await c.request(undefined,{endpoint:'/auth/me'});
+    c.control.mode='normal';await c.request(undefined,{endpoint:'/reports/cashflow'});
+    assert.equal(c.transport.continued,3);assert.deepEqual(c.transport.fulfilled,[]);
+});
+test('fault callback waits for real shell readiness before fulfilling, records linked receipt and fails closed',async()=>{
+    const c=actorCallbacks();c.control.mode='fail500';c.control.paths=['/reports/cashflow'];
+    let release;const ready=new Promise(resolve=>{release=resolve;});let entered=false;
+    c.control.beforeFault=async()=>{entered=true;await ready;return {route:'/reports/cashflow',readerRootMounted:true};};
+    const request=c.request(`Bearer ${c.tokens.readerA}`,{endpoint:'/reports/cashflow'});
+    await new Promise(resolve=>setImmediate(resolve));assert.equal(entered,true);assert.equal(c.transport.fulfilled.length,0);
+    release();await request;assert.deepEqual(c.network[0].faultUiReady,{route:'/reports/cashflow',readerRootMounted:true});assert.equal(c.transport.fulfilled.length,1);
+    c.control.beforeFault=async()=>{throw Error('DO_NOT_LEAK_READINESS');};await c.request(undefined,{endpoint:'/reports/cashflow'});
+    assert.equal(c.transport.aborted,1);assert.equal(c.transport.fulfilled.length,1);assert.equal(c.network[1].faultUiReadinessRejected,true);assert.ok(!JSON.stringify(c.network).includes('DO_NOT_LEAK'));
+});
+test('fault shell requires exact URL, one mounted root and visibility without data-heading or a sleep',async()=>{
+    const events=[],root={};const page={locator(selector){assert.equal(selector,'.admin-reader-page');return root;}};
+    const expect=target=>({async toHaveURL(url,options){assert.equal(target,page);assert.equal(url,'http://127.0.0.1:12345/reports/cashflow');assert.equal(options.timeout,25000);events.push('url');},async toHaveCount(n,options){assert.equal(target,root);assert.equal(n,1);assert.equal(options.timeout,25000);events.push('count');},async toBeVisible(options){assert.equal(target,root);assert.equal(options.timeout,25000);events.push('visible');}});
+    assert.deepEqual(await readerNative.waitForReaderFaultShell({page,subject:{route:'/reports/cashflow'},adminOrigin:'http://127.0.0.1:12345',expect}),{route:'/reports/cashflow',readerRootMounted:true});assert.deepEqual(events,['url','count','visible']);
+    await assert.rejects(readerNative.waitForReaderFaultShell({page,subject:{route:'/reports/cashflow'},adminOrigin:'http://127.0.0.1:12345',expect:()=>({async toHaveURL(){throw Error('wrong target');}})}),/wrong target/);
+});
+test('initial-fault acceptance rejects missing, wrong-page, cross-context or replayed request readiness',()=>{
+    for(const change of [r=>delete r.emptyCases[0].initialFaultReady,r=>r.emptyCases[0].initialFaultReady.route='/reports/margin',r=>r.emptyCases[0].initialFaultReady.readerRootMounted=false,r=>r.emptyCases[0].initialFaultReady.contextId=99,r=>r.emptyCases[0].initialFaultReady.requestId=0]){
+        const r=fakeResult();change(r);assert.throws(()=>assertReadersNativeAcceptance(r));
+    }
+});
+test('held late-response callback only handles exact fetch/xhr Admin margin API',async()=>{
+    for(const options of [{url:'http://127.0.0.1:12345/reports/margin?period=2026-01',resourceType:'document'},{resourceType:'script'},{endpoint:'/reports/margin/'}]){
+        const c=actorCallbacks();c.control.hold={started:false};await c.request(undefined,options);assert.equal(c.control.hold.started,false);assert.equal(c.transport.fetched,0);assert.equal(c.transport.continued,1);
+    }
+    const c=actorCallbacks();const events=[];c.control.hold={started:false,ready:{resolve(){events.push('ready');}},release:{promise:Promise.resolve()},done:{resolve(){events.push('done');}}};await c.request(undefined);
+    assert.equal(c.transport.fetched,1);assert.equal(c.transport.fulfilled.length,1);assert.deepEqual(events,['ready','done']);assert.equal(c.control.hold.failed,undefined);
+});
+test('fault callback preserves all five front-end navigation documents and their query/hash', async () => {
+    const c=actorCallbacks();c.control.mode='fail500';c.control.paths=[...readerEndpoints];
+    for(const route of ['/reports/cashflow','/reports/margin','/reports/sales-ranking','/inventory/analytics','/suppliers'])
+        await c.request(undefined,{url:'http://127.0.0.1:12345'+route+'?period=2026-01#/api/v1/admin/reports/cashflow',resourceType:'document'});
+    assert.equal(c.transport.continued,5);assert.equal(c.transport.fulfilled.length,0);assert.equal(c.budgetCalls.length,0);
 });

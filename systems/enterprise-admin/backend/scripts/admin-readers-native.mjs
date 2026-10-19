@@ -59,6 +59,15 @@ export async function navigateReader({ page, subject, adminOrigin, expect, perio
     }
     return { route: subject.route, heading: unavailable ? null : subject.heading, period: unavailable || subject.id === 'suppliers' ? null : period };
 }
+export async function waitForReaderFaultShell({ page, subject, adminOrigin, expect }) {
+    // A fresh context has no preceding reader root. This shell exists in the
+    // actual pending/error branches, so readiness never depends on the held API.
+    await expect(page).toHaveURL(adminOrigin + subject.route, { timeout: readerResponseTimeoutMs });
+    const root = page.locator('.admin-reader-page');
+    await expect(root).toHaveCount(1, { timeout: readerResponseTimeoutMs });
+    await expect(root).toBeVisible({ timeout: readerResponseTimeoutMs });
+    return { route: subject.route, readerRootMounted: true };
+}
 export function readerRequestActor(authorization, tokens) {
     if (authorization === undefined || authorization === '') return 'unauthenticated';
     // These are generated fixture tokens already in this process. Never return
@@ -229,6 +238,7 @@ export function assertReadersNativeAcceptance(result) {
     assert.deepEqual(result.emptyCases.map(row => row.id), subjects.map(row => row.id));
     for (const row of result.emptyCases) {
         const subject = subjects.find(subject => subject.id === row.id);
+        assert.deepEqual(row.initialFaultReady, { route: subject.route, readerRootMounted: true, contextId: row.contextId, requestId: row.views['initial-error'][0].response.requestId });
         for (const [state, status] of [['initial-error', 500], ['empty', 200]]) {
             assert.deepEqual(row.views[state].map(view => view.width), [1366, 1024, 390]);
             for (const view of row.views[state]) {
@@ -271,7 +281,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 await route.abort();
                 return;
             }
-            const entry = { contextId, requestId: ++nextRequestId, actor: readerRequestActor(req.headers().authorization, tokens), width: req.frame().page?.().viewportSize?.()?.width ?? viewport.width, method: req.method(), path: url.pathname + url.search, allowed: url.origin === adminOrigin && req.method() === 'GET' };
+            const entry = { contextId, requestId: ++nextRequestId, actor: readerRequestActor(req.headers().authorization, tokens), width: req.frame().page?.().viewportSize?.()?.width ?? viewport.width, method: req.method(), resourceType: req.resourceType(), path: url.pathname + url.search, allowed: url.origin === adminOrigin && req.method() === 'GET' };
             dispatched.set(req, entry);
             network.push(entry);
             if (!entry.allowed) {
@@ -279,11 +289,14 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 await route.abort();
                 return;
             }
-            const endpoint = url.pathname.replace(/^\/api\/v1\/admin/, '');
+            const apiNamespace = '/api/v1/admin/';
+            const endpoint = url.pathname.startsWith(apiNamespace) ? url.pathname.slice(apiNamespace.length - 1) : null;
+            const readerApi = endpoint !== null && readerEndpoints.includes(endpoint)
+                && ['fetch', 'xhr'].includes(entry.resourceType);
             try {
                 if (url.pathname.startsWith('/api/'))
-                    budget.request(endpoint);
-                if (endpoint.startsWith('/analytics/')) {
+                    budget.request(endpoint ?? url.pathname);
+                if (readerApi && endpoint.startsWith('/analytics/')) {
                     entry.analyticsQueuedAt = performance.now();
                     const admission = await pace(() => Boolean(req.failure()) || req.frame().isDetached());
                     if (!admission.admitted) {
@@ -299,7 +312,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 await route.abort().catch(() => { });
                 return;
             }
-            if (control.hold && endpoint === '/reports/margin' && url.searchParams.get('period') === readerPeriod && !control.hold.started) {
+            if (readerApi && control.hold && endpoint === '/reports/margin' && url.searchParams.get('period') === readerPeriod && !control.hold.started) {
                 const hold = control.hold; hold.started = true; hold.request = req;
                 try {
                     const response = await route.fetch({ timeout: 10000 }); assert.equal(response.status(), 200);
@@ -313,7 +326,14 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 finally { hold.done.resolve(); }
                 return;
             }
-            if (control.mode === 'fail500' && control.paths.includes(endpoint)) {
+            if (readerApi && control.mode === 'fail500' && control.paths.includes(endpoint)) {
+                if (control.beforeFault) {
+                    try { entry.faultUiReady = await control.beforeFault(); }
+                    catch {
+                        entry.faultUiReadinessRejected = true; forbidden.push(entry);
+                        await route.abort().catch(() => {}); return;
+                    }
+                }
                 entry.syntheticTransport500 = true;
                 await route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ success: false, error: { message: 'SYNTHETIC_READER_TRANSPORT_500' } }) });
                 return;
@@ -631,10 +651,15 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             const outcome = (status, afterRequestId, endpoint = subject.paths[0]) => waitForReaderOutcome({ expect, responses, contextId, endpoint, period: defaultPeriod, actor: 'readerEmpty', status, afterRequestId });
             control.paths = subject.paths;
             control.mode = 'fail500';
+            control.beforeFault = () => waitForReaderFaultShell({ page, subject, adminOrigin, expect });
             try {
                 const initialBefore = nextRequestId;
                 await navigateReader({ page, subject, adminOrigin, expect, unavailable: true });
                 const initialResponse = await outcome(500, initialBefore);
+                const initialRequest = network.find(row => row.contextId === contextId && row.requestId === initialResponse.requestId);
+                assert.equal(initialRequest?.syntheticTransport500, true);
+                assert.deepEqual(initialRequest.faultUiReady, { route: subject.route, readerRootMounted: true });
+                emptyCase.initialFaultReady = { ...initialRequest.faultUiReady, contextId, requestId: initialRequest.requestId };
                 const retry = page.getByRole('button', { name: `重試${subject.label}`, exact: true });
                 await expect(retry).toBeVisible({ timeout: readerResponseTimeoutMs });
                 await expect(page.getByText('資料尚不可用', { exact: false }).first()).toBeVisible();
