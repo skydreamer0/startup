@@ -15,7 +15,7 @@ heavy worker, but required status contexts must remain trustworthy.
 ## Decision
 
 Use the workflow's existing ephemeral contents:read token only in a metadata
-preflight step, with a validated fixed api.github.com commit URL, redirect:error,
+preflight step in each consuming Admin/POS job, with a validated fixed api.github.com commit URL, redirect:error,
 a bounded timeout and redacted diagnostics. No new credential, grant or persistent
 access is created. Browser/subject subprocesses never receive the metadata token. An accidentally
 inherited token is deleted before a fixed, secret-free error is thrown.
@@ -52,3 +52,12 @@ Hosted exact-head CI is required before claiming actual browser or PostgreSQL
 execution. This branch is based on merged master; camera and receiving Drafts
 remain independent. Roll back the complete scheduling/proof delta together; do
 not restore anonymous fallback or leave browser consumers without their producer.
+
+## Integration correction
+
+The first hosted run exposed the other shared provenance caller in the Admin
+browser runner. Both browser jobs now have their own isolated metadata producer
+and proof-only consumer, with Admin source identity also covering the proof
+module. The metadata token remains confined to each job's producer step. The
+original failed Admin worker and failed required aggregate are retained as
+evidence; no same-SHA retry can repair a missing producer.

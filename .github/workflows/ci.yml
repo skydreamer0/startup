@@ -231,10 +231,23 @@ jobs:
         google-chrome --version
         node --test pos-ui/e2e/admin-margin-warning/run.test.mjs
 
+    - name: Authenticate Admin execution metadata only
+      id: provenance_metadata
+      shell: bash
+      env:
+        UI_QA_METADATA_TOKEN: ${{ github.token }}
+        UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      run: node pos-ui/e2e/ui-evidence/provenance-proof.mjs
+
     - name: Current Admin margin warnings in sandboxed Chrome
       id: admin_margin_browser
       timeout-minutes: 8
       env:
+        UI_QA_PROOF_PATH: ${{ steps.provenance_metadata.outputs.proof_path }}
+        UI_QA_PROOF_SHA256: ${{ steps.provenance_metadata.outputs.proof_sha256 }}
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         UI_QA_EXECUTION_SHA: ${{ github.sha }}
         UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}

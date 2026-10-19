@@ -5,7 +5,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
-import { resolveProvenance } from '../ui-evidence/provenance.mjs';
+import { readProvenanceProof } from '../ui-evidence/provenance-proof.mjs';
 import { expectedCases } from './cases.mjs';
 import { assertImportNetwork } from './import-contract.mjs';
 import { validatePng, validateTraceDesktopPng } from './png.mjs';
@@ -16,7 +16,8 @@ export const sourceInputs = ['systems/enterprise-admin/admin-ui', 'systems/enter
   'systems/enterprise-admin/pnpm-lock.yaml', 'systems/enterprise-admin/pnpm-workspace.yaml', 'systems/enterprise-admin/package.json',
   'systems/enterprise-admin/pos-ui/package.json', 'systems/enterprise-admin/pos-ui/e2e/admin-margin-warning',
   'systems/enterprise-admin/pos-ui/e2e/ui-evidence/owned-process.mjs',
-  'systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance.mjs', '.github/workflows/ci.yml'];
+  'systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance.mjs',
+  'systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance-proof.mjs', '.github/workflows/ci.yml'];
 export function assertInputIdentity(git, head, execution) {
   assert.equal(git('diff', '--name-only', head, execution, '--', ...sourceInputs), '', 'Execution inputs differ from submitted head');
 }
@@ -156,7 +157,7 @@ async function main() {
   const pos = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const admin = path.resolve(pos, '../admin-ui'), root = path.resolve(pos, '../../..');
   const git = (...args) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', timeout: 10000, maxBuffer: 8 * 1024 * 1024 }).trim();
-  const provenance = await resolveProvenance({ cwd: root });
+  const provenance = readProvenanceProof({ cwd: root });
   const assertSource = () => {
     assert.equal(git('rev-parse', 'HEAD'), provenance.executionHead);
     assert.equal(git('status', '--porcelain'), '', 'Acceptance source must be clean');
