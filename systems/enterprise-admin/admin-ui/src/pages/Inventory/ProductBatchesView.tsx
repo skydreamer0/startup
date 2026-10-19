@@ -6,6 +6,23 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProductBatches } from '../../api/productBatches';
 import { useAuth } from '../../hooks/authContext';
 
+function revealFocusedTraceEntry(button: HTMLButtonElement) {
+    if (button.disabled || document.activeElement !== button) return;
+    const container = button.closest<HTMLElement>('.product-table-scroll');
+    if (!container || container.clientWidth <= 0) return;
+    const control = button.getBoundingClientRect();
+    const frame = container.getBoundingClientRect();
+    const left = frame.left + container.clientLeft;
+    const right = left + container.clientWidth;
+    // Preserve the scoped 3px outline + 3px offset as well as the full control.
+    // Only this horizontal container moves; page/vertical position stays put.
+    const clearance = 6;
+    const delta = control.left - clearance < left ? control.left - clearance - left
+        : control.right + clearance > right ? control.right + clearance - right : 0;
+    const next = Math.max(0, Math.min(container.scrollWidth - container.clientWidth, container.scrollLeft + delta));
+    if (next !== container.scrollLeft) container.scrollTo({ left: next, behavior: 'instant' });
+}
+
 export default function ProductBatchesView({ productId, onBack }: { productId: string; onBack: () => void }) {
     const { user, loading, hasPermission } = useAuth();
     const allowed = !loading && !!user && hasPermission('read:products');
@@ -68,7 +85,7 @@ export default function ProductBatchesView({ productId, onBack }: { productId: s
                                         <td>{new Date(batch.expiryDate).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' })}</td>
                                         <td>{batch.status === 'RELEASED' ? '已驗收' : batch.status === 'BLOCKED' ? '封鎖' : '待驗收隔離'}</td>
                                         <td>{batch.quantity < 0 ? <><strong>{batch.quantity.toLocaleString()}</strong><br /><strong>負數帳量，需核對</strong></> : batch.quantity.toLocaleString()}</td>
-                                        <td><button type="button" className="btn btn-ghost product-batches-button" aria-label={`查看批次 ${batch.batchNumber} 的來源與售出分攤`} onClick={() => { if (user && allowed) setSelection({ batch, productId, userId: user.id }); }}>來源／售出分攤</button></td>
+                                        <td><button type="button" className="btn btn-ghost product-batches-button" aria-label={`查看批次 ${batch.batchNumber} 的來源與售出分攤`} onFocus={event => revealFocusedTraceEntry(event.currentTarget)} onClick={() => { if (user && allowed) setSelection({ batch, productId, userId: user.id }); }}>來源／售出分攤</button></td>
                                     </tr>)}</tbody></table>
                                 </div>
                             </>}

@@ -90,3 +90,40 @@ describe('batch-list request generation invalidates trace selection', () => {
         expect(screen.getByRole('button', { name: '查看批次 LOT-a 的來源與售出分攤' })).toHaveFocus();
     });
 });
+
+describe('focused trace entry reveals only its own horizontal scroll container', () => {
+    function rect(x: number, width: number) { return { x, left: x, right: x + width, y: 464, top: 464, bottom: 508, width, height: 44, toJSON: () => ({}) }; }
+    async function arrange(x = 249, scrollLeft = 600, scrollWidth = 900) {
+        setup(); const button = await screen.findByRole('button', { name: '查看批次 LOT-a 的來源與售出分攤' });
+        const region = screen.getByRole('region', { name: '商品批次清單' });
+        Object.defineProperties(region, { clientLeft: { value: 1 }, clientWidth: { value: 236 }, scrollWidth: { value: scrollWidth }, scrollLeft: { value: scrollLeft, writable: true }, scrollTop: { value: 17, writable: true } });
+        vi.spyOn(region, 'getBoundingClientRect').mockReturnValue(rect(112,238));
+        vi.spyOn(button, 'getBoundingClientRect').mockReturnValue(rect(x,129));
+        const scroll = vi.fn();Object.defineProperty(region,'scrollTo',{value:scroll,configurable:true});
+        const outside=vi.spyOn(window,'scrollTo').mockImplementation(()=>{});
+        const unrelated=document.createElement('div');unrelated.className='product-table-scroll';const unrelatedScroll=vi.fn();Object.defineProperty(unrelated,'scrollTo',{value:unrelatedScroll});document.body.append(unrelated);
+        return {button,region,scroll,outside,unrelated,unrelatedScroll};
+    }
+    it('corrects the hosted stable28px clipping on actual focus and focus return without vertical/page scrolling', async () => {
+        const t=await arrange();
+        try {
+            t.button.focus();expect(t.button).toHaveFocus();
+            // Client edge349 plus6px ring clearance:378+6-349=35, not a fixed jump to the end.
+            expect(t.scroll).toHaveBeenCalledWith({left:635,behavior:'instant'});
+            expect(t.region.scrollTop).toBe(17);expect(t.outside).not.toHaveBeenCalled();expect(t.unrelatedScroll).not.toHaveBeenCalled();
+            fireEvent.click(t.button);await screen.findByRole('dialog');t.scroll.mockClear();
+            fireEvent.click(screen.getByRole('button',{name:'關閉來源明細'}));
+            expect(t.button).toHaveFocus();expect(t.scroll).toHaveBeenCalledWith({left:635,behavior:'instant'});
+        } finally { t.outside.mockRestore();t.unrelated.remove(); }
+    });
+    it.each([{x:200,current:600,width:900,expected:null},{x:105,current:10,width:900,expected:0},{x:249,current:650,width:900,expected:664}])('uses nearest bounded scroll and avoids an already-visible entry: $x/$current', async ({x,current,width,expected}) => {
+        const t=await arrange(x,current,width);
+        try { t.button.focus();if(expected===null)expect(t.scroll).not.toHaveBeenCalled();else expect(t.scroll).toHaveBeenCalledExactlyOnceWith({left:expected,behavior:'instant'});expect(t.outside).not.toHaveBeenCalled();expect(t.unrelatedScroll).not.toHaveBeenCalled(); }
+        finally { t.outside.mockRestore();t.unrelated.remove(); }
+    });
+    it('does not scroll a disabled trace control', async () => {
+        const t=await arrange();
+        try { (t.button as HTMLButtonElement).disabled=true;fireEvent.focus(t.button);expect(t.scroll).not.toHaveBeenCalled(); }
+        finally { t.outside.mockRestore();t.unrelated.remove(); }
+    });
+});
