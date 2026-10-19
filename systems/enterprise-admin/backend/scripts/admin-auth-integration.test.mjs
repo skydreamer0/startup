@@ -28,7 +28,7 @@ function modelDb() {
         db[model]={count:async({where})=>data[model].filter(row=>matches(row,where)).length,createMany:async({data:rows})=>{rows.forEach(insert);return{count:rows.length};},create:async({data:row})=>insert(row),findFirst:async({where})=>structuredClone(data[model].find(row=>matches(row,where))??null),findUnique:async({where})=>structuredClone(data[model].find(row=>matches(row,where))??null),deleteMany:async({where})=>{events.push('delete:'+model);const before=data[model].length;data[model]=data[model].filter(row=>!matches(row,where));return{count:before-data[model].length};}};
     }
     const names=[...Object.values(tables),...Array.from({length:25},(_,i)=>`business_${String.fromCharCode(97+i)}`)].sort();
-    db.$queryRaw=async()=>names.map(tablename=>({tablename}));
+    db.$queryRaw=async()=>{events.push('snapshot');return names.map(tablename=>({tablename}));};
     db.$queryRawUnsafe=async query=>{const table=query.match(/public\."([a-z_]+)"/)[1],model=Object.keys(tables).find(k=>tables[k]===table);const rows=(model?data[model]:[]).map(row=>Object.fromEntries(Object.entries(row).map(([k,v])=>[snake(k),v]))).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));return[{rows:structuredClone(rows)}];};
     function audit(user,action){data.auditLog.push({id:randomUUID(),tenantId:user.tenantId,userId:user.id,action,resourceType:'users',resourceId:user.id,oldValue:null,newValue:null});}
     function login(user){user.failedLoginAttempts=0;user.lastLoginAt=new Date(Date.UTC(2026,0,1,0,0,++tick)).toISOString();user.updatedAt=user.lastLoginAt;audit(user,'LOGIN');}
@@ -50,7 +50,7 @@ function modelBrowser(database,options={}) {
             const selected=database.data.user.find(x=>x.email===body.email);
             if(!selected||selected.status!=='active')return{status:401,body:{error:{code:'AUTH_FAILED',message:'Invalid credentials'}}};
             if(selected.passwordHash!==await hashPassword(body.password)){selected.failedLoginAttempts++;return{status:401,body:{error:{code:'AUTH_FAILED',message:'Invalid credentials'}}};}
-            database.login(selected);const accessToken=`adapter-access-${++tokenNumber}`,refreshToken=`adapter-refresh-${tokenNumber}`;tokens.set(accessToken,selected);tokens.set(refreshToken,selected);return{status:200,body:{data:{accessToken,refreshToken,user:{id:selected.id}}}};
+            if(options.holdNextLogin){options.holdNextLogin=false;database.events.push('pending-http-start');await delay(40);database.events.push(database.data.user.some(x=>x.id===selected.id)?'pending-http-user-present':'pending-http-user-missing');}database.login(selected);database.events.push('login-http-finished');const accessToken=`adapter-access-${++tokenNumber}`,refreshToken=`adapter-refresh-${tokenNumber}`;tokens.set(accessToken,selected);tokens.set(refreshToken,selected);return{status:200,body:{data:{accessToken,refreshToken,user:{id:selected.id}}}};
         }
         if(endpoint==='/auth/refresh'){const selected=tokens.get(body.refreshToken);assert.ok(selected);const accessToken=`adapter-late-${++tokenNumber}`;tokens.set(accessToken,selected);return{status:200,body:{data:{accessToken}}};}
         assert.ok(user,`adapter missing authorized user at ${endpoint}`);
@@ -65,7 +65,7 @@ function modelBrowser(database,options={}) {
         async function request(endpoint,{method='GET',body=null}={}){
             const authorization=page.access?'Bearer '+page.access:undefined;const req={url:()=>origin+'/api/v1/admin'+endpoint,method:()=>method,resourceType:()=> 'fetch',headers:()=>authorization?{authorization}:{},postDataJSON:()=>body,failure:()=>context.closed?{errorText:'closed'}:null};
             let reply;requests.push({endpoint,method,actor:tokens.get(page.access)?actor(tokens.get(page.access)):null});
-            await context.handler({request:()=>req,fetch:async()=>{const response=await server(endpoint.split('?')[0],body,authorization);const url=new URL(req.url());apiLedger.push(...parentLedgerPath(url.pathname,url.search,response.status));return{status:()=>response.status,json:async()=>response.body};},fulfill:async value=>{reply=value.response?{status:value.response.status(),body:await value.response.json()}:{status:value.status,body:JSON.parse(value.body)};},abort:async()=>{},continue:async()=>{assert.fail('adapter should only generate APIs');}});
+            await context.handler({request:()=>req,fetch:async()=>{if(options.failNextFetch){options.failNextFetch=false;throw new Error('SYNTHETIC_PRIVATE_FETCH');}const response=await server(endpoint.split('?')[0],body,authorization);const url=new URL(req.url());apiLedger.push(...parentLedgerPath(url.pathname,url.search,response.status));return{status:()=>response.status,json:async()=>response.body};},fulfill:async value=>{reply=value.response?{status:value.response.status(),body:await value.response.json()}:{status:value.status,body:JSON.parse(value.body)};},abort:async()=>{},continue:async()=>{assert.fail('adapter should only generate APIs');}});
             if(!options.omitSettlement)for(const callback of listeners.get('requestfinished')??[])callback(req);
             return reply;
         }
@@ -78,14 +78,14 @@ function modelBrowser(database,options={}) {
             focus:async()=>{page.focus=name;},
             click:async()=>{
                 if(name==='Sign In')return signedIn();
-                if(name==='Logout'){await request('/auth/logout',{method:'POST'});page.access=null;page.refresh=null;page.url=origin+'/login';page.denied=false;return;}
+                if(name==='Logout'){if(options.failLogoutDuringHold&&page.pendingRefresh)throw new Error('SYNTHETIC_PRIVATE_LOGOUT');await request('/auth/logout',{method:'POST'});page.access=null;page.refresh=null;page.url=origin+'/login';page.denied=false;return;}
                 if(kind==='link'){page.url=origin+'/reports/cashflow';const reply=await request('/reports/cashflow?period=2026-01');page.denied=reply.status===403;return;}
                 if(name==='Refresh'){page.pendingRefresh=(async()=>{const reply=await request('/reports/cashflow?period=2026-01');if(reply.status===401){const prior=page.refresh;const refreshed=await request('/auth/refresh',{method:'POST',body:{refreshToken:prior}});if(page.refresh===prior&&refreshed?.status===200)page.access=refreshed.body.data.accessToken;}})();return;}
                 assert.fail('unexpected click '+kind+'/'+name);
             },
             evaluate:async()=>{if(options.geometryReadFailure)throw new Error('synthetic-private geometry read');return{x:24,y:200,width:viewport.width-48,height:44,outline:2,offset:2,color:'rgb(10, 90, 180)',focused:page.focus==='Sign In',centerHit:true,viewport:viewport.width,viewportHeight:viewport.height,pageWidth:viewport.width,...options.geometry};},
         };}
-        Object.assign(page,{on:(event,callback)=>{const set=listeners.get(event)??new Set();set.add(callback);listeners.set(event,set);},off:(event,callback)=>listeners.get(event)?.delete(callback),goto:async url=>{page.url=!page.access&&url.endsWith('/reports/cashflow')?origin+'/login':url;},getByRole:(role,args={})=>locator(role,args.name),getByLabel:(name)=>locator('label',name),getByText:()=>locator('denied'),locator:selector=>{assert.ok(['a[href="/reports/cashflow"]','.admin-reader-page'].includes(selector));return locator(selector.startsWith('a[')?'link':'root');},evaluate:async()=>page.access===null&&page.refresh===null,isClosed:()=>context.closed,keyboard:{press:async key=>{assert.equal(key,'Tab');assert.equal(page.focus,'Password');page.focus='Sign In';}}});
+        Object.assign(page,{qaRequest:request,on:(event,callback)=>{const set=listeners.get(event)??new Set();set.add(callback);listeners.set(event,set);},off:(event,callback)=>listeners.get(event)?.delete(callback),goto:async url=>{page.url=!page.access&&url.endsWith('/reports/cashflow')?origin+'/login':url;},getByRole:(role,args={})=>locator(role,args.name),getByLabel:(name)=>locator('label',name),getByText:()=>locator('denied'),locator:selector=>{assert.ok(['a[href="/reports/cashflow"]','.admin-reader-page'].includes(selector));return locator(selector.startsWith('a[')?'link':'root');},evaluate:async()=>page.access===null&&page.refresh===null,isClosed:()=>context.closed,keyboard:{press:async key=>{assert.equal(key,'Tab');assert.equal(page.focus,'Password');page.focus='Sign In';}}});
         context.newPage=async()=>page;context.page=page;return context;
     }
     return{newContext,contexts,requests,apiLedger};
@@ -96,7 +96,14 @@ async function integrated(options={}) {
     const parent=fs.readFileSync(new URL('./package-browser-acceptance.mjs',import.meta.url),'utf8');
     const start=parent.indexOf('async function capture(page, name, viewport) {');
     const actualCapture=new Function('fs','path','output','assert','captures','createHash',`${parent.slice(start,parent.indexOf('\nasync function counts()',start))};return capture;`)(fs,path,output,assert,captures,createHash);
-    const capture=async(page,name,viewport)=>{assert.ok(!page.isClosed());page.screenshot=async args=>{assert.equal(args.fullPage,false);if(options.captureFailure&&name.includes(options.captureFailure))throw Object.assign(new Error('private capture failure'),{code:'EIO'});const bytes=Buffer.alloc(24);Buffer.from([137,80,78,71,13,10,26,10]).copy(bytes);bytes.writeUInt32BE(viewport.width,16);bytes.writeUInt32BE(viewport.height,20);if(args.path)fs.writeFileSync(args.path,bytes);return bytes;};return actualCapture(page,name,viewport);};
+    const capture=async(page,name,viewport)=>{assert.ok(!page.isClosed());
+        if((options.pendingLoginAtCapture||options.fetchFailureAtCapture)&&name==='admin-auth-authenticated-1366.png'){
+            if(options.pendingLoginAtCapture)options.holdNextLogin=true;else options.failNextFetch=true;
+            page.pendingQaRequest=page.qaRequest('/auth/login',{method:'POST',body:{email:page.email,password:page.password}});
+            // Start the actual route callback before the primary capture failure.
+            await delay(1);throw new Error('SYNTHETIC_PRIVATE_PRIMARY_CAPTURE');
+        }
+page.screenshot=async args=>{assert.equal(args.fullPage,false);if(options.captureFailure&&name.includes(options.captureFailure))throw Object.assign(new Error('private capture failure'),{code:'EIO'});const bytes=Buffer.alloc(24);Buffer.from([137,80,78,71,13,10,26,10]).copy(bytes);bytes.writeUInt32BE(viewport.width,16);bytes.writeUInt32BE(viewport.height,20);if(args.path)fs.writeFileSync(args.path,bytes);return bytes;};return actualCapture(page,name,viewport);};
     if(options.collision)fs.writeFileSync(path.join(output,options.collision),'IMMUTABLE-PRIOR');
     let result,error;try{result=await runAdminAuthNative({db:database.db,browser,adminOrigin:origin,output,nonce:randomUUID(),expect:fakeExpect,capture,hashPassword});}catch(caught){error=caught;}
     return{output,database,browser,captures,result,error};
@@ -234,5 +241,34 @@ for(const [name,options]of[['read failure',{geometryReadFailure:true}],['image f
   assert.ok(x.error);checkCleanup(x);const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));const proof=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-cold-login-1366-geometry.json')));
   assert.equal(report.stage,'auth cold focus 1366');assert.ok(!JSON.stringify(report).includes('synthetic-private'));assert.ok(x.captures.some(row=>row.name==='admin-auth-failed-1366.png'));
   if(options.geometryReadFailure){assert.deepEqual(proof.samples,[]);assert.equal(proof.geometry,null);}else{assert.ok(proof.samples.length>=2);assert.equal(proof.geometry.height,44);}
+ }finally{fs.rmSync(x.output,{recursive:true});}
+});
+
+
+test('actual runner drains a late login callback before failed-path snapshot and fixture deletion',async()=>{
+ const x=await integrated({pendingLoginAtCapture:true});try{
+  await Promise.all(x.browser.contexts.map(c=>c.page.pendingQaRequest).filter(Boolean));assert.ok(x.error);checkCleanup(x);
+  const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));assert.equal(report.stage,'auth real allowed login 1366');assert.equal(report.failureDetail.kind,'Error');assert.equal(report.httpQuiescenceVerified,true);assert.equal(report.transportFailure,false);
+  const events=x.database.events,lastSnapshot=events.lastIndexOf('snapshot'),done=events.lastIndexOf('login-http-finished'),deletion=events.findIndex(x=>x.startsWith('delete:'));
+  assert.ok(events.includes('pending-http-user-present'));assert.equal(events.includes('pending-http-user-missing'),false);assert.ok(done<lastSnapshot&&lastSnapshot<deletion);
+  assert.ok(report.network.some(row=>row.endpoint==='/auth/login'&&row.cancelledBeforeFulfill&&row.status===200&&Number.isFinite(row.settledAt)));
+  assert.ok(!JSON.stringify(report).includes('SYNTHETIC_PRIVATE'));assert.equal(fs.readdirSync(x.output).filter(n=>n==='admin-auth-native.json').length,1);
+ }finally{fs.rmSync(x.output,{recursive:true});}
+});
+test('actual runner preserves primary error and refuses fixture deletion when fetch completion is unproven',async()=>{
+ const x=await integrated({fetchFailureAtCapture:true});try{
+  await Promise.all(x.browser.contexts.map(c=>c.page.pendingQaRequest).filter(Boolean));assert.ok(x.error);
+  const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json'))),cleanup=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-cleanup.json')));
+  assert.equal(report.stage,'auth real allowed login 1366');assert.equal(report.failureDetail.kind,'Error');assert.equal(report.fixtureCleaned,false);assert.equal(report.httpQuiescenceVerified,false);assert.equal(cleanup.status,'blocked');
+  assert.equal(x.database.events.some(x=>x.startsWith('delete:')),false);assert.equal(fs.existsSync(path.join(x.output,'admin-auth-after.json')),false);assert.ok(!JSON.stringify(report).includes('SYNTHETIC_PRIVATE'));assert.ok(x.browser.contexts.every(c=>c.closed));
+ }finally{fs.rmSync(x.output,{recursive:true});}
+});
+
+
+test('actual runner releases an outstanding refresh hold before draining a failed lifecycle',async()=>{
+ const x=await integrated({failLogoutDuringHold:true});try{
+  await Promise.all(x.browser.contexts.map(c=>c.page.pendingRefresh).filter(Boolean));assert.ok(x.error);checkCleanup(x);
+  const report=JSON.parse(fs.readFileSync(path.join(x.output,'admin-auth-native.json')));assert.equal(report.stage,'auth held actual refresh');assert.equal(report.httpQuiescenceVerified,true);assert.equal(report.fixtureCleaned,true);assert.equal(report.lifecycle.lateRefreshSuppressed,undefined);
+  assert.ok(report.network.some(r=>r.heldActualResponse&&r.holdReleased&&r.cancelledBeforeFulfill));assert.ok(!JSON.stringify(report).includes('SYNTHETIC_PRIVATE'));
  }finally{fs.rmSync(x.output,{recursive:true});}
 });

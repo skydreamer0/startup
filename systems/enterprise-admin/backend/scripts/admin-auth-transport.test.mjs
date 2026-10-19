@@ -55,3 +55,52 @@ test('actual icon route rejects similar paths query hash methods resources and o
   ['/brand/flow-capsule-v1/synthetic-private.svg',{resource:'other'}],
  ]){const h=await harness(request(value,options));await h.run();assert.deepEqual(h.calls,['abort']);assert.equal(h.forbidden.length,1);assert.ok(!JSON.stringify(h.network).includes('synthetic-private'));assert.equal(h.budget.receipt().apiRequests,0);}
 });
+
+test('context closing cancels a queued real APIRequestContext fetch before disposed-context dispatch',async()=>{
+ const {request:apiRequest}=await import('@playwright/test');const api=await apiRequest.newContext();
+ const h=await harness(request('/api/v1/admin/analytics/trends',{authorization:'Bearer synthetic-A'}));
+ const admitted=defer(),started=defer();h.scope={closing:false,pending:[]};h.pace=async cancelled=>{started.resolve();await admitted.promise;return{admitted:!cancelled(),at:1};};
+ let fetches=0;h.route.fetch=async()=>{fetches++;return api.get(origin+'/api/v1/admin/analytics/trends');};
+ const run=createAuthRouteHandler(h)(h.route);await started.promise;h.scope.closing=true;await api.dispose();admitted.resolve();await run;
+ assert.equal(fetches,0);assert.equal(h.network[0].cancelled,true);assert.equal(h.state.transportFailure,false);assert.deepEqual(await Promise.all(h.pending),[true]);
+});
+
+async function withRealAuthHttp(run){
+ const http=await import('node:http'),{request:apiRequest}=await import('@playwright/test');
+ const entered=defer(),release=defer(),events=[];let responseMode='ok';
+ const server=http.createServer(async(req,res)=>{events.push('server-start');entered.resolve();await release.promise;events.push('server-complete');if(responseMode==='disconnect'){res.destroy();return;}res.statusCode=responseMode==='500'?500:200;res.setHeader('content-type','application/json');res.end(responseMode==='malformed'?'SYNTHETIC_PRIVATE_BODY':JSON.stringify(responseMode==='500'?{error:{code:'RATE_LIMIT_EXCEEDED'}}:{data:{}}));});
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${server.address().port}`,api=await apiRequest.newContext();
+ try{await run({api,base,entered,release,events,mode:value=>{responseMode=value;}});}finally{release.resolve();await api.dispose();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+}
+test('real loopback fetch drains before API context disposal and never fulfills a closing context',async()=>{
+ const {createAuthContextScope,closeAuthContextScope}=await import('./admin-auth-transport.mjs');
+ await withRealAuthHttp(async({api,base,entered,release,events})=>{
+  const h=await harness(request('/api/v1/admin/analytics/trends',{base,authorization:'Bearer synthetic-A'}));h.origin=base;h.scope=createAuthContextScope(1);h.route.fetch=async()=>api.get(base+'/api/v1/admin/analytics/trends');
+  const running=createAuthRouteHandler(h)(h.route);await entered.promise;let disposed=false;
+  const closing=closeAuthContextScope(h.scope,async()=>{events.push('context-dispose');disposed=true;await api.dispose();});
+  await new Promise(resolve=>setTimeout(resolve,20));assert.equal(disposed,false);assert.equal(h.scope.closing,true);release.resolve();await closing;await running;
+  assert.deepEqual(events,['server-start','server-complete','context-dispose']);assert.equal(h.state.transportFailure,false);assert.equal(h.responses[0].status,200);assert.equal(h.network[0].cancelledBeforeFulfill,true);assert.equal(h.calls.some(x=>x.fulfilled),false);assert.ok(h.network[0].httpCompletedAt<=h.scope.preCloseSettledAt);assert.ok(h.scope.preCloseSettledAt<=h.scope.closedAt&&h.scope.closedAt<=h.scope.callbacksSettledAt);
+ });
+});
+test('closing scope prevents queued and late API dispatch without poisoning the next independent context',async()=>{
+ const {createAuthContextScope,closeAuthContextScope}=await import('./admin-auth-transport.mjs');const h=await harness(request('/api/v1/admin/analytics/trends',{authorization:'Bearer synthetic-A'}));h.scope=createAuthContextScope(1);const ready=defer(),release=defer();h.pace=async cancelled=>{ready.resolve();await release.promise;return{admitted:!cancelled()};};
+ const running=createAuthRouteHandler(h)(h.route);await ready.promise;let closed=0;const closing=closeAuthContextScope(h.scope,async()=>{closed++;});release.resolve();await closing;await running;await closeAuthContextScope(h.scope,async()=>{closed++;});
+ await createAuthRouteHandler(h)(h.route);assert.equal(closed,1);assert.equal(h.calls.includes('fetch'),false);assert.equal(h.budget.receipt().apiRequests,2);assert.equal(h.state.transportFailure,false);assert.ok(h.network.every(x=>x.cancelled&&x.cancelReason==='context-closing'));
+ const next=await harness(request('/api/v1/admin/analytics/kpis',{authorization:'Bearer synthetic-A'}));next.state=h.state;await createAuthRouteHandler(next)(next.route);assert.equal(next.responses[0].status,200);assert.equal(next.state.transportFailure,false);
+});
+test('real loopback HTTP500 stays an actual failed response rather than cancellation or success',async()=>{
+ await withRealAuthHttp(async({api,base,release,mode})=>{mode('500');release.resolve();const h=await harness(request('/api/v1/admin/analytics/kpis',{base,authorization:'Bearer synthetic-A'}));h.origin=base;h.route.fetch=async()=>api.get(base+'/api/v1/admin/analytics/kpis');await createAuthRouteHandler(h)(h.route);assert.equal(h.network[0].status,500);assert.equal(h.responses[0].status,500);assert.equal(h.responses.some(x=>x.status===200),false);assert.equal(h.network[0].cancelled,undefined);assert.equal(h.state.transportFailure,true);assert.deepEqual(await Promise.all(h.pending),[false]);});
+});
+for(const mode of ['malformed','disconnect'])test(`real loopback ${mode} remains fail-closed with no raw error and HTTP completion unproven`,async()=>{
+ await withRealAuthHttp(async({api,base,release,mode:setMode})=>{setMode(mode);release.resolve();const h=await harness(request('/api/v1/admin/analytics/kpis',{base,authorization:'Bearer synthetic-A'}));h.origin=base;h.route.fetch=async()=>api.get(base+'/api/v1/admin/analytics/kpis',{maxRetries:0});await createAuthRouteHandler(h)(h.route);assert.equal(h.state.transportFailure,true);assert.equal(h.state.httpQuiescenceUnproven,true);assert.deepEqual(await Promise.all(h.pending),[false]);assert.equal(h.network[0].failureStage,mode==='malformed'?'body':'fetch');assert.ok(!JSON.stringify(h.network).includes('SYNTHETIC_PRIVATE'));});
+});
+test('browser abort never excuses malformed identity projection after a real response arrived',async()=>{
+ let aborted=false;const req=request('/api/v1/admin/auth/me',{authorization:'Bearer synthetic-A'});req.failure=()=>aborted?{errorText:'SYNTHETIC_PRIVATE_ABORT'}:null;const h=await harness(req);h.route.fetch=async()=>({status:()=>200,json:async()=>{aborted=true;return{data:{id:'foreign-user',permissions:[],token:'SYNTHETIC_PRIVATE_TOKEN'}};}});
+ await h.run();assert.equal(h.state.transportFailure,true);assert.equal(h.network[0].failureStage,'projection');assert.equal(h.network[0].failureDetail.code,'ERR_ASSERTION');assert.deepEqual(await Promise.all(h.pending),[false]);assert.equal(h.network[0].cancelled,undefined);assert.ok(!JSON.stringify(h.network).includes('SYNTHETIC_PRIVATE'));
+});
+test('genuine browser abort after actual response is never fulfilled or replayed',async()=>{
+ let aborted=false;const req=request('/api/v1/admin/analytics/kpis',{authorization:'Bearer synthetic-A'});req.failure=()=>aborted?{errorText:'cancelled'}:null;const h=await harness(req);h.route.fetch=async()=>({status:()=>200,json:async()=>{aborted=true;return{data:{}};}});await h.run();assert.equal(h.calls.some(x=>x.fulfilled),false);assert.equal(h.network[0].cancelledBeforeFulfill,true);assert.equal(h.state.transportFailure,false);assert.equal(h.responses[0].status,200);
+});
+test('fetch rejection with a genuine browser abort is cancellation but cannot certify safe database cleanup',async()=>{
+ let aborted=false;const req=request('/api/v1/admin/analytics/kpis',{authorization:'Bearer synthetic-A'});req.failure=()=>aborted?{errorText:'cancelled'}:null;const h=await harness(req);h.route.fetch=async()=>{aborted=true;throw new Error('SYNTHETIC_PRIVATE_FETCH');};await h.run();assert.equal(h.network[0].cancelled,true);assert.equal(h.state.transportFailure,false);assert.equal(h.state.httpQuiescenceUnproven,true);assert.ok(!JSON.stringify(h.network).includes('SYNTHETIC_PRIVATE'));
+});

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { buildAuthFixture, seedAuthFixture, cleanupAuthFixture, authCredential, authPeriod, redactAuthSnapshot, assertAuthMutationScope, assertAuthAuditMatchesResponses } from './admin-auth-fixture.mjs';
-import { createAuthRouteHandler, createAuthBudget } from './admin-auth-transport.mjs';
+import { createAuthRouteHandler, createAuthBudget, createAuthContextScope, closeAuthContextScope } from './admin-auth-transport.mjs';
 import { createReaderPacer } from './admin-readers-native.mjs';
 import { safeTraceFailure } from './admin-trace-native.mjs';
 const viewports=[{width:1366,height:768},{width:1024,height:768},{width:390,height:844}];
@@ -12,6 +12,7 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>{resolve=done;})
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export function assertAuthNativeAcceptance(result) {
     assert.equal(result.status,'passed');assert.equal(result.failure,null);assert.equal(result.fixtureCleaned,true);assert.equal(result.mutationScopeVerified,true);
+    assert.equal(result.httpQuiescenceVerified,true);assert.equal(result.contextCleanup.length,viewports.length);for(const row of result.contextCleanup){assert.equal(row.closing,true);assert.ok(row.closeStartedAt<=row.preCloseSettledAt&&row.preCloseSettledAt<=row.closedAt&&row.closedAt<=row.callbacksSettledAt);}
     assert.equal(result.databaseGrantLookup,true);assert.equal(result.forbidden.length,0);assert.equal(result.transportFailure,false);assert.equal(result.diagnosticFailures.length,0);
     assert.deepEqual(result.coldEntries.map(row=>row.viewport),viewports);
     for(const row of result.coldEntries){assert.equal(row.loginStatus,200);assert.equal(row.profileStatus,200);assert.equal(row.reportStatus,200);assert.equal(row.actualForm,true);assert.equal(row.credentialStorageEmptyInitially,true);for(const [key,endpoint]of[['loginRequestId','/auth/login'],['profileRequestId','/auth/me'],['reportRequestId','/reports/cashflow']])assert.ok(result.responses.some(proof=>proof.contextId===row.contextId&&proof.requestId===row[key]&&proof.endpoint===endpoint&&proof.actor==='allowed'&&proof.status===200));}
@@ -26,15 +27,15 @@ export function assertAuthNativeAcceptance(result) {
 }
 export async function runAdminAuthNative({db,browser,adminOrigin,output,nonce,expect,capture,hashPassword}) {
     const origin=new URL(adminOrigin);assert.equal(origin.protocol,'http:');assert.equal(origin.hostname,'127.0.0.1');assert.ok(origin.port);
-    let f;const contexts=[],pending=[],network=[],responses=[],forbidden=[],coldEntries=[],lifecycle={},tokenActors=new Map();
-    const state={nextRequestId:0,transportFailure:false,faultOnce:false,holdRefresh:null};
+    let f;const contexts=[],requestScopes=[],pending=[],network=[],responses=[],forbidden=[],coldEntries=[],lifecycle={},tokenActors=new Map();
+    const state={nextRequestId:0,transportFailure:false,faultOnce:false,holdRefresh:null,httpQuiescenceUnproven:false};
     const budget=createAuthBudget(),pace=createReaderPacer({check:budget.check});let stage='auth fixture',failure=null,failureDetail=null,before,after,mutations,fixtureCleaned=false,databaseGrantLookup=false,expired=false;
     let contextId=0,actualGrantReportsAllowed=false,actualGrantReportsDenied=false;const diagnosticFailures=[];
     const write=(name,value)=>fs.writeFileSync(path.join(output,name),JSON.stringify(value,null,2)+'\n',{flag:'wx'});
     function diagnosticWrite(name,value){try{write(name,value);return true;}catch(error){diagnosticFailures.push({file:name,detail:safeTraceFailure(error)});failure??='Admin auth evidence write failed';failureDetail??=safeTraceFailure(error);return false;}}
-    const timer=setTimeout(()=>{expired=true;state.holdRefresh?.release.resolve();for(const context of contexts)void context.close().catch(()=>{});},180000);
+    const timer=setTimeout(()=>{expired=true;state.holdRefresh?.release.resolve();for(const scope of requestScopes)scope.closing=true;},180000);
     async function snapshot(){const tables=await db.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename<>'_prisma_migrations' ORDER BY tablename`;const result={};for(const{tablename}of tables){assert.match(tablename,/^[a-z_]+$/);result[tablename]=(await db.$queryRawUnsafe(`SELECT COALESCE(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),'[]'::jsonb) AS rows FROM public."${tablename}" t`))[0].rows;}assert.equal(Object.keys(result).length,33);return result;}
-    async function contextFor(viewport){budget.check();const context=await browser.newContext({viewport});contexts.push(context);const id=++contextId;await context.route('**/*',createAuthRouteHandler({origin:adminOrigin,fixture:f,tokenActors,state,budget,pace,network,responses,forbidden,pending,contextId:id}));return{context,page:await context.newPage(),id,viewport};}
+    async function contextFor(viewport){budget.check();const context=await browser.newContext({viewport});contexts.push(context);const id=++contextId,scope=createAuthContextScope(id);requestScopes.push(scope);await context.route('**/*',createAuthRouteHandler({origin:adminOrigin,fixture:f,tokenActors,state,budget,pace,network,responses,forbidden,pending,contextId:id,scope}));return{context,page:await context.newPage(),id,viewport,scope};}
     async function responseAfter(id,beforeId,endpoint,actor,status){await expect.poll(()=>{budget.check();assert.equal(state.transportFailure,false,'Auth transport proof failed');return responses.find(row=>row.contextId===id&&row.requestId>beforeId&&row.endpoint===endpoint&&row.actor===actor&&row.status===status)??null;},{timeout:25000}).not.toBeNull();return responses.find(row=>row.contextId===id&&row.requestId>beforeId&&row.endpoint===endpoint&&row.actor===actor&&row.status===status);}
     async function loginForm(subject){await expect(subject.page).toHaveURL(adminOrigin+'/login',{timeout:25000});await expect(subject.page.getByRole('button',{name:'Sign In',exact:true})).toBeEnabled();await expect(subject.page.getByLabel('Email',{exact:true})).toBeVisible();await expect(subject.page.getByLabel('Password',{exact:true})).toBeVisible();}
     async function safeCapture(subject,name){await capture(subject.page,`admin-auth-${name}-${subject.viewport.width}.png`,subject.viewport);}
@@ -56,6 +57,7 @@ export async function runAdminAuthNative({db,browser,adminOrigin,output,nonce,ex
         await seedAuthFixture(db,f,value=>{stage=value;});databaseGrantLookup=true;before=await snapshot();write('admin-auth-before.json',redactAuthSnapshot(before));
         for(let index=0;index<viewports.length;index++){
             const subject=await contextFor(viewports[index]);stage=`auth cold entry ${subject.viewport.width}`;
+            let subjectFailure;
             try{
                 await subject.page.goto(adminOrigin+'/login');await loginForm(subject);const credentialStorageEmptyInitially=await subject.page.evaluate(()=>localStorage.getItem('accessToken')===null&&localStorage.getItem('refreshToken')===null);assert.equal(credentialStorageEmptyInitially,true);stage=`auth cold focus ${subject.viewport.width}`;await captureLoginFocus(subject,'cold-login');
                 if(index===0){stage='auth wrong password';await submit(subject,'allowed',{wrong:true,status:401});assert.equal((await db.user.findUnique({where:{id:f.ids.allowed}})).failedLoginAttempts,1);await safeCapture(subject,'wrong-password');lifecycle.wrongPasswordDenied=true;stage='auth suspended';await submit(subject,'suspended',{status:401});await safeCapture(subject,'suspended');lifecycle.suspendedDenied=true;}
@@ -76,17 +78,27 @@ export async function runAdminAuthNative({db,browser,adminOrigin,output,nonce,ex
                     assert.equal(await subject.page.evaluate(()=>localStorage.getItem('accessToken')===null&&localStorage.getItem('refreshToken')===null),true);lifecycle.pendingAuthCleared=true;lifecycle.refreshHoldProof={...ready,logoutRequestId:logoutProof.requestId,responseReadyAt:hold.responseReadyAt,logoutObservedAt:hold.logoutObservedAt,releasedAt:hold.releasedAt,browserSettlement:hold.browserSettlement,browserSettledAt:hold.browserSettledAt,storageEmptyAfterRelease:true};
                     await subject.page.goto(adminOrigin+'/reports/cashflow');await loginForm(subject);await safeCapture(subject,'late-refresh-suppressed');lifecycle.lateRefreshSuppressed=true;
                 }
-            }catch(error){await boundedCaptureFailure(subject,'failed');throw error;}finally{await subject.context.close();}
+            }catch(error){subjectFailure=error;await boundedCaptureFailure(subject,'failed');throw error;}finally{
+                state.holdRefresh?.release.resolve();
+                try{await closeAuthContextScope(subject.scope,()=>subject.context.close());}catch(error){state.httpQuiescenceUnproven=true;if(!subjectFailure)throw error;}
+            }
+            assert.equal(state.transportFailure,false,'Auth context transport proof failed');
         }
         assert.ok((await Promise.all(pending)).every(Boolean),'Auth callback proof failed');assert.equal(state.transportFailure,false);assert.equal(forbidden.length,0);
     }catch(error){failure=`Admin auth acceptance failed at ${stage}`;failureDetail=safeTraceFailure(error);}
     finally{
-        state.holdRefresh?.release.resolve();clearTimeout(timer);for(const context of contexts)await context.close().catch(()=>{});
+        state.holdRefresh?.release.resolve();clearTimeout(timer);for(const scope of requestScopes)scope.closing=true;
+        for(let index=0;index<contexts.length;index++){
+            try{await closeAuthContextScope(requestScopes[index],()=>contexts[index].close());}catch(error){failure??='Admin auth context drain failed';failureDetail??=safeTraceFailure(error);state.httpQuiescenceUnproven=true;}
+        }
+        await Promise.all(pending); // Includes failed-path callbacks before any snapshot or deletion.
+        if(state.transportFailure)failure??='Admin auth transport proof failed';
         if(expired)failure??='Admin auth whole-flow deadline exceeded';
-        if(before){try{after=await snapshot();mutations=assertAuthMutationScope(before,after,f);if(!failure)Object.assign(mutations,assertAuthAuditMatchesResponses(mutations,responses,f));diagnosticWrite('admin-auth-after.json',redactAuthSnapshot(after));diagnosticWrite('admin-auth-mutations.json',mutations);}catch(error){failure??='Admin auth mutation scope failed';failureDetail??=safeTraceFailure(error);}}
-        if(f?.ownershipProven){try{const remaining=await cleanupAuthFixture(db,f);fixtureCleaned=true;diagnosticWrite('admin-auth-cleanup.json',{status:'passed',remaining});}catch(error){failure??='Admin auth owned cleanup failed';failureDetail??=safeTraceFailure(error);diagnosticWrite('admin-auth-cleanup.json',{status:'failed'});}}else diagnosticWrite('admin-auth-cleanup.json',{status:'not-required',reason:'no absent-ID ownership acquired'});
+        if(before&&!state.httpQuiescenceUnproven){try{after=await snapshot();mutations=assertAuthMutationScope(before,after,f);if(!failure)Object.assign(mutations,assertAuthAuditMatchesResponses(mutations,responses,f));diagnosticWrite('admin-auth-after.json',redactAuthSnapshot(after));diagnosticWrite('admin-auth-mutations.json',mutations);}catch(error){failure??='Admin auth mutation scope failed';failureDetail??=safeTraceFailure(error);}}
+        if(f?.ownershipProven&&state.httpQuiescenceUnproven){failure??='Admin auth HTTP completion unproven';diagnosticWrite('admin-auth-cleanup.json',{status:'blocked',reason:'HTTP completion unproven; no fixture row deletion attempted'});}
+        else if(f?.ownershipProven){try{const remaining=await cleanupAuthFixture(db,f);fixtureCleaned=true;diagnosticWrite('admin-auth-cleanup.json',{status:'passed',remaining});}catch(error){failure??='Admin auth owned cleanup failed';failureDetail??=safeTraceFailure(error);diagnosticWrite('admin-auth-cleanup.json',{status:'failed'});}}else diagnosticWrite('admin-auth-cleanup.json',{status:'not-required',reason:'no absent-ID ownership acquired'});
     }
-    const result={nonce,status:failure?'failed':'passed',failure,failureDetail,stage,fixtureCleaned,mutationScopeVerified:!!mutations,diagnosticFailures,databaseGrantLookup,actualGrantReportsAllowed,actualGrantReportsDenied,lifecycle,coldEntries,network,responses,forbidden,transportFailure:state.transportFailure,mutations:mutations??null,budget:budget.receipt(),beforeRedactedSha256:before?hash(redactAuthSnapshot(before)):null,afterRedactedSha256:after?hash(redactAuthSnapshot(after)):null,scope:'Real Admin email/password form -> production Argon2/JWT/RBAC -> owned PG. One full lifecycle plus three independent cold contexts. No POS PIN policy, physical devices, native zoom or operational release.'};
+    const result={nonce,status:failure?'failed':'passed',failure,failureDetail,stage,fixtureCleaned,mutationScopeVerified:!!mutations,diagnosticFailures,databaseGrantLookup,actualGrantReportsAllowed,actualGrantReportsDenied,lifecycle,coldEntries,network,responses,forbidden,transportFailure:state.transportFailure,httpQuiescenceVerified:!state.httpQuiescenceUnproven&&pending.length===network.filter(row=>row.api&&row.allowed).length&&network.filter(row=>row.api&&row.allowed).every(row=>Number.isFinite(row.settledAt)),contextCleanup:requestScopes.map(scope=>({contextId:scope.contextId,closing:scope.closing,callbacks:scope.pending.length,closeStartedAt:scope.closeStartedAt,preCloseSettledAt:scope.preCloseSettledAt,callbacksSettledAt:scope.callbacksSettledAt,closedAt:scope.closedAt})),mutations:mutations??null,budget:budget.receipt(),beforeRedactedSha256:before?hash(redactAuthSnapshot(before)):null,afterRedactedSha256:after?hash(redactAuthSnapshot(after)):null,scope:'Real Admin email/password form -> production Argon2/JWT/RBAC -> owned PG. One full lifecycle plus three independent cold contexts. No POS PIN policy, physical devices, native zoom or operational release.'};
     if(!failure){try{assertAuthNativeAcceptance(result);}catch(error){result.status='failed';result.failure='Auth acceptance contract failed';result.failureDetail=safeTraceFailure(error);}}
     write('admin-auth-native.json',result);assertAuthNativeAcceptance(result);return result;
 }

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { safeTraceFailure } from './admin-trace-native.mjs';
 import { authActorKeys, authCredential, authReadResources } from './admin-auth-fixture.mjs';
 export const authApiPrefix = '/api/v1/admin';
 // Exact current Admin index.html icon paths only; this is not a brand-directory wildcard.
@@ -59,7 +60,27 @@ export function projectAuthResponse(endpoint, status, body, actor, fixture, toke
     }
     return safe;
 }
-export function createAuthRouteHandler({ origin, fixture, tokenActors, state, budget, pace, network, responses, forbidden, pending, contextId }) {
+export function createAuthContextScope(contextId) {
+    return { contextId, closing:false, pending:[], closeStartedAt:null, preCloseSettledAt:null, callbacksSettledAt:null, closedAt:null, closePromise:null };
+}
+export async function closeAuthContextScope(scope, close) {
+    if (!scope.closePromise) {
+        scope.closing=true; scope.closeStartedAt=performance.now();
+        scope.closePromise=(async()=>{
+            // Freeze new dispatch, cancel queued reads, and let already-dispatched HTTP
+            // finish while its APIRequestContext remains alive. Closing first races fetch.
+            let size; do { size=scope.pending.length; await Promise.all(scope.pending); } while(size!==scope.pending.length);
+            scope.preCloseSettledAt=performance.now();
+            await close();
+            scope.closedAt=performance.now();
+            // Close may deliver late callbacks; the closing scope prevents any fetch.
+            do { size=scope.pending.length; await Promise.all(scope.pending); } while(size!==scope.pending.length);
+            scope.callbacksSettledAt=performance.now();
+        })();
+    }
+    return scope.closePromise;
+}
+export function createAuthRouteHandler({ origin, fixture, tokenActors, state, budget, pace, network, responses, forbidden, pending, contextId, scope }) {
     return async route => {
         const request=route.request(), url=new URL(request.url()), policy=authRequestPolicy(request,origin);
         const entry={contextId,requestId:++state.nextRequestId,...policy,actor:policy.api?authDispatchActor(request,policy.endpoint,fixture,tokenActors):null};
@@ -69,22 +90,39 @@ export function createAuthRouteHandler({ origin, fixture, tokenActors, state, bu
             forbidden.push(entry);await route.abort();return;
         }
         if (!policy.api) {await route.continue();return;}
-        budget.request(policy.endpoint);
         // Capture intent and actor before queueing; only one exact report response may be replaced.
         const synthetic401 = state.faultOnce === true && policy.method==='GET' && policy.endpoint==='/reports/cashflow' && url.searchParams.get('period')==='2026-01';
         if(synthetic401)state.faultOnce=false;
         const hold=policy.endpoint==='/auth/refresh'?state.holdRefresh:null;
+        let phase='admission';
+        const cancelled=()=>scope?.closing===true||!!request.failure();
+        const cancel=async()=>{entry.cancelled=true;entry.cancelReason=scope?.closing?'context-closing':'browser-aborted';await route.abort().catch(()=>{});};
         const work=(async()=>{
-            if(policy.endpoint.startsWith('/analytics/')) {const admission=await pace(()=>!!request.failure());entry.pacing=admission;if(!admission.admitted){entry.cancelled=true;await route.abort().catch(()=>{});return;}}
-            if(request.failure()){entry.cancelled=true;await route.abort().catch(()=>{});return;}
+            budget.request(policy.endpoint);
+            if(cancelled()){await cancel();return;}
+            if(policy.endpoint.startsWith('/analytics/')) {phase='pacing';const admission=await pace(cancelled);entry.pacing=admission;if(!admission.admitted){await cancel();return;}}
+            if(cancelled()){await cancel();return;}
             if(synthetic401){entry.synthetic401=true;entry.status=401;responses.push({...entry,status:401,errorCode:'SYNTHETIC_EXPIRED_ACCESS'});await route.fulfill({status:401,contentType:'application/json',body:JSON.stringify({success:false,error:{code:'SYNTHETIC_EXPIRED_ACCESS',message:'Synthetic expired access'}})});return;}
+            phase='fetch';entry.fetchStartedAt=performance.now();
             const actual=await route.fetch({timeout:25000}),status=actual.status();entry.status=status;
-            const body=await actual.json();const projection=projectAuthResponse(policy.endpoint,status,body,entry.actor,fixture,tokenActors);
+            phase='body';const body=await actual.json();entry.httpCompletedAt=performance.now();
+            phase='projection';const projection=projectAuthResponse(policy.endpoint,status,body,entry.actor,fixture,tokenActors);
             responses.push({contextId,requestId:entry.requestId,path:entry.path,method:entry.method,endpoint:policy.endpoint,...projection});
+            assert.ok(status<500,'Auth actual server error');
             if(hold){hold.browserRequest=request;assert.equal(status,200);assert.equal(projection.actualTokenIssued,true);entry.heldActualResponse=true;hold.responseReadyAt=performance.now();hold.ready.resolve({contextId,requestId:entry.requestId,actor:entry.actor,status});await hold.release.promise;hold.releasedAt=performance.now();entry.holdReleased=true;hold.releaseObserved=true;}
-            try{await route.fulfill({response:actual});}catch(error){if(!request.failure())throw error;entry.cancelled=true;}
+            // A real browser abort (including the held refresh) is never replayed.
+            if(cancelled()){entry.cancelledBeforeFulfill=true;await cancel();return;}
+            phase='fulfill';try{await route.fulfill({response:actual});}catch(error){if(!request.failure())throw error;entry.cancelledBeforeFulfill=true;await cancel();}
         })();
-        const outcome=work.then(()=>true,async()=>{const cancelled=!!request.failure();if(cancelled){entry.cancelled=true;}else{entry.transportFailed=true;state.transportFailure=true;}await route.abort().catch(()=>{});return cancelled;});
-        pending.push(outcome);await outcome;
+        const outcome=work.then(()=>true,async error=>{
+            // Do not turn a malformed identity/body or unknown fetch failure into
+            // cancellation merely because the browser later happened to abort.
+            entry.failureStage=phase;entry.failureDetail=safeTraceFailure(error);
+            if(phase==='fetch'||phase==='body')state.httpQuiescenceUnproven=true;
+            if(phase==='fetch'&&request.failure()){await cancel();return true;}
+            entry.transportFailed=true;state.transportFailure=true;
+            await route.abort().catch(()=>{});return false;
+        }).finally(()=>{entry.settledAt=performance.now();});
+        pending.push(outcome);scope?.pending.push(outcome);await outcome;
     };
 }
