@@ -48,3 +48,9 @@ test('actual collection cannot prewrite native report and context teardown cance
  const runner=source('./run.mjs');assert.match(runner,/\['collection', app, \[[^\n]*'--list', '--reporter=list'\]\]/);
  const fixture=source('./fixtures.ts');assert.ok(fixture.includes('endRecovery(state);'));assert.ok(fixture.indexOf('endRecovery(state);')<fixture.indexOf('await context.close()'));
 });
+test('actual native initial boundary awaits exact dispatch plus persisted terminal state before frozen reads',()=>{
+ const spec=source('./recovery.spec.ts');
+ const wait="await expect.poll(async () => recoveryBoundaryReady(await saved(page, scope), guard.requests, scenario), { timeout: 20_000, intervals: [50, 100, 250, 500] }).toBe(true);";
+ assert.ok(spec.includes(wait));assert.ok(spec.indexOf(wait)<spec.indexOf('const frozen = await saved(page, scope)'));
+ assert.ok(spec.includes("expect(frozen.status).toBe(scenario.mode === 'conflict' ? 'conflict' : 'unknown')"));
+});

@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures';
 import { cases, origin, prefix } from './contract.mjs';
+import { recoveryBoundaryReady } from './network.mjs';
 import { capture, controlGeometry, assertControlGeometry, fontProof, observeControl, writeJson } from './evidence.mjs';
 import type { Page, Locator } from '@playwright/test';
 async function saved(page: Page, scope: string) {
@@ -31,6 +32,9 @@ for (const scenario of cases) test(scenario.title, async ({ page, guard }, info)
   await expect(panel).toContainText(scenario.mode === 'conflict' ? '結帳意圖衝突' : '尚未確認結帳結果');
   await expect(page.getByTestId('cart-checkout-button')).toBeDisabled();
   await expect(page.getByTestId('receipt-modal')).toHaveCount(0);
+  // Pending and unknown share the same visible heading. Await the actual
+  // dispatch outcome AND its persisted state, never the heading alone.
+  await expect.poll(async () => recoveryBoundaryReady(await saved(page, scope), guard.requests, scenario), { timeout: 20_000, intervals: [50, 100, 250, 500] }).toBe(true);
   const frozen = await saved(page, scope); expect(frozen.status).toBe(scenario.mode === 'conflict' ? 'conflict' : 'unknown');
   expect(frozen.payload.cartItems).toHaveLength(1); expect(frozen.payload.cartItems[0].quantity).toBe(1);
   guard.journey.commandId = frozen.payload.commandId;

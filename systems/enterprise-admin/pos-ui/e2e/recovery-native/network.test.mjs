@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import http from 'node:http';
-import { createPacer, createRecoveryDispatch, createState, requestClass, endRecovery } from './network.mjs';
+import { createPacer, createRecoveryDispatch, createState, requestClass, endRecovery, recoveryBoundaryReady } from './network.mjs';
 import { cases, origin, prefix, authorizeOwnedWrite } from './contract.mjs';
 const commandId='11111111-1111-4111-8111-111111111111', fixture={nonce:'owned-nonce',tenantId:'tenant',userId:'cashier',productId:'product',shiftId:'shift',accessToken:'synthetic-token'};
 const payload={commandId,shiftId:'shift',cartItems:[{productId:'product',quantity:1,discountRate:0}],paymentMethod:'CASH',orderDiscountAmount:0,orderDiscountNote:'',salesStaffId:'cashier'};
@@ -57,3 +57,23 @@ test('endRecovery releases a refund response hold without delivering after close
  const state=createState(fixture,cases[0]);let disposed=0;const req=request(origin+prefix+'/orders/'+commandId+'/refund','POST','fetch',{reason:'合成原生退款'});const route=routeFor(req,async()=>({status:()=>200,body:async()=>Buffer.from('{"success":true}'),dispose:async()=>{disposed++;}}));
  const task=createRecoveryDispatch(state,{pace:async()=>true})(route);while(!state.refundReady)await new Promise(resolve=>setTimeout(resolve,1));endRecovery(state);await task;assert.equal(disposed,1);assert.equal(state.requests[0].cancelled,true);assert.deepEqual(route.calls,[]);
 });
+
+function terminalRow(scenario=cases[0]){return{caseId:scenario.id,method:'POST',path:prefix+'/checkout',phase:'submit',payload:{commandId},dispatched:true,status:201,sha256:'a'.repeat(64),droppedAfterCommit:true,delivered:false};}
+test('recovery boundary does not equate the shared pending heading with unknown completion',()=>{
+ const row=terminalRow();assert.equal(recoveryBoundaryReady({status:'pending',payload:{commandId}},[row],cases[0]),false);assert.equal(recoveryBoundaryReady({status:'unknown',payload:{commandId}},[row],cases[0]),true);
+});
+for(const [label,change]of Object.entries({missing:rows=>rows.pop(),queued:rows=>{rows[0].dispatched=false;},'wrong-command':rows=>{rows[0].payload.commandId='other';},'wrong-case':rows=>{rows[0].caseId='other';},'wrong-phase':rows=>{rows[0].phase='recover';},'real500':rows=>{rows[0].status=500;},'no-real-body':rows=>{delete rows[0].sha256;},'not-dropped':rows=>{rows[0].droppedAfterCommit=false;},delivered:rows=>{rows[0].delivered=true;},duplicate:rows=>rows.push(structuredClone(rows[0]))}))test(`initial recovery refuses ${label} even with persisted unknown`,()=>{
+ const rows=[terminalRow()];change(rows);assert.equal(recoveryBoundaryReady({status:'unknown',payload:{commandId}},rows,cases[0]),false);
+});
+test('initial conflict requires real competing201 and delivered original409 with the same identity',()=>{
+ const rows=[{...terminalRow(cases[2]),phase:'prime',competingCommit:true},{...terminalRow(cases[2]),status:409,delivered:true}],intent={status:'conflict',payload:{commandId}};
+ assert.equal(recoveryBoundaryReady(intent,rows,cases[2]),true);
+ for(const change of [v=>v.pop(),v=>{v[0].competingCommit=false;},v=>{v[0].status=500;},v=>{v[1].delivered=false;},v=>{v[1].status=201;},v=>{v[1].payload.commandId='other';}]){const altered=structuredClone(rows);change(altered);assert.equal(recoveryBoundaryReady(intent,altered,cases[2]),false);}
+});
+test('actual queued callback must settle committed201/drop and persisted unknown before readiness',async()=>loopback(async(fetch,received)=>{
+ const state=createState(fixture,cases[0]),queue=deferred(),entered=deferred(),intent={status:'pending',payload:{commandId}};state.phase='submit';
+ const route=routeFor(request(),fetch);route.abort=async reason=>{route.calls.push(['abort',reason]);intent.status='unknown';};
+ const task=createRecoveryDispatch(state,{pace:async()=>{entered.resolve();await queue.promise;return true;}})(route);
+ await entered.promise;assert.equal(received.length,0);assert.equal(recoveryBoundaryReady(intent,state.requests,cases[0]),false);assert.equal(state.requests[0].dispatched,false);
+ queue.resolve();await task;assert.equal(received.length,1);assert.equal(intent.status,'unknown');assert.equal(recoveryBoundaryReady(intent,state.requests,cases[0]),true);assert.deepEqual(route.calls,[['abort','connectionreset']]);
+}));

@@ -103,6 +103,15 @@ export function endRecovery(state) {
   for (const controller of state.controllers.values()) controller.abort();
   state.releaseRefund();
 }
+export function recoveryBoundaryReady(intent, requests, scenario) {
+  const expected = scenario.mode === 'conflict' ? 'conflict' : 'unknown';
+  if (intent?.status !== expected || !intent.payload?.commandId) return false;
+  const rows = requests.filter(row => row.caseId === scenario.id && row.method === 'POST' && row.path === `${prefix}/checkout`);
+  if (rows.some(row => !row.dispatched || row.payload?.commandId !== intent.payload.commandId || !/^[a-f0-9]{64}$/.test(row.sha256 ?? ''))) return false;
+  if (expected === 'unknown') return rows.length === 1 && rows[0].phase === 'submit' && rows[0].status === 201 && rows[0].droppedAfterCommit === true && rows[0].delivered === false;
+  return rows.length === 2 && rows[0].phase === 'prime' && rows[0].status === 201 && rows[0].competingCommit === true
+    && rows[1].phase === 'submit' && rows[1].status === 409 && rows[1].delivered === true;
+}
 export function createState(fixture, scenario) {
   let release;
   const state = { fixture, caseId: scenario.id, mode: scenario.mode, phase: 'initial', checkoutSeen: false, requests: [], errors: [], pageErrors: [], verifiedBrand: [], cancelled: new WeakSet(), controllers: new Map(), ending: false, refundReady: false, refundRelease: new Promise(resolve => { release = resolve; }) };
