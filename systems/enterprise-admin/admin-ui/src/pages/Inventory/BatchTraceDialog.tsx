@@ -14,7 +14,9 @@ function failureMessage(error: unknown): string {
 const dateTime = (value: string) => new Date(value).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false });
 const dateOnly = (value: string) => new Date(value).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' });
 
-export default function BatchTraceDialog({ batch, onClose }: { batch: ProductBatch; onClose: () => void }) {
+export type BatchTraceSubject = Pick<ProductBatch, 'id' | 'tenantId' | 'batchNumber'>;
+
+export default function BatchTraceDialog({ batch, onClose }: { batch: BatchTraceSubject; onClose: () => void }) {
     const { user, loading, hasPermission } = useAuth();
     const allowed = !loading && !!user && hasPermission('read:products');
     const dialogRef = useRef<HTMLDialogElement>(null);
