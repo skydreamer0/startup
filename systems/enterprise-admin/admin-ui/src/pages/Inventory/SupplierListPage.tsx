@@ -174,14 +174,14 @@ export default function SupplierListPage() {
                                             <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{s.email || '--'}</div>
                                         </td>
                                         <td>
-                                            {s.deliveryReliability !== undefined ? (
+                                            {s.deliveryReliability != null ? (
                                                 <span className={`badge ${s.deliveryReliability < 90 ? 'badge-danger' : 'badge-success'}`}>
                                                     {s.deliveryReliability}%
                                                 </span>
                                             ) : <span className="text-muted">--</span>}
                                         </td>
                                         <td>
-                                            {s.defectRate !== undefined ? (
+                                            {s.defectRate != null ? (
                                                 <span className={`badge ${s.defectRate > 2 ? 'badge-danger' : 'badge-success'}`}>
                                                     {s.defectRate}%
                                                 </span>

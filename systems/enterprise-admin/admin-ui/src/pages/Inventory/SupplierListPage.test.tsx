@@ -122,3 +122,46 @@ it('does not present an old empty supplier result as a currently successful empt
     expect(host.querySelector('[role="alert"]')).toBeNull();
     expect(api.post).not.toHaveBeenCalled(); expect(api.put).not.toHaveBeenCalled();
 });
+
+
+describe('supplier metric missing-value disclosure', () => {
+    function metricCells() {
+        const cells = host.querySelectorAll('tbody tr:first-child td');
+        expect(cells).toHaveLength(6);
+        return [cells[3], cells[4]];
+    }
+    it.each([null, undefined])('shows the existing missing-data marker without a severity badge for %s', async missing => {
+        api.get.mockResolvedValue({ data: { data: [{ ...supplier, deliveryReliability: missing, defectRate: missing }] } });
+        mount(); await until(() => expect(host.textContent).toContain('SYNTHETIC_CONTACT'));
+        for (const cell of metricCells()) {
+            expect(cell.textContent).toBe('--');
+            expect(cell.querySelector('.badge')).toBeNull();
+            expect(cell.textContent).not.toContain('%');
+        }
+        expect(api.post).not.toHaveBeenCalled(); expect(api.put).not.toHaveBeenCalled();
+    });
+    it.each([
+        [0, 0, 'badge-danger', 'badge-success'],
+        [89.99, 2.01, 'badge-danger', 'badge-danger'],
+        [90, 2, 'badge-success', 'badge-success'],
+        [100, 100, 'badge-success', 'badge-danger'],
+    ])('preserves numeric values and existing thresholds (%s / %s)', async (reliability, defect, reliabilityClass, defectClass) => {
+        api.get.mockResolvedValue({ data: { data: [{ ...supplier, deliveryReliability: reliability, defectRate: defect }] } });
+        mount(); await until(() => expect(host.textContent).toContain('SYNTHETIC_CONTACT'));
+        const [reliabilityCell, defectCell] = metricCells();
+        expect(reliabilityCell.textContent).toBe(`${reliability}%`);
+        expect(defectCell.textContent).toBe(`${defect}%`);
+        expect(reliabilityCell.querySelector('.badge')?.classList.contains(String(reliabilityClass))).toBe(true);
+        expect(defectCell.querySelector('.badge')?.classList.contains(String(defectClass))).toBe(true);
+    });
+    it('keeps missing metrics distinct from zero through stale refresh and recovery', async () => {
+        api.get.mockResolvedValue({ data: { data: [{ ...supplier, deliveryReliability: null, defectRate: null }] } });
+        mount(); await until(() => expect(host.textContent).toContain('SYNTHETIC_CONTACT'));
+        api.get.mockRejectedValue(failure(500)); await refresh(['inventory', 'suppliers']);
+        await until(() => expect(host.textContent).toContain('可能已過期'));
+        expect(metricCells().map(cell => cell.textContent)).toEqual(['--', '--']);
+        api.get.mockImplementation(success); await click('重試供應商清單');
+        await until(() => expect(metricCells().map(cell => cell.textContent)).toEqual(['0%', '0%']));
+        expect(api.post).not.toHaveBeenCalled(); expect(api.put).not.toHaveBeenCalled();
+    });
+});
