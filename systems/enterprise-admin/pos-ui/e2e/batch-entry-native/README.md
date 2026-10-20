@@ -1,0 +1,38 @@
+# Existing Admin batch entry: read-only native acceptance
+
+Issue #31; stacked on PR159 head `23d9b0e63f90105c0bce386ae2dd27f057ac16c9`. This is the existing `BatchListPage` form, not PR149's private receiving draft workspace. Product changes are limited to validating its consumed product-choice fields and pagination metadata. No submit/release/stock/price/role policy changes.
+
+## Actual local defect and repair
+
+With the exact base page, a null product row or object-valued name crashes the mounted form; missing/fractional totals and wrong pages become misleading accepted results. The new parser validates identity/labels, safe integer metadata, unique IDs, stable total/limit, and pagination progress before publishing choices. The existing retry/error/cancel behavior is retained. The final actual component suite has 23 cases, with exact base page restored in a separate negative copy: 9 fail and 14 pass. Related receipt/form regression totals 45 passing cases.
+
+## Bounded native contract (not yet executed)
+
+- Five independent contexts: 1440×900 full read lifecycle, 1024×768 cold read/cancel, read-only actor, denied actor, and genuinely empty tenant. Fixed viewport Chromium (`isMobile:false`, `hasTouch:false`).
+- Same execution head/tree/run/attempt, prior package status and source hashes must match. Reuse the actual Admin build from that same successful job step; do not rebuild a synthetic page. Record served dist hashes plus current source hashes.
+- Three synthetic tenants, four active synthetic actors, 61 owned products and one foreign same-name/SKU sentinel. Two quarantine batches with corresponding IN receipt costs satisfy all existing schema constraints. Login UI is not under test: an ephemeral fixture-issued JWT is private bootstrap data, never an artifact.
+- Exact GET allowlist: auth/me, tenants/me/plan, product-batches, inventory/products page 1 or 2. Every real browser/server request has matching ID, owned actor, tenant, path, page, status and response digest. Non-GET, unknown query/path/origin and redirects fail closed. Actual denied reads must return 403; foreign products/batches must not appear.
+- Hold actual live page-2 request identities for loading. A cancelled request is never replayed or used as readiness. Only after a genuine page-2 200, separately inject a synthetic 500 or null row. Both original and delivered hashes/statuses are bound. These are presentation faults, not genuine API 500/malformed-response claims.
+- Select the later-page product with native select keyboard input, open/cancel with ordinary pointer, retain unsent batch text across retry, restore focus, and keep QUARANTINE / unavailable release choice. No form submit occurs.
+- 13 immutable viewport PNGs and five geometry receipts (16 reachable-control observations), actual CJK font proof, exact report cases/no retry. Geometry checks the complete control against viewport/clipping ancestors plus hit test; no new universal 44px/2px requirement is invented.
+- Every one of the 33 raw tables must remain deeply equal before/after. End each context, cancel queued work, settle callbacks; drain owned HTTP before snapshot/deleting only proven fixture IDs. Require zero rows and the unchanged subsequent SKU database cleanup receipt. Preserve primary errors when diagnostics/disposal also fail.
+
+## Cost and deadlines
+
+The previous exact-head SKU job took 17m06s with its existing 20-minute job cap. This addition does not change that cap, required names, selectors, permissions, dependency lockfiles or old steps. It adds one maximum-three-minute step and one upload. The native process has a 90-second global browser cutoff, zero retries, 64 total actual API-dispatch cap and 550ms pacing (maximum 34.65 seconds of intentional spacing). The normal planned requests total 43: full lifecycle 23, second cold 5, reader 5, denied 6, empty 4. Additional StrictMode/cancellation attempts still count when dispatched, never beyond64. HTTP drain is bounded at20seconds; the remaining step budget covers source/type/collection/seed/postprocess/process cleanup. Total CI time can still hit the unchanged job cap if upstream work slows; no runtime or cost saving is asserted. Product rate-limit configuration is unchanged.
+
+## Local controls and limits
+
+94 Node controls cover actual dispatch callbacks, mounted Express routing, request cancellation/primary-error disposal, oracle tampering, and the real exclusive evidence writer plus complete postprocessor. The writer integration uses generated PNG/geometry adapters, not native screenshots. A separate package-only resolution copy has no repository-root node_modules, with dependencies mapped only under backend/POS; all94 pass there. Five actual control mutations fail and are restored.
+
+All16 existing migrations were applied to already-installed PGlite: 12CHECK constraints,63 live foreign keys and9 triggers; the real fixture's88 inserted rows passed, and176 before/after each-row interruption prefixes returned to zero. Eight concrete receipt-cost/quantity/type, product/role foreign-key and stock-unit constraint probes were rejected with their expected SQLSTATE. This is supplemental embedded PostgreSQL with a mapped SQL adapter, not Prisma/PostgreSQL15/browser evidence. An initial local adapter used uuid[] against the schema's TEXT IDs and failed with42883; corrected to text[] without changing product code or schema.
+
+Node24 local product and browser-driver focused typechecks passed; the canonical full backend typecheck is not locally complete because unrelated backend source files and dependencies are not materialized. Five Playwright cases were listed without creating an artifact. Native Node22/Chrome/PG15, originals and exact-head CI remain NOT_RUN until a new head runs naturally and is independently reviewed.
+
+Not covered: receipt posting/unknown POST outcomes/release or financial writes; full batch audit/history; PR149 private drafts; 1366×768,390px or1180px layout; mobile/touch mode,200% zoom, soft keyboard, Safari/iPad/physical devices; new login UI; production data, deployment or merge. Existing successful receipts remain scoped to their original heads. This package cannot close all of #31.
+
+## Focused commands
+
+`node --test pos-ui/e2e/batch-entry-native/*.test.mjs` from enterprise-admin.
+
+`node pos-ui/e2e/batch-entry-native/run.mjs` only in the owned canonical GitHub job after the successful package build/acceptance step. All ownership/environment guards are mandatory; never set them merely to bypass a local environment limitation.

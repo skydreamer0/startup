@@ -183,3 +183,9 @@ submitting/error UI mounted and provides associated field labels and an error al
 This is a client lifecycle boundary, not JWT revocation, a new permission grant or
 a rollback of server writes. See the exact-source evidence and synthetic native
 limits in `../infrastructure/verification/admin-auth-handover/README.md`.
+
+## Existing batch entry read acceptance
+
+`src/api/receiptProducts.ts` validates the existing paginated inventory response before `BatchListPage` publishes product choices. Invalid rows, inconsistent page/total/limit, duplicates and non-progress pages stay inside the existing retryable form read error; retry retains the unsent draft. No receipt submit, release permission, price or API policy changed.
+
+The owned browser runner is `../pos-ui/e2e/batch-entry-native/run.mjs`, with the production API fixture in `../backend/scripts/admin-batch-entry-browser-fixture.ts`. It reuses the same-head built Admin from the successful preceding package acceptance step, allows only exact owned GET reads, validates all 33 raw tables before/after, drains HTTP before exact-ID cleanup, and records immutable originals. Its bounded scope and unexecuted gates are in `../pos-ui/e2e/batch-entry-native/README.md`.

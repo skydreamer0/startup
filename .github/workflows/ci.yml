@@ -623,6 +623,17 @@ jobs:
           pnpm --filter pos-ui run build
           export MEDICINE_LABEL_PYTHON="$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/bin/python"
           (cd backend && node --import tsx scripts/package-browser-acceptance.mjs)
+      - name: Existing Admin batch form through real read-only API and owned PostgreSQL
+        id: batch_entry_native
+        timeout-minutes: 3
+        env:
+          BATCH_ENTRY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+          CATEGORY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: |
+          node --test pos-ui/e2e/batch-entry-native/*.test.mjs
+          node pos-ui/e2e/batch-entry-native/run.mjs
       - name: Verify zero rows and drop only the owned SKU database
         if: ${{ always() && steps.sku_preflight.outcome == 'success' }}
         env:
@@ -643,6 +654,14 @@ jobs:
         with:
           name: package-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ steps.package_native.outputs.evidence_dir }}
+          if-no-files-found: error
+          retention-days: 7
+      - name: Preserve quiescent Admin batch form API database evidence
+        if: ${{ always() && steps.batch_entry_native.outputs.evidence_dir != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: admin-batch-entry-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.batch_entry_native.outputs.evidence_dir }}
           if-no-files-found: error
           retention-days: 7
       - name: Preserve separate PostgreSQL and current POS evidence

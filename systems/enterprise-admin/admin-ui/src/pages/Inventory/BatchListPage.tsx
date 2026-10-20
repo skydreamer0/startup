@@ -3,7 +3,7 @@ import BatchTraceDialog from './BatchTraceDialog';
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { batchesApi, ProductBatch } from '../../api/batches';
-import { inventoryApi, Product } from '../../api/inventory';
+import { loadReceiptProductChoices } from '../../api/receiptProducts';
 import { useAuth } from '../../hooks/authContext';
 import './BatchListPage.css';
 
@@ -106,20 +106,11 @@ export default function BatchListPage() {
 
     const { data: products, isError: productError, isPending: productsPending, error: productFailure, isFetching: productsFetching, refetch: refetchProducts } = useQuery({
         queryKey: ['inventory', 'products', 'batches'],
-        queryFn: async () => {
-            const all: Product[] = [];
-            let page = 1;
-            while (true) {
-                const result = await inventoryApi.getProducts({ page: String(page) });
-                all.push(...result.data);
-                if (all.length >= result.total || result.data.length === 0) return all;
-                page++;
-            }
-        },
+        queryFn: loadReceiptProductChoices,
     });
 
     const batches: ProductBatch[] = batchesData?.data || [];
-    const productList: Product[] = products || [];
+    const productList = products || [];
 
     function openCreate() {
         if (!canReceive || submitting.current) return;
