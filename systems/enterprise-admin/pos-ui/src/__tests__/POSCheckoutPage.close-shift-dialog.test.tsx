@@ -1,4 +1,5 @@
 import { webcrypto } from 'node:crypto';
+import { useState } from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -55,13 +56,18 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); client.clear(); vi.unstubAllGlobals(); });
 
+function NextPage() {
+  const [paymentOpen, setPaymentOpen] = useState(true);
+  return <section><h1>下一頁</h1>{paymentOpen && <PaymentModal loading={false} onConfirm={vi.fn()} onClose={() => setPaymentOpen(false)} />}</section>;
+}
+
 async function setup() {
   const user = userEvent.setup();
   let navigate!: NavigateFunction;
   function Navigation() { navigate = useNavigate(); return null; }
   const view = render(<QueryClientProvider client={client}><MemoryRouter><Navigation /><Routes>
     <Route path="/" element={<POSCheckoutPage />} />
-    <Route path="/next" element={<section><h1>下一頁</h1><PaymentModal loading={false} onConfirm={vi.fn()} onClose={vi.fn()} /></section>} />
+    <Route path="/next" element={<NextPage />} />
   </Routes></MemoryRouter></QueryClientProvider>);
   await screen.findByTestId('product-card-synthetic-product');
   const opener = screen.getByRole('button', { name: '交班' });
@@ -142,17 +148,28 @@ describe('real close-shift dialog lifecycle in POS', () => {
     const { user, navigate, dialog } = await setup();
     await user.click(within(dialog).getByRole('button', { name: '確認交班' }));
     await act(async () => { navigate('/next'); });
-    expect(screen.getByRole('heading', { name: '下一頁' })).toBeInTheDocument();
+    const nextHeading = screen.getByText('下一頁', { selector: 'h1' });
+    expect(nextHeading).toHaveAttribute('inert'); expect(nextHeading).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.queryByRole('heading', { name: '下一頁' })).not.toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: '確認交班' })).not.toBeInTheDocument();
     const newer = screen.getByRole('spinbutton', { name: '收取金額' });
     expect(newer).toHaveFocus(); expect(newer.closest('[inert]')).toBeNull();
-    expect(document.querySelectorAll('[inert]')).toHaveLength(0);
+    expect(Array.from(document.querySelectorAll('[inert]'))).toEqual([nextHeading]);
     await act(async () => {
       if (result === 'success') pending.resolve(response({ ...shift, status: 'CLOSED' }));
       else pending.reject(new Error('synthetic late failure'));
     });
     expect(newer).toHaveFocus(); expect(useCartStore.getState().items).toEqual(items);
+    expect(Array.from(document.querySelectorAll('[inert]'))).toEqual([nextHeading]);
+    expect(posApi.closeShift).toHaveBeenCalledExactlyOnceWith(shift.id, 1234);
+    expect(posApi.checkout).not.toHaveBeenCalled();
+    // The newer modal owns these locks until it is actually dismissed.
+    await user.click(within(screen.getByRole('dialog', { name: '確認結帳' })).getByRole('button', { name: '取消' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '下一頁' })).toBeInTheDocument();
     expect(document.querySelectorAll('[inert]')).toHaveLength(0);
+    expect(nextHeading).not.toHaveAttribute('aria-hidden');
+    expect(useCartStore.getState().items).toEqual(items);
     expect(posApi.closeShift).toHaveBeenCalledExactlyOnceWith(shift.id, 1234);
     expect(posApi.checkout).not.toHaveBeenCalled();
   });
@@ -175,14 +192,26 @@ describe('real close-shift dialog lifecycle in POS', () => {
     await user.keyboard('{Escape}');
     const discounted = items.map(item => ({ ...item, discountRate: 20 }));
     act(() => { useCartStore.setState({ items: discounted }); });
-    await user.click(screen.getByTestId('cart-checkout-button'));
+    const checkout = screen.getByTestId('cart-checkout-button'), background = checkout.closest('fieldset')!;
+    expect(background).not.toBeNull();
+    await user.click(checkout);
     fireEvent.change(screen.getByRole('spinbutton', { name: '收取金額' }), { target: { value: '200' } });
     await user.click(screen.getByRole('button', { name: '確認付款' }));
     const heading = screen.getByRole('heading', { name: '管理員授權' });
     expect(heading.closest('[inert]')).toBeNull();
     await user.click(within(heading.parentElement!).getByRole('button', { name: '取消' }));
     expect(screen.queryByRole('heading', { name: '管理員授權' })).not.toBeInTheDocument();
+    const payment = screen.getByRole('dialog', { name: '確認結帳' });
+    expect(payment.closest('[inert]')).toBeNull();
+    expect(within(payment).getByRole('spinbutton', { name: '收取金額' })).toHaveFocus();
+    expect(background).toHaveAttribute('inert'); expect(background).toHaveAttribute('aria-hidden', 'true');
+    expect(Array.from(document.querySelectorAll('[inert]'))).toEqual([background]);
+    expect(useCartStore.getState().items).toEqual(discounted); expectNoWrite();
+    await user.click(within(payment).getByRole('button', { name: '取消' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(document.querySelectorAll('[inert]')).toHaveLength(0);
+    expect(background).not.toHaveAttribute('aria-hidden');
+    await waitFor(() => expect(checkout).toHaveFocus());
     expect(useCartStore.getState().items).toEqual(discounted); expectNoWrite();
   });
 
