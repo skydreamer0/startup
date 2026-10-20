@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { setTimeout as delay } from 'node:timers/promises';
 import { capture, writeJson } from '../recovery-native/evidence.mjs';
-import { assertFonts } from '../category-native/contract.mjs';
+import { assertFontSources, readInstalledFontSources } from './font-sources.mjs';
 const targets = { '#receipt-title': '登記批次進貨', '.batch-list-page .page-title': '批號效期管理' };
-export async function readFontSnapshot(page, selector) {
+export async function readFontSnapshot(page, selector, sourceReader = readInstalledFontSources) {
   assert.ok(Object.hasOwn(targets, selector));
   const session = await page.context().newCDPSession(page); let primary = null;
   try {
@@ -13,14 +13,16 @@ export async function readFontSnapshot(page, selector) {
     const { nodeId } = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector });
     assert.ok(nodeId > 0, 'Actual capture text node must exist');
     const { fonts } = await session.send('CSS.getPlatformFontsForNode', { nodeId });
-    return { selector, ...target, fonts };
+    let fontSources = null;
+    try { fontSources = sourceReader(fonts, target.text); } catch { /* Preserve the real CDP arrays; an unverifiable installed face cannot pass. */ }
+    return { selector, ...target, fonts, fontSources };
   } catch (error) { primary = error; throw error; }
   finally { try { await session.detach(); } catch (error) { if (!primary) throw error; } }
 }
 export function assertFontSnapshot(value) {
   assert.ok(Object.hasOwn(targets, value.selector)); assert.equal(value.text, targets[value.selector]);
   assert.equal(value.visible, true); assert.ok(value.width > 0 && value.height > 0);
-  assertFonts(value.fonts); // Original installed, noncustom Noto Sans CJK positive-glyph criterion.
+  assertFontSources(value.fonts, value.text, value.fontSources);
 }
 export async function observeFonts(read, { timeoutMs = 2000, intervalMs = 50, clock = () => performance.now(), sleep = delay } = {}) {
   const started = clock(), samples = []; let previous = null;
@@ -42,13 +44,13 @@ export function assertFontObservation(proof, fonts) {
   const strip = ({ elapsedMs, ...value }) => value;
   assert.deepEqual(strip(pair[0]), strip(pair[1])); assert.deepEqual(proof.final, strip(pair[1])); assert.deepEqual(fonts, proof.final.fonts);
 }
-export async function captureWithFonts(page, directory, stage, metadata, selector) {
+export async function captureWithFonts(page, directory, stage, metadata, selector, sourceReader = readInstalledFontSources) {
   // Font loading and paint readiness are separate from React's visible element.
-  // No CSS injection, fallback replacement or acceptance of a different family.
+  // No CSS injection or fallback replacement; actual installed faces require identity/hash/charset proof.
   await page.evaluate(async () => { await document.fonts.ready; await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); });
-  const observation = await observeFonts(() => readFontSnapshot(page, selector));
+  const observation = await observeFonts(() => readFontSnapshot(page, selector, sourceReader));
   if (!observation.ok) {
-    const error = new Error('Installed Noto Sans CJK glyph proof did not converge');
+    const error = new Error('Installed CJK glyph and source proof did not converge');
     try { writeJson(directory, `${stage}-font-failure.json`, { ...metadata, stage, selector, observation }); } catch { /* Preserve the primary failed glyph criterion. */ }
     throw error;
   }

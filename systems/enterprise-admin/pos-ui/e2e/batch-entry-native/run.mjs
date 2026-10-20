@@ -7,12 +7,13 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
 import { createRunScope, cleanupRunProcesses } from '../category-native/owned-run.mjs';
 import { assertEnvironment, assertReport, assertEvidence, cases, databaseUrl, rawTables } from './contract.mjs';
-import { assertFonts, completionOutcome } from '../category-native/contract.mjs';
+import { completionOutcome } from '../category-native/contract.mjs';
 import { runOwnedPhase, publishEvidence } from '../category-native/run.mjs';
 import { assertOwnership, assertService, databaseName } from '../../../backend/scripts/pos-product-lookup-ci.mjs';
 import { assertReachable } from '../layout-native/evidence.mjs';
 import { validateExactViewportPng } from '../admin-margin-warning/png.mjs';
 import { assertFontObservation } from './fonts.mjs';
+import { verifyInstalledFontSources } from './font-sources.mjs';
 import { assertBrandSources } from '../dialog-acceptance/brand-assets.mjs';
 
 export function assertPriorPackage(source, report, counts, identity, hashes, readSource) {
@@ -33,7 +34,7 @@ export function inspectEvidence(output, nonce) {
   const captures = files.filter(file=>file.endsWith('.png')).map(file=>{
     const receipt=read(path.join('tests',file.replace(/\.png$/,'.json'))), scenario=cases.find(row=>row.id===receipt.caseId);
     assert.ok(scenario); assert.equal(receipt.nonce,nonce); assert.equal(receipt.stage,path.basename(file,'.png')); assert.ok(scenario.stages.includes(receipt.stage));
-    assert.deepEqual(receipt.viewport,{width:scenario.width,height:scenario.height}); assertFonts(receipt.fonts); assertFontObservation(receipt.fontObservation, receipt.fonts); assert.equal(receipt.fontObservation.final.selector, ['cancelled','reader','denied'].includes(receipt.stage) ? '.batch-list-page .page-title' : '#receipt-title');
+    assert.deepEqual(receipt.viewport,{width:scenario.width,height:scenario.height}); assertFontObservation(receipt.fontObservation, receipt.fonts); verifyInstalledFontSources(receipt.fonts, receipt.fontObservation.final.text, receipt.fontObservation.final.fontSources); assert.equal(receipt.fontObservation.final.selector, ['cancelled','reader','denied'].includes(receipt.stage) ? '.batch-list-page .page-title' : '#receipt-title');
     const bytes=fs.readFileSync(path.join(output,'tests',file)), png=validateExactViewportPng(bytes,receipt.viewport);
     assert.equal(receipt.sha256,createHash('sha256').update(bytes).digest('hex'));
     return {file,...receipt,...png};
@@ -88,7 +89,7 @@ async function main() {
   const read = name => JSON.parse(fs.readFileSync(path.join(output, name), 'utf8'));
   const nonce = randomUUID();
   write('source.json', { ...identity, nonce, chrome, sandbox: true, priorPackage, scope: 'Issue31 existing Admin batch form: paginated read, fault recovery, roles and cancel; read-only synthetic fixture',
-    login: 'Fixture-issued short-lived synthetic JWT for owned active actors; login UI not under test', externalCss: 'blocked; installed Noto CJK',
+    login: 'Fixture-issued short-lived synthetic JWT for owned active actors; login UI not under test', externalCss: 'blocked; actual CDP CJK faces bound to system font file/index, charset and SHA256',
     brandAssets: assertBrandSources(app) });
   const inputs = ['systems/enterprise-admin/admin-ui', 'systems/enterprise-admin/pos-ui', 'systems/enterprise-admin/backend', 'systems/enterprise-admin/packages',
     'systems/enterprise-admin/package.json', 'systems/enterprise-admin/pnpm-lock.yaml', 'systems/enterprise-admin/pnpm-workspace.yaml', '.github/workflows/ci.yml'];
