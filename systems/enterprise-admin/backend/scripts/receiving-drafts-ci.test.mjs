@@ -41,5 +41,7 @@ test('cleanup retains append-only snapshots and only drops its owned literal dat
   assert.ok(source.includes("assert.deepEqual(read('ownership.json')"));
   assert.ok(source.includes('DROP DATABASE "${databaseName}" WITH (FORCE)'));
   assert.ok(source.includes('retainedSyntheticCounts: remaining'));
+  assert.ok(source.includes("const browser = read('browser-accepted.json')"));
+  assert.ok(source.includes("assert.equal(browser.status, 'passed')"));
   assert.doesNotMatch(source,/TRUNCATE|DISABLE TRIGGER|DELETE FROM/);
 });

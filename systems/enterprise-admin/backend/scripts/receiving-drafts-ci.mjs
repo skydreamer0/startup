@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import vm from 'node:vm';
+import { assertBrowserQuietBeforeOwnedDrop } from './receiving-browser-cleanup.mjs';
 
 export const databaseName = 'checkout_http_recovery_receiving_drafts_ci';
 export const databaseUrl = `postgresql://test@127.0.0.1:55438/${databaseName}`;
@@ -134,7 +135,14 @@ async function main(mode) {
     assert.equal(fs.existsSync(path.join(evidence, 'ownership.json')), false, 'Never reuse a prior fixture');
     save('source.json', { ...identity, parents: git('cat-file', '-p', 'HEAD').split('\n').filter(line => line.startsWith('parent ')).map(line => line.slice(7)) });
     save('network.json', { service, members: Object.keys(network.Containers), driver: network.Driver });
-    const files = ['.github/workflows/ci.yml', ...[nativeFile, 'src/modules/receiving-drafts/receiving-drafts.service.ts', 'src/modules/receiving-drafts/receiving-drafts.routes.ts', 'src/modules/receiving-drafts/receiving-drafts.schema.ts', 'prisma/migrations/20261018141500_private_receiving_drafts/migration.sql', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/receiving-drafts-ci.mjs'].map(file => `systems/enterprise-admin/backend/${file}`)];
+    const files = ['.github/workflows/ci.yml',
+      ...[nativeFile, 'src/modules/receiving-drafts/receiving-drafts.service.ts', 'src/modules/receiving-drafts/receiving-drafts.routes.ts', 'src/modules/receiving-drafts/receiving-drafts.schema.ts', 'prisma/migrations/20261018141500_private_receiving_drafts/migration.sql', 'src/lib/prisma.ts', 'prisma/schema.prisma', 'package.json', 'package-lock.json', 'scripts/receiving-drafts-ci.mjs', 'scripts/receiving-drafts-browser-native.mjs', 'scripts/receiving-browser-cleanup.mjs', 'scripts/receiving-browser-cleanup.test.mjs', 'scripts/admin-auth-fixture.mjs', 'scripts/admin-auth-native.mjs', 'scripts/admin-auth-transport.mjs']
+        .map(file => `systems/enterprise-admin/backend/${file}`),
+      ...['admin-ui/src/api/receivingDrafts.ts', 'admin-ui/src/pages/Receiving/ReceivingDraftPage.tsx', 'admin-ui/src/pages/Receiving/ReceiptDraftHistory.tsx', 'pos-ui/tsconfig.receiving-browser-native.json', 'pos-ui/e2e/receiving-browser-native/fixture.mjs', 'pos-ui/e2e/receiving-browser-native/fixture.d.mts', 'pos-ui/e2e/receiving-browser-native/fixture.test.mjs', 'pos-ui/e2e/receiving-browser-native/acceptance.mjs', 'pos-ui/e2e/receiving-browser-native/acceptance.test.mjs', 'pos-ui/e2e/receiving-browser-native/application-work.test.mjs', 'pos-ui/e2e/receiving-browser-native/http-work.mjs', 'pos-ui/e2e/receiving-browser-native/http-work.test.mjs', 'pos-ui/e2e/receiving-browser-native/server-shutdown.mjs', 'pos-ui/e2e/receiving-browser-native/owned-browser-process.mjs', 'pos-ui/e2e/receiving-browser-native/fixtures.ts', 'pos-ui/e2e/receiving-browser-native/playwright.config.mts', 'pos-ui/e2e/receiving-browser-native/receiving.spec.ts', 'pos-ui/e2e/recovery-native/evidence.mjs', 'pos-ui/e2e/batch-entry-native/font-sources.mjs']
+        .map(file => `systems/enterprise-admin/${file}`)];
+    files.push('systems/enterprise-admin/backend/scripts/receiving-browser-snapshot.mjs',
+      'systems/enterprise-admin/backend/scripts/receiving-browser-snapshot.test.mjs',
+      'systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs');
     save('source-hashes.json', Object.fromEntries(files.map(file => [file, createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')])));
     save('guard.json', { url: databaseUrl, equalEnvironmentUrls: true, probes: probeOriginalGuard(fs.readFileSync(path.join(backend, nativeFile), 'utf8')) });
     assert.deepEqual(tables(), [], 'Refuse a previously used service database; never reset it');
@@ -145,6 +153,8 @@ async function main(mode) {
 
   assert.deepEqual(read('ownership.json'), { ...identity, initialPublicTables: [], syntheticOnly: true });
   if (mode === 'cleanup') {
+    const browserCleanup = read('browser-cleanup.json');
+    assertBrowserQuietBeforeOwnedDrop(browserCleanup);
     // Append-only rows remain as acceptance evidence. Never disable triggers or delete historical rows.
     const remaining = counts();
     save('cleanup-counts.json', remaining);
@@ -154,8 +164,11 @@ async function main(mode) {
     const tests = read('tests.json');
     assert.equal(tests.status, 'passed');
     assert.equal(tests.native.length, 10);
-    save('accepted.json', { ...identity, status: 'passed', tests, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: ten native private-draft cases; append-only receipt retained; owned DB removed');
+    const browser = read('browser-accepted.json');
+    assert.equal(browser.status, 'passed');
+    assert.equal(browser.head, identity.head); assert.equal(browser.tree, identity.tree);
+    save('accepted.json', { ...identity, status: 'passed', tests, browser, cleanup: read('cleanup.json'), productionDataUsed: false });
+    console.log('Acceptance passed: ten native API/PG cases and seven bounded real-login browser cases; append-only receipt retained; owned DB removed');
     return;
   }
 
