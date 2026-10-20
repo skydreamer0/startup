@@ -303,3 +303,16 @@ The POS login component names its input, owns and aborts pending requests, rejec
 stale/unmounted publication, and accepts only an explicit successful response
 with a non-empty string token. Native evidence is required before claiming the
 three viewport journeys passed; local controls do not substitute for Chrome/PG.
+
+### Existing POS pointer reachability and payment cancellation
+
+Issue #31 source package `STARTUP-POS-LAYOUT-CANCEL-NATIVE-20261020` adds a bounded
+`e2e/layout-native` acceptance at 1440×900, 1024×768 and 1180×820, each pointer and
+Chrome touch-capable. The real employee-code entry is followed only by existing
+GETs. Twelve products, total 240, ordinary payment/split/shift cancellation and
+existing clear confirmation must preserve the cart and all 33 raw database tables.
+PaymentModal now owns idle/pending keyboard focus, isolates the background, yields
+to the existing PIN overlay, and restores its opener without stealing a newer
+surface's focus. Financial and authentication policy are unchanged. Native PNG,
+geometry and owned cleanup remain required; local jsdom/adapters/PGlite are not
+native acceptance. See the harness README for exact scope and limitations.

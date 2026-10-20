@@ -587,6 +587,17 @@ jobs:
         run: |
           node --test pos-ui/e2e/staff-entry-native/*.test.mjs
           node pos-ui/e2e/staff-entry-native/run.mjs
+      - name: Existing POS pointer reachability and payment cancellation through owned PostgreSQL
+        id: layout_native
+        timeout-minutes: 4
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+          CATEGORY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+          LAYOUT_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+        run: |
+          node --test pos-ui/e2e/layout-native/*.test.mjs
+          node pos-ui/e2e/layout-native/run.mjs
       - name: Prepare pinned render-only Python for medicine label journey
         run: |
           python3 -c "import sys, platform; assert sys.version_info[:2] == (3, 12); assert platform.machine() == 'x86_64'"
@@ -667,6 +678,15 @@ jobs:
         with:
           name: pos-staff-entry-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ steps.staff_entry_native.outputs.evidence_dir }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Preserve quiescent POS pointer and cancellation evidence
+        if: ${{ always() && steps.layout_native.outputs.evidence_dir != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pos-layout-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.layout_native.outputs.evidence_dir }}
           if-no-files-found: error
           retention-days: 7
 
