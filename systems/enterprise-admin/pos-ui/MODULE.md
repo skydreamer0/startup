@@ -289,3 +289,17 @@ verified run/attempt-bound proof and never receives that token. Keep immutable
 API corroboration, local source/setup checks and failure diagnostics fail-closed.
 See `../infrastructure/adr/ci-reliability-and-selection.md` before changing this
 contract or the required-job aggregation in `.github/workflows/ci.yml`.
+
+
+### Existing POS employee-code entry acceptance (Issues #31 / #49 / #37)
+
+`pos-ui/e2e/staff-entry-native/README.md` documents the bounded owned-PostgreSQL
+journey for the unchanged employee-code login endpoint and subsequent GET-only
+POS entry. It seeds only disposable active/suspended users, the existing
+`manage:pos` role relation and default tenant, proves every raw table unchanged,
+and cleans exact fixture IDs after HTTP drain. Real response tokens stay private;
+no PIN, credential policy, tenant-selection feature, deployment or device change.
+The POS login component names its input, owns and aborts pending requests, rejects
+stale/unmounted publication, and accepts only an explicit successful response
+with a non-empty string token. Native evidence is required before claiming the
+three viewport journeys passed; local controls do not substitute for Chrome/PG.

@@ -8,25 +8,60 @@ export default function POSLoginPage() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { inputRef.current?.focus(); }, []);
+  const mounted = useRef(false);
+  const activeRequest = useRef<{ controller: AbortController; previousToken: string | null } | null>(null);
+  const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    mounted.current = true;
+    inputRef.current?.focus();
+    return () => {
+      mounted.current = false;
+      activeRequest.current?.controller.abort();
+      activeRequest.current = null;
+      if (focusTimer.current !== null) clearTimeout(focusTimer.current);
+      focusTimer.current = null;
+    };
+  }, []);
 
   async function handleLogin(employeeCode: string) {
-    if (!employeeCode.trim()) return;
+    if (!employeeCode.trim() || !mounted.current || activeRequest.current) return;
+    if (focusTimer.current !== null) clearTimeout(focusTimer.current);
+    focusTimer.current = null;
+    const request = { controller: new AbortController(), previousToken: localStorage.getItem('pos_accessToken') };
+    activeRequest.current = request;
+    const ownsResult = () => mounted.current && activeRequest.current === request
+      && !request.controller.signal.aborted
+      && localStorage.getItem('pos_accessToken') === request.previousToken;
     setLoading(true);
     setError('');
     try {
       const res = await api.post<{ success: boolean; data: { accessToken: string } }>(
         '/pos/staff-login',
         { employeeCode: employeeCode.trim() },
+        { signal: request.controller.signal },
       );
-      localStorage.setItem('pos_accessToken', res.data.data.accessToken);
+      if (!ownsResult()) return;
+      const token = res.data?.data?.accessToken;
+      if (res.data?.success !== true || typeof token !== 'string' || token.trim().length === 0) {
+        throw new Error('Invalid staff-login response');
+      }
+      localStorage.setItem('pos_accessToken', token);
       window.location.href = '/';
     } catch {
+      if (!ownsResult()) return;
       setError('登入失敗，請確認員工代碼後再試');
       setCode('');
-      setTimeout(() => inputRef.current?.focus(), 50);
+      focusTimer.current = setTimeout(() => {
+        focusTimer.current = null;
+        if (mounted.current && !activeRequest.current
+            && localStorage.getItem('pos_accessToken') === request.previousToken) inputRef.current?.focus();
+      }, 50);
     } finally {
-      setLoading(false);
+      if (activeRequest.current === request) {
+        activeRequest.current = null;
+        if (mounted.current) setLoading(false);
+      }
     }
   }
 
@@ -47,6 +82,7 @@ export default function POSLoginPage() {
         <input
           ref={inputRef}
           data-testid="login-employee-code-input"
+          aria-label="員工條碼 / 員工代碼"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={handleKeyDown}

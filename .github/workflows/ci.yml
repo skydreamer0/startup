@@ -576,6 +576,17 @@ jobs:
         run: |
           node --test pos-ui/e2e/recovery-native/*.test.mjs
           node pos-ui/e2e/recovery-native/run.mjs
+      - name: Existing employee-code login and read-only POS entry through owned PostgreSQL
+        id: staff_entry_native
+        timeout-minutes: 3
+        env:
+          SKU_QA_CONTAINER: ${{ job.services.postgres.id }}
+          SKU_QA_NETWORK: ${{ job.services.postgres.network }}
+          CATEGORY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+          STAFF_ENTRY_QA_DATABASE_URL: postgresql://test@127.0.0.1:55435/checkout_http_recovery_pos_lookup_ci
+        run: |
+          node --test pos-ui/e2e/staff-entry-native/*.test.mjs
+          node pos-ui/e2e/staff-entry-native/run.mjs
       - name: Prepare pinned render-only Python for medicine label journey
         run: |
           python3 -c "import sys, platform; assert sys.version_info[:2] == (3, 12); assert platform.machine() == 'x86_64'"
@@ -647,6 +658,15 @@ jobs:
         with:
           name: pos-recovery-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ steps.recovery_native.outputs.evidence_dir }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Preserve quiescent employee-code login evidence
+        if: ${{ always() && steps.staff_entry_native.outputs.evidence_dir != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pos-staff-entry-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.staff_entry_native.outputs.evidence_dir }}
           if-no-files-found: error
           retention-days: 7
 

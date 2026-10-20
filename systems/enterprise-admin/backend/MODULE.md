@@ -231,3 +231,17 @@ all31 other raw tables stay equal, credentials/hashes remain memory-only, and
 cleanup is bounded to absent-before IDs. The fixture, transport and failure-path
 controls are separate from real API/PG/browser acceptance. See
 `../infrastructure/verification/admin-auth-handover/README.md`.
+
+
+### Existing POS employee-code entry acceptance (Issues #31 / #49 / #37)
+
+`pos-ui/e2e/staff-entry-native/README.md` documents the bounded owned-PostgreSQL
+journey for the unchanged employee-code login endpoint and subsequent GET-only
+POS entry. It seeds only disposable active/suspended users, the existing
+`manage:pos` role relation and default tenant, proves every raw table unchanged,
+and cleans exact fixture IDs after HTTP drain. Real response tokens stay private;
+no PIN, credential policy, tenant-selection feature, deployment or device change.
+The POS login component names its input, owns and aborts pending requests, rejects
+stale/unmounted publication, and accepts only an explicit successful response
+with a non-empty string token. Native evidence is required before claiming the
+three viewport journeys passed; local controls do not substitute for Chrome/PG.
