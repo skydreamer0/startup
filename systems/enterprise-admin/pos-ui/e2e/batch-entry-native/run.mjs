@@ -12,6 +12,7 @@ import { runOwnedPhase, publishEvidence } from '../category-native/run.mjs';
 import { assertOwnership, assertService, databaseName } from '../../../backend/scripts/pos-product-lookup-ci.mjs';
 import { assertReachable } from '../layout-native/evidence.mjs';
 import { validateExactViewportPng } from '../admin-margin-warning/png.mjs';
+import { assertFontObservation } from './fonts.mjs';
 import { assertBrandSources } from '../dialog-acceptance/brand-assets.mjs';
 
 export function assertPriorPackage(source, report, counts, identity, hashes, readSource) {
@@ -32,7 +33,7 @@ export function inspectEvidence(output, nonce) {
   const captures = files.filter(file=>file.endsWith('.png')).map(file=>{
     const receipt=read(path.join('tests',file.replace(/\.png$/,'.json'))), scenario=cases.find(row=>row.id===receipt.caseId);
     assert.ok(scenario); assert.equal(receipt.nonce,nonce); assert.equal(receipt.stage,path.basename(file,'.png')); assert.ok(scenario.stages.includes(receipt.stage));
-    assert.deepEqual(receipt.viewport,{width:scenario.width,height:scenario.height}); assertFonts(receipt.fonts);
+    assert.deepEqual(receipt.viewport,{width:scenario.width,height:scenario.height}); assertFonts(receipt.fonts); assertFontObservation(receipt.fontObservation, receipt.fonts); assert.equal(receipt.fontObservation.final.selector, ['cancelled','reader','denied'].includes(receipt.stage) ? '.batch-list-page .page-title' : '#receipt-title');
     const bytes=fs.readFileSync(path.join(output,'tests',file)), png=validateExactViewportPng(bytes,receipt.viewport);
     assert.equal(receipt.sha256,createHash('sha256').update(bytes).digest('hex'));
     return {file,...receipt,...png};

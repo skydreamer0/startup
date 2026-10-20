@@ -1,7 +1,8 @@
 import { test, expect } from './fixtures';
 import type { Locator } from '@playwright/test';
 import { cases, origin, routePath } from './contract.mjs';
-import { capture, fontProof, writeJson } from '../recovery-native/evidence.mjs';
+import { writeJson } from '../recovery-native/evidence.mjs';
+import { captureWithFonts } from './fonts.mjs';
 import { readReachability, stableReachability } from '../layout-native/evidence.mjs';
 
 for (const scenario of cases) {
@@ -13,7 +14,7 @@ for (const scenario of cases) {
       const dialog = page.getByRole('dialog', { name: '登記批次進貨', exact: true });
       const selected = guard.fixture.products.filter((row: { tenantId: string }) => row.tenantId === guard.fixture.tenantA).at(-1);
       async function reachable(name: string, locator: Locator) { await locator.hover(); try { const proof = await stableReachability(() => readReachability(locator)); geometry.push({ name, ...proof }); } catch (error) { geometry.push({ name, samples: (error as { samples?: unknown[] }).samples ?? [], final: null }); throw error; } }
-      async function picture(stage: string) { guard.stage = stage; const fonts = await fontProof(page, await dialog.count() ? '#receipt-title' : '.batch-list-page .page-title'); await capture(page, info.outputDir, stage, { caseId: scenario.id, nonce: guard.fixture.nonce, fonts }); guard.journey.stages.push(stage); }
+      async function picture(stage: string) { guard.stage = stage; await captureWithFonts(page, info.outputDir, stage, { caseId: scenario.id, nonce: guard.fixture.nonce }, await dialog.count() ? '#receipt-title' : '.batch-list-page .page-title'); guard.journey.stages.push(stage); }
       async function visit() { await page.goto(origin + routePath); await expect(page).toHaveURL(origin + routePath); await expect(page.getByRole('heading', { name: '批號效期管理', exact: true })).toBeVisible(); }
       async function open() { await expect(opener).toBeEnabled(); await reachable(`entry-${guard.stage}`, opener); await opener.click(); await expect(dialog).toBeVisible(); }
       async function selectLater() {
