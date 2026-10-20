@@ -245,3 +245,15 @@ The POS login component names its input, owns and aborts pending requests, rejec
 stale/unmounted publication, and accepts only an explicit successful response
 with a non-empty string token. Native evidence is required before claiming the
 three viewport journeys passed; local controls do not substitute for Chrome/PG.
+
+### Read-only POS layout/cancellation fixture
+
+`scripts/pos-layout-browser-fixture.ts` uses the existing exact-owned synthetic
+Node22/PG15/loopback service. It extends the reviewed staff-entry seed to twelve
+products/released batches, allows exactly one real active-user login per context
+plus the seven existing GET paths, and rejects all financial writes. Actual HTTP
+must drain before the 33-table before/after comparison and exact fixture cleanup.
+All setup prefixes retain ownership-scoped deletion; the original SKU cleanup
+still proves zero rows and owned DB absence. Native evidence remains required;
+local adapter and PGlite controls do not certify real PostgreSQL/Prisma/browser
+behavior. See `pos-ui/e2e/layout-native/README.md`.

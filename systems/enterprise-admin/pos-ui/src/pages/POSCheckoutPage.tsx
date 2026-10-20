@@ -501,6 +501,7 @@ export default function POSCheckoutPage() {
       )}
       {showPaymentModal && (
         <PaymentModal
+          suspended={!!adminPinPending}
           onConfirm={() => requirePin('checkout')}
           onClose={() => setShowPaymentModal(false)}
           loading={checkoutLoading}

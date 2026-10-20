@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useCartStore } from '../store/cartStore';
 import { PAYMENT_LABELS, PaymentMethod } from '../constants';
 
@@ -6,18 +6,64 @@ interface Props {
   onConfirm: () => void;
   onClose: () => void;
   loading: boolean;
+  suspended?: boolean;
   salesStaffName?: string;
   hasHighDiscount?: boolean;
   pinAuthorized?: boolean;
 }
 
-export default function PaymentModal({ onConfirm, onClose, loading, salesStaffName, hasHighDiscount, pinAuthorized }: Props) {
+export default function PaymentModal({ onConfirm, onClose, loading, suspended = false, salesStaffName, hasHighDiscount, pinAuthorized }: Props) {
   const [tendered, setTendered] = useState(0);
-  useEffect(() => {
+  const overlayRef = useRef<HTMLDivElement>(null), dialogRef = useRef<HTMLDivElement>(null);
+  const stateRef = useRef({ loading, suspended });
+  useLayoutEffect(() => { stateRef.current = { loading, suspended }; }, [loading, suspended]);
+  const controls = () => Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled)') ?? []);
+  const focusEntry = () => (stateRef.current.loading ? dialogRef.current : dialogRef.current?.querySelector<HTMLElement>('input:not(:disabled)') ?? controls()[0] ?? dialogRef.current)?.focus();
+  useLayoutEffect(() => {
+    const overlay = overlayRef.current!;
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    document.getElementById('payment-tendered')?.focus();
-    return () => { if (opener?.isConnected) opener.focus(); };
+    const backgrounds: { element: HTMLElement; inert: string | null; hidden: string | null }[] = [];
+    for (let branch: HTMLElement | null = overlay; branch && branch !== document.body; branch = branch.parentElement) {
+      for (const sibling of Array.from(branch.parentElement?.children ?? [])) {
+        if (!(sibling instanceof HTMLElement) || sibling === branch || sibling.hasAttribute('data-pos-modal')) continue;
+        backgrounds.push({ element: sibling, inert: sibling.getAttribute('inert'), hidden: sibling.getAttribute('aria-hidden') });
+        sibling.setAttribute('inert', ''); sibling.setAttribute('aria-hidden', 'true');
+      }
+    }
+    if (!stateRef.current.suspended) focusEntry();
+    const repairFocus = (event: FocusEvent) => {
+      if (!stateRef.current.suspended && event.target instanceof HTMLElement && !dialogRef.current?.contains(event.target) && !event.target.closest('[data-pos-modal]')) focusEntry();
+    };
+    document.addEventListener('focusin', repairFocus);
+    return () => {
+      const ownsFocus = overlay.contains(document.activeElement) || document.activeElement === document.body;
+      document.removeEventListener('focusin', repairFocus);
+      for (const { element, inert, hidden } of backgrounds) {
+        if (inert === null) element.removeAttribute('inert'); else element.setAttribute('inert', inert);
+        if (hidden === null) element.removeAttribute('aria-hidden'); else element.setAttribute('aria-hidden', hidden);
+      }
+      queueMicrotask(() => {
+        if (ownsFocus && !overlay.isConnected && opener?.isConnected && !opener.matches(':disabled') && !opener.closest('[inert]') && !document.activeElement?.closest('[data-pos-modal]')) opener.focus();
+      });
+    };
   }, []);
+  useLayoutEffect(() => { if (!suspended) focusEntry(); }, [loading, suspended]);
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const handled = event.defaultPrevented;
+    event.stopPropagation();
+    if (suspended) return;
+    if (/^F[2-8]$/.test(event.key)) event.preventDefault();
+    if (event.key === 'Escape') {
+      if (handled || event.nativeEvent.isComposing) return;
+      event.preventDefault(); if (!loading) onClose();
+    } else if (event.key === 'Tab') {
+      const all = controls(), first = all[0], last = all[all.length - 1];
+      if (!first) { event.preventDefault(); dialogRef.current?.focus(); }
+      else if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialogRef.current)) { event.preventDefault(); first.focus(); }
+    } else if (event.key === 'Enter' && !event.nativeEvent.isComposing && !(event.target instanceof HTMLElement && event.target.closest('button'))) event.preventDefault();
+  }
+  function restoreDialogFocus() { if (!suspended && !dialogRef.current?.contains(document.activeElement)) focusEntry(); }
   const { items, subtotal, total, orderDiscountAmount, paymentMethod, setPaymentMethod } = useCartStore();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const checkoutTotal = total();
@@ -25,8 +71,8 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
   const confirmDisabled = loading || cashUnderpaid;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-      <div role="dialog" aria-modal="true" aria-labelledby="payment-title" style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 24, width: 'min(400px, calc(100vw - 32px))', maxHeight: 'calc(100dvh - 32px)', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }} onClick={(event) => event.stopPropagation()}>
+    <div ref={overlayRef} data-pos-modal="payment" inert={suspended} aria-hidden={suspended || undefined} onKeyDown={handleKeyDown} onClick={restoreDialogFocus} onPointerDown={event => { if (event.target === event.currentTarget) { event.preventDefault(); restoreDialogFocus(); } }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+      <div ref={dialogRef} role="dialog" aria-modal={!suspended} aria-busy={loading} aria-labelledby="payment-title" tabIndex={-1} style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', padding: 24, width: 'min(400px, calc(100vw - 32px))', maxHeight: 'calc(100dvh - 32px)', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }} onClick={event => { event.stopPropagation(); restoreDialogFocus(); }}>
         <div style={{ minHeight: 0, overflowY: 'auto' }}>
         <h3 id="payment-title" style={{ margin: '0 0 8px' }}>確認結帳</h3>
 
@@ -63,6 +109,7 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
             <button
               type="button"
               key={value}
+              disabled={loading}
               onClick={() => setPaymentMethod(value as PaymentMethod)}
               style={{
                 padding: '8px 16px', borderRadius: 'var(--radius-xs)',
@@ -83,6 +130,7 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
               收取金額
             </label>
             <input
+              disabled={loading}
               id="payment-tendered"
               data-testid="payment-tendered-input"
               type="number"
@@ -101,7 +149,8 @@ export default function PaymentModal({ onConfirm, onClose, loading, salesStaffNa
         <div style={{ display: 'flex', gap: 12, flexShrink: 0, paddingTop: 12 }}>
           <button
             type="button"
-            onClick={onClose}
+            disabled={loading}
+            onClick={() => { if (!loading && !suspended) onClose(); }}
             style={{ flex: 1, padding: '12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)', cursor: 'pointer', fontSize: 15 }}
           >
             取消

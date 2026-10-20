@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import { setTimeout as delay } from 'node:timers/promises';
+export function assertReachable(value){
+ for(const key of ['x','y','right','bottom','width','height','viewportWidth','viewportHeight'])assert.equal(Number.isFinite(value[key]),true);
+ assert.ok(Math.abs(value.right-value.x-value.width)<1e-6 && Math.abs(value.bottom-value.y-value.height)<1e-6);
+ assert.ok(value.viewportWidth>0&&value.viewportHeight>0);assert.ok(value.width>0&&value.height>0);assert.equal(value.centerHit,true);assert.equal(value.visible,true);assert.equal(value.disabled,false);
+ for(const bounds of [{left:0,top:0,right:value.viewportWidth,bottom:value.viewportHeight},...value.clips]){
+  for(const key of ['left','right','top','bottom'])assert.equal(Number.isFinite(bounds[key]),true);assert.ok(bounds.right>=bounds.left&&bounds.bottom>=bounds.top);
+  assert.ok(value.x>=bounds.left && value.y>=bounds.top && value.right<=bounds.right && value.bottom<=bounds.bottom,'Complete control must fit viewport and each clipping ancestor');
+ }
+}
+export async function readReachability(locator){return locator.evaluate(node=>{
+ const r=node.getBoundingClientRect(),s=getComputedStyle(node),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2),clips=[];
+ let visible=node.isConnected&&node.getClientRects().length>0;for(let element=node;element;element=element.parentElement){const style=getComputedStyle(element);if(style.display==='none'||['hidden','collapse'].includes(style.visibility)||Number(style.opacity||'1')===0)visible=false;}
+ for(let parent=node.parentElement;parent;parent=parent.parentElement){const p=getComputedStyle(parent),b=parent.getBoundingClientRect();const x=/auto|scroll|hidden|clip/.test(p.overflowX),y=/auto|scroll|hidden|clip/.test(p.overflowY);if(x||y)clips.push({left:x?b.left+parent.clientLeft:0,right:x?b.left+parent.clientLeft+parent.clientWidth:innerWidth,top:y?b.top+parent.clientTop:0,bottom:y?b.top+parent.clientTop+parent.clientHeight:innerHeight});}
+ return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height,viewportWidth:innerWidth,viewportHeight:innerHeight,centerHit:hit===node||node.contains(hit),visible,disabled:node.matches(':disabled'),active:document.activeElement===node,outlineWidth:parseFloat(s.outlineWidth),outlineOffset:parseFloat(s.outlineOffset),outlineColor:s.outlineColor,clips};
+},undefined,{timeout:1000});}
+export async function stableReachability(read,{clock=()=>performance.now(),sleep=delay,timeoutMs=3000}={}){const start=clock(),samples=[];let last=null;while(clock()-start<timeoutMs){const value=await read();if(clock()-start>=timeoutMs)break;samples.push(value);let valid=true;try{assertReachable(value);}catch{valid=false;}const signature=JSON.stringify(value);if(valid&&signature===last)return{samples,final:value};last=valid?signature:null;await sleep(Math.min(50,Math.max(0,timeoutMs-(clock()-start))));}throw Object.assign(new Error('Control did not become stably reachable'),{samples});}
+export function assertLayout(value){assert.ok(value.width>0);const v=value.visualViewport;assert.ok(v);for(const key of ['width','height','scale','offsetLeft','offsetTop','pageLeft','pageTop'])assert.equal(Number.isFinite(v[key]),true);assert.equal(v.scale,1);assert.equal(v.offsetLeft,0);assert.equal(v.offsetTop,0);assert.ok(Math.abs(v.width-value.width)<0.5&&Math.abs(v.height-value.height)<0.5,'Layout and visual viewports must agree at the requested unscaled viewport');assert.ok(Number.isInteger(value.touchPoints)&&value.touchPoints>=0);assert.ok(value.documentWidth<=value.width && value.bodyWidth<=value.width,'No page-level horizontal overflow');for(const r of [value.toolbar,value.cart,value.products])assert.ok(r.left>=0&&r.right<=value.width&&r.top>=0&&r.bottom<=value.height,'Main POS region must be inside the viewport');}
+
+export function readCart(cart) { return cart.evaluate(node=>({products:Array.from(node.querySelectorAll('button[aria-label^="移除 "]')).map(button=>({name:button.getAttribute('aria-label').replace(/^移除 /,''),quantity:Number(button.parentElement.parentElement.querySelector('input[aria-label="商品數量"]').value)})),total:Number(node.querySelector('[data-testid="cart-total"]').textContent.replace(/[^0-9.-]/g,'')),discount:Number(node.querySelector('#order-discount').value)})); }
