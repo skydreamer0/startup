@@ -164,3 +164,39 @@ describe('local image evidence UI (synthetic decoder adapter)', () => {
     expect(screen.queryByRole('radio')).not.toBeInTheDocument(); expect(confirm()).toBeDisabled();
   });
 });
+
+describe('camera acquisition reuses the same evidence and confirmation boundary', () => {
+  it('retains exact decoder bytes, labels camera provenance, and hands off only after selection plus confirmation', async () => {
+    const track = { stop: vi.fn(), onended: null };
+    const stream = { getTracks: () => [track], getVideoTracks: () => [track] } as unknown as MediaStream;
+    vi.stubGlobal('isSecureContext', true);
+    const getUserMedia = vi.fn().mockResolvedValue(stream);
+    Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getUserMedia } });
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+    Object.defineProperty(HTMLVideoElement.prototype, 'videoWidth', { configurable: true, get: () => 640 });
+    Object.defineProperty(HTMLVideoElement.prototype, 'videoHeight', { configurable: true, get: () => 480 });
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage: vi.fn() } as unknown as CanvasRenderingContext2D);
+    vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation(callback => callback(new Blob(['synthetic PNG'], { type: 'image/png' })));
+    const literal = '  001aB\u001d\r\nhttps://example.invalid  ';
+    const observed = observation(literal); vi.mocked(decodeImageScan).mockResolvedValue([observed]);
+    const onLookup = vi.fn();
+    const view = render(<ImageScanDialog source="camera" onClose={vi.fn()} onLookup={onLookup} />);
+    try {
+      const start = screen.getByRole('button', { name: '啟用相機／重新拍攝' });
+      expect(start).toHaveFocus(); expect(getUserMedia).not.toHaveBeenCalled();
+      await act(async () => { fireEvent.click(start); });
+      await act(async () => { fireEvent.click(screen.getByRole('button', { name: '拍攝並在本機辨識' })); });
+      expect(track.stop).toHaveBeenCalledOnce(); expect(onLookup).not.toHaveBeenCalled();
+      const lookup = screen.getByRole('button', { name: '使用這段原碼查找商品／包裝' });
+      expect(lookup).toBeDisabled();
+      fireEvent.click(screen.getByRole('radio'));
+      const evidence = JSON.parse(screen.getByLabelText('圖片掃描證據 JSON').textContent!);
+      expect(evidence).toEqual({ ...observed, scan: { ...observed.scan, source: 'camera', evidence: { inputRoute: 'camera-frame', hardwareVerified: false } } });
+      expect(lookup).toBeDisabled(); fireEvent.click(confirm()); expect(onLookup).not.toHaveBeenCalled();
+      fireEvent.click(lookup); expect(onLookup).toHaveBeenCalledWith(evidence.scan);
+      await act(async () => { fireEvent.click(start); });
+      expect(screen.queryByRole('radio')).toBeNull(); expect(lookup).toBeDisabled();
+      expect(revokeObjectURL).toHaveBeenCalled();
+    } finally { view.unmount(); vi.restoreAllMocks(); vi.unstubAllGlobals(); }
+  });
+});

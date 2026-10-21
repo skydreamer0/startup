@@ -12,3 +12,6 @@ expectedCases.push(...importCases);
 
 export const readerCases = ['suppliers','analytics'].flatMap(page => widths.flatMap(width => ['initial retry','denial 401','denial 403'].map(flow => `reader-${page} ${width}: ${flow}`))).concat(['reader-suppliers 1440: identity change']);
 expectedCases.push(...readerCases);
+
+export const receivingCases = widths.flatMap(width => ['ten-line save reopen history', 'lost response and navigation', 'CAS explicit choice'].map(flow => `receiving ${width}: ${flow}`)).concat(['receiving 1440: identity and invalid URL']);
+expectedCases.push(...receivingCases);

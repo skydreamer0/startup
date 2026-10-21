@@ -4,6 +4,7 @@ import { decodeImageScan, ImageScanError } from '../services/imageScanDecoder';
 import type { ImageScanEvidence } from '../services/imageScanResult';
 import type { ScanResultV1 } from '@pharmasaas/types';
 import './ImageScanDialog.css';
+import CameraCapture from './CameraCapture';
 
 type ImagePreview = { name: string; url: string; results: readonly ImageScanEvidence[] };
 
@@ -22,11 +23,11 @@ function errorMessage(error: unknown): string {
 }
 
 /** Temporary local evidence; product lookup requires a separate explicit handoff. */
-export default function ImageScanDialog({ onClose, onLookup }: { onClose: () => void; onLookup?: (scan: ScanResultV1) => void }) {
+export default function ImageScanDialog({ onClose, onLookup, source = 'image' }: { onClose: () => void; onLookup?: (scan: ScanResultV1) => void; source?: 'image' | 'camera' }) {
   const id = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const focusEntry = () => dialogRef.current?.querySelector<HTMLElement>('[data-scan-entry]:not(:disabled), button:not(:disabled)')?.focus();
   const closeRef = useRef(onClose);
   const requestRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
@@ -50,9 +51,9 @@ export default function ImageScanDialog({ onClose, onLookup }: { onClose: () => 
       element.setAttribute('inert', ''); element.setAttribute('aria-hidden', 'true');
     }
     document.body.style.overflow = 'hidden';
-    fileRef.current?.focus();
+    focusEntry();
     function repairFocus(event: FocusEvent) {
-      if (!(event.target instanceof Node) || !dialog.contains(event.target)) fileRef.current?.focus();
+      if (!(event.target instanceof Node) || !dialog.contains(event.target)) focusEntry();
     }
     function ownKeyboard(event: KeyboardEvent) {
       event.stopPropagation();
@@ -66,7 +67,7 @@ export default function ImageScanDialog({ onClose, onLookup }: { onClose: () => 
           event.preventDefault(); controls[event.shiftKey ? controls.length - 1 : 0]?.focus();
         }
       } else if (/^F[2-8]$/.test(event.key) || !inside) {
-        event.preventDefault(); if (!inside) fileRef.current?.focus();
+        event.preventDefault(); if (!inside) focusEntry();
       }
     }
     window.addEventListener('keydown', ownKeyboard, true);
@@ -88,6 +89,14 @@ export default function ImageScanDialog({ onClose, onLookup }: { onClose: () => 
     };
   }, []);
 
+  function resetEvidence() {
+    ++requestRef.current;
+    abortRef.current?.abort(); abortRef.current = null;
+    if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    objectUrlRef.current = null;
+    setPreview(null); setSelected(null); setConfirmed(false); setError(null); setPending(false);
+  }
+
   async function readImage(file: File) {
     const request = ++requestRef.current;
     abortRef.current?.abort();
@@ -102,7 +111,9 @@ export default function ImageScanDialog({ onClose, onLookup }: { onClose: () => 
       // The decoder has validated the actual format, dimensions and byte limit.
       const url = URL.createObjectURL(file);
       objectUrlRef.current = url;
-      setPreview({ name: file.name, url, results });
+      setPreview({ name: file.name, url, results: source === 'camera' ? results.map(result => ({
+        ...result, scan: { ...result.scan, source: 'camera', evidence: { ...result.scan.evidence, inputRoute: 'camera-frame' } },
+      })) : results });
     } catch (failure: unknown) {
       if (requestRef.current === request) setError(errorMessage(failure));
     } finally {
@@ -113,25 +124,27 @@ export default function ImageScanDialog({ onClose, onLookup }: { onClose: () => 
   const chosen = selected === null ? null : preview?.results[selected];
   return createPortal(
     <div className="image-scan-overlay" ref={overlayRef} onPointerDown={event => {
-      if (event.target === event.currentTarget) { event.preventDefault(); fileRef.current?.focus(); }
+      if (event.target === event.currentTarget) { event.preventDefault(); focusEntry(); }
     }}>
       <div className="image-scan-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-help`}>
-        <h2 id={`${id}-title`}>圖片掃碼</h2>
+        <h2 id={`${id}-title`}>{source === 'camera' ? '相機掃碼' : '圖片掃碼'}</h2>
         <p id={`${id}-help`}>在本機辨識 QR、EAN／UPC、Code128、Data Matrix。圖片不會上傳；結果僅供本次檢視，關閉後清除。</p>
         <p>請核對原圖與辨識文字。確認不會查詢商品、加入購物車或變更庫存。</p>
+        {source === 'camera' ? <CameraCapture onReset={resetEvidence} onCapture={file => void readImage(file)} /> : <>
         <label htmlFor={`${id}-file`}>選擇條碼或 QR Code 圖片</label>
-        <input id={`${id}-file`} ref={fileRef} type="file" accept="image/png,image/jpeg" aria-describedby={`${id}-limits`}
+        <input id={`${id}-file`} data-scan-entry type="file" accept="image/png,image/jpeg" aria-describedby={`${id}-limits`}
           onChange={event => {
             const file = event.currentTarget.files?.[0];
             event.currentTarget.value = '';
             if (file) void readImage(file);
           }} />
-        <p id={`${id}-limits`}>PNG／JPEG，10 MiB 以內、1600 萬像素以內。相機與文字 OCR 尚未包含在此入口。</p>
+        <p id={`${id}-limits`}>PNG／JPEG，10 MiB 以內、1600 萬像素以內。文字 OCR 尚未包含在此入口。</p>
+        </>}
         <p role="status">{pending ? '正在本機辨識，可重新選圖或關閉取消本次檢視。' : confirmed ? '已人工確認本次辨識文字；商品與包裝尚未核對，沒有寫入交易或庫存。' : ''}</p>
         {error && <p role="alert">{error}</p>}
         {preview && <section aria-label="圖片辨識預覽">
           <p>{preview.name}</p>
-          <img className="image-scan-preview" src={preview.url} alt="本次匯入圖片，供人工核對條碼" />
+          <img className="image-scan-preview" src={preview.url} alt={source === 'camera' ? '本次相機擷取影像，供人工核對條碼' : '本次匯入圖片，供人工核對條碼'} />
           {preview.results.length === 0 ? <p>未找到支援的條碼，請換一張清楚的圖片；也可關閉後使用手動貼碼。</p> : <>
             <fieldset className="image-scan-candidates">
               <legend>辨識到 {preview.results.length} 個結果，請逐一核對並選擇</legend>

@@ -245,3 +245,15 @@ mocked 邊界測試及隔離 HTTP/PostgreSQL 測試分別為
 `backend/src/modules/inventory/__tests__/stock-reconciliation.test.ts` 與
 `backend/src/__tests__/stock-reconciliation-http.integration.test.ts`。
 
+
+
+## Private receiving drafts (candidate, no posting)
+All routes below use the existing `/api/v1/admin` mount, authenticated active actor and backend tenant context. No client actor/tenant parameter can choose an owner. Reads require `read:products`; PUT also requires `create:products`. Responses use `{success:true,data:...}` and `Cache-Control: no-store`.
+
+- `GET /receiving-drafts?page=1`: private summaries `{id,title,revision,updatedAt}`, fixed50 page with `{data,total,page,limit,tenantId,ownerId}`. Page is positive integer <=1000000.
+- `GET /receiving-drafts/:id`: head `{id,tenantId,ownerId,revision,updatedAt,payload}`; missing or other-owner ID returns404.
+- `GET /receiving-drafts/:id/history?page=1`: private revision metadata `{revision,createdAt}[]`, fixed50 descending.
+- `GET /receiving-drafts/:id/history/:revision`: immutable payload snapshot in the head response shape. Read-only; no restore/delete endpoint.
+- `PUT /receiving-drafts/:id`: `{expectedRevision,payload}`. Expected0 creates a client UUID; otherwise conditional update only the exact actor/tenant/revision. A duplicate create/stale version is409, inaccessible existing ID404. Payload is strict `{title,lines}` with title1..120, at most100 unique UUID lines `{id,fields,reviewed}`; fields retain raw productId/baseUnit/batchNumber/expiryDate/quantity/note and optional orderedQuantity/quarantineQuantity/rejectedQuantity/packageDescription/unitCost/sourceReference. Incomplete fields can be saved unchecked; checked lines require valid full date, nonzero decimal quantity and required identifiers. Unknown keys, invalid payload or nonlocal product reference400.
+
+After unknown PUT response, GET the same ID. Identical payload confirms saved content without another PUT. Otherwise explicitly compare before saving against a newer revision. Only an unsaved expected0 draft with GET404 may retry the same ID. This API never posts receipts, releases stock, converts units or writes accounting entries. The additive schema remains a candidate; production migration is not part of this change.

@@ -101,3 +101,46 @@ manufacturer/package mapping, internal-batch QR routing and business writes. Eac
 remains on its existing M0/M1 tracking path. Real WASM fixtures, cold-cache offline
 asset delivery, browser interaction, supported runtime/build and device/CPU/RAM
 acceptance are separate gates and must not be inferred from source or mocked tests.
+
+## Camera acquisition continuation (#37 M0-A / #31 / #48)
+
+The POS camera entry reuses ImageScanDialog's evidence selection/confirmation and
+the explicit ADR-024 package lookup handoff. CameraCapture requests video only
+after the user presses its enable button; merely opening the dialog requests
+nothing. It never requests microphone access, automatically captures, records,
+uploads, dispatches scanner input, opens decoded URLs, or writes inventory.
+
+A user-triggered single frame is copied into an aspect-preserving canvas with
+both dimensions <=1600 before allocation, encoded as bounded PNG, and passed to
+the same pinned local WASM reader. Requested 1280x720 dimensions are hints, not
+guarantees. Camera source/frame-route replace acquisition metadata only; decoder
+literal, observed bytes and symbology remain untouched, GS1 remains unknown, and
+hardwareVerified remains false. The evidence coordinates refer to the bounded
+captured frame, not original sensor resolution. These memory bounds are not
+measured 8 GB PC performance acceptance.
+
+Capture releases the live stream before asynchronous PNG encoding/decoding.
+Stop, close/unmount, pagehide, hidden document and interrupted tracks release
+every acquired track. Unresolved getUserMedia cannot be forcibly cancelled by
+the web API; generation invalidation immediately stops a late returned stream.
+Late encoding and decoding cannot restore cancelled evidence. Retake clears
+selection, confirmation, errors and object URLs. Permission/device/play/canvas
+errors expose retry or the existing image/manual alternatives.
+
+POS camera evidence is scoped to checkout identity, cart draft revision and
+sales staff. Scope/draft/staff changes or a frozen pending checkout remove the
+camera dialog and clean its resources. Existing scanner partial/late-result
+invalidation and modal keyboard ownership remain in force. Capture, text
+confirmation and package handoff each have no cart or stock effect. The existing
+explicit package lookup and re-resolution/selection can add reviewed base units
+to the editable POS cart; it is still not checkout or inventory posting.
+
+The exact-head official Chrome dialog harness uses a generated synthetic Y4M QR
+with fake-device flags, real browser media/video/canvas and the bundled reader.
+Business HTTP and injected permission-denial/delay cases are synthetic. It
+checks three viewports, warm initialized-decoder offline reuse, raw evidence,
+explicit package handoff, no unapproved writes, ended tracks, CJK glyphs and
+bounded control geometry/hit tests. Unit media mocks and official fake-device
+Chrome are separate evidence. Real permission prompts, physical camera/USB,
+LAN HTTPS, Safari/iPad, cold offline startup, native 200% zoom and CPU/RAM/P50/P95
+measurements remain NOT RUN. No parent M0/G0–G7 gate closes with this software PR.

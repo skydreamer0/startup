@@ -30,7 +30,7 @@ function fixture(t) {
   git('merge', '-q', '--no-ff', source, '-m', 'test(pos-ui): synthetic execution merge');
   const execution = git('rev-parse', 'HEAD');
   const env = { UI_QA_SOURCE_SHA: source, UI_QA_EXECUTION_SHA: execution,
-    UI_QA_EXECUTION_MODE: 'pr-merge', UI_QA_EVENT_BASE_SHA: eventBase, GITHUB_REPOSITORY: 'owner/repo' };
+    UI_QA_EXECUTION_MODE: 'pr-merge', UI_QA_EVENT_BASE_SHA: eventBase, GITHUB_REPOSITORY: 'owner/repo', UI_QA_METADATA_TOKEN: 'synthetic-readonly-token' };
   const api = { sha: execution, commit: { tree: { sha: git('rev-parse', 'HEAD^{tree}') } }, parents: [base, source].map(sha => ({ sha })) };
   const fetchCommit = async () => ({ ok: true, json: async () => api });
   function setup(baseSha = base, overrides = {}) {
@@ -68,7 +68,8 @@ test('fixed SHA API URL, tree and ordered parents are all cross-checked', async 
   const f = fixture(t);
   await resolveFixture(f, {}, async (url, options) => {
     assert.equal(url, `https://api.github.com/repos/owner/repo/commits/${f.execution}`);
-    assert.equal(options.headers.Authorization, undefined);
+    assert.equal(options.headers.Authorization, 'Bearer synthetic-readonly-token');
+    assert.equal(options.redirect, 'error');
     return f.fetchCommit();
   });
   for (const change of [
@@ -139,9 +140,9 @@ test('API HTTP, network, timeout and invalid JSON failures have no fallback', as
   const f = fixture(t);
   await assert.rejects(resolveFixture(f, {}, async () => ({ ok: false, status: 503 })), /API failed: HTTP 503/);
   for (const message of ['network unavailable', 'request timeout']) {
-    await assert.rejects(resolveFixture(f, {}, async () => { throw new Error(message); }), new RegExp(message));
+    await assert.rejects(resolveFixture(f, {}, async () => { throw new Error(message); }), /API transport failed/);
   }
-  await assert.rejects(resolveFixture(f, {}, async () => ({ ok: true, json: async () => { throw new SyntaxError('bad JSON'); } })), /bad JSON/);
+  await assert.rejects(resolveFixture(f, {}, async () => ({ ok: true, json: async () => { throw new SyntaxError('bad JSON'); } })), /API invalid JSON/);
 });
 
 test('missing SHA, repository and invalid mode fail closed', async t => {
@@ -178,4 +179,66 @@ test('original setup still rejects hidden index flags and unexpected base in hea
   f.git('update-index', '--no-assume-unchanged', `${qaPath}/driver.txt`);
   f.git('update-index', '--skip-worktree', `${qaPath}/driver.txt`);
   assert.match(f.setup().stderr, /Hidden tracked QA source/);
+});
+
+
+test('metadata proof rejects tampering, replay and token inheritance', async t => {
+  const f = fixture(t);
+  const { writeProvenanceProof, readProvenanceProof } = await import('./provenance-proof.mjs');
+  const env = { ...f.env, GITHUB_RUN_ID:'100', GITHUB_RUN_ATTEMPT:'1', RUNNER_TEMP:f.cwd };
+  const proof = await writeProvenanceProof({cwd:f.cwd,env,fetchCommit:f.fetchCommit});
+  assert.equal(env.UI_QA_METADATA_TOKEN,undefined);
+  const reading={...env,UI_QA_PROOF_PATH:proof.file,UI_QA_PROOF_SHA256:proof.sha256};
+  assert.equal(readProvenanceProof({cwd:f.cwd,env:reading}).commitApiVerified,true);
+  for(const override of [{UI_QA_PROOF_SHA256:'a'.repeat(64)},{GITHUB_RUN_ATTEMPT:'2'},{GITHUB_RUN_ID:'101'},{UI_QA_METADATA_TOKEN:'synthetic-token'},{UI_QA_SOURCE_SHA:f.base},{UI_QA_PROOF_PATH:'/wrong'}])assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:{...reading,...override}}));
+  writeFileSync(proof.file,readFileSync(proof.file,'utf8').replace('"schema":1','"schema":2'));
+  assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:reading}));
+});
+test('missing credential fails closed; transport errors never echo credential', async t=>{
+ const f=fixture(t);await assert.rejects(resolveFixture(f,{UI_QA_METADATA_TOKEN:''}),/Metadata token/);
+ await assert.rejects(resolveFixture(f,{},async()=>{throw new Error('synthetic-readonly-token');}),error=>!error.message.includes('synthetic-readonly-token')&&error.message.includes('transport failed'));
+ const {writeProvenanceProof}=await import('./provenance-proof.mjs');const env={...f.env,GITHUB_RUN_ID:'1',GITHUB_RUN_ATTEMPT:'1',RUNNER_TEMP:f.cwd};
+ await assert.rejects(writeProvenanceProof({cwd:f.cwd,env,fetchCommit:async()=>{throw new Error('secret');}}),/transport failed/);assert.equal(env.UI_QA_METADATA_TOKEN,undefined);
+});
+
+test('proof rejects changed QA bytes and forged schema even with a matching digest', async t=>{
+ const f=fixture(t);const {writeProvenanceProof,readProvenanceProof}=await import('./provenance-proof.mjs');
+ const {createHash}=await import('node:crypto');const env={...f.env,GITHUB_RUN_ID:'400',GITHUB_RUN_ATTEMPT:'1',RUNNER_TEMP:f.cwd};
+ const p=await writeProvenanceProof({cwd:f.cwd,env,fetchCommit:f.fetchCommit});const reading={...env,UI_QA_PROOF_PATH:p.file,UI_QA_PROOF_SHA256:p.sha256};
+ const original=readFileSync(p.file);const data=JSON.parse(original);
+ for(const altered of [{...data,extra:true},{...data,repository:'other/repo'},{...data,record:{...data.record,commitApiVerified:false}},{...data,record:{...data.record,executionParents:[...data.record.executionParents].reverse()}},{...data,qaBlobs:{}}]){
+  const bytes=JSON.stringify(altered);writeFileSync(p.file,bytes);
+  assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:{...reading,UI_QA_PROOF_SHA256:createHash('sha256').update(bytes).digest('hex')}}));
+ }
+ writeFileSync(p.file,original);writeFileSync(join(f.cwd,qaPath,'driver.txt'),'changed after preflight\n');
+ assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:reading}));f.git('checkout','--',`${qaPath}/driver.txt`);
+ assert.equal(readProvenanceProof({cwd:f.cwd,env:reading}).commitApiVerified,true);
+ rmSync(p.file);assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:reading}));
+});
+
+test('preflight CLI derives repository root and writes only digest/path outputs in head mode', async t=>{
+ const f=fixture(t);
+ for(const file of ['provenance.mjs','provenance-proof.mjs'])writeFileSync(join(f.cwd,qaPath,file),readFileSync(join(here,file)));
+ f.git('add','.');f.git('commit','-qm','test: proof CLI');const head=f.git('rev-parse','HEAD');
+ const output=join(f.cwd,'step-output');
+ const result=spawnSync(process.execPath,[join(f.cwd,qaPath,'provenance-proof.mjs')],{cwd:join(f.cwd,'systems/enterprise-admin'),encoding:'utf8',env:{...process.env,GITHUB_REPOSITORY:'owner/repo',GITHUB_RUN_ID:'500',GITHUB_RUN_ATTEMPT:'1',RUNNER_TEMP:f.cwd,GITHUB_OUTPUT:output,UI_QA_EXECUTION_MODE:'head',UI_QA_EXECUTION_SHA:head,UI_QA_SOURCE_SHA:head,UI_QA_EVENT_BASE_SHA:'',UI_QA_BASE_SHA:'',UI_QA_METADATA_TOKEN:'synthetic-cli-token'}});
+ assert.equal(result.status,0,result.stderr);const lines=readFileSync(output,'utf8').trim().split('\n');assert.equal(lines.length,2);assert.match(lines[0],/^proof_path=/);assert.match(lines[1],/^proof_sha256=[a-f0-9]{64}$/);assert.ok(!result.stdout.includes('synthetic-cli-token'));assert.ok(!readFileSync(output,'utf8').includes('synthetic-cli-token'));
+});
+
+test('unexpected browser token is removed and never appears in rendered rejection', async t=>{
+ const f=fixture(t);const {readProvenanceProof}=await import('./provenance-proof.mjs');const {inspect,format}=await import('node:util');
+ const sentinel='synthetic-browser-secret-should-never-be-logged';const env={UI_QA_METADATA_TOKEN:sentinel};
+ let caught;try{readProvenanceProof({cwd:f.cwd,env});}catch(error){caught=error;}
+ assert.ok(caught);assert.equal(caught.message,'Metadata token must not reach browser execution');
+ for(const rendered of [String(caught),inspect(caught),format(caught),caught.stack,JSON.stringify(caught)])assert.ok(!rendered.includes(sentinel));
+ assert.equal(env.UI_QA_METADATA_TOKEN,undefined);
+});
+
+test('genuine local exact head remains no-API; any CI context prevents proof downgrade',async t=>{
+ const f=fixture(t);const {readProvenanceProof}=await import('./provenance-proof.mjs');
+ const env={UI_QA_SOURCE_SHA:f.execution,UI_QA_EXECUTION_SHA:f.execution,UI_QA_EXECUTION_MODE:'head'};
+ const local=readProvenanceProof({cwd:f.cwd,env});assert.equal(local.commitApiVerified,false);assert.equal(local.baseHead,null);
+ for(const key of ['CI','GITHUB_ACTIONS','GITHUB_RUN_ID','GITHUB_RUN_ATTEMPT','GITHUB_REPOSITORY','RUNNER_TEMP','RUNNER_NAME','UI_QA_PROOF_PATH','UI_QA_PROOF_SHA256'])for(const value of ['', 'false','1'])assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:{...env,[key]:value}}),`${key}=${value}`);
+ assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:{...env,UI_QA_EXECUTION_MODE:'pr-merge'}}));
+ assert.throws(()=>readProvenanceProof({cwd:f.cwd,env:{...env,UI_QA_SOURCE_SHA:f.base}}));
 });

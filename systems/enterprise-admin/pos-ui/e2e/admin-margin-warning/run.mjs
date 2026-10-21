@@ -5,7 +5,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
-import { resolveProvenance } from '../ui-evidence/provenance.mjs';
+import { readProvenanceProof } from '../ui-evidence/provenance-proof.mjs';
 import { expectedCases } from './cases.mjs';
 import { assertImportNetwork } from './import-contract.mjs';
 import { validatePng, validateTraceDesktopPng } from './png.mjs';
@@ -16,7 +16,8 @@ export const sourceInputs = ['systems/enterprise-admin/admin-ui', 'systems/enter
   'systems/enterprise-admin/pnpm-lock.yaml', 'systems/enterprise-admin/pnpm-workspace.yaml', 'systems/enterprise-admin/package.json',
   'systems/enterprise-admin/pos-ui/package.json', 'systems/enterprise-admin/pos-ui/e2e/admin-margin-warning',
   'systems/enterprise-admin/pos-ui/e2e/ui-evidence/owned-process.mjs',
-  'systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance.mjs', '.github/workflows/ci.yml'];
+  'systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance.mjs',
+  'systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance-proof.mjs', '.github/workflows/ci.yml'];
 export function assertInputIdentity(git, head, execution) {
   assert.equal(git('diff', '--name-only', head, execution, '--', ...sourceInputs), '', 'Execution inputs differ from submitted head');
 }
@@ -90,7 +91,7 @@ export function validateEvidence(output, cases) {
     if (item.title.startsWith('import ')) assertImportNetwork(data);
     const images = item.attachments.filter(a => a.name.endsWith('.png'));
     const suffix = item.title.split(': ')[1];
-    const required = item.title.startsWith('reader-') ? (item.title.startsWith('reader-analytics ') && suffix.startsWith('denial ') ? ['reader-before', 'reader-after', 'ranking-denied', 'ranking-recovered'] : ['reader-before', 'reader-after']) : item.title.startsWith('import ') ? ({
+    const required = item.title.startsWith('receiving ') ? ['receiving-before','receiving-after'] : item.title.startsWith('reader-') ? (item.title.startsWith('reader-analytics ') && suffix.startsWith('denial ') ? ['reader-before', 'reader-after', 'ranking-denied', 'ranking-recovered'] : ['reader-before', 'reader-after']) : item.title.startsWith('import ') ? ({
       'keyboard and idle dismissal': ['import-open'],
       'preview pending recovery': ['preview-pending', 'preview-recovered'],
       'confirm pending pairing': ['confirm-pending', 'import-complete'],
@@ -120,7 +121,13 @@ export function validateEvidence(output, cases) {
         assert.ok(bounds.x + bounds.width <= geometry.viewport.width + 1);
         assert.ok(bounds.y + bounds.height <= geometry.viewport.height + 1);
       }
-      if (item.title.startsWith('reader-')) {
+      if (item.title.startsWith('receiving ')) {
+        assert.equal(geometry.subject, 'receiving-draft');
+        assert.equal(geometry.keyboardReachable, true);
+        assert.ok(geometry.target.width > 0 && geometry.target.height > 0);
+        assert.ok(geometry.target.x >= 0 && geometry.target.right <= geometry.viewport.width + 1);
+        assert.ok(geometry.target.y >= 0 && geometry.target.bottom <= geometry.viewport.height + 1);
+      } else if (item.title.startsWith('reader-')) {
         assertReaderGeometry(geometry);
       } else if (item.title.startsWith('batch-trace ')) {
         assert.equal(geometry.subject, 'batch-trace');
@@ -156,7 +163,7 @@ async function main() {
   const pos = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const admin = path.resolve(pos, '../admin-ui'), root = path.resolve(pos, '../../..');
   const git = (...args) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', timeout: 10000, maxBuffer: 8 * 1024 * 1024 }).trim();
-  const provenance = await resolveProvenance({ cwd: root });
+  const provenance = readProvenanceProof({ cwd: root });
   const assertSource = () => {
     assert.equal(git('rev-parse', 'HEAD'), provenance.executionHead);
     assert.equal(git('status', '--porcelain'), '', 'Acceptance source must be clean');
@@ -198,7 +205,7 @@ async function main() {
     accepted = { ...identity, status: 'passed', cases, phases,
       visualReview: 'PNG pixels require separate independent review; automated checks alone are not full visual acceptance',
       knownLimits: ['Existing initial-error zero/empty fallback is not repaired', 'Whole-report layout overflow is recorded separately',
-        'Google font CSS stubbed; Ubuntu Noto CJK fallback verified by actual Chrome platform glyphs', 'No native page zoom, physical devices, Safari/iPad, screen reader, financial reconciliation, real API or DB acceptance',
+        'Google font CSS stubbed; original report/trace cases have CDP glyph evidence, reader/import/receiving PNGs require independent CJK visual review', 'No native page zoom, physical devices, Safari/iPad, screen reader, financial reconciliation, real API or DB acceptance',
         'Import file chooser uses synthetic byte fixtures through Playwright; not native OS picker or XLSX parser acceptance; import PNGs need visual/CJK review'] };
   } catch (problem) { error = problem; }
   finally {

@@ -18,6 +18,28 @@ concurrency:
 
 jobs:
 
+  plan:
+    name: CI change plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.select.outputs.backend }}
+      admin: ${{ steps.select.outputs.admin }}
+      pos: ${{ steps.select.outputs.pos }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Verify conservative planner and required gate controls
+        run: node --test scripts/ci/plan.test.mjs scripts/ci/workflow.test.mjs
+      - id: select
+        name: Bind change plan to exact execution parents
+        run: node scripts/ci/plan.mjs
+
   agent-context:
     name: Agent Context Validation
     runs-on: ubuntu-latest
@@ -37,7 +59,9 @@ jobs:
       run: python3 -I scripts/ocr-evaluation/verify.py --output-dir "$RUNNER_TEMP/ocr-evaluation"
 
   backend:
-    name: Backend CI
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
+    name: Backend CI worker
     runs-on: ubuntu-latest
 
     services:
@@ -150,7 +174,9 @@ jobs:
         retention-days: 7
 
   admin-ui:
-    name: Admin UI CI
+    needs: plan
+    if: ${{ needs.plan.outputs.admin == 'true' }}
+    name: Admin UI CI worker
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -205,10 +231,23 @@ jobs:
         google-chrome --version
         node --test pos-ui/e2e/admin-margin-warning/run.test.mjs
 
+    - name: Authenticate Admin execution metadata only
+      id: provenance_metadata
+      shell: bash
+      env:
+        UI_QA_METADATA_TOKEN: ${{ github.token }}
+        UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      run: node pos-ui/e2e/ui-evidence/provenance-proof.mjs
+
     - name: Current Admin margin warnings in sandboxed Chrome
       id: admin_margin_browser
       timeout-minutes: 8
       env:
+        UI_QA_PROOF_PATH: ${{ steps.provenance_metadata.outputs.proof_path }}
+        UI_QA_PROOF_SHA256: ${{ steps.provenance_metadata.outputs.proof_sha256 }}
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         UI_QA_EXECUTION_SHA: ${{ github.sha }}
         UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
@@ -225,7 +264,9 @@ jobs:
         retention-days: 7
 
   pos-ui:
-    name: POS UI CI
+    needs: plan
+    if: ${{ needs.plan.outputs.pos == 'true' }}
+    name: POS UI CI worker
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -314,10 +355,23 @@ jobs:
         pnpm --dir "$GITHUB_WORKSPACE/.ui-evidence-subjects/scanner/systems/enterprise-admin" install --frozen-lockfile
         pnpm --dir "$GITHUB_WORKSPACE/.ui-evidence-subjects/suppliers/systems/enterprise-admin" install --frozen-lockfile
 
+    - name: Authenticate fixed execution metadata only
+      id: provenance_metadata
+      shell: bash
+      env:
+        UI_QA_METADATA_TOKEN: ${{ github.token }}
+        UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        UI_QA_EXECUTION_SHA: ${{ github.sha }}
+        UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
+        UI_QA_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      run: node pos-ui/e2e/ui-evidence/provenance-proof.mjs
+
     - name: Reviewed scanner and supplier browser evidence
       id: reviewed_ui
       shell: bash
       env:
+        UI_QA_PROOF_PATH: ${{ steps.provenance_metadata.outputs.proof_path }}
+        UI_QA_PROOF_SHA256: ${{ steps.provenance_metadata.outputs.proof_sha256 }}
         UI_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         UI_QA_EXECUTION_SHA: ${{ github.sha }}
         UI_QA_EXECUTION_MODE: ${{ github.event_name == 'pull_request' && 'pr-merge' || 'head' }}
@@ -343,6 +397,8 @@ jobs:
           systems/enterprise-admin/pos-ui/http-recovery-ci.txt
 
   products-pagination:
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
     name: Product pagination PostgreSQL acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -415,6 +471,8 @@ jobs:
           retention-days: 7
 
   pos-sku-acceptance:
+    needs: plan
+    if: ${{ needs.plan.outputs.pos == 'true' }}
     name: Exact SKU PostgreSQL and current POS browser acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -573,6 +631,8 @@ jobs:
           retention-days: 7
 
   batch-audit:
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
     name: Batch audit PostgreSQL acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -645,6 +705,8 @@ jobs:
           retention-days: 7
 
   order-sequence:
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
     name: Order sequence PostgreSQL acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -717,6 +779,8 @@ jobs:
           retention-days: 7
 
   pos-dialog-acceptance:
+    needs: plan
+    if: ${{ needs.plan.outputs.pos == 'true' }}
     name: Exact-head POS dialog Chrome acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -761,3 +825,135 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+
+  receiving-drafts:
+    needs: plan
+    if: ${{ needs.plan.outputs.backend == 'true' }}
+    name: Private receiving PostgreSQL acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_DB: checkout_http_recovery_receiving_drafts_ci
+          # Only this new, disposable, synthetic-only service uses passwordless auth.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - '127.0.0.1:55438:5432'
+        options: >-
+          --health-cmd "pg_isready -U test -d checkout_http_recovery_receiving_drafts_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: ./systems/enterprise-admin/backend
+    env:
+      DATABASE_URL: 'postgresql://test@127.0.0.1:55438/checkout_http_recovery_receiving_drafts_ci'
+      RECEIVING_DRAFT_DATABASE_URL: 'postgresql://test@127.0.0.1:55438/checkout_http_recovery_receiving_drafts_ci'
+      RECEIVING_QA_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # This worker proves the exact source head and participates in required Backend CI.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
+      - name: Guard exact source, loopback service and empty owned DB
+        id: receiving_preflight
+        env:
+          RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
+          RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/receiving-drafts-ci.mjs preflight
+      - name: Install locked backend dependencies and generate Prisma
+        run: |
+          npm install --global npm@11.21.0
+          npm ci
+          npm run db:generate
+      - name: Validate harness safety and evidence controls
+        run: node --test scripts/receiving-drafts-ci.test.mjs
+      - name: Run ten private receiving native PostgreSQL and HTTP cases
+        env:
+          RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
+          RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/receiving-drafts-ci.mjs run
+      - name: Retain append-only row receipt and remove only the owned DB
+        if: ${{ always() && steps.receiving_preflight.outcome == 'success' }}
+        env:
+          RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
+          RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/receiving-drafts-ci.mjs cleanup
+      - name: Preserve exact-head receiving evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: receiving-drafts-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/receiving-qa-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 7
+
+
+  backend-required:
+    name: Backend CI
+    if: ${{ always() }}
+    needs: [plan, backend, products-pagination, batch-audit, order-sequence, receiving-drafts]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Fail closed on every selected worker
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+          CI_GROUP: backend
+        run: node scripts/ci/gate.mjs
+
+  admin-required:
+    name: Admin UI CI
+    if: ${{ always() }}
+    needs: [plan, admin-ui]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Fail closed on every selected worker
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+          CI_GROUP: admin
+        run: node scripts/ci/gate.mjs
+
+  pos-required:
+    name: POS UI CI
+    if: ${{ always() }}
+    needs: [plan, pos-ui, pos-sku-acceptance, pos-dialog-acceptance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Fail closed on every selected worker
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+          CI_GROUP: pos
+        run: node scripts/ci/gate.mjs

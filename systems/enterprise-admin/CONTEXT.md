@@ -57,3 +57,7 @@ Update this file, `CONTEXT-MAP.md`, `docs/agents/navigation.md`, a standard, or 
 - architecture constraints.
 
 Run `./scripts/validate-agent-context.sh` after context-related edits.
+
+
+## Manual receiving draft candidate
+`admin-ui/src/pages/Receiving/` and `backend/src/modules/receiving-drafts/` connect actor-private drafts, manual CAS saves, readback recovery and read-only history. See ADR-025. The additive schema is not production-applied. This is not inventory posting, package authority or device/OCR acceptance; #31/#37 remain open.

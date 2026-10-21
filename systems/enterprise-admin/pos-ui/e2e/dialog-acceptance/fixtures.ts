@@ -101,6 +101,7 @@ export async function screenshot(page: Page, info: TestInfo, name: string) {
   await captureScreenshot(page, info, name);
   // Inspect real product/dialog text, never the synthetic screenshot badge.
   const candidates = [
+    '.image-scan-dialog h2',
     '.manual-scan-dialog h2',
     '[data-pos-modal="admin-pin"] [role="dialog"] h3',
     '[data-pos-modal="split-payment"]:not([inert]) [role="dialog"] h3',

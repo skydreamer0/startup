@@ -1,5 +1,5 @@
+import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route, Navigate, Outlet } from 'react-router-dom';
 import StockReconciliationPage from './pages/Inventory/StockReconciliationPage';
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
 import { useAuth } from './hooks/authContext';
 import LoginPage from './pages/LoginPage';
@@ -24,6 +24,7 @@ import PosCheckoutPrototype from './pages/POS/PosCheckoutPrototype';
 import BatchListPage from './pages/Inventory/BatchListPage';
 import ShiftListPage from './pages/Shifts/ShiftListPage';
 import AccountingSyncPage from './pages/AccountingSyncPage';
+import ReceivingDraftPage from './pages/Receiving/ReceivingDraftPage';
 import MarketingPage from './pages/Marketing/MarketingPage';
 
 function ProtectedRoute() {
@@ -38,11 +39,8 @@ function PublicRoute() {
     return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
 }
 
-export default function App() {
-    return (
-        <BrowserRouter>
-            <AuthProvider>
-                <Routes>
+const router = createBrowserRouter(createRoutesFromElements(
+    <Route element={<AuthProvider><Outlet /></AuthProvider>}>
                     {/* Public */}
                     <Route element={<PublicRoute />}>
                         <Route path="/login" element={<LoginPage />} />
@@ -65,6 +63,7 @@ export default function App() {
                             {/* Inventory Phase 3 */}
                             <Route path="/inventory/reconciliation" element={<StockReconciliationPage />} />
                             <Route path="/inventory" element={<ProductListPage />} />
+                            <Route path="/receiving" element={<ReceivingDraftPage />} />
                             <Route path="/inventory/analytics" element={<PlanGate plan="pro"><InventoryAnalyticsPage /></PlanGate>} />
                             <Route path="/suppliers" element={<SupplierListPage />} />
                             {/* Inventory batches Phase 8 */}
@@ -86,8 +85,9 @@ export default function App() {
 
                     {/* Default redirect */}
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                </Routes>
-            </AuthProvider>
-        </BrowserRouter>
-    );
+    </Route>
+));
+
+export default function App() {
+    return <RouterProvider router={router} />;
 }

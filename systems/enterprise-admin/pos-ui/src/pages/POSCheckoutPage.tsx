@@ -54,6 +54,9 @@ export default function POSCheckoutPage() {
   const [barcodeLookupStatus, setBarcodeLookupStatus] = useState<BarcodeLookupStatus>(null);
   const [showManualScan, setShowManualScan] = useState(false);
   const [showImageScan, setShowImageScan] = useState(false);
+  const [cameraScope, setCameraScope] = useState<string | null>(null);
+  const cameraScanButton = useRef<HTMLButtonElement>(null);
+  const cameraRecoveryScope = useCheckoutRecoveryStore(state => state.scope);
   const [packageLookup, setPackageLookup] = useState<{ scan?: ScanResultV1; returnFocus?: HTMLElement | null } | null>(null);
   const manualScanButton = useRef<HTMLButtonElement>(null);
   const imageScanButton = useRef<HTMLButtonElement>(null);
@@ -74,7 +77,7 @@ export default function POSCheckoutPage() {
     orderDiscountAmount,
     addItem,
     setSalesStaff,
-    currentSalesStaffId, selectedCustomer, setCustomer,
+    currentSalesStaffId, selectedCustomer, setCustomer, draftScope, draftRevision,
   } = useCartStore();
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -97,6 +100,26 @@ export default function POSCheckoutPage() {
   useEffect(() => {
     if (pending) { setShowPaymentModal(false); setShowSplitModal(false); }
   }, [pending]);
+
+  // A changed authentication/checkout scope cannot retain camera evidence or live tracks.
+  const cameraBoundary = checkoutScope && cameraRecoveryScope === checkoutScope && draftScope === checkoutScope
+    ? JSON.stringify([checkoutScope, draftRevision, currentSalesStaffId, shift.activeShift?.id]) : null;
+  const showCameraScan = cameraScope !== null && cameraScope === cameraBoundary && contextReady && !pending;
+  useEffect(() => {
+    if (!contextReady || pending || cameraScope !== cameraBoundary) setCameraScope(null);
+  }, [cameraScope, cameraBoundary, contextReady, pending]);
+
+  useEffect(() => {
+    // Observe every transition, including an ABA change batched into one render.
+    const recovery = useCheckoutRecoveryStore.subscribe((next, previous) => {
+      if (next.scope !== previous.scope || next.pending !== previous.pending) setCameraScope(null);
+    });
+    const cart = useCartStore.subscribe((next, previous) => {
+      if (next.draftScope !== previous.draftScope || next.draftRevision !== previous.draftRevision
+        || next.currentSalesStaffId !== previous.currentSalesStaffId) setCameraScope(null);
+    });
+    return () => { recovery(); cart(); };
+  }, []);
 
   useCustomerDisplay();
 
@@ -156,7 +179,7 @@ export default function POSCheckoutPage() {
 
   const scannerBlocked = !contextReady || !shift.activeShift || showStaffModal || showPaymentModal
     || showSplitModal || showOrderLookup || showShiftReport || !!checkoutResult
-    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget || showManualScan || showImageScan || !!packageLookup;
+    || !!shift.showCloseShift || !!adminPinPending || !!refundTarget || showManualScan || showImageScan || showCameraScan || !!packageLookup;
   const handleScannerSearchInput = useBarcodeScanner(products, searchRef, setSearchQuery, addItem, showToast, setBarcodeCandidates, {
     blocked: scannerBlocked,
     onStatus: setBarcodeLookupStatus,
@@ -230,7 +253,7 @@ export default function POSCheckoutPage() {
   }
 
   const handleKeydown = useCallback((event: KeyboardEvent) => {
-    if (pending || showManualScan || showImageScan || packageLookup) return;
+    if (pending || showManualScan || showImageScan || showCameraScan || packageLookup) return;
     if (event.defaultPrevented) return;
     // Backstop modal ownership even if a removed control/backdrop lost focus.
     if ((showPaymentModal || showSplitModal || adminPinPending) && event.key !== 'Escape') {
@@ -296,7 +319,7 @@ export default function POSCheckoutPage() {
         }
         break;
     }
-  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading, showManualScan, showImageScan, packageLookup]);
+  }, [showPaymentModal, showStaffModal, showSplitModal, showToast, checkoutResult, shift.activeShift, pending, adminPinPending, checkoutLoading, showManualScan, showImageScan, showCameraScan, packageLookup]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -380,6 +403,7 @@ export default function POSCheckoutPage() {
         />
         <button ref={manualScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
         <button ref={imageScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showImageScan} onClick={event => { event.currentTarget.focus(); setShowImageScan(true); }}>圖片掃碼</button>
+        <button ref={cameraScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showCameraScan} onClick={event => { event.currentTarget.focus(); setCameraScope(cameraBoundary); }}>相機掃碼</button>
         <button type="button" className="pos-topbar-action" disabled={scannerBlocked} onClick={event => { event.currentTarget.focus(); setPackageLookup({ returnFocus: event.currentTarget }); }}>包裝查找</button>
         <CustomerLookupPanel
           selectedCustomer={selectedCustomer}
@@ -464,6 +488,7 @@ export default function POSCheckoutPage() {
 
       {showManualScan && <ManualScanDialog onClose={() => setShowManualScan(false)} onLookup={scan => { setShowManualScan(false); setPackageLookup({ scan, returnFocus: manualScanButton.current }); }} />}
       {showImageScan && <ImageScanDialog onClose={() => setShowImageScan(false)} onLookup={scan => { setShowImageScan(false); setPackageLookup({ scan, returnFocus: imageScanButton.current }); }} />}
+      {showCameraScan && <ImageScanDialog source="camera" onClose={() => setCameraScope(null)} onLookup={scan => { setCameraScope(null); setPackageLookup({ scan, returnFocus: cameraScanButton.current }); }} />}
       {packageLookup && <PackageLookupDialog scan={packageLookup.scan} returnFocus={packageLookup.returnFocus} onClose={() => setPackageLookup(null)} />}
       {showStaffModal && (
         <StaffSwitchModal
