@@ -5,19 +5,33 @@ import { isDeepStrictEqual } from 'node:util';
 import { createHash, randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createTraceRequestHold } from './admin-trace-native.mjs';
 
-function deferred() {
-  let resolve;
-  const promise = new Promise(done => { resolve = done; });
-  return { promise, resolve };
-}
-async function bounded(promise, label) {
-  let timer;
-  try { return await Promise.race([promise, new Promise((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`Reconciliation timeout: ${label}`)), 10000);
-  })]); } finally { clearTimeout(timer); }
-}
 const hash = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
+
+
+// Reuse the exact-request hold already exercised by the trace journey. A real
+// aborted StrictMode probe cannot stand in for, release, or replay its live replacement.
+export function assertReconciliationHold(rows) {
+  assert.ok(Array.isArray(rows) && rows.length > 0);
+  assert.equal(new Set(rows.map(row => row.id)).size, rows.length);
+  assert.ok(rows.some(row => row.ready && row.settled && row.fulfilled && !row.aborted), 'A live initial read must actually be delivered');
+  for (const row of rows) {
+    assert.ok(Number.isSafeInteger(row.id) && row.id > 0);
+    assert.equal(row.ready, true); assert.equal(row.settled, true);
+    assert.equal(row.fulfilled, !row.aborted, 'Never replay a browser-aborted read');
+  }
+}
+export async function finishReconciliationContext({ hold, page, context, settleResponses, write, primaryError }) {
+  let cleanupError;
+  hold.release();
+  try { await hold.settle(); } catch (error) { cleanupError = error; }
+  try { await settleResponses(); } catch (error) { cleanupError ??= error; }
+  try { write(hold.receipt()); } catch (error) { cleanupError ??= error; }
+  page.off('requestfailed', hold.aborted);
+  try { await context.close(); } catch (error) { cleanupError ??= error; }
+  if (!primaryError && cleanupError) throw cleanupError;
+}
 
 // Synthetic fixture geometry only; not a maximum-height guarantee for arbitrary product names.
 export function assertReconciliationGeometry(value) {
@@ -71,8 +85,8 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
     assert.ok(productRows.length > 100, 'Reuse existing multi-page fixture');
     for (const viewport of [{ width: 1366, height: 900 }, { width: 390, height: 844 }]) {
       const context = await browser.newContext({ viewport });
-      let mode = 'hold', held = false, routeError;
-      const ready = deferred(), release = deferred(), handled = deferred();
+      let mode = 'hold', journeyError;
+      const hold = createTraceRequestHold({ origin: adminOrigin, pathname: reportPath });
       const pendingResponses = [];
       await context.addInitScript(value => localStorage.setItem('accessToken', value), token);
       await context.route('**/*', async route => {
@@ -88,21 +102,11 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
           await route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ success: false, error: { code: 'SYNTHETIC_TRANSPORT_FAILURE', message: 'Controlled browser transport failure, not production server failure' } }) });
           return;
         }
-        if (url.pathname === reportPath && mode === 'hold' && !held) {
-          held = true;
-          try {
-            const response = await route.fetch({ timeout: 10000 });
-            assert.equal(response.status(), 200);
-            entry.authenticHeldResponse = { status: response.status(), bodyHash: hash(await response.text()) };
-            ready.resolve(); await bounded(release.promise, 'release initial response');
-            await route.fulfill({ response });
-          } catch (error) { routeError = error; ready.resolve(); }
-          finally { handled.resolve(); }
-          return;
-        }
+        if (mode === 'hold' && hold.matches(request)) { await hold.capture(route, entry); return; }
         await route.continue();
       });
       const page = await context.newPage();
+      page.on('requestfailed', hold.aborted);
       page.on('response', response => {
         const url = new URL(response.url());
         if (url.origin !== adminOrigin || ![reportPath, batchesPath].includes(url.pathname)) return;
@@ -128,10 +132,10 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
       }
       try {
         await page.goto(`${adminOrigin}/inventory/reconciliation`);
-        await bounded(ready.promise, 'initial real API response'); if (routeError) throw routeError;
+        await expect.poll(() => { hold.assertHealthy(); return hold.activeRequests().size; }, { timeout: 10000 }).toBeGreaterThan(0);
         await expect(page.getByRole('status').filter({ hasText: '庫存對帳載入中' })).toBeVisible();
         await expect(table).toHaveCount(0);
-        mode = 'normal'; release.resolve(); await bounded(handled.promise, 'initial response delivered'); if (routeError) throw routeError;
+        mode = 'normal'; hold.release(); await hold.settle(); assertReconciliationHold(hold.receipt());
         await loaded();
         await expect(table.getByRole('row')).toHaveCount(51); // 50 data rows plus header.
         const next = page.getByRole('button', { name: '下一頁', exact: true });
@@ -214,16 +218,24 @@ export async function runStockReconciliationJourney({ db, tenantId, browser, adm
         assert.ok(geometry && geometry.x >= 0 && geometry.x + geometry.width <= viewport.width + 1, 'Table scroll region must remain within viewport');
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'No whole-page horizontal overflow');
         await capture(page, `reconciliation-ready-${viewport.width}.png`, viewport);
-        cases.push({ viewport, status: 'passed', loadingRealResponseHeld: true, pageSizes: [50, 50], keyboardPagination: true,
+        cases.push({ viewport, status: 'passed', loadingRealResponseHeld: true, initialHeldRequests: hold.receipt(), pageSizes: [50, 50], keyboardPagination: true,
           traceBatchRows: 5, signedBatchQuantity: -2, zeroBatchQuantity: 0, negativeWarning: true, batch500Recovery: true, forwardAndReloadTrace: true, traceScope: 'heading focus, signed/zero quantities, warning and quarantine; no full trace-table narrow-layout acceptance', backNavigation: true, injected500InitialAndStaleRecovery: true, realDeniedTokenHttp: 403, permissionSource: 'signed JWT permissions=[] fast path; not role-grant lookup',
           deniedCacheHidden: true, retryRecovered: true, geometry, readableGeometry, keyboardHorizontalScroll, nativeTouchAndSoftwareKeyboard: 'NOT_RUN' });
+      } catch (error) {
+        journeyError = error;
+        // Capture before close; diagnostics may never replace the original failure.
+        try { await capture(page, `reconciliation-failed-${viewport.width}.png`, viewport); }
+        catch { network.push({ viewport: viewport.width, diagnosticCaptureFailed: true }); }
+        throw error;
       } finally {
-        release.resolve();
-        if (held) await bounded(handled.promise, 'held response cleanup');
-        const settled = await Promise.all(responseTasks);
-        await context.close();
-        network.push(...pendingResponses);
-        assert.ok(settled.every(row => row.ok), JSON.stringify(settled.filter(row => !row.ok)));
+        await finishReconciliationContext({ hold, page, context, primaryError: journeyError,
+          settleResponses: async () => {
+            const settled = await Promise.all(responseTasks);
+            network.push(...pendingResponses);
+            assert.ok(settled.every(row => row.ok), 'Reconciliation response body did not settle');
+          },
+          write: requests => fs.writeFileSync(path.join(output, `reconciliation-held-${viewport.width}.json`), JSON.stringify({ requests }) + '\n', { flag: 'wx' }),
+        });
       }
     }
     const responses = await Promise.all(responseTasks);

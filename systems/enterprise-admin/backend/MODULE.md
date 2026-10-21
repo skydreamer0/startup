@@ -48,6 +48,16 @@ constraints beyond Prisma DSL. Existing SKU lookup remains unchanged. Native
 ownership guards, PG15 and current browser evidence are described in
 `../infrastructure/verification/pos-manufacturer-barcode-contract/README.md`.
 
+### Verify existing checkout recovery and refund boundaries
+
+`scripts/pos-recovery-browser-fixture.ts` is test-only and requires the existing
+exact-head owned SKU PostgreSQL service. It mounts the unchanged production app,
+seeds only its recorded synthetic tenants, observes real command/refund results,
+and requires HTTP drain before raw snapshots and FK-ordered cleanup. It creates
+no API, permission, schema or financial policy. See
+`../pos-ui/e2e/recovery-native/README.md` for the finite write allowlist, source
+controls, native NOT_RUN boundary and subsequent database-removal requirement.
+
 ### Add or change a backend endpoint
 
 1. Read `../infrastructure/api/api_spec.md`.
@@ -55,6 +65,18 @@ ownership guards, PG15 and current browser evidence are described in
 3. Use `src/lib/admin-route-policy.ts` / `src/lib/route-policy.ts` for auth, plan, permission, and validation middleware assembly.
 4. Open the nearest tests for that module.
 5. Update API spec and context if the contract meaning changes.
+
+### Read isolated financial and inventory analytics
+
+`reports/{margin,sales-ranking,cashflow}.service.ts` and
+`analytics/product-analytics.service.ts` require the existing actor tenant.
+OrderItem is not auto-scoped: both its order and product relations must constrain
+that tenant. Supplier raw SQL also constrains the joined supplier; every share,
+median, count and sort stays inside the actor cohort. Foreign legacy relation
+labels are unavailable, never copied into a reader result. Current-cost and cash
+estimates remain estimates; this does not approve refund or historical-cost policy.
+The five-reader real-API/owned-PG fixture, all migration constraints and fail-closed
+cleanup are in `../infrastructure/verification/admin-readers-native/README.md`.
 
 ### Read split-payment totals
 
@@ -194,3 +216,44 @@ then drops only its preflight-proven empty owned synthetic DB.
 Append-only fixture rows remain until that DROP. Handoff and result provenance live
 in `../infrastructure/verification/product-batch-change-integration.md`. UI receipt
 reason/browser, store roles and independent review remain separate gates.
+
+
+## Synthetic Admin auth acceptance
+
+The existing exact-head package native runner also invokes
+`scripts/admin-auth-native.mjs` after reader acceptance. It uses the production
+email/password/Argon2/JWT/RBAC endpoints with owned fixture identities, one complete
+auth lifecycle and three independent cold form entries. No auth-service policy,
+tenant selector, JWT setting or migration changes. Fixture setup refuses an
+existing default tenant before acquiring cleanup ownership. Only exact owned
+LOGIN/LOGOUT audit additions and allowed login bookkeeping fields may change;
+all31 other raw tables stay equal, credentials/hashes remain memory-only, and
+cleanup is bounded to absent-before IDs. The fixture, transport and failure-path
+controls are separate from real API/PG/browser acceptance. See
+`../infrastructure/verification/admin-auth-handover/README.md`.
+
+
+### Existing POS employee-code entry acceptance (Issues #31 / #49 / #37)
+
+`pos-ui/e2e/staff-entry-native/README.md` documents the bounded owned-PostgreSQL
+journey for the unchanged employee-code login endpoint and subsequent GET-only
+POS entry. It seeds only disposable active/suspended users, the existing
+`manage:pos` role relation and default tenant, proves every raw table unchanged,
+and cleans exact fixture IDs after HTTP drain. Real response tokens stay private;
+no PIN, credential policy, tenant-selection feature, deployment or device change.
+The POS login component names its input, owns and aborts pending requests, rejects
+stale/unmounted publication, and accepts only an explicit successful response
+with a non-empty string token. Native evidence is required before claiming the
+three viewport journeys passed; local controls do not substitute for Chrome/PG.
+
+### Read-only POS layout/cancellation fixture
+
+`scripts/pos-layout-browser-fixture.ts` uses the existing exact-owned synthetic
+Node22/PG15/loopback service. It extends the reviewed staff-entry seed to twelve
+products/released batches, allows exactly one real active-user login per context
+plus the seven existing GET paths, and rejects all financial writes. Actual HTTP
+must drain before the 33-table before/after comparison and exact fixture cleanup.
+All setup prefixes retain ownership-scoped deletion; the original SKU cleanup
+still proves zero rows and owned DB absence. Native evidence remains required;
+local adapter and PGlite controls do not certify real PostgreSQL/Prisma/browser
+behavior. See `pos-ui/e2e/layout-native/README.md`.

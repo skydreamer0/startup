@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 import type { ApiSuccess, MarginAnalysis } from '@pharmasaas/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { reportsApi } from '../api/reports';
+import { AuthContext, type AuthContextType } from '../hooks/authContext';
 import MarginAnalysisPage from '../pages/Reports/MarginAnalysisPage';
 import SalesRankingPage from '../pages/Reports/SalesRankingPage';
 
@@ -55,7 +56,8 @@ const clients: QueryClient[] = [];
 function setup(page: ReactElement = <MarginAnalysisPage />) {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     clients.push(client);
-    return render(<QueryClientProvider client={client}>{page}</QueryClientProvider>);
+    const auth: AuthContextType = { user: { id: 'warning-reader', email: 'synthetic@example.test', fullName: 'Reader', roles: [], permissions: ['read:reports'] }, loading: false, login: vi.fn(), demoLogin: vi.fn(), logout: vi.fn(), hasPermission: () => true };
+    return render(<QueryClientProvider client={client}><AuthContext.Provider value={auth}>{page}</AuthContext.Provider></QueryClientProvider>);
 }
 afterEach(() => { cleanup(); clients.splice(0).forEach(client => client.clear()); vi.resetAllMocks(); });
 const noticeName = '目前成本估算，非歷史實際毛利';
@@ -151,7 +153,7 @@ describe('current-cost margin disclosure', () => {
         const request = deferred();
         httpGet.mockReset().mockReturnValue(request.promise);
         fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
-        await waitFor(() => expect(httpGet).toHaveBeenCalledWith(page.request(period)));
+        await waitFor(() => expect(httpGet).toHaveBeenCalledWith(page.request(period), { signal: expect.any(AbortSignal) }));
         expect(screen.getByRole('note', { name: noticeName })).toBeVisible();
         expect(screen.getByText(page.product)).toBeInTheDocument();
         await act(async () => { request.reject(new Error('Synthetic refresh failure')); });
@@ -172,8 +174,8 @@ describe('current-cost margin disclosure', () => {
         expect(screen.getByRole('note', { name: noticeName })).toBeVisible();
         expect(screen.getByText(page.loading)).toBeInTheDocument();
         expect(screen.queryByText(page.product)).not.toBeInTheDocument();
-        await waitFor(() => expect(httpGet).toHaveBeenCalledWith(page.request(nextPeriod)));
-        if (page.name === 'margin') expect(httpGet).toHaveBeenCalledWith(`/reports/margin/trend?to=${nextPeriod}`);
+        await waitFor(() => expect(httpGet).toHaveBeenCalledWith(page.request(nextPeriod), { signal: expect.any(AbortSignal) }));
+        if (page.name === 'margin') expect(httpGet).toHaveBeenCalledWith(`/reports/margin/trend?to=${nextPeriod}`, { signal: expect.any(AbortSignal) });
         await act(async () => { request.resolve(response(page.name === 'margin'
             ? { ...margin, period: nextPeriod } : { ...ranking, period: nextPeriod })); });
         await screen.findByText(page.product);
@@ -191,7 +193,7 @@ describe('current-cost margin disclosure', () => {
         fireEvent.change(screen.getByRole('combobox'), { target: { value: 'quantity' } });
         expect(screen.getByRole('note', { name: noticeName })).toBeVisible();
         expect(screen.getByText('Loading sales ranking...')).toBeInTheDocument();
-        await waitFor(() => expect(httpGet).toHaveBeenCalledWith(`/reports/sales-ranking?period=${period}&sort=quantity&limit=20`));
+        await waitFor(() => expect(httpGet).toHaveBeenCalledWith(`/reports/sales-ranking?period=${period}&sort=quantity&limit=20`, { signal: expect.any(AbortSignal) }));
         await act(async () => { request.resolve(response({ ...ranking, topProducts: [...ranking.topProducts].reverse() })); });
         await screen.findByText('Quantity leader');
         expect(screen.getByRole('combobox')).toHaveValue('quantity');

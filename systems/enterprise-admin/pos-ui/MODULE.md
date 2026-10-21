@@ -92,6 +92,19 @@ SKU cleanup separately proves owned DB removal. See
 `../infrastructure/verification/pos-confirmed-stock/README.md`. Login, unknown/conflict
 native recovery, narrow-phone and physical-device acceptance remain separate.
 
+### Verify frozen recovery and narrow refund dialogs
+
+`e2e/recovery-native/README.md` describes the separate exact-head owned-PG path
+for real lost-response query/replay, real conflicting checkout and a 390px
+money-only refund. Its three journeys do not replace every viewport/device gate.
+`useOrderDialog` is scoped to order lookup/refund: named native controls, keyboard
+ownership, pending cancellation protection, background leases and return focus
+through the surviving order toolbar. Financial, identity and frozen intent
+semantics are unchanged. Source controls are supplemental; only a successful
+new-head native run plus raw API/DB, geometry, original pixels and final owned
+cleanup establishes this slice. Employee login, full POS responsive layout,
+200% zoom, touch and actual devices remain separate.
+
 ### Change scanner matching or asynchronous scan behavior
 
 1. Start with `src/hooks/useBarcodeScanner.ts`, its nearest test, `POSCheckoutPage` and `cartStore`. Automatic additions require one exact string match on SKU or a barcode already present in supplied candidates. Do not treat a single fuzzy search result as exact.
@@ -276,3 +289,30 @@ verified run/attempt-bound proof and never receives that token. Keep immutable
 API corroboration, local source/setup checks and failure diagnostics fail-closed.
 See `../infrastructure/adr/ci-reliability-and-selection.md` before changing this
 contract or the required-job aggregation in `.github/workflows/ci.yml`.
+
+
+### Existing POS employee-code entry acceptance (Issues #31 / #49 / #37)
+
+`pos-ui/e2e/staff-entry-native/README.md` documents the bounded owned-PostgreSQL
+journey for the unchanged employee-code login endpoint and subsequent GET-only
+POS entry. It seeds only disposable active/suspended users, the existing
+`manage:pos` role relation and default tenant, proves every raw table unchanged,
+and cleans exact fixture IDs after HTTP drain. Real response tokens stay private;
+no PIN, credential policy, tenant-selection feature, deployment or device change.
+The POS login component names its input, owns and aborts pending requests, rejects
+stale/unmounted publication, and accepts only an explicit successful response
+with a non-empty string token. Native evidence is required before claiming the
+three viewport journeys passed; local controls do not substitute for Chrome/PG.
+
+### Existing POS pointer reachability and payment cancellation
+
+Issue #31 source package `STARTUP-POS-LAYOUT-CANCEL-NATIVE-20261020` adds a bounded
+`e2e/layout-native` acceptance at 1440×900, 1024×768 and 1180×820, each pointer and
+Chrome touch-capable. The real employee-code entry is followed only by existing
+GETs. Twelve products, total 240, ordinary payment/split/shift cancellation and
+existing clear confirmation must preserve the cart and all 33 raw database tables.
+PaymentModal now owns idle/pending keyboard focus, isolates the background, yields
+to the existing PIN overlay, and restores its opener without stealing a newer
+surface's focus. Financial and authentication policy are unchanged. Native PNG,
+geometry and owned cleanup remain required; local jsdom/adapters/PGlite are not
+native acceptance. See the harness README for exact scope and limitations.

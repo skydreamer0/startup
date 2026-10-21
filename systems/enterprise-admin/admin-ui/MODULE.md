@@ -76,8 +76,25 @@ tracked in `../infrastructure/verification/pos-manufacturer-barcode-contract/REA
 
 1. `inventoryApi.getProducts` consumes ApiSuccess<InventoryProductPage> with total/page/limit/data, not the shared meta/items pagination types.
 2. `ProductListPage` keys reads by page and lowStock; filter changes reset page one. Pending/error data is unavailable, no previous-page placeholder is shown, and server total reductions only clamp downward to the new last page. Supplier selection/draft handling is independent.
-3. Product navigation stores the existing `page`/`lowStock` and selected `productId` in the `/inventory` URL. `ProductBatchesView` reads only that product through the existing batch-list API; `api/productBatches.ts` checks the wire envelope and product identity. Read-only batch quantities retain safe signed integers, including anomalous negatives; negative rows and a visible count warning require manual investigation without changing stock or relaxing receipt/write rules. Back/Forward and return preserve the list location, while user-scoped abortable queries discard old reads. No receipt, correction, trace-detail, stock or money mutation is part of this view. See `src/__tests__/productBatchNavigation.test.tsx` and `../infrastructure/verification/product-batch-navigation/README.md`.
+3. Product navigation stores the existing `page`/`lowStock` and selected `productId` in the `/inventory` URL. `ProductBatchesView` reads only that product through the existing batch-list API; `api/productBatches.ts` checks the wire envelope and product identity. Read-only batch quantities retain safe signed integers, including anomalous negatives; negative rows and a visible count warning require manual investigation without changing stock or relaxing receipt/write rules. Back/Forward and return preserve the list location, while user-scoped abortable queries discard old reads. A focused trace control reveals itself by the nearest bounded horizontal movement of its own table container, preserving page/vertical position and the visible focus ring; disabled or already-visible controls do not scroll. Each current batch row can open the existing read-only `BatchTraceDialog`; selected details are discarded on product/user/permission changes, batch refetch or error. No receipt, correction, stock or money mutation is part of this view. The actual-entry/API/owned-PG driver and evidence limits are in `../infrastructure/verification/admin-trace-native/README.md`. See `src/__tests__/productBatchNavigation.test.tsx` and `../infrastructure/verification/product-batch-navigation/README.md`.
 4. `src/__tests__/productPagination.test.tsx` uses real clients with synthetic HTTP-boundary fixtures, deferred responses and BatchList cross-page options. Evidence/union checkpoint and reproduction are in `../infrastructure/verification/product-ui-pagination/README.md`. JSDOM is not browser/real HTTP acceptance.
+
+### Change financial or inventory reader lifecycle
+
+The five reader roots also use `pages/useReaderFocusReveal.ts` to reveal only their current enabled control after focus/resize, preserving the full 3px outline plus 3px offset with nearest, clamped movement through its own scroll ancestors. No already-visible/unrelated control moves; unmount cancels pending work. Native checks require all four ring edges to remain visible.
+
+The five reader pages opt into `pages/ReaderControls.css`: 44px controls, visible keyboard focus, wrapping period/sort controls, responsive cash/margin summaries and named keyboard-scrollable tables. Keep these selectors under `.admin-reader-page`; do not apply them globally or hide page overflow. `readerControls.test.tsx` checks CSS/DOM contracts; the native reader package separately proves real geometry and ArrowRight scrolling.
+
+The three `pages/Reports/` pages, `InventoryAnalyticsPage` and `SupplierListPage`
+use the existing `useGuardedRead` cache-owner contract. Query keys include the
+current reader ID and all HTTP reads consume AbortSignal. A 401/403 latches data
+unavailable for that query until a non-aborted authorized success; generic errors,
+remounts, actor changes and late canceled success cannot revive denied data.
+Ordinary failed refreshes may retain previously authorized data with the stale
+notice. Retry is query-local, including separate trends and supplier ranking.
+Estimate disclosures and existing amounts/ranking formulas remain unchanged.
+Actual-entry/real-API/owned-PG scope and unverified operational limits are in
+`../infrastructure/verification/admin-readers-native/README.md`.
 
 ### Change supplier list consumption
 
@@ -129,7 +146,8 @@ npm run build
 
 ### Read batch receipt and sale provenance
 
-`BatchListPage` opens the read-only `BatchTraceDialog` without changing its current
+`BatchListPage` and the product-scoped `ProductBatchesView` open the same read-only
+`BatchTraceDialog`. The global batch list opens it without changing its current
 expiry filter or starting a mutation. `api/batchTrace.ts` validates the existing
 `GET /product-batches/:id` envelope, requested batch/tenant identities, linked IN
 receipts and sale allocations. It exposes only the latest 100 sale allocations
@@ -149,3 +167,25 @@ sandboxed Chrome, CJK glyph/PNG evidence and owned-process cleanup. The extensio
 adds no job/service/environment and does not validate real API/DB, 1024px, native
 200% zoom or physical devices. Native CI evidence remains subject to independent
 artifact review; the separate local browser route was blocked by socket policy.
+
+
+## Authentication intent and cache handover
+
+`hooks/useAuth.tsx` binds each profile/login operation to an abortable process-local
+identity generation (`api/authSession.ts`). Logout, a new login, demo selection and
+unmount invalidate old results. `api/requestLifecycle.ts` captures request identity
+synchronously and keeps token snapshots in a private WeakMap, so superseded401 or
+refresh responses cannot replace/clear the current actor or replay an old request
+with a new actor's credentials. Session endpoint401s are not automatically replayed.
+`hooks/AuthCacheBoundary.tsx` clears and cancels the shared QueryClient at identity
+transitions; query-local denied-read guards remain in force. LoginPage keeps its
+submitting/error UI mounted and provides associated field labels and an error alert.
+This is a client lifecycle boundary, not JWT revocation, a new permission grant or
+a rollback of server writes. See the exact-source evidence and synthetic native
+limits in `../infrastructure/verification/admin-auth-handover/README.md`.
+
+## Existing batch entry read acceptance
+
+`src/api/receiptProducts.ts` validates the existing paginated inventory response before `BatchListPage` publishes product choices. Invalid rows, inconsistent page/total/limit, duplicates and non-progress pages stay inside the existing retryable form read error; retry retains the unsent draft. No receipt submit, release permission, price or API policy changed.
+
+The owned browser runner is `../pos-ui/e2e/batch-entry-native/run.mjs`, with the production API fixture in `../backend/scripts/admin-batch-entry-browser-fixture.ts`. It reuses the same-head built Admin from the successful preceding package acceptance step, allows only exact owned GET reads, validates all 33 raw tables before/after, drains HTTP before exact-ID cleanup, and records immutable originals. Its bounded scope and unexecuted gates are in `../pos-ui/e2e/batch-entry-native/README.md`.

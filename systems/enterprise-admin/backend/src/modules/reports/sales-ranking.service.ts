@@ -1,4 +1,5 @@
 import { prisma } from '../../lib/prisma';
+import { requireTenantId } from '../../lib/tenant.context';
 import { startOfMonth, endOfMonth, parseISO, isValid } from 'date-fns';
 
 interface RankedProduct {
@@ -16,6 +17,7 @@ export class SalesRankingService {
      * Get Top selling products by Revenue, Quantity, or Margin Contribution
      */
     static async getTopProducts(periodStr: string, limit: number = 10, sortBy: 'revenue' | 'quantity' = 'revenue') {
+        const tenantId = requireTenantId();
         const date = parseISO(`${periodStr}-01`);
         if (!isValid(date)) throw new Error('Invalid period');
 
@@ -25,9 +27,11 @@ export class SalesRankingService {
         const orderItems = await prisma.orderItem.findMany({
             where: {
                 order: {
+                    tenantId,
                     status: 'completed',
                     createdAt: { gte: startDate, lte: endDate }
-                }
+                },
+                product: { tenantId }
             },
             include: { product: { include: { category: true } } }
         });
@@ -43,7 +47,7 @@ export class SalesRankingService {
                 id: item.product.id,
                 name: item.product.name,
                 sku: item.product.sku,
-                categoryName: item.product.category?.name || 'Uncategorized',
+                categoryName: item.product.category?.tenantId === tenantId ? item.product.category.name : 'Uncategorized',
                 revenue: 0,
                 quantity: 0,
                 margin: 0

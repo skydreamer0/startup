@@ -82,3 +82,10 @@
 .inventory-product-page.product-batches-view p {
     overflow-wrap: anywhere;
 }
+
+/* Product-scoped trace keeps every signed quantity and read-only action reachable. */
+.inventory-product-page.product-batches-view .table { min-width: 900px; table-layout: fixed; }
+.inventory-product-page.product-batches-view .table th { width: 20%; }
+.inventory-product-page.product-batches-view .table th,
+.inventory-product-page.product-batches-view .table td { font-size: 14px; vertical-align: top; }
+.inventory-product-page.product-batches-view .product-batches-button:focus-visible { outline: 3px solid var(--text-primary); outline-offset: 3px; }

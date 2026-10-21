@@ -159,7 +159,7 @@ export default function CartPanel({ currentStaffName, onCheckout, onSplitCheckou
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
           <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>總計金額</span>
-          <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--accent)', letterSpacing: '-0.02em' }}>
+          <span data-testid="cart-total" style={{ fontSize: 24, fontWeight: 900, color: 'var(--accent)', letterSpacing: '-0.02em' }}>
             ${total().toFixed(0)}
           </span>
         </div>

@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import type { CashFlowStatement } from '../api/reports';
+import { AuthContext, type AuthContextType } from '../hooks/authContext';
 import CashFlowPage from '../pages/Reports/CashFlowPage';
 
 const { httpGet } = vi.hoisted(() => ({ httpGet: vi.fn() }));
@@ -29,7 +30,8 @@ const clients: QueryClient[] = [];
 function setup() {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     clients.push(client);
-    return render(<QueryClientProvider client={client}><CashFlowPage /></QueryClientProvider>);
+    const auth: AuthContextType = { user: { id: 'cash-warning-reader', email: 'synthetic@example.test', fullName: 'Reader', roles: [], permissions: ['read:reports'] }, loading: false, login: vi.fn(), demoLogin: vi.fn(), logout: vi.fn(), hasPermission: () => true };
+    return render(<QueryClientProvider client={client}><AuthContext.Provider value={auth}><CashFlowPage /></AuthContext.Provider></QueryClientProvider>);
 }
 afterEach(() => { cleanup(); clients.splice(0).forEach(client => client.clear()); vi.resetAllMocks(); });
 
@@ -91,7 +93,7 @@ describe('cash flow estimate disclosure', () => {
         fireEvent.change(container.querySelector('input[type="month"]')!, { target: { value: '2026-09' } });
         expect(screen.getByRole('note', { name: '示範／估算，非實際現金流' })).toBeInTheDocument();
         expect(screen.getByText('Loading cash flow data...')).toBeInTheDocument();
-        await waitFor(() => expect(httpGet).toHaveBeenCalledWith('/reports/cashflow?period=2026-09'));
-        expect(httpGet).toHaveBeenCalledWith('/reports/cashflow/trend?to=2026-09');
+        await waitFor(() => expect(httpGet).toHaveBeenCalledWith('/reports/cashflow?period=2026-09', { signal: expect.any(AbortSignal) }));
+        expect(httpGet).toHaveBeenCalledWith('/reports/cashflow/trend?to=2026-09', { signal: expect.any(AbortSignal) });
     });
 });

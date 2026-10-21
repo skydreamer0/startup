@@ -1,0 +1,201 @@
+[
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+    "sha256": "6b0060dc422813b62c27abb2386cb4f5948ec064bb71053fcfbdcfd6c5b2babd",
+    "checks": 0,
+    "foreignKeys": 26,
+    "authMentions": [
+      "CREATE TABLE \"tenants\" (",
+      "CONSTRAINT \"tenants_pkey\" PRIMARY KEY (\"id\")",
+      "CREATE TABLE \"users\" (",
+      "CONSTRAINT \"users_pkey\" PRIMARY KEY (\"id\")",
+      "CREATE TABLE \"roles\" (",
+      "CONSTRAINT \"roles_pkey\" PRIMARY KEY (\"id\")",
+      "CREATE TABLE \"permissions\" (",
+      "CONSTRAINT \"permissions_pkey\" PRIMARY KEY (\"id\")",
+      "CREATE TABLE \"role_permissions\" (",
+      "CONSTRAINT \"role_permissions_pkey\" PRIMARY KEY (\"role_id\",\"permission_id\")",
+      "CREATE TABLE \"user_roles\" (",
+      "CONSTRAINT \"user_roles_pkey\" PRIMARY KEY (\"user_id\",\"role_id\")",
+      "CREATE TABLE \"audit_logs\" (",
+      "CONSTRAINT \"audit_logs_pkey\" PRIMARY KEY (\"id\")",
+      "CREATE TABLE \"expenses\" (",
+      "CONSTRAINT \"expenses_pkey\" PRIMARY KEY (\"id\")",
+      "CREATE UNIQUE INDEX \"tenants_slug_key\" ON \"tenants\"(\"slug\");",
+      "CREATE UNIQUE INDEX \"users_email_key\" ON \"users\"(\"email\");",
+      "CREATE INDEX \"users_tenant_id_idx\" ON \"users\"(\"tenant_id\");",
+      "CREATE UNIQUE INDEX \"roles_name_key\" ON \"roles\"(\"name\");",
+      "CREATE INDEX \"roles_tenant_id_idx\" ON \"roles\"(\"tenant_id\");",
+      "CREATE UNIQUE INDEX \"permissions_action_resource_key\" ON \"permissions\"(\"action\", \"resource\");",
+      "CREATE INDEX \"audit_logs_created_at_idx\" ON \"audit_logs\"(\"created_at\");",
+      "CREATE INDEX \"audit_logs_user_id_idx\" ON \"audit_logs\"(\"user_id\");",
+      "CREATE INDEX \"audit_logs_tenant_id_idx\" ON \"audit_logs\"(\"tenant_id\");",
+      "CREATE INDEX \"expenses_tenant_id_idx\" ON \"expenses\"(\"tenant_id\");",
+      "CREATE INDEX \"expenses_period_idx\" ON \"expenses\"(\"period\");",
+      "ALTER TABLE \"users\" ADD CONSTRAINT \"users_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"roles\" ADD CONSTRAINT \"roles_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;",
+      "ALTER TABLE \"role_permissions\" ADD CONSTRAINT \"role_permissions_role_id_fkey\" FOREIGN KEY (\"role_id\") REFERENCES \"roles\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"role_permissions\" ADD CONSTRAINT \"role_permissions_permission_id_fkey\" FOREIGN KEY (\"permission_id\") REFERENCES \"permissions\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"user_roles\" ADD CONSTRAINT \"user_roles_user_id_fkey\" FOREIGN KEY (\"user_id\") REFERENCES \"users\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"user_roles\" ADD CONSTRAINT \"user_roles_role_id_fkey\" FOREIGN KEY (\"role_id\") REFERENCES \"roles\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"audit_logs\" ADD CONSTRAINT \"audit_logs_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"audit_logs\" ADD CONSTRAINT \"audit_logs_user_id_fkey\" FOREIGN KEY (\"user_id\") REFERENCES \"users\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;",
+      "ALTER TABLE \"customers\" ADD CONSTRAINT \"customers_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"tags\" ADD CONSTRAINT \"tags_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"interactions\" ADD CONSTRAINT \"interactions_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"suppliers\" ADD CONSTRAINT \"suppliers_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"product_categories\" ADD CONSTRAINT \"product_categories_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"products\" ADD CONSTRAINT \"products_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"orders\" ADD CONSTRAINT \"orders_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"inventory_transactions\" ADD CONSTRAINT \"inventory_transactions_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"expenses\" ADD CONSTRAINT \"expenses_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+    "sha256": "c23777946c2449bfc65bb10ed5a0fcf3afb0ae23b445c6dc9cad9fccdd9bb882",
+    "checks": 0,
+    "foreignKeys": 1,
+    "authMentions": [
+      "ALTER TABLE \"users\" ADD COLUMN     \"employee_code\" TEXT;",
+      "CREATE UNIQUE INDEX \"users_employee_code_key\" ON \"users\"(\"employee_code\");",
+      "ALTER TABLE \"orders\" ADD CONSTRAINT \"orders_sales_staff_id_fkey\" FOREIGN KEY (\"sales_staff_id\") REFERENCES \"users\"(\"id\") ON DELETE SET NULL ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+    "sha256": "10b818024a8eebae2b942ecb9394a90199f4e522393d48a20a21a5cb98e96bf2",
+    "checks": 0,
+    "foreignKeys": 8,
+    "authMentions": [
+      "ALTER TABLE \"roles\" DROP CONSTRAINT \"roles_tenant_id_fkey\";",
+      "DROP INDEX \"roles_name_key\";",
+      "ALTER TABLE \"roles\" ALTER COLUMN \"tenant_id\" SET NOT NULL;",
+      "CREATE UNIQUE INDEX \"roles_name_tenant_id_key\" ON \"roles\"(\"name\", \"tenant_id\");",
+      "ALTER TABLE \"roles\" ADD CONSTRAINT \"roles_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "ALTER TABLE \"shifts\" ADD CONSTRAINT \"shifts_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"shifts\" ADD CONSTRAINT \"shifts_staff_id_fkey\" FOREIGN KEY (\"staff_id\") REFERENCES \"users\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "ALTER TABLE \"product_batches\" ADD CONSTRAINT \"product_batches_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;",
+      "ALTER TABLE \"daily_settlements\" ADD CONSTRAINT \"daily_settlements_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+    "sha256": "c346a40f40b63130ada9d9e46d74cc31fa2195f7a7c696a59de25a8b43ff512a",
+    "checks": 0,
+    "foreignKeys": 1,
+    "authMentions": [
+      "ALTER TABLE \"accounting_sync_logs\" ADD CONSTRAINT \"accounting_sync_logs_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+    "sha256": "c586f4d1d3374ead74e6e87ca7513b8e204c5f4d62588cb0018ad33113728c0e",
+    "checks": 0,
+    "foreignKeys": 1,
+    "authMentions": [
+      "ALTER TABLE \"message_broadcasts\" ADD CONSTRAINT \"message_broadcasts_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+    "sha256": "3af6bfbed2cf592131abe741d02b8f33d9bdec90f56bf9a91b354be88fea9e1e",
+    "checks": 0,
+    "foreignKeys": 0,
+    "authMentions": [
+      "-- expenses: amount",
+      "ALTER TABLE \"expenses\""
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+    "sha256": "177b99d569521c9cca3c7483b528eb3b49355d592200441fab51168e41cadf56",
+    "checks": 0,
+    "foreignKeys": 2,
+    "authMentions": [
+      "ALTER TABLE \"order_payments\" ADD CONSTRAINT \"order_payments_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+    "sha256": "ab3f07660a2427ddff453f5e4565e1c1fdd7a7c6060aa42709c670ec9f1ac4ea",
+    "checks": 1,
+    "foreignKeys": 5,
+    "authMentions": [
+      "ALTER TABLE \"sale_batch_allocations\" ADD CONSTRAINT \"sale_batch_allocations_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+    "sha256": "c2f15be427ac1bfb0a325148703497013eca50913c5a90bfb0e6dc7ee98c47fb",
+    "checks": 1,
+    "foreignKeys": 1,
+    "authMentions": []
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+    "sha256": "84609ab16f74d3a12ed4ea843b872c6891b6d6e97304b4e9431bb197e44637f1",
+    "checks": 1,
+    "foreignKeys": 2,
+    "authMentions": [
+      "ALTER TABLE \"checkout_commands\" ADD CONSTRAINT \"checkout_commands_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+    "sha256": "df6e3de02052c08874c4adc307bca65d0383d86bd692653793948a99a1f3d553",
+    "checks": 1,
+    "foreignKeys": 1,
+    "authMentions": [
+      "REFERENCES \"tenants\"(\"id\") ON DELETE CASCADE ON UPDATE CASCADE"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+    "sha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4",
+    "checks": 2,
+    "foreignKeys": 4,
+    "authMentions": [
+      "CREATE UNIQUE INDEX \"users_id_tenant_id_key\" ON \"users\"(\"id\", \"tenant_id\");",
+      "ALTER TABLE \"product_batch_changes\" ADD CONSTRAINT \"product_batch_changes_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "ALTER TABLE \"product_batch_changes\" ADD CONSTRAINT \"product_batch_changes_actor_id_tenant_id_fkey\" FOREIGN KEY (\"actor_id\", \"tenant_id\") REFERENCES \"users\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+    "sha256": "b5d751f54c935de55461e4f45eab73a688a7e361c2d013d10e194de53c42d5e6",
+    "checks": 0,
+    "foreignKeys": 0,
+    "authMentions": []
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+    "sha256": "706fb801d756441bdb19bba29bf82adc3f91cf91cd6e807297c67b40fd959423",
+    "checks": 0,
+    "foreignKeys": 0,
+    "authMentions": []
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+    "sha256": "bb867d580feb54f554502d2a02d5602f7d8ea873dd1629eb3d63b462c64850c6",
+    "checks": 4,
+    "foreignKeys": 9,
+    "authMentions": [
+      "ALTER TABLE \"product_packages\" ADD CONSTRAINT \"product_packages_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "ALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revisions_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;",
+      "ALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revisions_actor_id_tenant_id_fkey\" FOREIGN KEY (\"actor_id\", \"tenant_id\") REFERENCES \"users\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "ALTER TABLE \"product_package_revisions\" ADD CONSTRAINT \"product_package_revisions_retired_by_id_tenant_id_fkey\" FOREIGN KEY (\"retired_by_id\", \"tenant_id\") REFERENCES \"users\"(\"id\", \"tenant_id\") ON DELETE RESTRICT ON UPDATE RESTRICT;",
+      "ALTER TABLE \"product_package_identifiers\" ADD CONSTRAINT \"product_package_identifiers_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE;"
+    ]
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+    "sha256": "62b8f47494273707eac8ce05f67d7b62ecb6cfc11f140ad18c1df94639dc9b35",
+    "checks": 2,
+    "foreignKeys": 3,
+    "authMentions": [
+      "CONSTRAINT \"receiving_drafts_tenant_id_fkey\" FOREIGN KEY (\"tenant_id\") REFERENCES \"tenants\"(\"id\") ON DELETE RESTRICT ON UPDATE CASCADE,",
+      "CONSTRAINT \"receiving_drafts_owner_id_tenant_id_fkey\" FOREIGN KEY (\"owner_id\",\"tenant_id\") REFERENCES \"users\"(\"id\",\"tenant_id\") ON DELETE RESTRICT ON UPDATE CASCADE"
+    ]
+  }
+]

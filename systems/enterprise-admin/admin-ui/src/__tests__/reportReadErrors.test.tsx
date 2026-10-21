@@ -12,6 +12,7 @@ vi.mock('@tanstack/react-query', () => ({
     useQueryClient: () => ({ invalidateQueries: query.invalidate }),
     useMutation: () => ({ mutate: query.write, isPending: false, isError: false }),
 }));
+vi.mock('../hooks/useGuardedRead', () => ({ useGuardedRead: query.read }));
 vi.mock('../api/reports', () => ({ reportsApi: {} }));
 vi.mock('../api/expenses', () => ({ expensesApi: {} }));
 vi.mock('recharts', () => {

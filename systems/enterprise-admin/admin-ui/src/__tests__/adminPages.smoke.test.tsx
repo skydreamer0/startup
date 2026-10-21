@@ -3,6 +3,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach, type Mock } from 'vitest';
+import { AuthContext, type AuthContextType } from '../hooks/authContext';
 import DashboardPage from '../pages/DashboardPage';
 import UsersPage from '../pages/UsersPage';
 import RolesPage from '../pages/RolesPage';
@@ -113,7 +114,8 @@ function renderWithQuery(ui: ReactElement) {
         },
     });
 
-    return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+    const auth: AuthContextType = { user: { id: 'smoke-reader', email: 'synthetic@example.test', fullName: 'Reader', roles: [], permissions: ['read:reports'] }, loading: false, login: vi.fn(), demoLogin: vi.fn(), logout: vi.fn(), hasPermission: () => true };
+    return render(<QueryClientProvider client={queryClient}><AuthContext.Provider value={auth}>{ui}</AuthContext.Provider></QueryClientProvider>);
 }
 
 describe('admin page visual refresh smoke tests', () => {
