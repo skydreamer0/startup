@@ -6,7 +6,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { buildReaderFixture, seedReaderFixture, cleanupReaderFixture, readerPeriod } from './admin-readers-fixture.mjs';
 import { readerEndpoints, readerExpected, assertReaderResponse } from './admin-readers-oracle.mjs';
-import { safeTraceFailure, settleTraceFocusGeometry } from './admin-trace-native.mjs';
+import { safeTraceFailure as traceFailure, settleTraceFocusGeometry } from './admin-trace-native.mjs';
+// Fixed error names only; browser messages/stacks may contain credentials.
+export function safeReaderFailure(error) {
+    const result = traceFailure(error);
+    const name = error && typeof error === 'object' ? error.name : undefined;
+    return ['TimeoutError', 'TypeError', 'ReferenceError', 'RangeError'].includes(name)
+        ? { kind: name, code: result.code } : result;
+}
+const safeTraceFailure = safeReaderFailure;
 const hash = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
 const deferred = () => { let resolve; const promise = new Promise(done => { resolve = done; }); return { promise, resolve }; };
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -394,21 +402,31 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
         return { context, page, control, contextId };
     }
     async function keyboardCapture(page, subject, width, target, name) {
-        for (let i = 0; i < 100; i++) {
-            await page.keyboard.press('Tab');
-            if (await target.evaluate(el => document.activeElement === el))
-                break;
-        }
         const samples = [];
-        let geometry;
+        let geometry, primaryError, diagnosticError;
+        const diagnostic = { phase: 'tab', tabIndex: null, failure: null };
         try {
+            for (let i = 0; i < 100; i++) {
+                diagnostic.tabIndex = i;
+                diagnostic.phase = 'tab';
+                await page.keyboard.press('Tab');
+                diagnostic.phase = 'focused-probe';
+                if (await target.evaluate(el => document.activeElement === el)) break;
+            }
+            diagnostic.phase = 'geometry';
             geometry = await settleTraceFocusGeometry(() => target.evaluate(el => { const b = el.getBoundingClientRect(), style = getComputedStyle(el), sidebar = document.querySelector('.sidebar')?.getBoundingClientRect(), hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { x: b.x, y: b.y, width: b.width, height: b.height, region: { x: Math.max(0, sidebar?.right ?? 0), right: innerWidth }, viewport: innerWidth, pageWidth: document.documentElement.scrollWidth, scrollLeft: scrollX, outline: style.outlineWidth, outlineOffset: style.outlineOffset, color: style.outlineColor, focused: document.activeElement === el, centerHit: !!hit && (hit === el || el.contains(hit)), viewportHeight: innerHeight }; }), row => samples.push(row));
+            diagnostic.phase = 'clearance';
             assertReaderFocusClearance(geometry);
         }
+        catch (error) { primaryError = error; diagnostic.failure = safeTraceFailure(error); }
         finally {
-            write(`admin-readers-${subject}-${name}-${width}-geometry.json`, { samples, geometry: geometry ?? null });
-            await capture(page, `admin-readers-${subject}-${name}-${width}.png`, { width, height: width === 1366 ? 900 : width === 1024 ? 768 : 844 });
+            try { write(`admin-readers-${subject}-${name}-${width}-geometry.json`, { samples, geometry: geometry ?? null, diagnostic }); }
+            catch (error) { diagnosticError = error; }
+            try { await capture(page, `admin-readers-${subject}-${name}-${width}.png`, { width, height: width === 1366 ? 900 : width === 1024 ? 768 : 844 }); }
+            catch (error) { diagnosticError ??= error; }
         }
+        if (primaryError) throw primaryError;
+        if (diagnosticError) throw diagnosticError;
         return geometry;
     }
     async function tableKeyboard(page, subject) {
@@ -514,7 +532,13 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     const visualState = async (name, target, verify, proof) => visitReaderViewports(page, async view => {
                         assert.ok(readerOutcomeResponse([proof], { contextId, endpoint: subject.paths[0], ...stateIdentity(name) }));
                         stage = `${subject.id} ${name} visual ${view.width}`;
-                        budget.check(); await verify();
+                        budget.check();
+                        try { await verify(); }
+                        catch (error) {
+                            try { write(`admin-readers-${subject.id}-${name}-${view.width}-verify-failure.json`, { phase: 'verify', failure: safeTraceFailure(error) }); }
+                            catch { /* Diagnostic I/O must not replace the verification failure. */ }
+                            throw error;
+                        }
                         const geometry = await keyboardCapture(page, subject.id, view.width, target(), name);
                         stateViews[view.width][name] = { width: view.width, verified: true, response: responseProof(proof), geometry };
                     });
