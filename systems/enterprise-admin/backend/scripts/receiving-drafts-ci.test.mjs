@@ -45,12 +45,16 @@ test('cleanup retains append-only snapshots and only drops its owned literal dat
   assert.ok(source.includes("assert.equal(browser.status, 'passed')"));
   assert.doesNotMatch(source,/TRUNCATE|DISABLE TRIGGER|DELETE FROM/);
 });
-test('receiving worker typecheck uses the pnpm-installed executable shim', () => {
+test('receiving worker typecheck executes TypeScript from its owning POS package', () => {
   const workflow=fs.readFileSync(new URL('../../../../.github/workflows/ci.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('- name: Validate harness safety and evidence controls');
   const end=workflow.indexOf('- name: Run ten private receiving native PostgreSQL and HTTP cases',start);
   assert.ok(start>=0 && end>start);
   const validation=workflow.slice(start,end);
-  assert.ok(validation.includes('../node_modules/.bin/tsc --project ../pos-ui/tsconfig.receiving-browser-native.json'));
-  assert.doesNotMatch(validation,/\.\.\/node_modules\/typescript\/bin\/tsc/);
+  assert.ok(validation.includes('pnpm --dir ../pos-ui exec tsc --project tsconfig.receiving-browser-native.json'));
+  assert.doesNotMatch(validation,/\.\.\/node_modules\/(?:typescript\/bin|\.bin)\/tsc/);
+  const owner=JSON.parse(fs.readFileSync(new URL('../../pos-ui/package.json',import.meta.url),'utf8'));
+  assert.ok(owner.devDependencies.typescript);
+  const workspace=JSON.parse(fs.readFileSync(new URL('../../package.json',import.meta.url),'utf8'));
+  assert.equal(workspace.devDependencies.typescript,undefined);
 });
