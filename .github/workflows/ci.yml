@@ -985,7 +985,7 @@ jobs:
           node --test scripts/receiving-browser-snapshot.test.mjs
           node --test scripts/receiving-browser-snapshot-deadline.test.mjs
           node --test scripts/receiving-browser-cleanup.test.mjs
-          ../node_modules/typescript/bin/tsc --project ../pos-ui/tsconfig.receiving-browser-native.json
+          ../node_modules/.bin/tsc --project ../pos-ui/tsconfig.receiving-browser-native.json
       - name: Run ten private receiving native PostgreSQL and HTTP cases
         env:
           RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
