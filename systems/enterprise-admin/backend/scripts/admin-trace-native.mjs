@@ -112,6 +112,26 @@ export async function settleTraceFocusGeometry(read, observe, pause = ms => new 
   try { return await Promise.race([poll(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Trace focus geometry timed out')), 3200); })]); }
   finally { cancelled = true; clearTimeout(timer); }
 }
+export async function settleTraceHorizontalScroll(read, start, pause = ms => new Promise(resolve => setTimeout(resolve, ms))) {
+  let previous, moved = false, cancelled = false, timer;
+  const poll = async () => {
+    for (let index = 0; index < 61 && !cancelled; index++) {
+      const geometry = await read();
+      if (cancelled) throw new Error('Trace horizontal scroll timed out');
+      const { scrollLeft, maxScrollLeft } = geometry ?? {};
+      if (!Number.isFinite(scrollLeft) || !Number.isFinite(maxScrollLeft) || maxScrollLeft < 0 || scrollLeft < -0.5 || scrollLeft > maxScrollLeft + 0.5)
+        throw new Error('Trace horizontal scroll geometry is invalid');
+      if (Math.abs(scrollLeft - start.scrollLeft) > 0.5) moved = true;
+      if (!moved && scrollLeft >= maxScrollLeft - 0.5) return { status: 'boundary', scrollLeft };
+      if (moved && previous !== undefined && Math.abs(previous - scrollLeft) <= 0.5) return { status: 'settled', scrollLeft };
+      if (moved) previous = scrollLeft;
+      await pause(50);
+    }
+    throw new Error(moved ? 'Trace horizontal scroll did not settle' : 'Trace horizontal scroll did not move');
+  };
+  try { return await Promise.race([poll(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Trace horizontal scroll timed out')), 3200); })]); }
+  finally { cancelled = true; clearTimeout(timer); }
+}
 export function assertTraceNativeAcceptance(result) {
   assert.equal(result.status, 'passed'); assert.equal(result.readOnlySnapshotEqual, true);
   assert.equal(result.fixtureCleaned, true); assert.equal(result.forbidden.length, 0);
@@ -297,7 +317,12 @@ export async function runAdminTraceNative({ db, tenantId, browser, adminOrigin, 
         const quantityVisible = async () => { const q = await quantities.boundingBox(), region = await table.boundingBox(); return !!q && !!region && q.x >= region.x - 1 && q.x + q.width <= region.x + region.width + 1; };
         // Actual key presses expose this non-interactive right-hand cell; no
         // DOM scrollLeft assignment, CSS zoom or force click substitutes.
-        for (let key = 0; key < 40 && !await quantityVisible(); key++) { await page.keyboard.press('ArrowRight'); await page.waitForTimeout(30); }
+        for (let key = 0; key < 40 && !await quantityVisible(); key++) {
+          const start = await table.evaluate(el => ({ scrollLeft: el.scrollLeft, maxScrollLeft: Math.max(0, el.scrollWidth - el.clientWidth) }));
+          await page.keyboard.press('ArrowRight');
+          const terminal = await settleTraceHorizontalScroll(() => table.evaluate(el => ({ scrollLeft: el.scrollLeft, maxScrollLeft: Math.max(0, el.scrollWidth - el.clientWidth) })), start);
+          if (terminal.status === 'boundary') break;
+        }
         assert.equal(await quantityVisible(), true, 'Signed quantity must be visible after native keyboard scroll');
         await capture(page, `admin-trace-batch-quantity-${viewport.width}.png`, viewport);
         await page.keyboard.press('Tab'); await expect(opener()).toBeFocused();

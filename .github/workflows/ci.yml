@@ -946,6 +946,10 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: './systems/enterprise-admin/backend/package-lock.json'
+      - name: Setup locked pnpm frontend runtime
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10.34.6
       - name: Guard exact source, loopback service and empty owned DB
         id: receiving_preflight
         env:
@@ -957,13 +961,41 @@ jobs:
           npm install --global npm@11.21.0
           npm ci
           npm run db:generate
+          npm run build
+      - name: Install canonical locked frontend dependencies and build Admin UI
+        working-directory: ./systems/enterprise-admin
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter admin-ui run build
+      - name: Verify installed official Chrome and CJK font source
+        run: |
+          google-chrome --version
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y fonts-noto-cjk
+          dpkg-query -W -f='${Package} ${Version} ${Status}\n' fonts-noto-cjk
+          fc-match 'sans-serif:lang=zh-tw'
+          fc-list :lang=zh-tw family | grep -F 'Noto Sans CJK'
       - name: Validate harness safety and evidence controls
-        run: node --test scripts/receiving-drafts-ci.test.mjs
+        run: |
+          node --test scripts/receiving-drafts-ci.test.mjs
+          node --test ../pos-ui/e2e/receiving-browser-native/fixture.test.mjs
+          node --test ../pos-ui/e2e/receiving-browser-native/acceptance.test.mjs
+          node --test ../pos-ui/e2e/receiving-browser-native/http-work.test.mjs
+          node --test ../pos-ui/e2e/receiving-browser-native/application-work.test.mjs
+          node --test scripts/receiving-browser-snapshot.test.mjs
+          node --test scripts/receiving-browser-snapshot-deadline.test.mjs
+          node --test scripts/receiving-browser-cleanup.test.mjs
+          ../node_modules/.bin/tsc --project ../pos-ui/tsconfig.receiving-browser-native.json
       - name: Run ten private receiving native PostgreSQL and HTTP cases
         env:
           RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
           RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
         run: node scripts/receiving-drafts-ci.mjs run
+      - name: Run bounded real login Admin receiving browser cases against owned PostgreSQL
+        env:
+          RECEIVING_QA_CONTAINER: ${{ job.services.postgres.id }}
+          RECEIVING_QA_NETWORK: ${{ job.services.postgres.network }}
+        run: node scripts/receiving-drafts-browser-native.mjs
       - name: Retain append-only row receipt and remove only the owned DB
         if: ${{ always() && steps.receiving_preflight.outcome == 'success' }}
         env:

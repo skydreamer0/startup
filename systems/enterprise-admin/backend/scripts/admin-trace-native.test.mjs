@@ -132,6 +132,36 @@ test('focus observation rejects unstable or briefly-valid geometry and preserves
     assert.equal(reads,61);assert.equal(observations.length,61);
   }
 });
+test('horizontal scroll waits for a stable native terminal position before continuing', async () => {
+  const { settleTraceHorizontalScroll } = await import('./admin-trace-native.mjs');
+  const samples = [{scrollLeft:0,maxScrollLeft:300},{scrollLeft:0,maxScrollLeft:300},{scrollLeft:48,maxScrollLeft:300},{scrollLeft:96,maxScrollLeft:300},{scrollLeft:96,maxScrollLeft:300}]; let reads=0, waits=0;
+  const result = await settleTraceHorizontalScroll(async () => samples[reads++], {scrollLeft:0,maxScrollLeft:300}, async ms => { assert.equal(ms, 50); waits++; });
+  assert.deepEqual(result, {status:'settled',scrollLeft:96}); assert.equal(reads, 5); assert.equal(waits, 4);
+});
+test('horizontal scroll distinguishes no movement, explicit right boundary, and deadline cleanup', async () => {
+  const { settleTraceHorizontalScroll } = await import('./admin-trace-native.mjs');
+  await assert.rejects(settleTraceHorizontalScroll(async () => ({scrollLeft:NaN,maxScrollLeft:300}), {scrollLeft:0,maxScrollLeft:300}, async () => {}), /geometry is invalid/);
+  let reads=0;
+  await assert.rejects(settleTraceHorizontalScroll(async () => { reads++; return {scrollLeft:0,maxScrollLeft:300}; }, {scrollLeft:0,maxScrollLeft:300}, async () => {}), /did not move/);
+  assert.equal(reads,61);
+  reads=0;
+  assert.deepEqual(await settleTraceHorizontalScroll(async () => { reads++; return {scrollLeft:300,maxScrollLeft:300}; }, {scrollLeft:300,maxScrollLeft:300}, async () => {}), {status:'boundary',scrollLeft:300});
+  assert.equal(reads,1);
+  let release, deadlineReads=0; const pending=new Promise(resolve=>{release=resolve;});
+  await assert.rejects(settleTraceHorizontalScroll(()=>{deadlineReads++;return pending;}, {scrollLeft:0,maxScrollLeft:300}), /timed out/);
+  release({scrollLeft:48,maxScrollLeft:300}); await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(deadlineReads,1);
+});
+test('mobile quantity visibility assertion remains strict and waits for native scroll terminal state', () => {
+  const source=fs.readFileSync(new URL('./admin-trace-native.mjs',import.meta.url),'utf8');
+  const block=source.slice(source.indexOf("for (let key = 0; key < 40"),source.indexOf("await capture(page, `admin-trace-batch-quantity-"));
+  assert.match(block,/await page\.keyboard\.press\('ArrowRight'\)/);
+  assert.match(block,/const start = await table\.evaluate\(el => \(\{ scrollLeft: el\.scrollLeft, maxScrollLeft: Math\.max\(0, el\.scrollWidth - el\.clientWidth\) \}\)\)/);
+  assert.match(block,/await settleTraceHorizontalScroll\(\(\) => table\.evaluate\(el => \(\{ scrollLeft: el\.scrollLeft, maxScrollLeft: Math\.max\(0, el\.scrollWidth - el\.clientWidth\) \}\)\), start\)/);
+  assert.match(block,/if \(terminal\.status === 'boundary'\) break/);
+  assert.match(block,/assert\.equal\(await quantityVisible\(\), true, 'Signed quantity must be visible after native keyboard scroll'\)/);
+  assert.doesNotMatch(block,/waitForTimeout\(30\)|scrollLeft\s*=|scrollIntoView\(|force:\s*true/);
+});
 test('driver records focus observations and failure PNG before closing context; no forced scroll substitute', () => {
   const source=fs.readFileSync(new URL('./admin-trace-native.mjs',import.meta.url),'utf8');
   const block=source.slice(source.indexOf('stage = `trace entry focus geometry'),source.indexOf('stage = `trace API and DB rows'));
