@@ -2,6 +2,25 @@
 
 此模組由 2026-10-15 已驗收的 Windows BLE 程式整合進 STARTUP。保留 Python/Bleak 的已驗證傳輸路徑；`src/deli720w/`、`scripts/`、`tests/` 和固定實驗封包來自原交付件。原始驗收報告位於使用者交付的 `deli-720w-bluetooth.zip`，未將含裝置資訊的傳輸日誌納入版控。
 
+## Pillow 13 安全更新候選與驗收範圍
+
+PR #162 將 Linux CI 的 `backend/scripts/medicine-label-ci.requirements.txt` 與 Windows 的 `requirements-tested.txt` 一起指定為 Pillow 13.0.0；套件宣告限制在 `Pillow>=13,<14`，避免一般安裝回到有漏洞的舊版或跨入尚未審查的下一個主版本。Pillow 13 不支援 Python 3.10，因此套件最低需求同步為 Python 3.11；本專案的軟體驗證環境仍指定 Python 3.12。
+
+2026-10-23 已在新的隔離 Windows CPython 3.12.14／Pillow 13.0.0 環境完成軟體驗證：pip check 通過、既有 pytest 52 項通過；使用 Microsoft JhengHei Bold 產生一般與長名稱 400×240 預覽，過長中文名稱正確拒絕、實體點陣為預覽的 180° 旋轉，工作 SHA-256 相符。固定 ZXing WASM 3.1.2 獨立解碼得到 P1:TEST-MED-001，兩張預覽經獨立檢視無字形缺漏或內容重疊。測試未啟動服務或藍牙，也未覆寫店內環境。Git Bash 的 agent context validator 通過；最終版本 Linux CI 與以下實體驗收仍待完成。
+
+安全來源：GitHub 在兩份 requirements 各列出九項 Pillow 12.3.0 告警，修正版均為 13.0.0：
+[JPEG heap overflow](https://github.com/advisories/GHSA-8g5g-8vmr-9782)、
+[TIFF decoder 越界讀取](https://github.com/advisories/GHSA-c6hw-5grf-ff96)、
+[TIFF tile 越界讀取](https://github.com/advisories/GHSA-462x-pgg6-55fp)、
+[PDF parser 遞迴](https://github.com/advisories/GHSA-p4wg-p73j-c528)、
+[TIFF encoder 越界讀取](https://github.com/advisories/GHSA-pchr-8j38-3x4p)、
+[TIFF 未初始化記憶體](https://github.com/advisories/GHSA-q45j-58j2-45rg)、
+[EPS 解壓縮限制繞過](https://github.com/advisories/GHSA-vx6w-vv9f-6gvg)、
+[GIF 拒絕服務](https://github.com/advisories/GHSA-65qm-jvmh-6pqg)、
+[零寬影像越界存取](https://github.com/advisories/GHSA-58r4-6rv3-gfh8)。
+
+[Pillow 13 官方說明](https://pillow.readthedocs.io/en/stable/releasenotes/13.0.0.html#wheels-now-use-harfbuzz-for-hinting)指出 wheel hinting 可能影響文字點陣，因此歷史 BLE 寫入及舊版紙張證據不能移轉為 Pillow 13 驗收。Pillow 13 的 Windows／實際字型紙上可讀性、QR 實體掃描及正式來源 loopback 路徑仍未驗收；既有 v9 的實體待驗收狀態維持不變。本更新不啟動店內服務、不使用藍牙，也不授權送印。
+
 ## 本機安裝
 
 在店內**連接標籤機的 Windows 電腦**執行，不在雲端 backend 或 Docker 容器執行。Python 3.12 為本次驗收環境；需要 Windows 藍牙與繁體中文字型。
