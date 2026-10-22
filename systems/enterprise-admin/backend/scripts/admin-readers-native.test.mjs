@@ -8,6 +8,41 @@ import { randomUUID, createHash } from 'node:crypto';
 import { settleTraceFocusGeometry, safeTraceFailure } from './admin-trace-native.mjs';
 import { runAdminReadersNative, assertReadersNativeAcceptance, createReaderBudget, assertReaderTableScroll, navigateReader, readerNavigationResponse } from './admin-readers-native.mjs';
 import { readerEndpoints } from './admin-readers-oracle.mjs';
+
+test('reader browser failure names are fixed and never serialize messages or stacks', () => {
+    for (const name of ['TimeoutError', 'TypeError', 'ReferenceError', 'RangeError', 'credential-secret']) {
+        const failure = readerNative.safeReaderFailure({ name, message: 'TOKEN_SECRET', stack: 'DATABASE_SECRET', code: 'TOKEN_SECRET' });
+        assert.deepEqual(failure, { kind: name === 'credential-secret' ? 'UnknownError' : name, code: null });
+        assert.ok(!JSON.stringify(failure).includes('SECRET'));
+    }
+});
+for (const phase of ['tab', 'focused-probe', 'geometry', 'clearance']) {
+    test(`actual keyboard capture preserves ${phase} failure before diagnostic capture failure`, async () => {
+        const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+        const begin = source.indexOf('    async function keyboardCapture(page, subject, width, target, name) {');
+        const end = source.indexOf('\n    async function tableKeyboard(', begin);
+        assert.ok(begin > 0 && end > begin);
+        const primary = Object.assign(new Error('TOKEN_SECRET'), { name: 'TimeoutError' });
+        const secondary = new Error('DIAGNOSTIC_SECRET');
+        const writes = []; let captured = false;
+        const run = new Function('settleTraceFocusGeometry', 'assertReaderFocusClearance', 'safeTraceFailure', 'write', 'capture', `${source.slice(begin, end)};return keyboardCapture;`)(
+            async () => { if (phase === 'geometry') throw primary; return {}; },
+            () => { if (phase === 'clearance') throw primary; },
+            readerNative.safeReaderFailure,
+            (name, value) => writes.push({ name, value: structuredClone(value) }),
+            async () => { captured = true; throw secondary; });
+        const page = { keyboard: { press: async () => { if (phase === 'tab') throw primary; } } };
+        const target = { evaluate: async () => { if (phase === 'focused-probe') throw primary; return true; } };
+        await assert.rejects(run(page, 'margin', 1024, target, 'recovered'), error => error === primary);
+        assert.equal(captured, true);
+        assert.equal(writes.length, 1);
+        assert.equal(writes[0].name, 'admin-readers-margin-recovered-1024-geometry.json');
+        assert.equal(writes[0].value.diagnostic.phase, phase);
+        assert.equal(writes[0].value.diagnostic.tabIndex, 0);
+        assert.deepEqual(writes[0].value.diagnostic.failure, { kind: 'TimeoutError', code: null });
+        assert.ok(!JSON.stringify(writes).includes('SECRET'));
+    });
+}
 function oldFakeResult() { const flags = { actualEntry: true, authorizedData: true, stale500Retained: true, real403Hidden: true, failedRetryStillHidden: true, recovered: true, keyboardGeometry: true }; return { status: 'passed', responseTimeoutMs: 25000, tableScroll: ['analytics', 'margin', 'sales', 'supplier-ranking', 'suppliers'].map(subject => ({ subject, before: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 0, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 }, after: { focused: true, clientWidth: 200, scrollWidth: 640, scrollLeft: 35, pageX: 0, pageY: 20, viewport: 390, pageWidth: 390 } })), budget: { elapsedMs: 1, deadlineMs: 300000, apiRequests: 1, analyticsRequests: 1 }, fixtureCleaned: true, databaseGrantLookup: true, lateScopeSuppressed: true, readOnlySnapshotEqual: true, rawSnapshotTables: 33, forbidden: [], beforeSha256: 'a'.repeat(64), afterSha256: 'a'.repeat(64), cases: [1366, 1024, 390].map(width => ({ width, contextId: [1366, 1024, 390].indexOf(width) + 2, readers: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'].map(id => { const subject = navigationSubjects.find(row => row.id === id); return { id, ...flags, navigation: { route: subject.route, heading: subject.heading, period: id === 'suppliers' ? null : '2026-01', response: { contextId: [1366, 1024, 390].indexOf(width) + 2, requestId: 1, path: '/api/v1/admin' + (id === 'analytics' ? '/analytics/product-abc' : id === 'suppliers' ? '/inventory/suppliers' : subject.route) + (id === 'suppliers' ? '' : '?period=2026-01'), actor: 'readerA', status: 200, sha256: 'c'.repeat(64) } } }; }) })), pgNegativeControls: { oldOrderItemRevenue: 17844, scopedRevenue: 67, oldSupplierDenominator: 17844, scopedSupplierDenominator: 62 }, httpStatuses: Object.fromEntries(readerEndpoints.map(endpoint => [endpoint, { readerA: 200, readerB: 200, readerEmpty: 200, unauthenticated: 401, denied: 403, inactive: 401, crossTenantHeader: 401 }])), initialErrorRecovered: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'], authorizedEmpty: ['cashflow', 'margin', 'sales', 'analytics', 'suppliers'] }; }
 function fakeResult() {
     const result = oldFakeResult();
