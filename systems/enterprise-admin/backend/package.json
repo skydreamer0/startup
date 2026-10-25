@@ -39,7 +39,7 @@
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.1.1",
+    "multer": "^2.5.0",
     "uuid": "^13.0.0",
     "zod": "^4.6.7"
   },
@@ -60,14 +60,14 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.2",
-    "vitest": "^4.1.11",
+    "vitest": "^4.1.12",
     "vite": "^6.4.4"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "^4.64.5"
+    "@rollup/rollup-darwin-arm64": "^4.64.9"
   },
   "overrides": {
     "@prisma/config": { "deepmerge-ts": "^8.0.2" },
