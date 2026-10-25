@@ -3,6 +3,73 @@ import fs from 'node:fs';
 import { test } from 'node:test';
 import { allowedPaths, assertBrowserLedger, assertReceivingBrowserEnvironment, ownedDatabaseUrl, receivingRequestAllowed } from './fixture.mjs';
 import { assertAcceptanceAfterCleanup, assertPlaywrightReceivingReport, expectedReceivingCases } from './acceptance.mjs';
+import { loginToReceiving } from './login-navigation.ts';
+
+// Page-protocol controls only: these do not establish native browser/API/PG acceptance.
+function loginPage({ authenticated = false, delayed = false, rejectLogin = false } = {}) {
+  const state = { path: '', phase: '', fields: {}, calls: [] };
+  const ready = () => { state.phase = authenticated ? 'receiving' : 'login'; state.path = `/${state.phase}`; };
+  const locator = name => ({
+    async isVisible() { return name === '#login-email' && state.phase === 'login'; },
+    async fill(value) { assert.equal(state.phase, 'login'); state.fields[name] = value; },
+    async click() {
+      state.calls.push(name);
+      if (name === '#login-submit') {
+        assert.equal(state.phase, 'login');
+        state.phase = rejectLogin ? 'login' : 'dashboard'; state.path = `/${state.phase}`;
+      } else {
+        assert.equal(name, 'link:人工收貨草稿'); assert.equal(state.phase, 'dashboard');
+        state.phase = 'receiving'; state.path = '/receiving';
+      }
+    },
+    or(other) {
+      assert.equal(name, '#login-email'); assert.equal(other.name, 'button:新增私人草稿');
+      return { async waitFor(options) { assert.deepEqual(options, { state: 'visible', timeout: 10_000 }); ready(); } };
+    },
+    name,
+  });
+  const page = {
+    async goto(url) { assert.equal(url, 'http://127.0.0.1:4287/receiving'); state.calls.push('goto'); if (!delayed) ready(); },
+    locator,
+    getByRole(role, options) { assert.equal(options.exact, true); return locator(`${role}:${options.name}`); },
+    async waitForURL(url, options) {
+      assert.deepEqual(options, { timeout: 10_000 }); state.calls.push(`wait:${new URL(url).pathname}`);
+      assert.equal(state.path, new URL(url).pathname, 'must observe successful navigation, not assume login success');
+    },
+  };
+  return { page, state };
+}
+
+test('receiving login follows the actual dashboard redirect through the existing named link', async () => {
+  const { page, state } = loginPage();
+  await loginToReceiving(page, 'http://127.0.0.1:4287', { email: 'synthetic@example.invalid', password: 'synthetic-test-password' });
+  assert.equal(state.path, '/receiving');
+  assert.deepEqual(state.fields, { '#login-email': 'synthetic@example.invalid', '#login-password': 'synthetic-test-password' });
+  assert.deepEqual(state.calls, ['goto', '#login-submit', 'wait:/dashboard', 'link:人工收貨草稿', 'wait:/receiving']);
+});
+
+test('receiving login waits for a delayed cold login form instead of skipping credentials', async () => {
+  const { page, state } = loginPage({ delayed: true });
+  await loginToReceiving(page, 'http://127.0.0.1:4287', { email: 'second@example.invalid', password: 'second-test-password' });
+  assert.equal(state.path, '/receiving');
+  assert.equal(state.fields['#login-email'], 'second@example.invalid');
+  assert.equal(state.calls.filter(value => value === '#login-submit').length, 1);
+});
+
+for (const delayed of [false, true]) test(`receiving entry preserves an authenticated session (delayed hydration: ${delayed})`, async () => {
+  const { page, state } = loginPage({ authenticated: true, delayed });
+  await loginToReceiving(page, 'http://127.0.0.1:4287', { email: 'unused@example.invalid', password: 'unused-test-password' });
+  assert.equal(state.path, '/receiving');
+  assert.deepEqual(state.fields, {});
+  assert.deepEqual(state.calls, ['goto', 'wait:/receiving']);
+});
+
+test('failed login cannot navigate around authentication or retry submission', async () => {
+  const { page, state } = loginPage({ rejectLogin: true });
+  await assert.rejects(loginToReceiving(page, 'http://127.0.0.1:4287', { email: 'synthetic@example.invalid', password: 'bad-test-password' }), /must observe successful navigation/);
+  assert.equal(state.path, '/login');
+  assert.deepEqual(state.calls, ['goto', '#login-submit', 'wait:/dashboard']);
+});
 
 test('network guard allows only real auth, product reads and bounded draft lifecycle routes', () => {
   assert.equal(receivingRequestAllowed('POST', 'http://127.0.0.1:4287/api/v1/admin/auth/login'), true);

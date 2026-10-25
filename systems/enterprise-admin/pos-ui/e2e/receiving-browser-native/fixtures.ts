@@ -2,6 +2,7 @@ import { test as base, expect, type Locator, type Page, type TestInfo } from '@p
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { origin, receivingRequestAllowed } from './fixture.mjs';
+import { loginToReceiving } from './login-navigation';
 // @ts-expect-error Reuse the existing native screenshot/geometry helpers; its legacy JavaScript surface has no declaration file.
 import { capture as captureNative, controlGeometry } from '../recovery-native/evidence.mjs';
 // @ts-expect-error Reuse the batch-entry installed-font file/hash/charset verifier.
@@ -97,12 +98,10 @@ export async function browserFixture(): Promise<Credentials> {
 
 export async function login(page: Page, actor: 'primary' | 'secondary' = 'primary') {
   const credentials = await browserFixture();
-  await page.goto(`${origin}/receiving`);
-  if (await page.locator('#login-email').isVisible().catch(() => false)) {
-    await page.locator('#login-email').fill(actor === 'primary' ? credentials.email : credentials.secondEmail);
-    await page.locator('#login-password').fill(actor === 'primary' ? credentials.password : credentials.secondPassword);
-    await page.locator('#login-submit').click();
-  }
+  await loginToReceiving(page, origin, {
+    email: actor === 'primary' ? credentials.email : credentials.secondEmail,
+    password: actor === 'primary' ? credentials.password : credentials.secondPassword,
+  });
   await expect(page.getByRole('button', { name: '新增私人草稿', exact: true })).toBeVisible();
 }
 
