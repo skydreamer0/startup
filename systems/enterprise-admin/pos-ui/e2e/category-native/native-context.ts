@@ -43,8 +43,13 @@ export async function withNativeContext(
       if (!activePort) throw new Error('Owned Chrome did not expose its temporary profile argument');
       await expect.poll(async () => {
         try {
-          const [port, path] = (await readFile(activePort, 'utf8')).trim().split('\n');
-          if (!/^\d+$/.test(port) || !/^\/devtools\/browser\/[\w-]+$/.test(path)) throw new Error('Invalid owned CDP endpoint');
+          // Chrome creates this file before both lines are necessarily written.
+          // Keep polling within the existing deadline; never connect to a partial
+          // or malformed endpoint, or leave the owned temporary profile.
+          const lines = (await readFile(activePort, 'utf8')).trim().split(/\r?\n/);
+          const [port, path] = lines;
+          if (lines.length !== 2 || !/^\d+$/.test(port) || Number(port) < 1 || Number(port) > 65535
+            || !/^\/devtools\/browser\/[\w-]+$/.test(path)) return false;
           endpoint = `ws://127.0.0.1:${port}${path}`;
           return true;
         } catch (error) {

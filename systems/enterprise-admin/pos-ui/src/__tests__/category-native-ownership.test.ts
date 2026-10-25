@@ -1,14 +1,27 @@
 // @vitest-environment node
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, expect, it, vi } from 'vitest';
 import { withNativeContext } from '../../e2e/category-native/native-context';
 
 // Resource/API regression only; these doubles do not establish native visibility.
-const state = vi.hoisted(() => ({ scenario: 'success', calls: [] as string[] }));
+// The owned-process fixture is synthetic Linux data on every test host.
+const originalUid = Object.getOwnPropertyDescriptor(process, 'getuid');
+beforeAll(() => Object.defineProperty(process, 'getuid', { configurable: true, value: () => 1000 }));
+afterAll(() => {
+  if (originalUid) Object.defineProperty(process, 'getuid', originalUid);
+  else Reflect.deleteProperty(process, 'getuid');
+});
+const state = vi.hoisted(() => ({ scenario: 'success', calls: [] as string[], endpointReads: 0 }));
 vi.mock('node:fs/promises', () => {
   const fs = {
-    readFile: vi.fn(async (path: string) => path.startsWith('/proc/')
-      ? `42 (unit-owned-chrome) ${['S', ...Array(18).fill('0'), '123'].join(' ')}`
-      : '12345\n/devtools/browser/unit-id\n'),
+    readFile: vi.fn(async (path: string) => {
+      if (path.startsWith('/proc/')) return `42 (unit-owned-chrome) ${['S', ...Array(18).fill('0'), '123'].join(' ')}`;
+      state.endpointReads++;
+      if (state.scenario === 'partial-endpoint' && state.endpointReads < 3)
+        return state.endpointReads === 1 ? '' : '12345\n';
+      if (state.scenario === 'invalid-endpoint') return '12345\nws://foreign.example/devtools/browser/unit-id';
+      if (state.scenario === 'invalid-port') return '65536\n/devtools/browser/unit-id';
+      return '12345\n/devtools/browser/unit-id\n';
+    }),
     access: vi.fn(async () => { throw Object.assign(new Error('unit profile removed'), { code: 'ENOENT' }); }),
   };
   return { ...fs, default: fs }; // Support Vite's CJS default-import interop as well as named imports.
@@ -17,7 +30,14 @@ vi.mock('@playwright/test', async () => {
   const { expect: check } = await import('vitest');
   const { EventEmitter } = await import('node:events');
   const assertion = Object.assign((value: unknown) => check(value), {
-    poll: (read: () => Promise<unknown>) => ({ toBe: async (value: unknown) => check(await read()).toBe(value) }),
+    poll: (read: () => Promise<unknown>) => ({ toBe: async (value: unknown) => {
+      let actual;
+      for (let attempt = 0; attempt < 4; attempt++) {
+        actual = await read();
+        if (actual === value) return;
+      }
+      check(actual).toBe(value);
+    } }),
   });
   const context = { addInitScript: async (script: () => void) => {
     state.calls.push('block-service-workers'); check(script.toString()).toContain('ServiceWorkerContainer');
@@ -52,8 +72,8 @@ vi.mock('@playwright/test', async () => {
   return { ...api, default: api };
 });
 
-beforeEach(() => { state.scenario = 'success'; state.calls = []; });
-it.each(['success', 'callback-failure', 'connect-failure', 'missing-profile', 'wrong-context-count', 'close-failure'])(
+beforeEach(() => { state.scenario = 'success'; state.calls = []; state.endpointReads = 0; });
+it.each(['success', 'partial-endpoint', 'invalid-endpoint', 'invalid-port', 'callback-failure', 'connect-failure', 'missing-profile', 'wrong-context-count', 'close-failure'])(
   'owns Chrome and closes it before disconnect: %s', async scenario => {
     state.scenario = scenario;
     const run = () => withNativeContext(async (_context, close) => {
@@ -62,8 +82,10 @@ it.each(['success', 'callback-failure', 'connect-failure', 'missing-profile', 'w
       await close(); await close();
     }, { identity: { runNonce: '00000000-0000-0000-0000-000000000001',
       testNonce: '00000000-0000-0000-0000-000000000002', test: scenario }, onReceipt: () => {} });
-    if (scenario === 'success') await run();
+    if (scenario === 'success' || scenario === 'partial-endpoint') await run();
     else await expect(run()).rejects.toThrow();
+    if (scenario === 'partial-endpoint') expect(state.endpointReads).toBe(3);
+    if (scenario === 'invalid-endpoint' || scenario === 'invalid-port') expect(state.calls).not.toContain('connect');
     expect(state.calls.filter(call => call === 'close-owned-server')).toHaveLength(1);
     if (state.calls.includes('disconnect-client')) {
       expect(state.calls.indexOf('close-owned-server')).toBeLessThan(state.calls.indexOf('disconnect-client'));
