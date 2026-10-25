@@ -1,9 +1,69 @@
 # Enterprise Admin Roadmap
 
-> This is the live engineering roadmap for `systems/enterprise-admin`.
+> This is the engineering status and evidence index for `systems/enterprise-admin`.
 > Completed historical phase detail lives in git history, not in working-tree archive files.
 
 ## Current Status
+
+**Readback: 2026-10-25 UTC, master
+[`f8c49a47`](https://github.com/skydreamer0/startup/commit/f8c49a47a5b593bc1eb4caddb63e90bc8eff2b0f).**
+This is a repository/status reconciliation, not a new test run or production
+acceptance. [#37's 2026-10-22 gap and dispatch index](https://github.com/skydreamer0/startup/issues/37#issuecomment-6331185482)
+is the current scope entry. It retains the original AC, M0/M1/M2 and G0–G7;
+[#31](https://github.com/skydreamer0/startup/issues/31) owns the UI/workspace AC.
+Use current head plus bounded evidence for implementation state, accepted ADRs
+for architecture, and API/schema/migrations for contracts. None of these replaces
+the latest confirmed user instruction or an action-specific permission gate.
+
+### Already integrated; do not implement again
+
+| Slice | Verified merge / existing responsibility | Still outside that delivery |
+| ----- | ----------------------------------------- | --------------------------- |
+| Split payment / PIN focus | [#88](https://github.com/skydreamer0/startup/pull/88), merged 2026-10-10 as `22b412e4` | Complete money/refund policy and device acceptance. |
+| Reviewed product/package lookup | [#142](https://github.com/skydreamer0/startup/pull/142), merged 2026-10-18 as `4577649d`; tenant mapping/revisions and explicit POS selection | All-store unit policy, hardware/FNC1, cold offline and store rollout. The application is no longer SKU-only. |
+| Manual ReceivingDraft and camera | [#153](https://github.com/skydreamer0/startup/pull/153), merged 2026-10-21 as `e18a3be4`; private CAS drafts and local camera evidence | Formal receipt posting, original-image/OCR lifecycle, partial receipt and physical-camera acceptance. |
+| Subsequent source integration | [#160](https://github.com/skydreamer0/startup/pull/160), merged 2026-10-21 as `2f8768ad`; #154–159 source integration | An old open/Draft source PR does not prove its code is missing. Reconcile its ancestry and actual remaining AC before assigning work. |
+
+The system remains two standalone React/Vite SPAs sharing one Express/Prisma/PG
+backend. POS/general sales share the caller-owned inventory posting boundary;
+this does not finish all inventory writers. Checkout unknown/conflict stays
+frozen, refunds do not receive physical stock, ReceivingDraft is not posting,
+and scan/OCR/print cannot change stock. See [CONTEXT](CONTEXT.md) and
+[current architecture](../../docs/architecture.md) before starting a slice.
+
+### Remaining scope and evidence gates
+
+Use #37's existing P1–P12 index instead of creating a second backlog here.
+Its independent preparation lanes cover existing UI candidates, writer/quantity
+contracts, source/OCR contracts, and operational runbooks. Receiving/Reports files
+can be separated; shared schema/posting needs a single integration owner.
+Financial policies, actual devices and final-host decisions block only the work
+that depends on them, not unrelated read-only preparation or isolated contracts.
+
+The outstanding outcomes include full writer cutover/opening/rebuild and physical
+returns (#29), money/refund/historical-cost reconciliation (#30), formal
+multi-line/partial receiving and lot→bin→action workflows (#31/#37), source-image/OCR
+lifecycle, real scan/print/device acceptance, and final-host backup/restore/capacity.
+OCR candidates are not selected; cloud OCR/Vision/LLM/AI APIs remain excluded.
+Existing drafts, tests and diagrams are not evidence that these outcomes passed.
+
+At this readback, [#165](https://github.com/skydreamer0/startup/pull/165) has merged
+as `e6f7f2b8`: its dependency/security/native-acceptance integration and exact-head
+CI, review and bounded native evidence are recorded in that PR. The disjoint
+UX journeys and dispatch documentation in [#167](https://github.com/skydreamer0/startup/pull/167)
+has merged as `f8c49a47`. The independent [#166](https://github.com/skydreamer0/startup/pull/166)
+Dashboard candidate remains open and is not part of this master snapshot. Its live
+head, all applicable checks and review records decide subsequent integration.
+Do not reuse an old green run for a changed head or infer deployment, physical/store
+acceptance or whole-Issue completion from a merge. This documentation update
+changes no Issue checkbox, gate or product behavior.
+
+### Historical status checkpoint (preserved)
+
+The following earlier checkpoint records what was known at the time. Its
+pending/candidate wording, CI counts and master SHA are historical; use the
+current reconciliation above and subsequent PR evidence for today's status.
+
 
 Camera M0-A continuation (#37/#31/#48) is under bounded software review: explicit
 video enable/capture, local pinned decoder, human evidence confirmation and the
@@ -15,7 +75,7 @@ Safari/iPad and native zoom remain open. No mother issue or G0–G7 gate is clos
 
 The earlier product and architecture phases are complete. New single-pharmacy reliability and workflow requirements are active below; historical completion does not mean these issues or production acceptance gates are complete.
 
-Use this file as the active status source of truth. Use ADRs, standards, health reports, and git history for historical evidence.
+At that checkpoint this file served as the active status index. Its dated evidence is retained below; requirements remain with the linked Issues and accepted decisions.
 
 Status reconciled on **2026-10-16 (Asia/Taipei)** against merged master [`e46c6bbc`](https://github.com/skydreamer0/startup/commit/e46c6bbc1dd98ff8d5a25b4597373c559fd43427). The last completed baseline [CI 38696834118](https://github.com/skydreamer0/startup/actions/runs/38696834118) passed all nine pipeline jobs at `8390067e`; subsequent #128/#129 post-merge CI is a separate subject and was still running at this checkpoint. Merge dates/times below are UTC unless stated otherwise. Merged code and bounded synthetic acceptance do not establish in-store deployment or complete G0–G7 acceptance. Historical RED/GREEN, skipped and not-run records retain their original execution scope; later results are identified separately.
 
@@ -29,13 +89,14 @@ Status reconciled on **2026-10-16 (Asia/Taipei)** against merged master [`e46c6b
   adds local PNG/JPEG decoding with bundled, exactly pinned ZXing WASM 3.1.2.
   These evidence dialogs do not resolve products, dispatch scans, persist evidence,
   add to carts or post stock. Legacy keyboard timing and matching remain intact.
-  Camera acquisition, true USB/FNC1, cold-offline/device CPU/RAM performance,
-  manufacturer/package mapping (M0-B), workflow lookup (M0-C) and G0–G7 remain open.
+  This original checkpoint preceded #142/#153: camera acquisition and explicit
+  package lookup software later merged as recorded above. True USB/FNC1,
+  cold-offline/device CPU/RAM and complete M0/G0–G7 acceptance remain open.
   [#131](https://github.com/skydreamer0/startup/pull/131)/[#132](https://github.com/skydreamer0/startup/pull/132)
   deliver only the synthetic six-field OCR evaluator and its CI contract, not an OCR engine.
   See ADR-022; none of these slices completes M0 or a parent checkbox.
 
-- Current delivery order: finish [#137](https://github.com/skydreamer0/startup/issues/137)
+- Earlier delivery order (superseded by the #37 gap index above): finish [#137](https://github.com/skydreamer0/startup/issues/137)
   label-specific acceptance separately; continue #48's single manufacturer/package
   mapping authority and M0-C lookup before OCR expansion. #30 money/refund policy,
   #29 physical-return/reconciliation policy and store-role decisions, #31 workspace
@@ -43,7 +104,8 @@ Status reconciled on **2026-10-16 (Asia/Taipei)** against merged master [`e46c6b
   for their respective operational use. Do not repeat already merged SKU, category,
   command-recovery, audit or evidence-dialog implementations.
 
-- #48 implementation candidate: `codex/product-package-lookup` retains existing
+- #48 pre-merge candidate record (now merged through #142 above):
+  `codex/product-package-lookup` retains existing
   SKU behavior and adds tenant product/package/revision/identifier persistence,
   admin-reviewed maintenance, complete manufacturer/GTIN lookup and explicit POS
   confirmation with stale-version/unknown-conversion guards. Owner confirmed
