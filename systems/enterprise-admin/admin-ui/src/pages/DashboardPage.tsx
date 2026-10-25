@@ -223,15 +223,23 @@ export default function DashboardPage() {
                         </div>
                         <div className="supply-row">
                             <span className="stat-label">Avg. Delivery Rate</span>
-                            <span className="badge badge-success tabular" style={{ background: (kpis?.suppliers.avgDeliveryReliability ?? 0) >= 95 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }}>
-                                {kpis?.suppliers.avgDeliveryReliability ?? '--'}%
-                            </span>
+                            {kpis?.suppliers.avgDeliveryReliability == null ? (
+                                <span className="text-muted tabular">--</span>
+                            ) : (
+                                <span className="badge badge-success tabular" style={{ background: kpis.suppliers.avgDeliveryReliability >= 95 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)' }}>
+                                    {kpis.suppliers.avgDeliveryReliability}%
+                                </span>
+                            )}
                         </div>
                         <div className="supply-row">
                             <span className="stat-label">Avg. Defect Rate</span>
-                            <span className="badge tabular" style={{ background: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: (kpis?.suppliers.avgDefectRate ?? 0) > 2 ? '#ef4444' : '#10b981' }}>
-                                {kpis?.suppliers.avgDefectRate ?? '--'}%
-                            </span>
+                            {kpis?.suppliers.avgDefectRate == null ? (
+                                <span className="text-muted tabular">--</span>
+                            ) : (
+                                <span className="badge tabular" style={{ background: kpis.suppliers.avgDefectRate > 2 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: kpis.suppliers.avgDefectRate > 2 ? '#ef4444' : '#10b981' }}>
+                                    {kpis.suppliers.avgDefectRate}%
+                                </span>
+                            )}
                         </div>
                     </div>
                 </section>
