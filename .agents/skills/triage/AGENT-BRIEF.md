@@ -1,6 +1,6 @@
 # Writing Agent Briefs
 
-An agent brief is a structured comment posted on a GitHub issue when it moves to `ready-for-agent`. It is the authoritative specification that an AFK agent will work from. The original issue body and discussion are context — the agent brief is the contract.
+An agent brief is a structured comment posted on a GitHub issue when it moves to `ready-for-agent`. It consolidates the current behavioral specification and acceptance criteria into a resumable work contract. Link the source Issue criteria and latest applicable human instructions; the brief is not a new source of authorization and cannot override them.
 
 ## Principles
 
@@ -10,7 +10,7 @@ The issue may sit in `ready-for-agent` for days or weeks. The codebase will chan
 
 - **Do** describe interfaces, types, and behavioral contracts
 - **Do** name specific types, function signatures, or config shapes that the agent should look for or modify
-- **Don't** reference file paths — they go stale
+- **Don't** make a path the durable requirement; keep current file ownership in the revision-bound dispatch record below and revalidate it on resume
 - **Don't** reference line numbers
 - **Don't** assume the current implementation structure will remain the same
 
@@ -34,6 +34,72 @@ The agent needs to know when it's done. Every agent brief must have concrete, te
 
 State what is out of scope. This prevents the agent from gold-plating or making assumptions about adjacent features.
 
+<a id="dispatch-contract"></a>
+## Dispatch and acceptance record
+
+Keep the human-readable brief below. Add one small JSON record beside it when dispatching or handing off work, so a person or a simple reader can recover ownership, current evidence and the next step without inferring them from a chat transcript. This is a documentation convention, not a new orchestrator, permission system or repository label workflow.
+
+```json
+{
+  "version": 1,
+  "source": {
+    "issue": "REPLACE_WITH_VERIFIED_ISSUE_URL",
+    "ac_ids": ["AC-1"],
+    "latest_authorization_ref": "REPLACE_WITH_MESSAGE_OR_COMMENT_REFERENCE",
+    "checked_at": null
+  },
+  "owner": "REPLACE_WITH_CURRENT_OWNER",
+  "paths": ["REPLACE_WITH_EXACT_OWNED_PATH"],
+  "revision": { "base": null, "head": null },
+  "artifact": [],
+  "environment": {
+    "target": "REPLACE_WITH_AUTHORIZED_ENVIRONMENT",
+    "readiness": "unknown",
+    "evidence": null
+  },
+  "status": "planned",
+  "acceptance": [
+    {
+      "ac_id": "AC-1",
+      "layer": "source",
+      "verdict": "NOT RUN",
+      "head": null,
+      "command_or_action": null,
+      "evidence": [],
+      "reason": "Not evaluated yet"
+    }
+  ],
+  "next": { "owner": "REPLACE_WITH_CURRENT_OWNER", "action": "Verify live scope, revision and prerequisites" },
+  "stop": ["Latest human instruction cancels or pauses this work", "Required authority, environment or dependency is unavailable"]
+}
+```
+
+Replace placeholders before dispatch. Use `null` or an empty list for genuinely unknown information, never an invented SHA, link, approval or successful result. Keep secrets and private conversation contents out of the record; a reference locates the original instruction, it does not copy it into a public or broader audience.
+
+### Field and resume rules
+
+- `source`: link the original Issue and stable criterion IDs. If the Issue lacks IDs, map brief IDs to its exact criterion text without silently changing acceptance. Re-read current Issue comments and the latest applicable human authorization before acting; record the check time with timezone. An old schedule, label or brief never overrides a newer human instruction. Missing or inaccessible authority is unknown, not implied consent.
+- `owner` / `paths`: record one owner and exact, bounded write paths for this slice. They are current coordination metadata, not permanent architecture. Recheck them at the selected revision; resolve overlapping ownership before writing. A rename or need for another path requires coordination, not silently taking another worker's files.
+- `revision` / `artifact`: record full base and head commit IDs plus verified PR, diff, report or artifact references. Bind evidence to the tested head and environment, not merely a branch name or an older green run. A later edit invalidates the affected claim until rechecked.
+- `environment`: use `readiness` = `unknown`, `waiting`, `ready` or `blocked`, with a current observation in `evidence`. Distinguish availability from permission and the tools required for the next step. This record does not authorize a local computer, production data, installation, CI/permission changes, publication, merge or deployment.
+- `status`: use `planned`, `waiting`, `running`, `blocked`, `review` or `done`. `waiting` names an expected prerequisite; `blocked` names an obstacle requiring a decision or allowed remedy. `review` means evidence is ready for review, not already accepted. `done` means this bounded slice met its applicable criteria and required review/checks; it does not close the parent Issue or imply deployment.
+- `acceptance`: add one row for every applicable AC/evidence layer. Use an explicit layer such as `source`, `unit`, `integration`, `browser-synthetic`, `browser-real-api`, `native-db`, `physical-device`, `operational` or `review`. Link the command/action, source head and result artifact; do not substitute one layer for another. Summaries do not replace raw evidence when the gate requires it.
+- `next` / `stop`: name the next owner, concrete action and completion or stop boundary. On a real denial, stop that operation and preserve the exact target, reason and outcome. New wording or this record cannot bypass it; a retry requires materially new relevant evidence under the host policy, and an uncertain prior outcome must be checked first. Continue only independent authorized work.
+
+### Verdicts and completion
+
+| Verdict | Meaning |
+| --- | --- |
+| `PASS` | The stated criterion passed at this layer on the recorded revision and environment; evidence is linked. |
+| `FAIL` | The criterion was evaluated and did not meet the expected result. |
+| `BLOCKED` | A required action cannot proceed; state the exact action/target, reason, what completed and whether it was denied, is pending or has an uncertain outcome. |
+| `NOT RUN` | No qualifying execution/evaluation exists for this criterion or layer. State why and what remains. |
+| `N/A` | The criterion/layer is genuinely inapplicable to the agreed slice; explain why. Missing hardware, access, tools or evidence are not N/A. |
+
+Missing, failed, cancelled or unexpectedly skipped checks are never PASS. Compare the expected checks with the observed checks for the exact head; no check record does not mean success. Keep pending checks open, and report cancellations/skips with their reason rather than silently dropping the AC. A docs-only slice may mark product behavior testing N/A with justification, but still must meet applicable documentation validation, independent review and repository CI requirements. Follow the existing PR template and CI policy; this record cannot weaken a gate or manufacture authority to rerun it.
+
+Keep unmet parent criteria visible even when a smaller slice is done. For pharmacy UI, [MASTER role journeys](../../../systems/enterprise-admin/infrastructure/design-system/MASTER.md#role-journeys) identifies workflow boundaries; [pharmacy-touch-ui-review](../pharmacy-touch-ui-review/SKILL.md) routes the relevant evidence. Neither is a new business policy or acceptance approval.
+
 ## Template
 
 ```markdown
@@ -56,9 +122,13 @@ Be specific about edge cases and error conditions.
 - Config shape — any new configuration options needed
 
 **Acceptance criteria:**
-- [ ] Specific, testable criterion 1
-- [ ] Specific, testable criterion 2
-- [ ] Specific, testable criterion 3
+- [ ] AC-1: Specific, testable criterion 1 (link source criterion)
+- [ ] AC-2: Specific, testable criterion 2 (link source criterion)
+- [ ] AC-3: Specific, testable criterion 3 (link source criterion)
+
+**Source and dispatch record:**
+Link the Issue, latest applicable human instructions and current dispatch record.
+Refresh revision, ownership, environment and per-AC evidence on handoff or resume.
 
 **Out of scope:**
 - Thing that should NOT be changed or addressed in this issue
@@ -66,6 +136,8 @@ Be specific about edge cases and error conditions.
 ```
 
 ## Examples
+
+The examples below illustrate durable behavioral prose, not live tasks or authorization. They are not complete dispatch records: add verified source criteria, current ownership/revision and evidence using the contract above before using an example for real work.
 
 ### Good agent brief (bug)
 
@@ -162,7 +234,8 @@ The function around line 150 has the issue.
 This is bad because:
 - No category
 - Vague description ("the triage thing is broken")
-- References file paths and line numbers that will go stale
+- Uses file paths and line numbers in place of durable behavior, with no revision-bound ownership record
 - No acceptance criteria
 - No scope boundaries
 - No description of current vs desired behavior
+
