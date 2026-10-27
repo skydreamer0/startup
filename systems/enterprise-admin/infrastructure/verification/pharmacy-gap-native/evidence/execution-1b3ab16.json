@@ -1,0 +1,174 @@
+{
+  "sourceHead": "1b3ab16e527f777d17070a63dbb9e928b9c8d4a1",
+  "backendTree": "556f191ed4d4215a038c183d3fd7db7ac4d58e6b",
+  "sourceVerification": {
+    "sourceHead": "1b3ab16e527f777d17070a63dbb9e928b9c8d4a1",
+    "sourceBlobs": 307,
+    "lockSha256": "111af89c76e2d66a6c10d2ed602a614a4c3d484a323d52be6132a5cbc130acf3",
+    "noDotenv": true
+  },
+  "testFileSha256": "02942dd86f3520766bfc46a6c6027fec415e713e44a963a5d925f140d4921ec8",
+  "scope": "Two real-login HTTP/API/PostgreSQL cases; not browser or whole-system acceptance",
+  "result": {
+    "success": true,
+    "numTotalTests": 2,
+    "numPassedTests": 2,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "cases": [
+    {
+      "name": "CAS retained loser next revision",
+      "status": "PASS",
+      "layer": "real login HTTP API / PostgreSQL; no browser choice UI"
+    },
+    {
+      "name": "Initial receipts through sale/refund/general order/trace",
+      "status": "PASS",
+      "layer": "real login HTTP API / PostgreSQL; no browser, physical return or dispatch/ack"
+    }
+  ],
+  "conservation": {
+    "initialReceiptQuantity": 5,
+    "posSold": 3,
+    "generalOrderSold": 1,
+    "moneyOnlyRefundStockChange": 0,
+    "finalBalance": {
+      "product": 1,
+      "early": 0,
+      "late": 1
+    },
+    "movementCount": 4,
+    "orderCount": 2,
+    "commandCount": 1,
+    "paymentCount": 1,
+    "releaseAuditCount": 2
+  },
+  "rawComparison": "All raw rows included in in-memory digest assertions; redaction applies only to written snapshots",
+  "requestCount": 23,
+  "snapshotCount": 12,
+  "standaloneProbe": {
+    "mode": "probe",
+    "sourceHead": "1b3ab16e527f777d17070a63dbb9e928b9c8d4a1",
+    "timestamp": "2026-10-27T16:03:56.569751+00:00",
+    "error": null,
+    "testExitCode": null,
+    "stages": [
+      {
+        "stage": "schema-proof",
+        "exitCode": 0
+      },
+      {
+        "stage": "client-probe",
+        "exitCode": 0
+      }
+    ],
+    "cleanup": {
+      "clientAbsent": true,
+      "databaseAbsent": true,
+      "dbContainerAbsent": true,
+      "volumesAbsent": true,
+      "networkAbsent": true
+    },
+    "completed": true,
+    "passed": true
+  },
+  "testLifecycle": {
+    "serverClosed": true,
+    "prismaDisconnected": true
+  },
+  "cleanup": {
+    "clientAbsent": true,
+    "databaseAbsent": true,
+    "dbContainerAbsent": true,
+    "volumesAbsent": true,
+    "networkAbsent": true
+  },
+  "completed": true,
+  "overallPass": true,
+  "guardControls": [
+    {
+      "name": "default-ambient-db",
+      "exitCode": 0,
+      "passed": 0,
+      "pending": 2,
+      "failed": 0
+    },
+    {
+      "name": "partial-opt-in",
+      "exitCode": 1,
+      "passed": 0,
+      "pending": 0,
+      "failed": 0
+    },
+    {
+      "name": "mismatched-opt-in",
+      "exitCode": 1,
+      "passed": 0,
+      "pending": 0,
+      "failed": 0
+    },
+    {
+      "name": "optimized-python",
+      "exitCode": 1,
+      "rejectedBeforeResources": true
+    },
+    {
+      "name": "remote-docker-endpoint",
+      "rejectedBeforeDocker": true,
+      "exitCode": 1
+    }
+  ],
+  "otherChecks": {
+    "targetedEslint": "PASS: 0 warnings / 0 errors",
+    "prettier": "PASS",
+    "pythonSyntax": "PASS",
+    "agentContext": "PASS",
+    "existingSuites": "NOT_RERUN",
+    "browserFiveGaps": "NOT_RUN",
+    "newHeadRemoteCI": "Not established by this local receipt; inspect PR checks"
+  },
+  "independentReview": {
+    "reviewer": "Independent same-environment agent /root/review_pharmacy_acceptance",
+    "scope": "Read-only guard/assertion/evidence review; no DB execution or GitHub review approval",
+    "subjectCommit": "1b3ab16e527f777d17070a63dbb9e928b9c8d4a1",
+    "result": "No remaining blocking findings for Draft preservation",
+    "filesSha256": {
+      "systems/enterprise-admin/backend/scripts/pharmacy-gap-native.py": "fb84ee99a3c71ae4746520c48d5c6af032d0299c0b8846a8857ceabeca1ba177",
+      "systems/enterprise-admin/backend/src/__tests__/pharmacy-gap.native.test.ts": "02942dd86f3520766bfc46a6c6027fec415e713e44a963a5d925f140d4921ec8",
+      "systems/enterprise-admin/infrastructure/verification/pharmacy-gap-native/README.md": "9383c4e11856e7630fc1ff93f405c50702d6e25eb3b3907415d3662f1abff6cd",
+      "systems/enterprise-admin/infrastructure/verification/pharmacy-gap-native/evidence/historical-20261027.json": "de7c0433ec958b4bf373b9fb591b37ee7ad76b68a96778243b8a53b52346d9fd"
+    }
+  },
+  "runtime": {
+    "node": "22.23.4",
+    "npm": "11.21.0",
+    "nodeImageDigests": [
+      "node@sha256:63538dfe497cc29dfafdda25ada09b46db68a3f4cc205abf1f5d6bf0913f3384"
+    ],
+    "postgresImageDigests": [
+      "postgres@sha256:f7d23353e1b15400d22ebe31189f4d314b87a4c129cc400c8c2d8d4ca127bf81"
+    ],
+    "noPublishedPorts": true,
+    "internalOwnedNetworkOnly": true,
+    "existingDataMounted": false
+  },
+  "originalEvidenceSha256": {
+    "migrations.log": "0503f42078126013acc7f3d0c4129ee2d0e5568c5a82b18e7cdf8c20a5df50af",
+    "source-after.json": "b17d4e5ee0a91a7c4cc87359509d4a78cd282c428f5f692144d9358b8caf70cc",
+    "retained-row-counts-before-owned-drop.json": "dc0fc30a1cd826e9f9689244795f9929a8550566a4e37f2684804efadaf89a8c",
+    "source-before.json": "b17d4e5ee0a91a7c4cc87359509d4a78cd282c428f5f692144d9358b8caf70cc",
+    "schema-proof.json": "dfe05d773aebd5ce0800ba1321061ef2cd39d9878336b3368457975c335c5f67",
+    "new-gap-tests.log": "f76c3729c527f1aba4519e76ac1e4a932ec0831f387f60d3879c0ca2a4a40c03",
+    "vitest.json": "aadbfcaac4a3dcc578bfef7d24cb10a0cac5fecfaee50c00d73dd5b916cc8985",
+    "journey.json": "07e50ff8e4271c3d985ca781599800ecfb2262aab26d34113c3db950f81bb968",
+    "result.json": "e4551d7cd041ddc320fcc067a726eb312d8e237f9ae7cc5004e63e63df26168f",
+    "client-probe.json": "96b22d4f933c4432c9b025834d1080d4aeccacb0766baa11b5d51acf97f8dd83",
+    "schema-proof.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "client-probe.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw-snapshots-redacted.json": "58926071fe18562ba06ecb661aeb106e743e1e3c226b9bd5a9858d3bbbc51c54",
+    "ownership.json": "fa22076a7bc480c6057b2b9e0efb83aaa17572bd1d6425cc254ed41584224695"
+  },
+  "defaultSkipNote": "Two skipped cases are the expected default guard result, not native acceptance PASS",
+  "publicationNote": "Later evidence-only commits may have a different PR head; backend tree/code must remain identical to this tested subject."
+}
