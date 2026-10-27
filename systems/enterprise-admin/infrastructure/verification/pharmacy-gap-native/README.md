@@ -107,6 +107,13 @@ log, Vitest JSON, request ledger, redacted snapshots, retained row counts and
 cleanup receipts. Review before publishing: do not commit dependencies, `.env`,
 proxy values, credentials, full DB snapshots or unrelated historical artifacts.
 
+`evidence/execution-1b3ab16.json` records the committed runner/test revalidation:
+two real API/PG cases passed with zero pending/failed, five cleanup checks passed,
+and default/partial opt-in, optimized Python and remote-Docker rejection controls
+behaved as expected. It includes the independent read-only review's exact hashes.
+The subject is commit `1b3ab16e527f777d17070a63dbb9e928b9c8d4a1`; subsequent
+evidence-only commits do not change its backend tree. PR CI is a separate gate.
+
 The five receiving browser gaps remain **NOT_RUN**: save next revision after
 CAS choice; another actor's draft/history; cross-tenant browser; pending/unknown
 navigation guards; read-only actor PUT rejection. Backend CAS is not browser CAS.
