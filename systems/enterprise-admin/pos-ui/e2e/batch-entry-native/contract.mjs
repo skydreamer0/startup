@@ -24,7 +24,7 @@ export function assertReport(report) {
   return specs.map(spec => { assert.equal(spec.ok, true); assert.equal(spec.tests.length, 1); const test = spec.tests[0]; assert.equal(test.expectedStatus, 'passed'); assert.equal(test.status, 'expected'); assert.equal(test.results.length, 1); assert.equal(test.results[0].status, 'passed'); assert.deepEqual(test.results[0].errors, []); return { title: spec.title, duration: test.results[0].duration }; });
 }
 export function assertEvidence(database, browsers, api) {
-  for (const key of ['beforeEmpty', 'afterEmpty', 'httpDrainedBeforeSnapshot']) assert.equal(database[key], true);
+  for (const key of ['beforeEmpty', 'afterEmpty', 'httpDrainedBeforeSnapshot', 'browserQuiescent']) assert.equal(database[key], true);
   assert.equal(database.error, null); assert.equal(database.cancelled, null); assert.equal(database.browser.exitCode, 0); assert.equal(database.browser.signal, null);
   assert.deepEqual(Object.keys(database.before).sort(), rawTables); assert.deepEqual(database.before, database.after); assert.deepEqual(api.rejected, []);
   const expected = database.expected, before = database.before;

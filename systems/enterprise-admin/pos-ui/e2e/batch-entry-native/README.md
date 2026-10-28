@@ -19,6 +19,54 @@ With the exact base page, a null product row or object-valued name crashes the m
 
 ## Cost and deadlines
 
+### Package-local interruption cleanup
+
+The PR169 run40542029301 was cancelled while this step was active. Its SKU
+cleanup receipt records 88 remaining synthetic rows, `businessRowsZero:false`
+and `ownedDatabaseAbsent:true`. The owned database and service were removed;
+that does not turn fixture cleanup or native acceptance into PASS. The official
+cancellation cause remains unknown. Timing matches the 20-minute job limit,
+but no timeout, workflow split, rerun or CI gate change is made here.
+
+A separate process probe reproduced the shared owner's two-second SIGKILL
+interrupting cleanup that needed 2.5 seconds; this fixture allows up to20 seconds
+for HTTP drain alone. Only the real-API batch fixture phase now uses the local
+`process-owner.mjs`: after110 seconds of work, or on cancellation, it signals the
+fixture leader and allows at most40 seconds for cooperative shutdown before
+forced group termination. Preparation phases and every other suite retain the
+unchanged shared owner. The existing three-minute step and20-minute job limits
+still apply and can preempt this cleanup; this is no guarantee against outer
+runner cancellation. The40 seconds cover browser stopping, HTTP drain, snapshots,
+owned-row cleanup, disconnect and private-token removal; a slow or stuck operation
+can still exhaust that budget and must remain failed.
+
+The fixture runs directly with `node --import tsx`, so the signal recipient owns
+the cleanup handlers. Cancellation fences further seed/read work and rejects new
+HTTP requests. The browser gets its own process group; its group and nonce-bound
+descendants must be quiescent, and existing HTTP must drain, before snapshots or
+row deletion. Unknown stop/drain outcomes forbid deletion. Cleanup does not race
+an unresolved DB operation against a timer. Disconnect and private-token removal
+are attempted even if prior finalization fails, with the primary failure retained.
+Acceptance additionally requires `browserQuiescent:true`. Cancellation, forced
+signals, nonzero rows and missing evidence still fail; no bootstrap/upload guard
+is relaxed. An immutable, non-sensitive `fixture-process.json` records the bounded
+owner result when finalization reaches it; outer hard termination can prevent it.
+
+Focused local controls (no PostgreSQL or browser):
+
+```sh
+node --test pos-ui/e2e/batch-entry-native/lifecycle.test.mjs \
+  pos-ui/e2e/batch-entry-native/contract.test.mjs \
+  pos-ui/e2e/batch-entry-native/fixture.test.mjs
+```
+
+The lifecycle controls use actual owned Linux processes and loopback HTTP, with
+synthetic DB action adapters. The slow-cleanup regression waits a real2.5 seconds;
+forced-deadline tests shorten only their timer adapter and still use real signals
+and process-group inspection. These are lifecycle/guard evidence, not a rerun or
+PASS of the cancelled Chrome/PostgreSQL journey. Native new-head verification and
+independent review remain required.
+
 The previous exact-head SKU job took 17m06s with its existing 20-minute job cap. This addition does not change that cap, required names, selectors, permissions, dependency lockfiles or old steps. It adds one maximum-three-minute step and one upload. The native process has a 90-second global browser cutoff, zero retries, 64 total actual API-dispatch cap and 550ms pacing (maximum 34.65 seconds of intentional spacing). The normal planned requests total 43: full lifecycle 23, second cold 5, reader 5, denied 6, empty 4. Additional StrictMode/cancellation attempts still count when dispatched, never beyond64. HTTP drain is bounded at20seconds; the remaining step budget covers source/type/collection/seed/postprocess/process cleanup. Total CI time can still hit the unchanged job cap if upstream work slows; no runtime or cost saving is asserted. Product rate-limit configuration is unchanged.
 
 ## Local controls and limits
@@ -55,3 +103,18 @@ The new proof has no font-name allowlist. For each actual CDP face, require nonc
 Unknown/ambiguous/missing files, non-system/symlink escape paths, custom fonts, absent/zero/fractional/incomplete glyphs, missing PostScript identity, Latin-only or incomplete/malformed charsets, changed files and forged hashes all fail. Exact title/visibility/rect, two stable observations, readiness, deadlines, immutable diagnostics, PNG/hash/viewport checks and every product/HTTP/DB/cleanup assertion remain. No CSS, fontconfig, installation, dependency, workflow or unrelated Noto gate changes. A family alone is never sufficient. File queries have a5second subprocess timeout inside the unchanged case/global deadlines; the existing2second observation acceptance window still rejects a late completed read and is not an end-to-end timeout. No extra HTTP requests are added.
 
 Focused source/control validation:88 passing checks, also88 with only POS/backend dependency mappings and no repository-root node_modules. A real installed Noto TTC/index3 was scanned and hashed; changing its saved hash was rejected. The observed WenQuanYi identity is tested with synthetic font metadata/bytes locally because this local environment does not have that face; its actual CI file/charset/hash and new-head originals remain pending. CDP/capture tests use response adapters and integration PNGs use generated bytes. This does not claim native glyph rendering. Restoring exact R2 fonts.mjs gives five true assertion failures (missing provenance, incomplete count, missing PostScript, Latin charset, and observed WenQuanYi acceptance); restoring exact R2 run.mjs gives one true assertion failure for accepting a forged file hash. Browser-driver types and five-case collection pass. The existing local sandboxed browser socket denial remains; no bypass or old-head rerun was performed.
+
+### Interruption guard follow-up controls
+
+`node --test pos-ui/e2e/batch-entry-native/cleanup-guards.test.mjs` (system root)
+executes the fixture's actual resource-owning TypeScript body with injected scope
+initialization failure. Missing scope cannot grant snapshot/deletion authority;
+disconnect, private purge, receipt and listener disposal still run. The test uses
+Node's `stripTypeScriptTypes`; no backend app, DB or browser is imported.
+
+Three Linux probes use the real fixture owner, shared browser owner and nonce
+cleanup with synthetic Node child processes. They cover cooperative cancellation,
+a detached nonce-owned descendant, and unknown stop proof; cancellation remains
+failed, unknown proof blocks rows, and same-nonce baseline sentinel survives.
+PID start-time/UID/nonce guards are exercised before descendant cleanup. These
+controls are not PostgreSQL, Chrome or cancelled-CI acceptance.

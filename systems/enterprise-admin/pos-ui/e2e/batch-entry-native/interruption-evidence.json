@@ -1,0 +1,85 @@
+{
+  "baseHead": "5b1e7adb966920c4c6eef640605d87fc262dc936",
+  "subject": "Exact changed source hashes below; local branch commit may additionally package this receipt and README.",
+  "scope": "Batch-only cancellation lifecycle controls; no native browser/PostgreSQL execution; original CI cancellation cause remains unknown.",
+  "node": "22.23.4",
+  "dependencies": "Reused previously approved official lockfile dependencies in a no-dotenv source copy; no install or lockfile change.",
+  "sourceSha256": {
+    "systems/enterprise-admin/backend/scripts/admin-batch-entry-browser-fixture.ts": "a3053c5258a5988afd470ca2fba09482d54dcfa975bec2beb24668cdf89e6831",
+    "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/process-owner.mjs": "3a5ab18554c3494e91690d8a9facfa59109ac6458469e0a77fbcbab92453b583",
+    "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/lifecycle.mjs": "17a665b0b01e729f55760a1616394eab5a3da3b85a801284e4b1dbdf1becb1c7",
+    "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/lifecycle.test.mjs": "41d43004c3977d90794bfea8268eec7aae17dfbac0de810cb674441b56c8368e",
+    "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/run.mjs": "5538e5b0091ed8aa0cf015613d8498428f335e97d41403b8df308660b0cbe8f6",
+    "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/contract.mjs": "dc428d3232dbb427a49693a02153a540f01bfc383505dc3bc286cdd9d94f251f",
+    "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/test-support.mjs": "e4ef7108f7751ea4f18ba2b406af1d812390693fce7fb3d1f94dbbc001c96774"
+  },
+  "results": {
+    "focusedTests": {
+      "total": 64,
+      "passed": 64,
+      "failed": 0,
+      "skipped": 0
+    },
+    "fixtureTypecheck": "PASS",
+    "fixtureEslint": "PASS: 0 warnings/errors",
+    "newModuleFormatting": "PASS",
+    "agentContext": "PASS",
+    "diffCheck": "PASS",
+    "typedNodeImportTsxLoaderProbe": "PASS; no app/DB imports",
+    "nativeBrowserPostgres": "NOT_RUN",
+    "previousPharmacyTwoCases": "NOT_RERUN"
+  },
+  "commands": {
+    "focusedTests": "node --test pos-ui/e2e/batch-entry-native/lifecycle.test.mjs pos-ui/e2e/batch-entry-native/contract.test.mjs pos-ui/e2e/batch-entry-native/fixture.test.mjs",
+    "fixtureTypes": "node backend/node_modules/typescript/bin/tsc --project backend/tsconfig.batch-entry-native.json",
+    "fixtureLint": "node node_modules/eslint/bin/eslint.js scripts/admin-batch-entry-browser-fixture.ts --max-warnings 0 (cwd backend)"
+  },
+  "negativeControls": [
+    {
+      "mutation": "old-two-second-kill",
+      "exitCode": 1,
+      "logSha256": "15d34a6fe5d69f7c7885099823b7532c65c5b81dcaadfb950f5424c6dbf8b757",
+      "originalSourceSha256": "3a5ab18554c3494e91690d8a9facfa59109ac6458469e0a77fbcbab92453b583"
+    },
+    {
+      "mutation": "missing-stop-proof",
+      "exitCode": 1,
+      "logSha256": "5e3f3016f1b44d8a5a343ad3b5832c668cee44ae63c4fb5e8affde694c7c091b",
+      "originalSourceSha256": "17a665b0b01e729f55760a1616394eab5a3da3b85a801284e4b1dbdf1becb1c7"
+    },
+    {
+      "mutation": "missing-http-proof",
+      "exitCode": 1,
+      "logSha256": "631fc22f02a765923121c68efc1fa4abfaf9928e505ae06b828b2549e9690011",
+      "originalSourceSha256": "17a665b0b01e729f55760a1616394eab5a3da3b85a801284e4b1dbdf1becb1c7"
+    }
+  ],
+  "initialRed": {
+    "result": "1 assertion failure with original shared two-second owner; no import/setup failure",
+    "logSha256": "692366c4e6119ca60db5c74b145bf81e7e0d925c4f91139cb22fc1f5f389b850"
+  },
+  "initialControlCorrections": "Initial added controls assumed status cancelled instead of the existing failed status, and used a keep-alive loopback client with a 2s test drain. Corrected expected failure status and the probe response connection-close header; production drain timeout and acceptance rules were not relaxed.",
+  "originalFailure": {
+    "runId": 40542029301,
+    "jobId": 122322770536,
+    "artifactId": 12753041073,
+    "artifactSha256": "fa47ae16f5378148e6981aac24e10424e9989c9e674e2531c373e952dce03843",
+    "businessRowsZero": false,
+    "remainingRows": 88,
+    "ownedDatabaseAbsent": true,
+    "officialCancellationCause": "unknown"
+  },
+  "logSha256": {
+    "final-tests.log": "3ec713490c7b3b2373ca1551a1fdb0a04c1f3dd201ddcf3b95708ec72e266e1b",
+    "types-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fixture-eslint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "loader.log": "936fe3d180bd302d8af45b6042ecf30d3590218ffbde677669aab397699370eb"
+  },
+  "limits": [
+    "40s cooperative shutdown can still be preempted by the unchanged outer step/job cancellation.",
+    "Forced-deadline control uses a shortened timer adapter; real signals and process-group inspection remain.",
+    "DB actions in lifecycle controls are adapters; no claim of PostgreSQL row cleanup on this patch.",
+    "No workflow/job budget, shared process owner, required gate, source/DB ownership guard or secret publication guard was relaxed.",
+    "Independent review and hosted native verification pending. No push/merge/deploy/manual dispatch."
+  ]
+}

@@ -5,6 +5,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { processOwner } from '../ui-evidence/owned-process.mjs';
+import { fixtureProcessOwner, fixtureBudget } from './process-owner.mjs';
 import { createRunScope, cleanupRunProcesses } from '../category-native/owned-run.mjs';
 import { assertEnvironment, assertReport, assertEvidence, cases, databaseUrl, rawTables } from './contract.mjs';
 import { completionOutcome } from '../category-native/contract.mjs';
@@ -106,7 +107,7 @@ async function main() {
     DATABASE_URL: databaseUrl, POS_PRODUCT_LOOKUP_DATABASE_URL: databaseUrl, NODE_ENV: 'test', BROWSER: 'none',
     CORS_ORIGIN: 'http://127.0.0.1:4290', JWT_ACCESS_SECRET: 'stock-ci-synthetic-access-key-not-for-real-accounts',
     JWT_REFRESH_SECRET: 'stock-ci-synthetic-refresh-key-not-for-real-accounts' });
-  const owner = processOwner(), state = { quiescent: true }, phases = {};
+  const owner = processOwner(), fixtureOwner = fixtureProcessOwner(), state = { quiescent: true }, phases = {};
   const log = fs.openSync(path.join(output, 'raw.log'), 'wx');
   let error = null, accepted = null;
   try {
@@ -114,10 +115,11 @@ async function main() {
       ['browser-types', app, ['node_modules/typescript/bin/tsc', '--project', 'tsconfig.batch-entry-native.json']],
       ['fixture-types', backend, ['node_modules/typescript/bin/tsc', '--project', 'tsconfig.batch-entry-native.json']],
       ['collection', app, ['node_modules/@playwright/test/cli.js', 'test', '--config', 'e2e/batch-entry-native.config.mts', '--list', '--reporter=list']],
-      ['real-api-browser', backend, ['node_modules/tsx/dist/cli.mjs', 'scripts/admin-batch-entry-browser-fixture.ts']],
+      ['real-api-browser', backend, ['--import', 'tsx', 'scripts/admin-batch-entry-browser-fixture.ts']],
     ];
     for (const [name, cwd, args] of commands) {
-      phases[name] = await runOwnedPhase(owner, process.execPath, args, { cwd, env: name === 'build' ? { ...env, NODE_ENV: 'production' } : env, stdio: ['ignore', log, log] }, state, () => cleanupRunProcesses(scope));
+      assert.equal(owner.cancelled, null); assert.equal(fixtureOwner.cancelled, null);
+      phases[name] = await runOwnedPhase(name === 'real-api-browser' ? fixtureOwner : owner, process.execPath, args, { cwd, env: name === 'build' ? { ...env, NODE_ENV: 'production' } : env, stdio: ['ignore', log, log] }, state, () => cleanupRunProcesses(scope));
       assert.equal(phases[name].exitCode, 0, `${name} must pass`); assert.equal(phases[name].signal, null); assert.equal(phases[name].error, null); assert.equal(owner.cancelled, null);
     }
     assertSource();
@@ -134,8 +136,10 @@ async function main() {
     catch (problem) { state.quiescent = false; error ??= problem; }
     // A cancelled fixture may not get to its finally block. Never publish a real response token; bootstrap contains only ephemeral synthetic JWTs.
     fs.rmSync(path.join(output, '.bootstrap.json'), { force: true });
-    const terminal = completionOutcome(error, owner.cancelled); error = terminal.error;
-    fs.closeSync(log); owner.dispose(); process.stdout.write(fs.readFileSync(path.join(output, 'raw.log'), 'utf8'));
+    try { write('fixture-process.json', { ...identity, budget: fixtureBudget, result: fixtureOwner.lastResult, cancelled: fixtureOwner.cancelled }); }
+    catch (problem) { error ??= problem; }
+    const terminal = completionOutcome(error, owner.cancelled ?? fixtureOwner.cancelled); error = terminal.error;
+    fs.closeSync(log); owner.dispose(); fixtureOwner.dispose(); process.stdout.write(fs.readFileSync(path.join(output, 'raw.log'), 'utf8'));
     write('completion.json', { ...identity, phases, quiescent: state.quiescent, status: terminal.status, error: error?.message ?? null });
     if (state.quiescent && !error && accepted) write('accepted.json', accepted);
     publishEvidence(state, output, process.env.GITHUB_OUTPUT);

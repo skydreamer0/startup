@@ -8,7 +8,7 @@ export function goodEvidence(){
  for(const [model,table] of Object.entries(mapping)) before[table]=f[model].map(row=>Object.fromEntries(Object.entries(row).map(([key,value])=>[key.replace(/[A-Z]/g,c=>'_'+c.toLowerCase()),value])));
  before.users.forEach(row=>row.deleted_at=null);
  for(const actor of f.actors){before.user_roles.push({user_id:actor.userId,role_id:actor.roleId});for(const grant of actor.grants)before.role_permissions.push({role_id:actor.roleId,permission_id:f.permission.find(p=>`${p.action}:${p.resource}`===grant).id});}
- const database={beforeEmpty:true,afterEmpty:true,httpDrainedBeforeSnapshot:true,before,after:clone(before),error:null,cancelled:null,browser:{exitCode:0,signal:null},expected:{tenantA:f.ids.tenantA,actors:f.actors,products:f.product,batches:f.productBatch}};
+ const database={browserQuiescent:true,beforeEmpty:true,afterEmpty:true,httpDrainedBeforeSnapshot:true,before,after:clone(before),error:null,cancelled:null,browser:{exitCode:0,signal:null},expected:{tenantA:f.ids.tenantA,actors:f.actors,products:f.product,batches:f.productBatch}};
  const api={requests:[],rejected:[]},browsers=[];
  function add(browser,actor,path,page=null,fault=null){const restricted=path.endsWith('/inventory/products')||path.endsWith('/product-batches'),status=actor.key==='deniedA'&&restricted?403:200;let data={plan:'pro'};
  if(path.endsWith('/auth/me'))data={id:actor.userId,permissions:actor.grants};
