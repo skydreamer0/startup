@@ -59,15 +59,15 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.71.2",
+    "typescript-eslint": "^8.72.0",
     "vitest": "^4.1.12",
-    "vite": "^6.4.4"
+    "vite": "^6.4.5"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "^4.64.9"
+    "@rollup/rollup-darwin-arm64": "^4.65.0"
   },
   "overrides": {
     "@prisma/config": { "deepmerge-ts": "^8.0.2" },
