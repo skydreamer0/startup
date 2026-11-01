@@ -67,3 +67,9 @@ Before finishing work:
 4. Commit using the Conventional Commit format from `systems/enterprise-admin/infrastructure/standards/git_workflow.md`.
 
 Context updates are usually not required for trivial copy changes, isolated bug fixes, or test-only additions that do not change behavior or workflow.
+
+## Work principle
+
+Less attention taken. More value delivered.
+
+Reduce unnecessary questions and narration; deliver useful, verified results. Preserve required approvals, risk disclosures, and blocker reports. This principle does not expand authorization or override safety and project rules.
