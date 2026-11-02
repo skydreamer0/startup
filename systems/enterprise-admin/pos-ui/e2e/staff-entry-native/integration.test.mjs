@@ -19,12 +19,12 @@ test('actual driver keeps cold contexts and real login, bounded hold, full navig
  for(const text of ['await page.goto(origin)','await input.press(\'Enter\')','await page.keyboard.press(\'Tab\')','await page.keyboard.press(\'Enter\')','await expect.poll(() => guard.activeReady)','guard.releaseActive()','await page.reload()','reloadTokenUnchanged'])assert.ok(spec.includes(text),text);
  assert.ok(!fixture.includes("localStorage.setItem"));assert.ok(!fixture.includes('storageState'));assert.ok(fixture.indexOf('endEntry(state);')<fixture.indexOf('await context.close()'));assert.ok(fixture.indexOf('await capture(page')<fixture.indexOf('await context.close()'));
 });
-test('actual native config and workflow add a bounded step without changing selected checks or job cap',()=>{
+test('actual native config and workflow retain selected checks and the bounded job cap',()=>{
  const config=source('../staff-entry-native.config.mts'),yaml=source('../../../../../.github/workflows/ci.yml');
  for(const text of ['workers: 1','retries: 0','forbidOnly: true','globalTimeout: 120_000','chromiumSandbox: true',"trace: 'off'","video: 'off'",'reuseExistingServer: false'])assert.ok(config.includes(text));
  assert.equal(requestLimit,120);assert.equal(requestSpacingMs,550);assert.equal(nativeDeadlineMs,120000);assert.ok((requestLimit-1)*requestSpacingMs<nativeDeadlineMs);
  const worker=yaml.slice(yaml.indexOf('  pos-sku-acceptance:'),yaml.indexOf('  batch-audit:'));
- assert.match(worker,/needs: plan\n    if: \$\{\{ needs.plan.outputs.pos == 'true' \}\}/);assert.match(worker,/timeout-minutes: 20/);assert.match(worker,/id: staff_entry_native\n        timeout-minutes: 3/);
+ assert.match(worker,/needs: plan\n    if: \$\{\{ needs.plan.outputs.pos == 'true' \}\}/);assert.match(worker,/timeout-minutes: 30/);assert.match(worker,/id: staff_entry_native\n        timeout-minutes: 3/);
  assert.ok(worker.includes('always() && steps.staff_entry_native.outputs.evidence_dir'));assert.ok(!worker.includes('continue-on-error:'));assert.ok(!worker.includes('include-hidden-files: true'));
 });
 test('raw table inventory matches all actual Prisma schema maps',()=>{

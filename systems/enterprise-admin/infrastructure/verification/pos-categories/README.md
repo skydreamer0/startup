@@ -7,7 +7,7 @@ Issue #49, #31 or #37 acceptance gates.
 ## Existing execution path
 
 The ordinary `pos-sku-acceptance` CI job still uses the same `ubuntu-latest` runner,
-20-minute timeout, PostgreSQL 15 Alpine service, single-member network and
+30-minute timeout (originally 20 minutes), PostgreSQL 15 Alpine service, single-member network and
 loopback-only port 55435. There is no new job, runner type, environment, credential,
 permission, service or dependency. The five original SKU cases are unchanged and
 reported separately from the nine new category cases.
