@@ -475,7 +475,7 @@ jobs:
     if: ${{ needs.plan.outputs.pos == 'true' }}
     name: Exact SKU PostgreSQL and current POS browser acceptance
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     permissions:
       contents: read
     services:

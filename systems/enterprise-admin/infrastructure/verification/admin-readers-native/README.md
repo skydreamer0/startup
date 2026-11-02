@@ -97,7 +97,7 @@ geometry JSON and original PNGs. Parent `source.json`, `source-hashes.json`,
   browser contexts, prevents further queued dispatch and proceeds to failure
   cleanup. Each browser wait is bounded; retries remain the existing one retry.
 - Only `package_native.timeout-minutes` changes from 5 to 8; the job remains
-  capped at 20 minutes. Prior exact #154 package/build step took about 155 seconds
+  capped at 20 minutes at that checkpoint; it is now capped at 30 minutes. Prior exact #154 package/build step took about 155 seconds
   (run 39217078066, 07:45:07.982–07:47:43.041 UTC), leaving about 325 seconds in
   the new 8-minute envelope. This is a planning reference, not a speed guarantee.
   If PG/cleanup itself stalls, the existing workflow timeout/always cleanup is
@@ -177,7 +177,7 @@ The preserved R4 ledger has62 probe/bootstrap requests; its first three complete
 
 The R5 planned path is62 probes +103 shared lifecycle +5 held-period requests +39 initial-error/empty requests +54 independent cold requests =263 API attempts. Cold entry has15 reader query keys across default/fixture months plus one plan query and two auth calls per context; allowing the existing one retry for every cold query gives34 attempts per context,102 total, or311 with the other planned journeys. The corresponding conservative cold-retry analytics allocation is65 attempts, at most139.75 seconds of pacing. This is a source-based scheduling allowance, not a guarantee against additional unexpected remounts/transport failures; all attempted requests remain subject to hard320/120 caps, with no retry-budget reset.
 
-The unchanged300-second absolute deadline remains the worst-case browser-work bound: multiple slow25-second waits or geometry failures do not sum into an unlimited run; deadline closure fails the journey and proceeds to owned cleanup. Successful completion within that envelope still requires the next exact-head native run. Individual geometry3.2-second, held-response10-second and abort5-second guards are unchanged. CI step8 minutes/job20 minutes and all required checks are unchanged from R1/R2. No old-head rerun is requested. R5 source controls do not substitute for new-head Node22/Chrome/PG, all original-image review, raw33-table equality or owned cleanup.
+The unchanged300-second absolute deadline remains the worst-case browser-work bound: multiple slow25-second waits or geometry failures do not sum into an unlimited run; deadline closure fails the journey and proceeds to owned cleanup. Successful completion within that envelope still requires the next exact-head native run. Individual geometry3.2-second, held-response10-second and abort5-second guards are unchanged. At R5, CI step8 minutes/job20 minutes and all required checks were unchanged from R1/R2; the SKU job cap is now 30 minutes. No old-head rerun is requested. R5 source controls do not substitute for new-head Node22/Chrome/PG, all original-image review, raw33-table equality or owned cleanup.
 
 The broader Issue#31 responsive gate also names1366×768 and200% native zoom. This package uses1366×900,1024×768 and390×844;1366×768 and native zoom remain **NOT RUN**. Shared-state diagnostics name the lifecycle or actual current viewport, not the initial width. Cold-entry and initial-error/empty failures attempt a current-size PNG before context closure; a screenshot error cannot replace the original failure or bypass cleanup.
 
