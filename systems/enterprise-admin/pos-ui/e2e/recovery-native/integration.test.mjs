@@ -28,7 +28,7 @@ test('actual workflow preserves selected SKU execution and captures only quiesce
   const yaml = source('../../../../../.github/workflows/ci.yml');
   const worker = yaml.slice(yaml.indexOf('  pos-sku-acceptance:'), yaml.indexOf('  batch-audit:'));
   assert.match(worker, /needs: plan\n    if: \$\{\{ needs.plan.outputs.pos == 'true' \}\}/);
-  assert.match(worker, /timeout-minutes: 20/);
+  assert.match(worker, /timeout-minutes: 30/);
   assert.match(worker, /id: recovery_native\n        timeout-minutes: 5/);
   assert.match(worker, /node --test pos-ui\/e2e\/recovery-native\/\*\.test\.mjs\n          node pos-ui\/e2e\/recovery-native\/run\.mjs/);
   assert.match(worker, /always\(\) && steps\.recovery_native\.outputs\.evidence_dir != ''/);
