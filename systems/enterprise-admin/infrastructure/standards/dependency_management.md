@@ -33,7 +33,8 @@ Running npm scripts after installation is fine; frontend installation uses pnpm.
 
 For updates, change the owning manifest, regenerate only its canonical lock,
 then prove strict installation, audit, lint/tests/build and affected Docker images.
-Both install boundaries currently pass full audit with zero advisories; CI runs
+The earlier baseline passed both full audits with zero advisories; audit results
+are time-specific, not a permanent property of the lockfiles. CI runs
 `npm audit --audit-level=low` and `pnpm audit --audit-level=low` without suppression.
 Dependabot manages weekly patch/minor updates for both boundaries; runtime and
 dependency major migrations require explicit compatibility review.
@@ -57,6 +58,33 @@ The backend container invokes its installed CLI and never downloads a new CLI
 when starting. Overrides are limited to Prisma config's deepmerge-ts 8.0.2
 (prototype-pollution fix) and ExcelJS's uuid 11.1.1 (CommonJS v4 API retained).
 Prisma generation/migrations and DB-backed CSV/Excel regressions must pass.
+
+### November 2026 security compatibility follow-up
+
+Vite is at least 6.4.5 (GHSA-8g5g-mxqh-grgj); the frontend workspace pins
+follow-redirects 1.16.2 (GHSA-mrwp-f3q8-3g9p). The workspace also pins minimatch
+11.0.1 for GHSA-g3hv-75wg-m249. Backend minimatch overrides are deliberately
+scoped to ESLint/config-array/eslintrc, typescript-estree and readdir-glob.
+These consumers use the retained constructor/match or named minimatch API.
+This extends the Prisma/ExcelJS exceptions above; it is not permission for
+unreviewed major upgrades elsewhere.
+
+Do not apply a global backend minimatch override: glob 7 relies on the old
+RegExp `_glob` field, and a real recursive-glob probe fails with minimatch 11.
+Its old minimatch remains visible to the unchanged security gate. On the
+2026-11-02 candidate, frontend audit reports zero vulnerabilities; backend
+audit still fails with seven moderate affected-package entries through the
+ExcelJS/archive/glob/rimraf chain. This is a partial remediation, not CI-ready
+or deployment approval. A compatible archive dependency migration remains
+separate work; never suppress the advisory or weaken the threshold.
+
+After both canonical installs, run
+`node --test scripts/dependency-security-compat.test.cjs` from the repository
+root. It checks glob/readdir matching, an ExcelJS streaming ZIP roundtrip,
+actual ESLint resolution and cross-realm sensitive-header stripping through
+loopback redirects. These synthetic checks do not replace native API/PG,
+browser, hardware or full CI acceptance. Preserve original failed attempts
+and verify all applicable checks for the final published head.
 
 Admin used the shadcn CLI package only for its stylesheet. The original locked
 4.8.0 `dist/tailwind.css` is retained byte-for-byte at

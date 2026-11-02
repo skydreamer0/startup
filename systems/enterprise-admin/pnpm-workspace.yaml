@@ -9,3 +9,8 @@ onlyBuiltDependencies:
   - esbuild
 ignoredBuiltDependencies:
   - msw
+
+# Security compatibility is checked by the dependency regression suite.
+overrides:
+  minimatch: 11.0.1
+  follow-redirects: 1.16.2
