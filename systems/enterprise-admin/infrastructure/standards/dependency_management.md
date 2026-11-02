@@ -71,12 +71,32 @@ unreviewed major upgrades elsewhere.
 
 Do not apply a global backend minimatch override: glob 7 relies on the old
 RegExp `_glob` field, and a real recursive-glob probe fails with minimatch 11.
-Its old minimatch remains visible to the unchanged security gate. On the
-2026-11-02 candidate, frontend audit reports zero vulnerabilities; backend
-audit still fails with seven moderate affected-package entries through the
-ExcelJS/archive/glob/rimraf chain. This is a partial remediation, not CI-ready
-or deployment approval. A compatible archive dependency migration remains
-separate work; never suppress the advisory or weaken the threshold.
+Its old minimatch remained visible to the unchanged security gate. On the
+PR #174 candidate dated 2026-11-02, frontend audit reported zero vulnerabilities; backend
+audit failed with seven moderate affected-package entries through the
+ExcelJS/archive/glob/rimraf chain. That was a partial remediation, not CI-ready
+or deployment approval. It required a compatible archive dependency migration;
+never suppress the advisory or weaken the threshold.
+
+The subsequent archive-chain candidate keeps ExcelJS 4.4.0 and Archiver 5.3.2
+unchanged. Two exact, scoped overrides replace the vulnerable dependency paths:
+`exceljs > unzipper = 0.12.3` removes the fstream/rimraf/glob-7 chain, and
+`archiver-utils > glob = 14.0.3` supplies the retained synchronous `glob.sync`
+API with patched minimatch. This is not a global minimatch override, an
+ExcelJS downgrade, or a local fork of third-party security code. Do not use
+the newer glob as a drop-in replacement for arbitrary old callback consumers;
+the remaining archive-utils consumers use its synchronous API. Glob result
+ordering is not a new application contract.
+
+This candidate's canonical backend audit returned zero vulnerabilities on
+2026-11-02; that does not alter PR #174's historical seven-moderate result.
+Run `node --test scripts/archive-dependency-compat.test.cjs` in addition to
+the suite below. The extra cases exercise both actual archive-utils consumers,
+positive/negative glob filtering, ExcelJS streaming write/read with multiple
+worksheets and shared strings, archive output selection, and malformed ZIP
+rejection. They are manual developer checks, not CI wiring or 4070/device
+acceptance. Final exact-head CI, independent review and applicable real-data
+boundaries still govern readiness; no store deployment is implied.
 
 After both canonical installs, run
 `node --test scripts/dependency-security-compat.test.cjs` from the repository
