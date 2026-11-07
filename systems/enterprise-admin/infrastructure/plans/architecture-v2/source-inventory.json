@@ -1,0 +1,2975 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+  "sourceTree": "cc5230b00434655a286e2e5b87e0db3187383580",
+  "coverage": "All 20 mounted API routers and health endpoints; all tracked non-test backend src .ts files hashed. Lexical write/read-raw candidates supplement reviewed module ownership, not a proof of data flow. Deployment configuration/real calls not inspected.",
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/auth/login",
+      "source": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "line": 11,
+      "handlerPolicy": "router.post('/login', validate({ body: loginSchema }), controller.login.bind(controller));",
+      "group": "auth",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/auth/refresh",
+      "source": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "line": 12,
+      "handlerPolicy": "router.post('/refresh', validate({ body: refreshSchema }), controller.refresh.bind(controller));",
+      "group": "auth",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/auth/logout",
+      "source": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "line": 15,
+      "handlerPolicy": "router.post('/logout', authMiddleware, controller.logout.bind(controller));",
+      "group": "auth",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/auth/me",
+      "source": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "line": 16,
+      "handlerPolicy": "router.get('/me', authMiddleware, controller.me.bind(controller));",
+      "group": "auth",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "READ",
+      "testGroup": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users/",
+      "source": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "line": 19,
+      "handlerPolicy": "router.get(\n    '/',\n    requirePermission('read:users'),\n    validate({ query: listUsersQuerySchema }),\n    controller.list.bind(controller),\n);",
+      "group": "users",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "READ",
+      "testGroup": "users"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "line": 26,
+      "handlerPolicy": "router.get(\n    '/:id',\n    requirePermission('read:users'),\n    validate({ params: userIdParamSchema }),\n    controller.getById.bind(controller),\n);",
+      "group": "users",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "READ",
+      "testGroup": "users"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/users/",
+      "source": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "line": 33,
+      "handlerPolicy": "router.post(\n    '/',\n    requirePermission('create:users'),\n    validate({ body: createUserSchema }),\n    controller.create.bind(controller),\n);",
+      "group": "users",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "users"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/users/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "line": 40,
+      "handlerPolicy": "router.put(\n    '/:id',\n    requirePermission('update:users'),\n    validate({ params: userIdParamSchema, body: updateUserSchema }),\n    controller.update.bind(controller),\n);",
+      "group": "users",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "users"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/admin/users/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "line": 47,
+      "handlerPolicy": "router.delete(\n    '/:id',\n    requirePermission('delete:users'),\n    validate({ params: userIdParamSchema }),\n    controller.delete.bind(controller),\n);",
+      "group": "users",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "users"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/roles/",
+      "source": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.get('/', requirePermission('read:roles'), controller.list.bind(controller));",
+      "group": "roles",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "READ",
+      "testGroup": "roles"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/roles/",
+      "source": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "line": 16,
+      "handlerPolicy": "router.post(\n    '/',\n    requirePermission('create:roles'),\n    validate({ body: createRoleSchema }),\n    controller.create.bind(controller),\n);",
+      "group": "roles",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "roles"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/roles/:id/permissions",
+      "source": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "line": 23,
+      "handlerPolicy": "router.put(\n    '/:id/permissions',\n    requirePermission('update:roles'),\n    validate({ params: roleIdParamSchema, body: updateRolePermissionsSchema }),\n    controller.updatePermissions.bind(controller),\n);",
+      "group": "roles",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "roles"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/roles/permissions",
+      "source": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "line": 31,
+      "handlerPolicy": "router.get(\n    '/permissions',\n    requirePermission('read:roles'),\n    controller.listPermissions.bind(controller),\n);",
+      "group": "roles",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "READ",
+      "testGroup": "roles"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/audit-logs/",
+      "source": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.get(\n    '/',\n    validate({ query: listAuditLogsQuerySchema }),\n    controller.list.bind(controller),\n);",
+      "group": "audit-logs",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "effectClass": "READ",
+      "testGroup": "audit-logs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/crm/metrics",
+      "source": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "line": 15,
+      "handlerPolicy": "router.get('/metrics', requirePermission('read:crm'), CrmController.getMetrics);",
+      "group": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "effectClass": "READ",
+      "testGroup": "crm"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/crm/customers",
+      "source": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "line": 18,
+      "handlerPolicy": "router.get('/customers', requirePermission('read:crm'), CrmController.getCustomers);",
+      "group": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "effectClass": "READ",
+      "testGroup": "crm"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/crm/customers",
+      "source": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "line": 19,
+      "handlerPolicy": "router.post('/customers', requirePermission('manage:crm'), validate({ body: createCustomerSchema }), CrmController.createCustomer);",
+      "group": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "crm"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/crm/customers/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "line": 21,
+      "handlerPolicy": "router.get('/customers/:id', requirePermission('read:crm'), CrmController.getCustomerById);",
+      "group": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "effectClass": "READ",
+      "testGroup": "crm"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/crm/customers/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "line": 22,
+      "handlerPolicy": "router.put('/customers/:id', requirePermission('manage:crm'), validate({ body: updateCustomerSchema }), CrmController.updateCustomer);",
+      "group": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "crm"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/crm/customers/:id/interactions",
+      "source": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "line": 25,
+      "handlerPolicy": "router.post(\n    '/customers/:id/interactions',\n    requirePermission('manage:crm'),\n    validate({ body: createInteractionSchema }),\n    CrmController.addInteraction\n);",
+      "group": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "crm"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/crm/customers/export/csv",
+      "source": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "line": 33,
+      "handlerPolicy": "router.get('/customers/export/csv', requirePermission('read:crm'), CsvController.exportCustomers);",
+      "group": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "effectClass": "READ",
+      "testGroup": "crm"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/inventory/suppliers",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 29,
+      "handlerPolicy": "router.get('/suppliers', requirePermission('read:suppliers'), InventoryController.getSuppliers);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/inventory/suppliers/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 30,
+      "handlerPolicy": "router.get('/suppliers/:id', requirePermission('read:suppliers'), InventoryController.getSupplierById);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/inventory/suppliers",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 31,
+      "handlerPolicy": "router.post('/suppliers', requirePermission('create:suppliers'), validate({ body: createSupplierSchema }), InventoryController.createSupplier);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/inventory/suppliers/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 32,
+      "handlerPolicy": "router.put('/suppliers/:id', requirePermission('update:suppliers'), validate({ body: updateSupplierSchema }), InventoryController.updateSupplier);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/inventory/stock-reconciliation",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 35,
+      "handlerPolicy": "router.get('/stock-reconciliation', requirePermission('read:products'), StockReconciliationController.list);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/inventory/products/:productId/packages",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 38,
+      "handlerPolicy": "router.get('/products/:productId/packages', requirePermission('read:products'), validate({ params: packageProductParams }), ProductPackagesController.list);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/inventory/products/:productId/packages",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 39,
+      "handlerPolicy": "router.post('/products/:productId/packages', requirePermission('update:products'), validate({ params: packageProductParams, body: packageRevisionBody }), ProductPackagesController.create);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/inventory/products/:productId/packages/:packageId/revisions",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 40,
+      "handlerPolicy": "router.post('/products/:productId/packages/:packageId/revisions', requirePermission('update:products'), validate(packageRevisionSchema), ProductPackagesController.revise);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/inventory/products/:productId/packages/:packageId/retire",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 41,
+      "handlerPolicy": "router.post('/products/:productId/packages/:packageId/retire', requirePermission('update:products'), validate(packageRetireSchema), ProductPackagesController.retire);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/inventory/products",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 42,
+      "handlerPolicy": "router.get('/products', requirePermission('read:products'), InventoryController.getProducts);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/inventory/products/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 43,
+      "handlerPolicy": "router.get('/products/:id', requirePermission('read:products'), InventoryController.getProductById);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/inventory/products",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 44,
+      "handlerPolicy": "router.post('/products', requirePermission('create:products'), validate({ body: createProductSchema.shape.body }), InventoryController.createProduct);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/inventory/products/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 45,
+      "handlerPolicy": "router.put('/products/:id', requirePermission('update:products'), validate({ body: updateProductSchema.shape.body }), InventoryController.updateProduct);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/inventory/products/export/csv",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 48,
+      "handlerPolicy": "router.get('/products/export/csv', requirePermission('read:products'), CsvController.exportProducts);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/inventory/products/import/csv",
+      "source": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "line": 49,
+      "handlerPolicy": "router.post('/products/import/csv', requirePermission('create:products'), upload.single('file'), CsvController.importProducts);",
+      "group": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "inventory"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/dashboard/kpis",
+      "source": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.routes.ts",
+      "line": 10,
+      "handlerPolicy": "router.get('/kpis', requirePermission('read:dashboard'), DashboardController.getKPIs);",
+      "group": "dashboard",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "dashboard"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/orders/",
+      "source": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "line": 11,
+      "handlerPolicy": "router.post('/', requirePermission('create:orders'), OrderController.create);",
+      "group": "orders",
+      "owner": "sales + fulfillment",
+      "destination": ["AR-06", "AR-07", "AR-08", "AR-11"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "orders"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/orders/",
+      "source": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "line": 12,
+      "handlerPolicy": "router.get('/', requirePermission('read:orders'), OrderController.list);",
+      "group": "orders",
+      "owner": "sales + fulfillment",
+      "destination": ["AR-06", "AR-07", "AR-08", "AR-11"],
+      "effectClass": "READ",
+      "testGroup": "orders"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/orders/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "line": 13,
+      "handlerPolicy": "router.get('/:id', requirePermission('read:orders'), OrderController.getById);",
+      "group": "orders",
+      "owner": "sales + fulfillment",
+      "destination": ["AR-06", "AR-07", "AR-08", "AR-11"],
+      "effectClass": "READ",
+      "testGroup": "orders"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/orders/:id/status",
+      "source": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.patch('/:id/status', requirePermission('update:orders'), OrderController.updateStatus);",
+      "group": "orders",
+      "owner": "sales + fulfillment",
+      "destination": ["AR-06", "AR-07", "AR-08", "AR-11"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "orders"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/orders/export/csv",
+      "source": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "line": 17,
+      "handlerPolicy": "router.get('/export/csv', requirePermission('read:orders'), CsvController.exportOrders);",
+      "group": "orders",
+      "owner": "sales + fulfillment",
+      "destination": ["AR-06", "AR-07", "AR-08", "AR-11"],
+      "effectClass": "READ",
+      "testGroup": "orders"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/kpis",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 17,
+      "handlerPolicy": "router.get('/kpis', requirePlan('starter'), AnalyticsController.getKpis);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/trends",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 18,
+      "handlerPolicy": "router.get('/trends', requirePlan('starter'), AnalyticsController.getTrends);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/rfm",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 21,
+      "handlerPolicy": "router.get('/rfm', requirePlan('pro'), AnalyticsController.getRfm);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/churn-risk",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 22,
+      "handlerPolicy": "router.get('/churn-risk', requirePlan('pro'), AnalyticsController.getChurnRisk);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/product-abc",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 25,
+      "handlerPolicy": "router.get('/product-abc', requirePlan('pro'), AnalyticsController.getProductAbc);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/supplier-ranking",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 26,
+      "handlerPolicy": "router.get('/supplier-ranking', requirePlan('pro'), AnalyticsController.getSupplierRanking);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/reorder-forecast",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 27,
+      "handlerPolicy": "router.get('/reorder-forecast', requirePlan('pro'), AnalyticsController.getReorderForecast);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/heatmap",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 30,
+      "handlerPolicy": "router.get('/heatmap', requirePlan('pro'), AnalyticsController.getHeatmap);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/analytics/bonus-gate",
+      "source": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "line": 31,
+      "handlerPolicy": "router.get('/bonus-gate', requirePlan('pro'), AnalyticsController.getBonusGate);",
+      "group": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/expenses/",
+      "source": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "line": 12,
+      "handlerPolicy": "router.get('/', requirePermission('read:reports'), ExpensesController.getExpenses);",
+      "group": "expenses",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "READ",
+      "testGroup": "expenses"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/expenses/",
+      "source": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "line": 13,
+      "handlerPolicy": "router.post('/', requirePermission('manage:reports'), ExpensesController.createExpense);",
+      "group": "expenses",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "expenses"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/expenses/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.put('/:id', requirePermission('manage:reports'), ExpensesController.updateExpense);",
+      "group": "expenses",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "expenses"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/admin/expenses/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "line": 15,
+      "handlerPolicy": "router.delete('/:id', requirePermission('manage:reports'), ExpensesController.deleteExpense);",
+      "group": "expenses",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "expenses"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/reports/margin",
+      "source": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "line": 10,
+      "handlerPolicy": "router.get('/margin', ReportsController.getMarginAnalysis);",
+      "group": "reports",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "reports"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/reports/margin/trend",
+      "source": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "line": 11,
+      "handlerPolicy": "router.get('/margin/trend', ReportsController.getMarginTrend);",
+      "group": "reports",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "reports"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/reports/cashflow",
+      "source": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.get('/cashflow', ReportsController.getCashFlowStatement);",
+      "group": "reports",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "reports"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/reports/cashflow/trend",
+      "source": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "line": 15,
+      "handlerPolicy": "router.get('/cashflow/trend', ReportsController.getCashFlowTrend);",
+      "group": "reports",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "reports"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/reports/sales-ranking",
+      "source": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "line": 18,
+      "handlerPolicy": "router.get('/sales-ranking', ReportsController.getSalesRanking);",
+      "group": "reports",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "effectClass": "READ",
+      "testGroup": "reports"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/shifts/",
+      "source": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "line": 12,
+      "handlerPolicy": "router.get('/', requirePermission('read:shifts'), validate(getShiftsSchema), ShiftController.getAll);",
+      "group": "shifts",
+      "owner": "sales/payments",
+      "destination": ["AR-08"],
+      "effectClass": "READ",
+      "testGroup": "shifts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/shifts/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "line": 13,
+      "handlerPolicy": "router.get('/:id', requirePermission('read:shifts'), ShiftController.getById);",
+      "group": "shifts",
+      "owner": "sales/payments",
+      "destination": ["AR-08"],
+      "effectClass": "READ",
+      "testGroup": "shifts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/shifts/",
+      "source": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.post('/', requirePermission('manage:shifts'), validate(createShiftSchema), ShiftController.create);",
+      "group": "shifts",
+      "owner": "sales/payments",
+      "destination": ["AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "shifts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/shifts/:id/close",
+      "source": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "line": 15,
+      "handlerPolicy": "router.patch('/:id/close', requirePermission('manage:shifts'), validate(closeShiftSchema), ShiftController.close);",
+      "group": "shifts",
+      "owner": "sales/payments",
+      "destination": ["AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "shifts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/admin/shifts/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "line": 16,
+      "handlerPolicy": "router.delete('/:id', requirePermission('manage:shifts'), ShiftController.delete);",
+      "group": "shifts",
+      "owner": "sales/payments",
+      "destination": ["AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "shifts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/shifts/:id/report",
+      "source": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "line": 17,
+      "handlerPolicy": "router.get('/:id/report', requirePermission('read:shifts'), ShiftController.getReport);",
+      "group": "shifts",
+      "owner": "sales/payments",
+      "destination": ["AR-08"],
+      "effectClass": "READ",
+      "testGroup": "shifts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/product-batches/",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 17,
+      "handlerPolicy": "router.get(\n  '/',\n  requirePermission('read:products'),\n  validate(getProductBatchesSchema),\n  ProductBatchController.getAll,\n);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "READ",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/product-batches/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 23,
+      "handlerPolicy": "router.get('/:id', requirePermission('read:products'), ProductBatchController.getById);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "READ",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/product-batches/",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 24,
+      "handlerPolicy": "router.post(\n  '/',\n  requirePermission('create:products'),\n  validate(createProductBatchSchema),\n  ProductBatchController.create,\n);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/product-batches/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 30,
+      "handlerPolicy": "router.patch(\n  '/:id',\n  requirePermission('update:products'),\n  validate(updateProductBatchSchema),\n  ProductBatchController.update,\n);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/product-batches/:id/history",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 36,
+      "handlerPolicy": "router.get('/:id/history', requirePermission('read:products'), validate(batchHistorySchema), ProductBatchController.history);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "READ",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/product-batches/:id/status",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 37,
+      "handlerPolicy": "router.post('/:id/status', requirePermission('update:products'), validate(changeBatchStatusSchema), ProductBatchController.changeStatus);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/product-batches/:id/expiry-corrections",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 38,
+      "handlerPolicy": "router.post('/:id/expiry-corrections', requirePermission('update:products'), validate(correctBatchExpirySchema), ProductBatchController.correctExpiry);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/product-batches/:id/cost-corrections",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 39,
+      "handlerPolicy": "router.post('/:id/cost-corrections', requirePermission('update:products'), validate(correctBatchCostSchema), ProductBatchController.correctCost);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/admin/product-batches/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 40,
+      "handlerPolicy": "router.delete('/:id', requirePermission('update:products'), ProductBatchController.delete);",
+      "group": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "product-batches"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/receiving-drafts/",
+      "source": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "line": 20,
+      "handlerPolicy": "router.get('/', async (req, res, next) => {\n  try { res.set('Cache-Control', 'no-store').json({ success: true, data: await ReceivingDraftService.list(req.user!.userId, page(req.query.page)) });",
+      "group": "receiving-drafts",
+      "owner": "receiving",
+      "destination": ["AR-09"],
+      "effectClass": "READ",
+      "testGroup": "receiving-drafts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/receiving-drafts/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "line": 24,
+      "handlerPolicy": "router.get('/:id', async (req, res, next) => {\n  try { res.set('Cache-Control', 'no-store').json({ success: true, data: await ReceivingDraftService.get(id(req.params.id), req.user!.userId) });",
+      "group": "receiving-drafts",
+      "owner": "receiving",
+      "destination": ["AR-09"],
+      "effectClass": "READ",
+      "testGroup": "receiving-drafts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/receiving-drafts/:id/history",
+      "source": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "line": 28,
+      "handlerPolicy": "router.get('/:id/history', async (req, res, next) => {\n  try { res.set('Cache-Control', 'no-store').json({ success: true, data: await ReceivingDraftService.history(id(req.params.id), req.user!.userId, page(req.query.page)) });",
+      "group": "receiving-drafts",
+      "owner": "receiving",
+      "destination": ["AR-09"],
+      "effectClass": "READ",
+      "testGroup": "receiving-drafts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/receiving-drafts/:id/history/:revision",
+      "source": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "line": 32,
+      "handlerPolicy": "router.get('/:id/history/:revision', async (req, res, next) => {\n  try { res.set('Cache-Control', 'no-store').json({ success: true, data: await ReceivingDraftService.version(id(req.params.id), req.user!.userId, page(req.params.revision)) });",
+      "group": "receiving-drafts",
+      "owner": "receiving",
+      "destination": ["AR-09"],
+      "effectClass": "READ",
+      "testGroup": "receiving-drafts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/receiving-drafts/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "line": 36,
+      "handlerPolicy": "router.put('/:id', requirePermission('create:products'), async (req, res, next) => {\n  try { res.set('Cache-Control', 'no-store').json({ success: true, data: await ReceivingDraftService.save(id(req.params.id), req.user!.userId, req.body) });",
+      "group": "receiving-drafts",
+      "owner": "receiving",
+      "destination": ["AR-09"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "receiving-drafts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/daily-settlements/",
+      "source": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "line": 16,
+      "handlerPolicy": "router.get(\n  '/',\n  requirePermission('read:shifts'),\n  validate(getDailySettlementsSchema),\n  DailySettlementController.getAll,\n);",
+      "group": "daily-settlements",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "READ",
+      "testGroup": "daily-settlements"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/daily-settlements/:id",
+      "source": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "line": 22,
+      "handlerPolicy": "router.get('/:id', requirePermission('read:shifts'), DailySettlementController.getById);",
+      "group": "daily-settlements",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "READ",
+      "testGroup": "daily-settlements"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/daily-settlements/calculate",
+      "source": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "line": 23,
+      "handlerPolicy": "router.post(\n  '/calculate',\n  requirePermission('manage:shifts'),\n  validate(calculateSettlementSchema),\n  DailySettlementController.calculate,\n);",
+      "group": "daily-settlements",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "daily-settlements"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/daily-settlements/",
+      "source": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "line": 29,
+      "handlerPolicy": "router.post(\n  '/',\n  requirePermission('manage:shifts'),\n  validate(createDailySettlementSchema),\n  DailySettlementController.create,\n);",
+      "group": "daily-settlements",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "daily-settlements"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/daily-settlements/:id/confirm",
+      "source": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "line": 35,
+      "handlerPolicy": "router.post('/:id/confirm', requirePermission('manage:shifts'), DailySettlementController.confirm);",
+      "group": "daily-settlements",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "daily-settlements"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/pos/staff-login",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 19,
+      "handlerPolicy": "router.post('/staff-login', PosController.staffLogin);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "pos"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/pos/checkout",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 24,
+      "handlerPolicy": "router.post('/checkout', validate(checkoutSchema), PosController.checkout);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/checkout-commands/:commandId",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 25,
+      "handlerPolicy": "router.get('/checkout-commands/:commandId', validate(checkoutCommandQuerySchema), PosController.getCheckoutCommand);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/checkout-context",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 26,
+      "handlerPolicy": "router.get('/checkout-context', PosController.getCheckoutContext);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/categories",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 27,
+      "handlerPolicy": "router.get('/categories', PosController.getCategories);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/products/lookup",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 28,
+      "handlerPolicy": "router.get('/products/lookup', validate(productLookupSchema), lookupProduct);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/packages/lookup",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 29,
+      "handlerPolicy": "router.get('/packages/lookup', validate(packageLookupSchema), ProductPackagesController.lookup);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/pos/packages/resolve",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 30,
+      "handlerPolicy": "router.post('/packages/resolve', validate(packageResolveSchema), ProductPackagesController.resolve);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/products",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 31,
+      "handlerPolicy": "router.get('/products', validate(posProductsSchema), PosController.getProducts);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/customer-lookup",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 32,
+      "handlerPolicy": "router.get('/customer-lookup', validate(customerLookupSchema), PosController.lookupCustomer);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/pos/customers",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 33,
+      "handlerPolicy": "router.post('/customers', validate(createPosCustomerSchema), PosController.createCustomer);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/reorder-forecast",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 34,
+      "handlerPolicy": "router.get('/reorder-forecast', requirePlan('pro'), PosController.getReorderForecast);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/recommendations",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 35,
+      "handlerPolicy": "router.get('/recommendations', PosController.getHotRecommendations);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/recommendations/:customerId",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 36,
+      "handlerPolicy": "router.get('/recommendations/:customerId', validate(customerRecommendationsSchema), PosController.getRecommendations);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/staff",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 37,
+      "handlerPolicy": "router.get('/staff', PosController.getStaff);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/shift/active",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 38,
+      "handlerPolicy": "router.get('/shift/active', PosController.getActiveShift);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/receipt/:orderId",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 39,
+      "handlerPolicy": "router.get('/receipt/:orderId', PosController.getReceipt);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/orders/today",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 40,
+      "handlerPolicy": "router.get('/orders/today', PosController.getTodayOrders);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/pos/orders/:orderId",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 41,
+      "handlerPolicy": "router.get('/orders/:orderId', PosController.getOrderById);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "READ",
+      "testGroup": "pos"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/pos/orders/:orderId/refund",
+      "source": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "line": 42,
+      "handlerPolicy": "router.post('/orders/:orderId/refund', validate(refundOrderSchema), PosController.refundOrder);",
+      "group": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "pos"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/tenants/me/plan",
+      "source": "systems/enterprise-admin/backend/src/modules/tenants/tenants.routes.ts",
+      "line": 10,
+      "handlerPolicy": "router.get('/me/plan', TenantsController.getMyPlan);",
+      "group": "tenants",
+      "owner": "organization",
+      "destination": ["AR-03"],
+      "effectClass": "READ",
+      "testGroup": "tenants"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/excel/export/products",
+      "source": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "line": 16,
+      "handlerPolicy": "router.get(\n    '/export/products',\n    ...routePolicy({ plan: 'starter', permission: 'read:products' }),\n    ExcelController.exportProducts,\n);",
+      "group": "excel",
+      "owner": "catalog",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "excel"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/excel/export/customers",
+      "source": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "line": 21,
+      "handlerPolicy": "router.get(\n    '/export/customers',\n    ...routePolicy({ plan: 'starter', permission: 'read:crm' }),\n    ExcelController.exportCustomers,\n);",
+      "group": "excel",
+      "owner": "catalog",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "excel"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/excel/export/orders",
+      "source": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "line": 26,
+      "handlerPolicy": "router.get(\n    '/export/orders',\n    ...routePolicy({ plan: 'starter', permission: 'read:orders' }),\n    ExcelController.exportOrders,\n);",
+      "group": "excel",
+      "owner": "catalog",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "excel"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/excel/export/inventory",
+      "source": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "line": 31,
+      "handlerPolicy": "router.get(\n    '/export/inventory',\n    ...routePolicy({ plan: 'starter', permission: 'read:products' }),\n    ExcelController.exportInventory,\n);",
+      "group": "excel",
+      "owner": "catalog",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "READ",
+      "testGroup": "excel"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/excel/import/products/preview",
+      "source": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "line": 38,
+      "handlerPolicy": "router.post(\n    '/import/products/preview',\n    ...routePolicy({ plan: 'starter', permission: 'create:products', beforeValidation: [upload.single('file')] }),\n    ExcelController.previewImportProducts,\n);",
+      "group": "excel",
+      "owner": "catalog",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "excel"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/excel/import/products/confirm",
+      "source": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "line": 43,
+      "handlerPolicy": "router.post(\n    '/import/products/confirm',\n    ...routePolicy({ plan: 'starter', permission: 'create:products', beforeValidation: [upload.single('file')] }),\n    ExcelController.confirmImportProducts,\n);",
+      "group": "excel",
+      "owner": "catalog",
+      "destination": ["AR-03", "AR-07"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "excel"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/accounting/provider",
+      "source": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "line": 11,
+      "handlerPolicy": "router.get('/provider', ...routePolicy({ auth: false, permission: 'read:accounting' }), AccountingController.getProviderInfo);",
+      "group": "accounting",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "READ",
+      "testGroup": "accounting"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/accounting/sync/status",
+      "source": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.get('/sync/status', ...routePolicy({ auth: false, permission: 'read:accounting' }), AccountingController.getSyncStatus);",
+      "group": "accounting",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "READ",
+      "testGroup": "accounting"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/accounting/sync/orders/:orderId",
+      "source": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "line": 17,
+      "handlerPolicy": "router.post(\n    '/sync/orders/:orderId',\n    ...routePolicy({ auth: false, permission: 'manage:accounting' }),\n    AccountingController.syncOrder,\n);",
+      "group": "accounting",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "accounting"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/accounting/sync/expenses/:expenseId",
+      "source": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "line": 22,
+      "handlerPolicy": "router.post(\n    '/sync/expenses/:expenseId',\n    ...routePolicy({ auth: false, permission: 'manage:accounting' }),\n    AccountingController.syncExpense,\n);",
+      "group": "accounting",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "accounting"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/line/webhook",
+      "source": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "line": 9,
+      "handlerPolicy": "router.post('/webhook', LineController.webhook);",
+      "group": "line",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "line"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/line/broadcast",
+      "source": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "line": 14,
+      "handlerPolicy": "router.post('/broadcast', ...routePolicy({ auth: false, permission: 'manage:marketing' }), LineController.broadcast);",
+      "group": "line",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "line"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/line/push/:customerId",
+      "source": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "line": 15,
+      "handlerPolicy": "router.post('/push/:customerId', ...routePolicy({ auth: false, permission: 'manage:marketing' }), LineController.push);",
+      "group": "line",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "REVIEWED_GROUP_EFFECT",
+      "testGroup": "line"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/line/broadcasts",
+      "source": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "line": 16,
+      "handlerPolicy": "router.get('/broadcasts', ...routePolicy({ auth: false, permission: 'manage:marketing' }), LineController.listBroadcasts);",
+      "group": "line",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "effectClass": "READ",
+      "testGroup": "line"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "source": "systems/enterprise-admin/backend/src/app.ts",
+      "owner": "platform",
+      "destination": ["AR-20"],
+      "effectClass": "READ",
+      "testGroup": "health-readiness"
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "source": "systems/enterprise-admin/backend/src/app.ts",
+      "owner": "platform",
+      "destination": ["AR-20"],
+      "effectClass": "READ",
+      "testGroup": "health-readiness"
+    }
+  ],
+  "modules": [
+    {
+      "module": "auth",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "effect": "User lockout/last-login and AuditLog; JWT/refresh issue, no inventory or payment effect",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/authEntry.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/authHandover.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/authTransportEntry.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/authTransportHandover.test.ts", "systems/enterprise-admin/admin-ui/src/hooks/authDemo.test.ts", "systems/enterprise-admin/backend/scripts/admin-auth-fixture.test.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-integration.test.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-native.test.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-transport.test.mjs"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "users",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "effect": "User/UserRole/AuditLog; creates, updates and soft deletion, no stock/payment",
+      "existingTests": [],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "roles",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "effect": "Role/RolePermission; permission replacement, no stock/payment",
+      "existingTests": [],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "audit-logs",
+      "owner": "access",
+      "destination": ["AR-04"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.routes.ts",
+      "effect": "Read only AuditLog",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/batchAudit.test.tsx", "systems/enterprise-admin/backend/scripts/batch-audit-ci.test.mjs", "systems/enterprise-admin/backend/src/__tests__/batch-audit.integration.test.ts", "systems/enterprise-admin/backend/src/modules/product-batches/__tests__/batch-audit.test.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "crm",
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "effect": "Customer/Interaction creation and metadata/engagement update; no stock/payment",
+      "existingTests": ["systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/crm/__tests__/crm.test.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "inventory",
+      "owner": "catalog + inventory",
+      "destination": ["AR-03", "AR-07"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "effect": "Supplier/Product/PackageRevision/Identifier metadata; new product/CSV stock=0, quantity edits rejected; stock reconciliation read only",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/productBatchTraceJourney.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/productLayout.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/productPackages.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/productPagination.test.tsx", "systems/enterprise-admin/admin-ui/src/components/ImportProductsModal.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/InventoryAnalyticsPage.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/StockReconciliationPage.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/SupplierListPage.test.tsx", "systems/enterprise-admin/backend/scripts/inventory-fefo-trace-native.test.mjs", "systems/enterprise-admin/backend/scripts/package-camera-native.test.mjs", "systems/enterprise-admin/backend/scripts/pos-product-lookup-ci.test.mjs", "systems/enterprise-admin/backend/scripts/products-pagination-ci.test.mjs", "systems/enterprise-admin/backend/src/__tests__/csv.service.test.ts", "systems/enterprise-admin/backend/src/__tests__/inventory-fefo-trace.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/inventory-metadata-invariance.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/inventory-metadata-invariance.test.ts", "systems/enterprise-admin/backend/src/__tests__/inventory-provenance.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/inventory-receipt.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/packageAcceptanceGuard.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos-product-lookup.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.productLookup.routes.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.productLookup.test.ts", "systems/enterprise-admin/backend/src/__tests__/product-packages-uri.test.ts", "systems/enterprise-admin/backend/src/__tests__/product-packages.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/product-update-http.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/productIdentifier.test.ts", "systems/enterprise-admin/backend/src/__tests__/productPackages.test.ts", "systems/enterprise-admin/backend/src/__tests__/products-pagination.integration.test.ts", "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/inventory/__tests__/inventory.test.ts", "systems/enterprise-admin/backend/src/modules/inventory/__tests__/product-update-errors.test.ts", "systems/enterprise-admin/backend/src/modules/inventory/__tests__/products-pagination.test.ts", "systems/enterprise-admin/backend/src/modules/inventory/__tests__/stock-reconciliation.test.ts", "systems/enterprise-admin/backend/src/modules/product-batches/__tests__/batch-audit.test.ts", "systems/enterprise-admin/backend/src/modules/product-batches/__tests__/initial-release.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ProductCard.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ProductGrid.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/cartPackages.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/productPackages.test.tsx"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "dashboard",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.routes.ts",
+      "effect": "Read only aggregates; missing supplier-rate work belongs to open #166",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/pages/Inventory/InventoryAnalyticsPage.test.tsx", "systems/enterprise-admin/backend/src/__tests__/analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/analytics/operations-analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.test.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "orders",
+      "owner": "sales + fulfillment",
+      "destination": ["AR-06", "AR-07", "AR-08", "AR-11"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "effect": "Create pending order immediately debits FEFO and writes OUT/allocation + CRM stats in one TX; status patch changes status only, no stock reversal or command dedupe",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/productBatchTraceJourney.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/StockReconciliationPage.test.tsx", "systems/enterprise-admin/backend/scripts/admin-trace-native.test.mjs", "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts", "systems/enterprise-admin/backend/scripts/inventory-fefo-trace-native.test.mjs", "systems/enterprise-admin/backend/scripts/order-sequence-ci.test.mjs", "systems/enterprise-admin/backend/src/__tests__/inventory-fefo-trace.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts", "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/stock-reconciliation-http.integration.test.ts", "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts", "systems/enterprise-admin/backend/src/modules/inventory/__tests__/stock-reconciliation.test.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts", "systems/enterprise-admin/pos-ui/e2e/stock-native/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/stock-native/stock.spec.ts", "systems/enterprise-admin/pos-ui/src/__tests__/HoldOrderBar.feedback.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.keyboard.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.midnight.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ReorderForecastBadge.test.tsx"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "analytics",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "effect": "Read-only analytics; estimates are not approved financial facts",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/readerControls.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/reportReadErrors.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/InventoryAnalyticsPage.test.tsx", "systems/enterprise-admin/backend/scripts/admin-readers-fixture.test.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-native.test.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-oracle.test.mjs", "systems/enterprise-admin/backend/src/__tests__/analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/analytics/operations-analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.test.ts", "systems/enterprise-admin/backend/src/modules/reports/readers-tenant-isolation.test.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/reader-states.spec.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "expenses",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "effect": "Expense CRUD; local record, not bank/provider transfer",
+      "existingTests": [],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "reports",
+      "owner": "reporting",
+      "destination": ["AR-12"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "effect": "Read-only; current-cost margin and placeholder/estimated cashflow are known gaps, not an oracle",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/cashFlowWarning.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/marginReportWarning.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/readerControls.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/reportReadErrors.test.tsx", "systems/enterprise-admin/backend/scripts/admin-readers-fixture.test.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-native.test.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-oracle.test.mjs", "systems/enterprise-admin/backend/src/modules/reports/readers-tenant-isolation.test.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/import-dialog.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/reader-states.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/receiving-drafts.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/warning.spec.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "shifts",
+      "owner": "sales/payments",
+      "destination": ["AR-08"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "effect": "Shift create/close/delete; close CAS from #178/#204; no provider payment. Checkout-versus-close cutoff not proved",
+      "existingTests": ["systems/enterprise-admin/backend/src/__tests__/settlement-transition.test.ts", "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/close-shift.spec.ts", "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/report.test.mjs", "systems/enterprise-admin/pos-ui/src/__tests__/CloseShiftDialog.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ShiftOpenScreen.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/useShift.test.tsx"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "product-batches",
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "effect": "Initial receipt creates lot, IN and receipt cost via shared TX; controlled status/expiry/cost correction audits; ordinary PATCH rejected; only zero/unreferenced batch deletion allowed",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/batchAudit.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/batchEntryReadContract.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/batchReceipt.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/batchTrace.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/productBatchNavigation.test.tsx", "systems/enterprise-admin/admin-ui/src/__tests__/productBatchTraceJourney.test.tsx", "systems/enterprise-admin/admin-ui/src/domain/receiptDraft.test.ts", "systems/enterprise-admin/admin-ui/src/domain/receiptDraftWorkspace.test.ts", "systems/enterprise-admin/admin-ui/src/pages/Inventory/BatchListPage.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/StockReconciliationPage.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Receiving/ReceiptDraftEditor.test.tsx", "systems/enterprise-admin/backend/scripts/batch-audit-ci.test.mjs", "systems/enterprise-admin/backend/src/__tests__/batch-audit.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/batch-change-schema.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/inventory-receipt.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/stock-reconciliation-http.integration.test.ts", "systems/enterprise-admin/backend/src/modules/inventory/__tests__/stock-reconciliation.test.ts", "systems/enterprise-admin/backend/src/modules/product-batches/__tests__/batch-audit.test.ts", "systems/enterprise-admin/backend/src/modules/product-batches/__tests__/initial-release.test.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/batch.spec.ts", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/contract.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/fixture.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/font-sources.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/fonts.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/integration.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/network.test.mjs", "systems/enterprise-admin/pos-ui/e2e/stock-native/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/stock-native/stock.spec.ts", "systems/enterprise-admin/pos-ui/src/__tests__/ReceiptModal.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/receiptService.test.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "receiving-drafts",
+      "owner": "receiving",
+      "destination": ["AR-09"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "effect": "Private actor/tenant draft CAS plus immutable revision, no receipt/stock/payment side effect",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/pages/Receiving/ReceiptDraftEditor.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Receiving/ReceivingDraftPage.test.tsx", "systems/enterprise-admin/backend/scripts/receiving-browser-cleanup.test.mjs", "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs", "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot.test.mjs", "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.test.mjs", "systems/enterprise-admin/backend/src/__tests__/receiving-drafts.integration.test.ts", "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.test.ts", "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.test.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/receiving-drafts.spec.ts", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/acceptance.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/application-work.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/fixture.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/http-work.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/receiving.spec.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "daily-settlements",
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "effect": "Generate/upsert/confirm local settlement; first confirm preserved by CAS #178/#204. Not immutable financial fact redesign",
+      "existingTests": ["systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts", "systems/enterprise-admin/backend/src/__tests__/settlement-transition.test.ts", "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts", "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/PaymentModal.layout-cancel.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/PaymentModal.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/SplitPaymentModal.lifecycle.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/SplitPaymentModal.test.tsx"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "pos",
+      "owner": "sales + access + CRM + catalog",
+      "destination": ["AR-04", "AR-06", "AR-07", "AR-08"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "effect": "Checkout command TX: order/payment records/stock/movement/allocation/result. Refund updates status only, no stock or provider transfer. Customer creation delegates CRM; staff login JWT; package resolve read only",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/productPackages.test.tsx", "systems/enterprise-admin/admin-ui/src/pages/Inventory/StockReconciliationPage.test.tsx", "systems/enterprise-admin/backend/scripts/checkout-retry-ci.test.mjs", "systems/enterprise-admin/backend/scripts/package-camera-native.test.mjs", "systems/enterprise-admin/backend/scripts/pos-product-lookup-ci.test.mjs", "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts", "systems/enterprise-admin/backend/src/__tests__/checkout-command-retry.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/checkout-command-retry.test.ts", "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/packageAcceptanceGuard.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos-categories.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos-product-lookup.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.categories.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.checkout.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.createCustomer.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.customerLookup.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.productLookup.routes.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.productLookup.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.recommendations.test.ts", "systems/enterprise-admin/backend/src/__tests__/pos.todayOrders.test.ts", "systems/enterprise-admin/backend/src/__tests__/product-packages-uri.test.ts", "systems/enterprise-admin/backend/src/__tests__/product-packages.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/productPackages.test.ts", "systems/enterprise-admin/backend/src/__tests__/split-payment-totals.test.ts", "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/stock-reconciliation-http.integration.test.ts", "systems/enterprise-admin/backend/src/lib/__tests__/order-payment-totals.test.ts", "systems/enterprise-admin/backend/src/modules/inventory/__tests__/stock-reconciliation.test.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/batch-trace.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/import-dialog.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/reader-states.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/receiving-drafts.spec.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/warning.spec.ts", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/batch.spec.ts", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/contract.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/fixture.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/font-sources.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/fonts.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/integration.test.mjs", "systems/enterprise-admin/pos-ui/e2e/batch-entry-native/network.test.mjs", "systems/enterprise-admin/pos-ui/e2e/category-native/category.spec.ts", "systems/enterprise-admin/pos-ui/e2e/category-native/lifecycle.spec.ts", "systems/enterprise-admin/pos-ui/e2e/category-native/native-context.lifecycle.test.mjs", "systems/enterprise-admin/pos-ui/e2e/category-native/owned-run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/category-native/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/checkout-flow.spec.ts", "systems/enterprise-admin/pos-ui/e2e/checkout-http-recovery.spec.ts", "systems/enterprise-admin/pos-ui/e2e/checkout-recovery.spec.ts", "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/close-shift.spec.ts", "systems/enterprise-admin/pos-ui/e2e/close-shift-dialog/report.test.mjs", "systems/enterprise-admin/pos-ui/e2e/dialog-acceptance/camera.spec.ts", "systems/enterprise-admin/pos-ui/e2e/dialog-acceptance/dialog.spec.ts", "systems/enterprise-admin/pos-ui/e2e/dialog-acceptance/manual.spec.ts", "systems/enterprise-admin/pos-ui/e2e/dialog-acceptance/owned-run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/dialog-acceptance/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/image-scan/image-scan.spec.mts", "systems/enterprise-admin/pos-ui/e2e/layout-native/controls.test.mjs", "systems/enterprise-admin/pos-ui/e2e/layout-native/integration.test.mjs", "systems/enterprise-admin/pos-ui/e2e/layout-native/layout.spec.ts", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/acceptance.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/application-work.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/fixture.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/http-work.test.mjs", "systems/enterprise-admin/pos-ui/e2e/receiving-browser-native/receiving.spec.ts", "systems/enterprise-admin/pos-ui/e2e/recovery-native/evidence.test.mjs", "systems/enterprise-admin/pos-ui/e2e/recovery-native/fixture.test.mjs", "systems/enterprise-admin/pos-ui/e2e/recovery-native/integration.test.mjs", "systems/enterprise-admin/pos-ui/e2e/recovery-native/network.test.mjs", "systems/enterprise-admin/pos-ui/e2e/recovery-native/oracle.test.mjs", "systems/enterprise-admin/pos-ui/e2e/recovery-native/png.test.mjs", "systems/enterprise-admin/pos-ui/e2e/recovery-native/recovery.spec.ts", "systems/enterprise-admin/pos-ui/e2e/sku-acceptance/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/sku-acceptance/sku.spec.ts", "systems/enterprise-admin/pos-ui/e2e/staff-entry-native/controls.test.mjs", "systems/enterprise-admin/pos-ui/e2e/staff-entry-native/disposal.test.mjs", "systems/enterprise-admin/pos-ui/e2e/staff-entry-native/entry.spec.ts", "systems/enterprise-admin/pos-ui/e2e/staff-entry-native/integration.test.mjs", "systems/enterprise-admin/pos-ui/e2e/stock-native/run.test.mjs", "systems/enterprise-admin/pos-ui/e2e/stock-native/stock.spec.ts", "systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance-diagnostics.test.mjs", "systems/enterprise-admin/pos-ui/e2e/ui-evidence/provenance.test.mjs", "systems/enterprise-admin/pos-ui/e2e/ui-evidence/scanner.spec.ts", "systems/enterprise-admin/pos-ui/e2e/ui-evidence/suppliers.spec.ts", "systems/enterprise-admin/pos-ui/src/__tests__/BarcodeCandidates.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CameraCapture.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CartItem.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CartItem.touch-targets.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CartPanel.clear-confirmation.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CartPanel.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CategoryNav.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CloseShiftDialog.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CustomerLookupPanel.draft.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/CustomerLookupPanel.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/HoldOrderBar.feedback.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ImageScanDialog.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ManualScanDialog.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.keyboard.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/OrderLookupModal.midnight.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.close-shift-dialog.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.header-accessibility.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.held-draft.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.image-scan.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.inventory.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.manual-scan.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.scanner-keyboard.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSCheckoutPage.split-dialog.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSLoginPage.entry.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/POSLoginPage.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/PaymentModal.layout-cancel.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/PaymentModal.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ProductCard.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ProductGrid.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ReceiptModal.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/RecommendationChips.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/RefundModal.keyboard.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ReorderForecastBadge.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/ShiftOpenScreen.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/SplitPaymentModal.lifecycle.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/SplitPaymentModal.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/StaffSwitchModal.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/apiClient.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/barcodeService.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/cartPackages.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/cartStore.draft.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/cartStore.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/category-native-assets.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/category-native-ownership.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/checkoutIntent.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/checkoutPayloadHash.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/horizontalReveal.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/imageScanDecoder.guards.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/imageScanDecoder.wasm.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/imageScanEvidence.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/offlineQueue.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/posApi.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/productPackages.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/receiptService.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/scanInput.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/useBarcodeScanner.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/useCheckout.test.tsx", "systems/enterprise-admin/pos-ui/src/__tests__/useShift.test.tsx"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "tenants",
+      "owner": "organization",
+      "destination": ["AR-03"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/tenants/tenants.routes.ts",
+      "effect": "Read current tenant plan; no write",
+      "existingTests": ["systems/enterprise-admin/backend/src/__tests__/helpers/tenant-context.test.ts", "systems/enterprise-admin/backend/src/__tests__/tenant-persistence.test.ts", "systems/enterprise-admin/backend/src/modules/reports/readers-tenant-isolation.test.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "excel",
+      "owner": "catalog",
+      "destination": ["AR-03", "AR-07"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "effect": "Exports read only; product preview no write; signed confirm imports metadata at zero new stock, existing quantities preserved",
+      "existingTests": ["systems/enterprise-admin/admin-ui/src/__tests__/excelApi.test.ts", "systems/enterprise-admin/admin-ui/src/components/ImportProductsModal.test.tsx", "systems/enterprise-admin/backend/src/__tests__/excel-import.integration.test.ts", "systems/enterprise-admin/backend/src/__tests__/excel.service.test.ts", "systems/enterprise-admin/pos-ui/e2e/admin-margin-warning/import-dialog.spec.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "accounting",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "effect": "Synchronous provider attempt then AccountingSyncLog; mock fallback and check-then-send are known gaps. Live configuration not inspected",
+      "existingTests": ["systems/enterprise-admin/backend/src/__tests__/accounting.provider-factory.test.ts", "systems/enterprise-admin/backend/src/__tests__/accounting.service.test.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    },
+    {
+      "module": "line",
+      "owner": "integrations",
+      "destination": ["AR-17"],
+      "routeFile": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "effect": "Push/multicast external messaging when configured; broadcast log write. Signed webhook currently logs follow and writes no business rows. Not executed",
+      "existingTests": ["systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs", "systems/enterprise-admin/backend/src/__tests__/line.service.test.ts", "systems/enterprise-admin/pos-ui/src/__tests__/offlineQueue.test.ts"],
+      "testStatus": "NOT_RUN",
+      "activation": "HTTP_MOUNTED_AUTH_OR_CONFIG_GATED; live use not verified"
+    }
+  ],
+  "models": {
+    "Tenant": {
+      "owner": "organization/access",
+      "destination": ["AR-03", "AR-04"]
+    },
+    "User": {
+      "owner": "access",
+      "destination": ["AR-04"]
+    },
+    "Role": {
+      "owner": "access",
+      "destination": ["AR-04"]
+    },
+    "Permission": {
+      "owner": "access",
+      "destination": ["AR-04"]
+    },
+    "RolePermission": {
+      "owner": "access",
+      "destination": ["AR-04"]
+    },
+    "UserRole": {
+      "owner": "access",
+      "destination": ["AR-04"]
+    },
+    "AuditLog": {
+      "owner": "access",
+      "destination": ["AR-04"]
+    },
+    "Customer": {
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"]
+    },
+    "Tag": {
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"]
+    },
+    "CustomerTag": {
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"]
+    },
+    "Interaction": {
+      "owner": "CRM",
+      "destination": ["AR-01", "AR-11"]
+    },
+    "Supplier": {
+      "owner": "catalog",
+      "destination": ["AR-03"]
+    },
+    "ProductCategory": {
+      "owner": "catalog",
+      "destination": ["AR-03"]
+    },
+    "Product": {
+      "owner": "catalog",
+      "destination": ["AR-03"]
+    },
+    "ProductPackage": {
+      "owner": "catalog",
+      "destination": ["AR-03"]
+    },
+    "ProductPackageRevision": {
+      "owner": "catalog",
+      "destination": ["AR-03"]
+    },
+    "ProductPackageIdentifier": {
+      "owner": "catalog",
+      "destination": ["AR-03"]
+    },
+    "Order": {
+      "owner": "sales/payments",
+      "destination": ["AR-08"]
+    },
+    "OrderNumberCounter": {
+      "owner": "commands/sales",
+      "destination": ["AR-06"]
+    },
+    "CheckoutCommand": {
+      "owner": "commands/sales",
+      "destination": ["AR-06"]
+    },
+    "OrderItem": {
+      "owner": "sales/payments",
+      "destination": ["AR-08"]
+    },
+    "OrderPayment": {
+      "owner": "sales/payments",
+      "destination": ["AR-08"]
+    },
+    "InventoryTransaction": {
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"]
+    },
+    "Expense": {
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"]
+    },
+    "Shift": {
+      "owner": "sales/payments",
+      "destination": ["AR-08"]
+    },
+    "ProductBatch": {
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"]
+    },
+    "ProductBatchChange": {
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"]
+    },
+    "SaleBatchAllocation": {
+      "owner": "inventory",
+      "destination": ["AR-07", "AR-10"]
+    },
+    "DailySettlement": {
+      "owner": "reporting/payments",
+      "destination": ["AR-08", "AR-12"]
+    },
+    "AccountingSyncLog": {
+      "owner": "integrations",
+      "destination": ["AR-17"]
+    },
+    "MessageBroadcast": {
+      "owner": "integrations",
+      "destination": ["AR-17"]
+    },
+    "ReceivingDraft": {
+      "owner": "receiving",
+      "destination": ["AR-09"]
+    },
+    "ReceivingDraftRevision": {
+      "owner": "receiving",
+      "destination": ["AR-09"]
+    }
+  },
+  "writeAndRawCandidates": [
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "line": 40,
+      "code": "const claimed = await tx.product.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "line": 47,
+      "code": "const batch = await tx.productBatch.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "line": 52,
+      "code": "await tx.inventoryTransaction.create({ data: {"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "line": 79,
+      "code": "const result = await tx.productBatch.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "line": 104,
+      "code": "await tx.inventoryTransaction.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "line": 107,
+      "code": "await tx.saleBatchAllocation.createMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/product-import-preview.ts",
+      "line": 16,
+      "code": "return createHmac('sha256', env.JWT_ACCESS_SECRET).update(`product-import-preview:v1:${payload}`).digest();"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "line": 8,
+      "code": "type QueryClient = Pick<Prisma.TransactionClient, '$queryRaw'>;"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "line": 20,
+      "code": "await db.$queryRaw`SELECT 1 AS connected`;"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "line": 26,
+      "code": "rows = await db.$queryRaw<Migration[]>`SELECT migration_name, finished_at, rolled_back_at FROM \"_prisma_migrations\"`;"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "line": 49,
+      "code": "await db.$executeRaw`SET TRANSACTION READ ONLY`;"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/sale-stock.ts",
+      "line": 37,
+      "code": "const result = await tx.product.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.service.ts",
+      "line": 159,
+      "code": "const log = await prisma.accountingSyncLog.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.service.ts",
+      "line": 173,
+      "code": "await prisma.accountingSyncLog.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+      "line": 16,
+      "code": "* preserves FIX-03 (the single $queryRaw GROUP BY that replaced the N+1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+      "line": 243,
+      "code": "* FIX-03: revenue/cost rollup uses a single GROUP BY $queryRaw (no N+1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+      "line": 256,
+      "code": "prisma.$queryRaw<Array<{"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.controller.ts",
+      "line": 19,
+      "code": "await prisma.auditLog.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.controller.ts",
+      "line": 77,
+      "code": "await prisma.auditLog.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.service.ts",
+      "line": 22,
+      "code": "await prisma.user.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.service.ts",
+      "line": 30,
+      "code": "await prisma.user.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "line": 78,
+      "code": "return await prisma.customer.create({ data: data as Prisma.CustomerUncheckedCreateInput });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "line": 89,
+      "code": "return await prisma.customer.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "line": 98,
+      "code": "prisma.interaction.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "line": 105,
+      "code": "prisma.customer.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.controller.ts",
+      "line": 40,
+      "code": "const data = await DailySettlementService.create(req.body);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "line": 119,
+      "code": "return prisma.dailySettlement.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "line": 153,
+      "code": "return await prisma.dailySettlement.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "line": 51,
+      "code": "return createHash('sha256').update(JSON.stringify({ version: PRODUCT_IMPORT_PARSER_VERSION,"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "line": 434,
+      "code": "const identity = issueProductImportPreview(createHash('sha256').update(buffer).digest('hex'), normalizedRevision(rows));"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "line": 441,
+      "code": "if (preview.fileHash !== createHash('sha256').update(buffer).digest('hex')) {"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "line": 465,
+      "code": "await prisma.product.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "line": 487,
+      "code": "await prisma.product.create({ data: createData });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "line": 15,
+      "code": "router.delete('/:id', requirePermission('manage:reports'), ExpensesController.deleteExpense);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "line": 45,
+      "code": "return await prisma.expense.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "line": 66,
+      "code": "return await prisma.expense.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "line": 79,
+      "code": "await prisma.expense.delete({ where: { id } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.controller.ts",
+      "line": 49,
+      "code": "await prisma.product.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "line": 32,
+      "code": "return await prisma.supplier.create({ data: data as Prisma.SupplierUncheckedCreateInput });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "line": 44,
+      "code": "return await prisma.supplier.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "line": 108,
+      "code": "return await prisma.product.create({ data: { ...data, tenantId: requireTenantId(), stockQuantity: 0 } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "line": 129,
+      "code": "return await prisma.product.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "line": 45,
+      "code": "const unit = await tx.product.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "line": 54,
+      "code": "const changed = await tx.productPackage.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "line": 71,
+      "code": "await tx.productPackageRevision.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "line": 76,
+      "code": "const created = await tx.productPackage.create({ data: tenant.data({ productId }) });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "line": 80,
+      "code": "return tx.productPackageRevision.create({ data: tenant.data({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "line": 100,
+      "code": "const locked = await tx.productPackage.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "line": 105,
+      "code": "const retired = await tx.productPackageRevision.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.service.ts",
+      "line": 135,
+      "code": "const broadcast = await prisma.messageBroadcast.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "line": 50,
+      "code": "const order = await tx.order.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "line": 68,
+      "code": "await tx.customer.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "line": 79,
+      "code": "await tx.interaction.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "line": 128,
+      "code": "return await prisma.order.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+      "line": 27,
+      "code": "return createHash('sha256').update(JSON.stringify(businessPayload)).digest('hex');"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+      "line": 64,
+      "code": "const claim = await tx.checkoutCommand.createMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+      "line": 78,
+      "code": "const completed = await tx.checkoutCommand.updateMany({ where: { ...key, status: 'PENDING' }, data: {"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "line": 103,
+      "code": "const order = await tx.order.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "line": 461,
+      "code": "const result = await tx.order.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/order-number.ts",
+      "line": 17,
+      "code": "await tx.orderNumberCounter.createMany({ data: { ...key, lastSequence: 0 }, skipDuplicates: true });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/order-number.ts",
+      "line": 18,
+      "code": "const claimed = await tx.orderNumberCounter.updateMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+      "line": 39,
+      "code": "const locked = await tx.$queryRaw<{ id: string }[]>`"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+      "line": 70,
+      "code": "const updated = await tx.productBatch.updateMany({ where: { id, tenantId, productId: batch.productId }, data });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+      "line": 73,
+      "code": "await tx.productBatchChange.create({ data: {"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+      "line": 33,
+      "code": "const data = await ProductBatchService.create(req.body, req.user);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+      "line": 42,
+      "code": "const data = await ProductBatchService.update(req.params.id as string, req.body);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+      "line": 71,
+      "code": "await ProductBatchService.delete(req.params.id as string);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "line": 40,
+      "code": "router.delete('/:id', requirePermission('update:products'), ProductBatchController.delete);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.service.ts",
+      "line": 88,
+      "code": "if (released) await tx.productBatchChange.create({ data: {"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.service.ts",
+      "line": 121,
+      "code": "await prisma.productBatch.delete({ where: { id } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+      "line": 54,
+      "code": "await tx.receivingDraft.create({ data: { id, ...owner, ...data } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+      "line": 56,
+      "code": "const updated = await tx.receivingDraft.updateMany({ where: { id, ...owner, revision: expectedRevision }, data });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+      "line": 62,
+      "code": "await tx.receivingDraftRevision.create({ data: { draftId: id, ...owner, revision, payload } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+      "line": 25,
+      "code": "const role = await rolesService.create(req.body);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "line": 47,
+      "code": "const role = await prisma.role.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "line": 83,
+      "code": "await prisma.rolePermission.deleteMany({ where: { roleId } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "line": 84,
+      "code": "await prisma.rolePermission.createMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.controller.ts",
+      "line": 22,
+      "code": "const data = await ShiftService.create(req.body);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.controller.ts",
+      "line": 36,
+      "code": "await ShiftService.delete(req.params.id as string);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "line": 16,
+      "code": "router.delete('/:id', requirePermission('manage:shifts'), ShiftController.delete);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "line": 60,
+      "code": "return prisma.shift.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "line": 82,
+      "code": "return await prisma.shift.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "line": 104,
+      "code": "await prisma.shift.delete({ where: { id } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "line": 51,
+      "code": "const user = await usersService.create(req.body, req.user!.userId);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "line": 70,
+      "code": "const user = await usersService.update(req.params.id as string, req.body, req.user!.userId);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "line": 89,
+      "code": "const result = await usersService.delete(req.params.id as string, req.user!.userId);"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "line": 47,
+      "code": "router.delete("
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 124,
+      "code": "const created = await tx.user.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 130,
+      "code": "await tx.userRole.createMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 139,
+      "code": "await prisma.auditLog.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 162,
+      "code": "const updated = await prisma.user.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 174,
+      "code": "await prisma.userRole.deleteMany({ where: { userId: id } });"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 175,
+      "code": "await prisma.userRole.createMany({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 181,
+      "code": "await prisma.auditLog.create({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 203,
+      "code": "await prisma.user.update({"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "line": 209,
+      "code": "await prisma.auditLog.create({"
+    }
+  ],
+  "cli": [
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "dev",
+      "command": "tsx watch src/server.ts",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "build",
+      "command": "tsc",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "start",
+      "command": "node dist/server.js",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "db:generate",
+      "command": "prisma generate",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "db:migrate",
+      "command": "prisma migrate dev",
+      "effect": "DB mutation is prohibited for this baseline; owned synthetic harness only for future tests",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "db:seed",
+      "command": "tsx prisma/seed.ts",
+      "effect": "DB mutation is prohibited for this baseline; owned synthetic harness only for future tests",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "db:reset",
+      "command": "prisma migrate reset --force",
+      "effect": "DB mutation is prohibited for this baseline; owned synthetic harness only for future tests",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "db:studio",
+      "command": "prisma studio",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "test",
+      "command": "vitest run",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "test:watch",
+      "command": "vitest",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "test:coverage",
+      "command": "vitest run --coverage",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "lint",
+      "command": "eslint src/",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "entry": "format",
+      "command": "prettier --write 'src/**/*.ts'",
+      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/backend/Dockerfile",
+      "entry": "CMD",
+      "command": "prisma migrate deploy && node dist/server.js",
+      "effect": "DDL on image start currently exists; AR-20 must separate it; NOT EXECUTED",
+      "owner": "platform",
+      "destination": ["AR-20"]
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+      "entry": "main/local loopback HTTP",
+      "effect": "Device I/O with local idempotency receipts; no stock authority; real print prohibited here",
+      "owner": "device",
+      "destination": ["AR-18"]
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+      "entry": "main",
+      "effect": "Render/discover/print/reprint device command; hardware side effects, not invoked",
+      "owner": "device",
+      "destination": ["AR-18"]
+    },
+    {
+      "path": "scripts/ocr-evaluation/evaluator.py",
+      "entry": "CLI evaluator",
+      "effect": "Synthetic text evaluator only; no OCR engine, business writer or external AI",
+      "owner": "evidence",
+      "destination": ["AR-15"]
+    }
+  ],
+  "backgroundRuntime": {
+    "status": "NOT_PRESENT_IN_REVIEWED_SERVER_TREE",
+    "evidence": "systems/enterprise-admin/backend/src/server.ts",
+    "note": "Server only checks readiness and listens; no durable worker boot, cron or queue runtime found. Existing checkout-command.worker.ts is a test helper. AR-13 must introduce a real worker."
+  },
+  "testAndHarnessFiles": ["scripts/archive-dependency-compat.test.cjs", "scripts/ci/gate.mjs", "scripts/ci/plan.mjs", "scripts/ci/plan.test.mjs", "scripts/ci/workflow.test.mjs", "scripts/dependency-security-compat.test.cjs", "scripts/ocr-evaluation/README.md", "scripts/ocr-evaluation/evaluator.py", "scripts/ocr-evaluation/fixtures/control_predictions.json", "scripts/ocr-evaluation/fixtures/gold.json", "scripts/ocr-evaluation/fixtures/negative_predictions.json", "scripts/ocr-evaluation/tests/test_evaluator.py", "scripts/ocr-evaluation/verify.py", "scripts/validate-agent-context.sh", "scripts/validate-dependency-locks.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-fixture.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-fixture.test.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-integration.test.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-native.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-native.test.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-transport.mjs", "systems/enterprise-admin/backend/scripts/admin-auth-transport.test.mjs", "systems/enterprise-admin/backend/scripts/admin-batch-entry-browser-fixture.ts", "systems/enterprise-admin/backend/scripts/admin-readers-fixture.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-fixture.test.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-native.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-native.test.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-oracle.mjs", "systems/enterprise-admin/backend/scripts/admin-readers-oracle.test.mjs", "systems/enterprise-admin/backend/scripts/admin-trace-native.mjs", "systems/enterprise-admin/backend/scripts/admin-trace-native.test.mjs", "systems/enterprise-admin/backend/scripts/argon2-compat/README.md", "systems/enterprise-admin/backend/scripts/argon2-compat/generate-legacy.cjs", "systems/enterprise-admin/backend/scripts/argon2-compat/legacy-0.44.0.synthetic.json", "systems/enterprise-admin/backend/scripts/argon2-compat/mutation-controls.cjs", "systems/enterprise-admin/backend/scripts/argon2-compat/verify-final.cjs", "systems/enterprise-admin/backend/scripts/argon2-compat/verify-http.cjs", "systems/enterprise-admin/backend/scripts/batch-audit-ci.mjs", "systems/enterprise-admin/backend/scripts/batch-audit-ci.test.mjs", "systems/enterprise-admin/backend/scripts/business-day.test.mjs", "systems/enterprise-admin/backend/scripts/category-browser-fixture.ts", "systems/enterprise-admin/backend/scripts/checkout-retry-ci.mjs", "systems/enterprise-admin/backend/scripts/checkout-retry-ci.test.mjs", "systems/enterprise-admin/backend/scripts/general-order-trace-guards.test.ts", "systems/enterprise-admin/backend/scripts/general-order-trace-guards.ts", "systems/enterprise-admin/backend/scripts/general-order-trace-local.ts", "systems/enterprise-admin/backend/scripts/general-order-trace-owned.py", "systems/enterprise-admin/backend/scripts/health-readiness/ci.mjs", "systems/enterprise-admin/backend/scripts/health-readiness/ci.test.mjs", "systems/enterprise-admin/backend/scripts/health-readiness/verify.cjs", "systems/enterprise-admin/backend/scripts/integration-migrations.mjs", "systems/enterprise-admin/backend/scripts/inventory-fefo-trace-native.mjs", "systems/enterprise-admin/backend/scripts/inventory-fefo-trace-native.test.mjs", "systems/enterprise-admin/backend/scripts/medicine-label-ci.requirements.txt", "systems/enterprise-admin/backend/scripts/medicine-label-cloud.ts", "systems/enterprise-admin/backend/scripts/medicine-label-disabled-agent.py", "systems/enterprise-admin/backend/scripts/medicine-label-disabled-agent.test.py", "systems/enterprise-admin/backend/scripts/order-sequence-ci.mjs", "systems/enterprise-admin/backend/scripts/order-sequence-ci.test.mjs", "systems/enterprise-admin/backend/scripts/order-sequence-migration.mjs", "systems/enterprise-admin/backend/scripts/package-browser-acceptance.mjs", "systems/enterprise-admin/backend/scripts/package-browser-interactions.mjs", "systems/enterprise-admin/backend/scripts/package-camera-native.mjs", "systems/enterprise-admin/backend/scripts/package-camera-native.test.mjs", "systems/enterprise-admin/backend/scripts/pharmacy-gap-native.py", "systems/enterprise-admin/backend/scripts/pos-layout-browser-fixture.ts", "systems/enterprise-admin/backend/scripts/pos-product-lookup-ci.mjs", "systems/enterprise-admin/backend/scripts/pos-product-lookup-ci.test.mjs", "systems/enterprise-admin/backend/scripts/pos-recovery-browser-fixture.ts", "systems/enterprise-admin/backend/scripts/pos-staff-entry-browser-fixture.ts", "systems/enterprise-admin/backend/scripts/products-pagination-ci.mjs", "systems/enterprise-admin/backend/scripts/products-pagination-ci.test.mjs", "systems/enterprise-admin/backend/scripts/receiving-browser-cleanup.mjs", "systems/enterprise-admin/backend/scripts/receiving-browser-cleanup.test.mjs", "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs", "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot.mjs", "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot.test.mjs", "systems/enterprise-admin/backend/scripts/receiving-drafts-browser-native.mjs", "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.mjs", "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.test.mjs", "systems/enterprise-admin/backend/scripts/split-payment-guards.test.ts", "systems/enterprise-admin/backend/scripts/split-payment-guards.ts", "systems/enterprise-admin/backend/scripts/split-payment-local.ts", "systems/enterprise-admin/backend/scripts/split-payment-owned.py", "systems/enterprise-admin/backend/scripts/stock-browser-fixture.ts", "systems/enterprise-admin/backend/scripts/stock-reconciliation-browser.mjs"],
+  "sourceFiles": [
+    {
+      "path": "scripts/ocr-evaluation/evaluator.py",
+      "sha256": "d5828893fa1f2595ef8cfd35593abb4c6256a300e123742ffe2b58785677023f"
+    },
+    {
+      "path": "scripts/ocr-evaluation/tests/test_evaluator.py",
+      "sha256": "327e39ff91dc7a07d0ea2e52fa1477eb697b6f6bb2983fb43f9b6bfafbf858e1"
+    },
+    {
+      "path": "scripts/ocr-evaluation/verify.py",
+      "sha256": "9d6d8094e04f2cdba65d3e5734ec0d83ce4229ec02a3e3382a3e528b28359fef"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/Dockerfile",
+      "sha256": "39ab93a4f596fa6601804ca0f05d5a277bebb8d2328222e057d8caf408536132"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "sha256": "92e4a0bc6ccfe4b92b11e5bc36714a0e3fcfc4e39255a69a8e0c050aec4c187e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "sha256": "4ee60fd190bdba17170d3516cf816548cdf64023696ac1ba5f0e011f7a5c09ae"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/seed.ts",
+      "sha256": "5d56cf8012d505137e314019835d17e5b37f5d8e17acf50dbd7061f7e0637f38"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/app.ts",
+      "sha256": "2faf0bfbc5c55a7bf949716f128a69f07593e315f6490c3b8c7460a39f204587"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/config/env.ts",
+      "sha256": "e297ba59bd1a4a1a13829a8361f29dda0686dce0ed2072c835528dc42c899387"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/admin-route-policy.ts",
+      "sha256": "74dd4536afac7e6756af4d8b103dba6aa7e23bd0b11bd76721edbe5d0e51c364"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/batch-expiry.ts",
+      "sha256": "1ff74bcaa9dd039f83d28cd0c94afa4ec1c6cdcb73d71be40cba92b0824c11d8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/business-day.ts",
+      "sha256": "083c25a9219ccda0b68888d9becdd41badeba7fcdfd3a58c3459b586f7ce3576"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/errors.ts",
+      "sha256": "58ed2880bf7efe43330f25c5fd7f8697fd5cbd4dc673fe5cd4445fd9dd3054ef"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "sha256": "5c0f2cff905b737c2f446cc425ce7294d5c684d4d15653f68c513cf94595122e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/jwt.ts",
+      "sha256": "6ac703cd1ca49faf4edfadedabe81564cfbc6d540599e4a051b717bf8a87b714"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "sha256": "05ee4674ee7b2cd2307cebbc74c8a2ff161435130d0b960306246868d29ea7ab"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/password.ts",
+      "sha256": "eb20d8638432410945d15ceac823ccaec493fecbd7f9afd56fd52e29be1db3d4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/plan-features.ts",
+      "sha256": "1099c46d18cc0136263947785dbb19814b9812977ec3e5d779bdf9d36f62df32"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+      "sha256": "1754f7004cc25f796350b9844c6050f1b5bf156c1a425c848ff5a8c6d9b23f1c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/product-import-preview.ts",
+      "sha256": "dbf8d9ef6d8870d15e86f5bcfc1fe5f9c0a851fb00e6fd23ad8816842f7b12a5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "sha256": "583998dbfaf464693fffa470c9bec65420da931d03c16fc3175ae07bd241ad78"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/route-policy.ts",
+      "sha256": "e63cc4e1105565b98a92222d7e730acb12e7c8c73823142b52d4dc0e417bbfa2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/sale-stock.ts",
+      "sha256": "c622f4e48f702c2219310447f67a97844a33f34286730c29ed92fca5b21bb9ae"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+      "sha256": "8e81e51175487147faa60b86187b774cb6a5ab4cbd7f5d2d09b835107eaa2695"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+      "sha256": "2d48d04f4e33270fdecc0d60572fa6e6def906d7426ac002346e2ad1379e3a29"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant.context.ts",
+      "sha256": "33cbf5a1ddc8f5c49c2631b496582c0beacab2a4bec44477edfdb44e6475f348"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+      "sha256": "7cb272b3fd68943fcda09abbca6352d9aa0cc5f2683f5a5101f29fe410e61072"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/error.middleware.ts",
+      "sha256": "41a17ca00b970497b45c892295180fdfb402313cc5fb7a36d0622bb94a86ec66"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/plan.middleware.ts",
+      "sha256": "bda1291fdf75662d11f53067a652e00014eb1f9f579aa381ff9904300dc4bb82"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+      "sha256": "5eb9c5bba95a2c430262823928ec930a1fe7c154f0d84e1073a355e3ef89a31e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+      "sha256": "bb5514c89cc22f8e62db6935e0f735eeb96d33be86a666f8e0c902ef33d8c5db"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+      "sha256": "e58b0915b54986cda0aa463bac4978fecf8922abc0e99c556b4628dbbe11c4fd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+      "sha256": "04fa3d478cae2bebdee5b3bc6d63d20cb196d0b312f3a7c1cac6e36401217b39"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.controller.ts",
+      "sha256": "a630746fa346286cab185cfa8878d8465402be265fd53f122c888f4e3c509201"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "sha256": "0a6ca987ee2cedde491d8476705dc54747c7e53eb505cefb8a10ecd6c30425bf"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.service.ts",
+      "sha256": "58bd5f7b8a5bda8c6a202b2436c3a368f774bd06af7c046c9396c73d820dd7e4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/provider.factory.ts",
+      "sha256": "6c98df2fd1197296ddfe5d1d588c2b1e709fcc93636e85c6207822ea383084ba"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/mock.provider.ts",
+      "sha256": "b479fe642368c9389da3cb4112ad21b8ebf21f603cc72649f3a846616feac502"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/quickbooks.provider.ts",
+      "sha256": "e4b86fe030e8c6ffba444dcfcdcdac8c1349ec14a8271b185c10fa1003a98fc7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/types.ts",
+      "sha256": "b95427188c6ac313721c657468d76895bce71dd4936c2ce018d70d9441b6be77"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/xero.provider.ts",
+      "sha256": "039279c99298212640e355bda976d9b3c17863e39b0cdf5a0f6a975f98d3a1e9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.controller.ts",
+      "sha256": "96a074587ee6a3e94165edb5ca8711211435374a65ab440812e5b36d5d7cdb64"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "sha256": "75faea531c475cca96622071a4149c620966aaa85d60661fa7474d0af9b419c5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.shared.ts",
+      "sha256": "c7c6acbac7815cd35f56bfae5406020b1d1cf1ab9d4039b4ee7c8becb78132f9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.types.ts",
+      "sha256": "c99f977c3e541c944e4028a2440d937ad3d96b252e7bd2f151bb6ba1cd133551"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.ts",
+      "sha256": "931a2d0a5d5e1c76b6a6c633847367ec37905b64b2cfd26ae760e29cb8197707"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/operations-analytics.service.ts",
+      "sha256": "c8f098b2a60dbb82f4c19c1d74e6820cbfdccd8e32b91ee6ce233e6e8927b7ca"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+      "sha256": "f6c1f1c22648eab48f3805fc63113d751f2d168b86e15695f0138af38ae7f518"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.controller.ts",
+      "sha256": "aacd05dea13d59f732e9b0a27ca11f4b08157056660b08d04532f058cc9b2cea"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.routes.ts",
+      "sha256": "c0db72597e9aa13408cf5f19034d7bcad758aa116d626c726eefed2218cafbef"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.schema.ts",
+      "sha256": "bd60f5a3944fb79505d9e41a47ddc7080fe0b4bf4ec3fc0a0b331a82515bfc43"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.service.ts",
+      "sha256": "93417d433e6296998003b9efeb8eb08f599b1b55f1cd6322bef8ca80692e7b73"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.controller.ts",
+      "sha256": "71bdaa9fb212466a404198e6eba777ac62423f6eb605b29036e0bb3c43eb9081"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "sha256": "e0033643550d66078012d2cb4cb236cacd7eb5fef470af23081e56563d6340ba"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.schema.ts",
+      "sha256": "fd5a6971eafc1ba8c5f838ca820972268d2ef9b759dc1f07371551274981ee36"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.service.ts",
+      "sha256": "6cb21957a238ac67abb42a024e2a542510b57fb4b627a6ff806560d96902506e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.controller.ts",
+      "sha256": "cbdd18d57c8ceb380be38007b0814f2793529c79508cb46a76fd7cc9a97afca5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "sha256": "26b0f5416eb5b3b7c79144280f6fce23da26a9a18e2eb5cff4e555f2a0c3da36"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.schema.ts",
+      "sha256": "11fb3c5229a06e15df357401a3c8b3ba6d12c3da7a82b283aebe12d14b4eb6a8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "sha256": "5cb8e9f70277549b7d433a88d11a5011f42460abed985604db55a42d1b96ec2c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.controller.ts",
+      "sha256": "3d1a02580c499cbcd05bd601bea7870c101e86f0aae12ec3d09b95d55088d408"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "sha256": "4a7fe1cf71076d9cf963535112dd3fb739795a735f1d8b6a6783d80601fb6959"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.schema.ts",
+      "sha256": "7741637665d9eb6b9208d431ac541b3d7a72485acb70ee92853872c4611527b2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "sha256": "47d00847fb5f65f9845c1702890f57d01567991ae13ca7e4cc24948cf1cc95b4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.controller.ts",
+      "sha256": "bcfc2b1dfddaa348cddc50a4ee99ad11b3c8b42855156c8d396982916029ef6b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.routes.ts",
+      "sha256": "dacdce00f72a0ee8944f8f0c732b2cf2cc42ff834679c76ac759257ee2b3ffe2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.service.ts",
+      "sha256": "e56dce4a90c2c93a4fbffa7dff51141a68d1555b6fac43eb4b5e1e9b8966a471"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.controller.ts",
+      "sha256": "40ac85f69ceeaa5963f9b4e57092bf415ae870e27eebb9af22d79ed2f99f0884"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "sha256": "e2d5a3de99df4a0ac7360b2e76c2ccaffcb1f6d5583f4be0079f0e14a1bcaadf"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "sha256": "4895706ab05b6542fdbe23d86db2856c132a15d22c6774c9a6b6bceff4d610cb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+      "sha256": "36d87997829af071bf6443cbada71e3ac74131c827f275d95595dc8dbb24da9a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "sha256": "15bd05620739ccac0efbe73a5df19f610eca8146e6961f15ff19361e24ad1808"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "sha256": "27fffb4537077a57bac6ddb1d7380147e8b7ee3c8a9a10dcfade0b4c6f0b1767"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.controller.ts",
+      "sha256": "2032fe944ebf3ba6c3e572ea085368933eb8147bfe65fe1f8a7f034c590d76ff"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.service.ts",
+      "sha256": "75fa32c8e1ad904b1049d563a07150781b306807eab911b137d4590705eec6a0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.controller.ts",
+      "sha256": "95ec0b723bb26f3e3a9b007f4aa8349ffe5ed077183314b646904db19ed9ada5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "sha256": "db3e9ca98fa32c047bd28c93abc57ed59acf6a1657cb29e12563f4ed0481688b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.schema.ts",
+      "sha256": "699b5482a15adf0a825802453886e0cfb8485edf5b29c62430122fe5de48ed58"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "sha256": "adb8de0e09257d7fa7563f1cfd52d899f5e4b8e30a954867abdfaba9362e7cd6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages-identifier-policy.ts",
+      "sha256": "e2fb1e973d15b64bc97ac06a90133507573c2893b6366c6be816841960a6fc4f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.controller.ts",
+      "sha256": "2d54ea4b6f9351e4ebc35afbf32ab93dd2a8a8423a4610df89e531d30cc75d4f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.schema.ts",
+      "sha256": "ca522f20477ca749d0fd5022e5ace2983e04104f058ab0ba6ed009d7ba33b6bf"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "sha256": "bdefc7ea500a4e22cf0e62cbea560c60c0d428dc0cf6084899442ea4173f49c0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.controller.ts",
+      "sha256": "fb24a2aac6ba1ec07810cf5924941be361d365f2bab2647376744fa7fee83619"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.service.ts",
+      "sha256": "00c448f30da10640a8ea50c8ee62d4ac08845271ac04c84df770ba5096b7c968"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.controller.ts",
+      "sha256": "d4d833c6c74bd322e7261e0af4fa90653b83702a893b950ceaea80ae79b0c565"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "sha256": "65e19f7c22a886b6bd1f78b868404329dbabf08b74512f4ccd634c0dd760c227"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.service.ts",
+      "sha256": "d5d3d13e04224f376269849233c894a6186d73434fb16333a1d53c810393eea6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.controller.ts",
+      "sha256": "80712204da2c83c88d208d291ed6e8f9616185bd32a1eba800eb939e91f5dbe5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "sha256": "9c1fd288f5feb1071cf5738a799cf65d22e93bfab7522dcf988ada58e719969f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "sha256": "60be5a90376478771b1dc143fb87cd1e422bf8961dc248f8c3d58da391c503d6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+      "sha256": "2f1ca419f7759fef3e3056af8c9d02913c971eee20e6020212606f618297ba35"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "sha256": "42cd25ebc981905638fb4753e49c13d4b5866a1e6939f1756b9f0a65af055c2e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/order-number.ts",
+      "sha256": "56093e6e4bd3de6484947447085f1d8c5cc92d3fff433e757c61ed0b8f691590"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.controller.ts",
+      "sha256": "6def0a99955a49a12a30b4623e70c6233110252340fa438b103d8e46fbe752a6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "sha256": "c95cf6f1cd6930c006837644b42339cb017bfcf1181251e938e412964d26eef5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.schema.ts",
+      "sha256": "e2a070504e90070524a5d6e249b6145ed33c444c8eed5b99cdb60bcdff296729"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-identifier.schema.ts",
+      "sha256": "f26003dbb505f03d822c21f5bcdb8dd82740fc04c33674363d411266f7c2be31"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.controller.ts",
+      "sha256": "7ef52791fb17b6f5af2b7c88f2d74583c80235e34c4e8d75273418550cfb4811"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.schema.ts",
+      "sha256": "65e18a6c1e983f322f64f7ffe7239f2f385fa25fe315f9b0a8ba360706783637"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.service.ts",
+      "sha256": "c46a34c2c29ce99a6d4fef18ddfc6428d6cc55bb67dea817dad6c90263a35bbd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/receipt.service.ts",
+      "sha256": "11d92a801b1a8c694c1df2f0078d1ceae9918c2ff61ec90e30e6391cccdfa1ce"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+      "sha256": "7fcd35144cbff199d6df3b8064acd41da7c131cf5f64fa68b2ab0f76a4d56970"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+      "sha256": "de438f5b514d2a519703a0d5d1d081a1b71bcf2245a3a77a11310862d251ae30"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "sha256": "70f065d91e2ecbec0d5e93d1c7fd3d9de2cbaa3a03c3c36cbf9719f7ab3a878d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.schema.ts",
+      "sha256": "ebbdcb33d3e8b257d5ed14f74f378df0abc94379597c67b05db326e437c89baf"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.service.ts",
+      "sha256": "53359897562f42dae2aef4b89bfdb56acbac1ecdd4a5bca5daad569ac1edc6e6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "sha256": "6582da38ec0c58981a6ed556d0c15ada85e1d568f6667470e166c08e846ed2a4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.schema.ts",
+      "sha256": "451425392dacc35507a67e648581aee3d18a8dd16127aa09f4000f1bd3141dc8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+      "sha256": "45afbc96bea28c5c14e1760e4b5070e69bf9e9d00c6a9b293e88710e485e948e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/cashflow.service.ts",
+      "sha256": "c1db33ccdee83c1a6250dc6ea3de54428118c9d22ec9fe3a7808f955bb5220cb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/margin.service.ts",
+      "sha256": "e1516444b696ec703ea93e41c6a3b25754abfbd51b87b92f6131965339fcf3b8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.controller.ts",
+      "sha256": "a19cc17f16e9b7100e1023c01de4bcfffe5a4919b7825aab1db16bab90b7b1cc"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "sha256": "113393f59310979b2cca12a03c12cabdd7598062a3dad5dc723be93caeb4d3ad"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/sales-ranking.service.ts",
+      "sha256": "61893ab235ca4887ba87fef4c87b12ce57d480690c3ac9cffd6ebabdfc41b461"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+      "sha256": "7d36310ccc047ddb52b528128840ac320caff90c22105c3934ec38c83136bda1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "sha256": "0ce4e6272f023c9e65a0f7f9cbdbcc6c84a08a376ac664adfb9eefc10f3954bd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts",
+      "sha256": "3aae71578d2da228dc9a4dd6a95a0d0ec5f5a0e86bc4a05c27309f1fe9f5b2e7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "sha256": "5e631bea9303c9eec81ac3d55d8e55f26737090d70434af209ad7fb4883e7d26"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.controller.ts",
+      "sha256": "fcfc997143233e634c4ded92694b8ffbae5ad1ca81df870b856cf1511de8869d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "sha256": "0d0c38eafbef44fc60a16164c2035c92249380030409bfeab47d0beb2076fc66"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.schema.ts",
+      "sha256": "e74645811db99ddde73769bbde75cf1938af21080fa58ccec0e34ce396782b74"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "sha256": "08e7e707a05e75c41bb7b69f9e5b9adb9ddbcd027a3013eb271b96b5a33307fc"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.controller.ts",
+      "sha256": "b11238d1f56624d8e8c71619c25f9b2dee8f4ff0ee624ba7489879c89500f869"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.routes.ts",
+      "sha256": "2f93fe63ddaed58688cad1aaf00084e9c4c973b87a7a4e4d7ca3f94a8393907f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.service.ts",
+      "sha256": "169409a20424752522937dfa117e6f9e3fee2b92a94312596bb41469c3cab6b2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "sha256": "05959fff37f659f341f1eed79c6d761033f2db43bf51aa457b84f69865244186"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "sha256": "bb216520474dbadebf4c8d9c21037e4a28569820a4713d43b1bdecb52f1ff472"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.schema.ts",
+      "sha256": "9c3a5d3cf131e5af010d300338e0d083df69566a3e19c5fbb7f3b4da858ff268"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "sha256": "81a99ef0df876c3146d23b7c66ce4dd0720a91187b2b316e251e95a9fc07b48a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/server.ts",
+      "sha256": "68aa4c8cb222c384a5b6b30e9cb6d37e9470c931c50512d82b7b5511c9c12c1d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/setupTests.ts",
+      "sha256": "840abec94015c4fc243c17e4161d04306ab1be6b49e15daf9678290738eb6437"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/types/express.d.ts",
+      "sha256": "1069013ebe1e083f470713c44be9dbc1ecbd0c0b9820baece332b6bb4f0f91bb"
+    },
+    {
+      "path": "systems/enterprise-admin/docker-compose.yml",
+      "sha256": "854d2feaf2365ba7daaa5a6e1bcd3e1c7d22e7776ecfdf2d44dcffc1bce8d299"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/pyproject.toml",
+      "sha256": "044c1c2453a5dfa3b14dbd09e54689e4b0db2d9f7f2bd1bbed9db4d4a399a2f2"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+      "sha256": "e24eacc6750f5a4c96a83653977f40e4ddbfe6ef48398b549c0ae238b38bcb86"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+      "sha256": "7385d6399aa3ef9cd04b8732c43e91c62b50a496ba42056fc4b889f2466ce7f1"
+    }
+  ]
+}

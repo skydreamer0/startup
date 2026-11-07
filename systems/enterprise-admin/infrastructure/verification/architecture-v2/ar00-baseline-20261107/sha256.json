@@ -1,0 +1,14 @@
+{
+  "independent-review-b6ceab9-negative-controls.json": "6141f5cb8cfbe0df49712eea8a9b44bb99c428a9d9e517e25c1b62d5470a7f91",
+  "plan-tests-b6ceab9-node22.log": "62187013c815049e5a010eccee67fa3c9d96fa0ef171127907c34ed10f1e2247",
+  "diff-b6ceab9.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "independent-review-b6ceab9-scope.json": "4c9ec6ee24910d4fa5ceeaed3696378ba83d6efd60934859905c6c1a3da00971",
+  "plan-tests-node22.log": "28b35878f19186cf7e81a303ca60c1c8e50d93751dd9d00b9149684f61197b9a",
+  "plan-b6ceab9-node22.json": "04e7a1ebb58553902c4c59ade235dad02f627a4277ad9b4129a2c5cc1d366353",
+  "review-fix-attempt2.log": "e0a0149603acab756980bf01c27c32d16f93b7c6529eb10231646f319ca1b749",
+  "verify-plan-b6ceab9-node22.log": "cf485dee94957206195f1aa3da19ec4f245037aac8aece63711240b0a530c32b",
+  "review-fix-attempt1.log": "9857d12b79d5feec5ac680965238153a5072b4d18986fc777c37c83773eb3cd7",
+  "context-b6ceab9.log": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695",
+  "independent-review-b6ceab9-tests.log": "d827c8958c60acefdf2fd625bf105f1bb9eb47c76ba68b18d1440672237693b1",
+  "historical-log-transformations.json": "1ad22d702e473da8667e83615f8d367768fe64290a96e08d62048d353d1f8d8f"
+}

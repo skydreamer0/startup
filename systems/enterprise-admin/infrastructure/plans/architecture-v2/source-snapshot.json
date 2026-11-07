@@ -1,0 +1,396 @@
+{
+  "capturedAt": "2026-11-07T02:12:28.881686+00:00",
+  "sourceHead": "67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+  "sourceTree": "cc5230b00434655a286e2e5b87e0db3187383580",
+  "issues": [
+    {
+      "issue": 29,
+      "url": "https://github.com/skydreamer0/startup/issues/29",
+      "updatedAt": "2026-10-21T05:31:51Z",
+      "sha256": "1207c267d176a815131ac91aff2c24c24e7d07cef55c128b9dd4f01b7a6feb9a",
+      "checklistCount": 15,
+      "title": "fix(inventory): [P0] 統一庫存過帳、持久化批次分攤與安全 FEFO／退貨回補"
+    },
+    {
+      "issue": 30,
+      "url": "https://github.com/skydreamer0/startup/issues/30",
+      "updatedAt": "2026-10-21T05:31:57Z",
+      "sha256": "d51fcad2930f969bdc89e1c33249a53c09dc3bb70bbe0d2ad5c283dfa32dd916",
+      "checklistCount": 17,
+      "title": "fix(pos): [P0] 建立冪等 CheckoutCommand、競爭扣庫、唯一單號與精確金額規則"
+    },
+    {
+      "issue": 31,
+      "url": "https://github.com/skydreamer0/startup/issues/31",
+      "updatedAt": "2026-10-21T05:32:01Z",
+      "sha256": "a27023aee5b487f89cfa55bc4792db49c534f5d3e4b9c770d5afc4cf0d4259ad",
+      "checklistCount": 28,
+      "title": "feat(frontend): [P0/P1] 修正掃碼與庫存新鮮度，建立可續作工作區及可行動效期報表"
+    },
+    {
+      "issue": 32,
+      "url": "https://github.com/skydreamer0/startup/issues/32",
+      "updatedAt": "2026-10-09T17:33:01Z",
+      "sha256": "94f50492cdca648bc7cf862bd3efa7dbbbfe27df634cabe1cded3c798e588a27",
+      "checklistCount": 12,
+      "title": "feat(receiving): [P1] 建立商品主檔、單位／庫位與附原始證據的部分收貨流程"
+    },
+    {
+      "issue": 33,
+      "url": "https://github.com/skydreamer0/startup/issues/33",
+      "updatedAt": "2026-10-04T03:39:06Z",
+      "sha256": "c2a57464797bb3fdcc0e4ebecb71ade974ee429dbd617c441fa3c00a6ac958b8",
+      "checklistCount": 10,
+      "title": "feat(outflow): [P1] 區分零售、B2B 調貨、藥師覆核調劑、移位與退供應商"
+    },
+    {
+      "issue": 34,
+      "url": "https://github.com/skydreamer0/startup/issues/34",
+      "updatedAt": "2026-10-11T10:09:55Z",
+      "sha256": "6a335cdd3ad2bc2ea601075f5db40358f0fae587efa8f40b55c835638fe60748",
+      "checklistCount": 11,
+      "title": "feat(ai): [P1] 加入本地影像證據、可重試 OCR 工作與人工覆核閘門"
+    },
+    {
+      "issue": 35,
+      "url": "https://github.com/skydreamer0/startup/issues/35",
+      "updatedAt": "2026-10-04T03:40:25Z",
+      "sha256": "318e49f8c5addf94d6feb0cff54ac3f10535548931ede7c1723e74be82e82566",
+      "checklistCount": 13,
+      "title": "feat(devices): [P1/P2] 外盒標籤、可恢復列印佇列與 PrintAdapter／Rust 可行性 ADR"
+    },
+    {
+      "issue": 36,
+      "url": "https://github.com/skydreamer0/startup/issues/36",
+      "updatedAt": "2026-10-04T03:41:01Z",
+      "sha256": "5f5fb7adab4bbc993bfb494a055148c106eaa82c40df2121b35b6c970dedabc6",
+      "checklistCount": 14,
+      "title": "feat(ops): [P0/P1] 專用主機 Docker Compose、一鍵使用與資料／影像一致性備份"
+    },
+    {
+      "issue": 37,
+      "url": "https://github.com/skydreamer0/startup/issues/37",
+      "updatedAt": "2026-11-07T01:46:18Z",
+      "sha256": "8083dca77875a51181fb94d2b03ae6f4dcd2e4ae42d3843c1d1da9854a77a159",
+      "checklistCount": 90,
+      "title": "feat(pharmacy): [Roadmap] 單店藥局整併交付、並行工作與驗收門檻"
+    },
+    {
+      "issue": 46,
+      "url": "https://github.com/skydreamer0/startup/issues/46",
+      "updatedAt": "2026-10-13T04:27:16Z",
+      "sha256": "dad9050a8246383d093465cac8ab4799010a2060b1cdabee5d1ce747e9cef722",
+      "checklistCount": 12,
+      "title": "fix(inventory): [P0] 批次效期與狀態修改改走可稽核紀錄，釋出另設權限"
+    },
+    {
+      "issue": 48,
+      "url": "https://github.com/skydreamer0/startup/issues/48",
+      "updatedAt": "2026-10-21T05:32:09Z",
+      "sha256": "f6b74df4103b67d8fb302dcb6fa6d02609d7a33b17fa95ab6acbfab220e449be",
+      "checklistCount": 3,
+      "title": "fix(pos): [P0] 掃碼只接受完全相符的條碼／SKU"
+    },
+    {
+      "issue": 49,
+      "url": "https://github.com/skydreamer0/startup/issues/49",
+      "updatedAt": "2026-10-21T05:32:13Z",
+      "sha256": "70cff5233e4cf67f0b702ce79c8cb40cb55e6b1c67939da00ff8a97159f3b6e6",
+      "checklistCount": 4,
+      "title": "fix(pos): [P0] 結帳／退款後刷新 POS 庫存，分類改用獨立 API"
+    },
+    {
+      "issue": 137,
+      "url": "https://github.com/skydreamer0/startup/issues/137",
+      "updatedAt": "2026-10-19T16:43:03Z",
+      "sha256": "25c7b0b578cac114c46e490e20223c17432b0ce18ec1861709c8b642d6b23f0a",
+      "checklistCount": 6,
+      "title": "feat(inventory): 驗收 DL-720W 本機藥品識別標籤整合"
+    },
+    {
+      "issue": 180,
+      "url": "https://github.com/skydreamer0/startup/issues/180",
+      "updatedAt": "2026-11-07T01:33:02Z",
+      "sha256": "5749cf1b47176561241539785aecfd9e793137b7ee8657238e60d4f64cb49d10",
+      "checklistCount": null,
+      "title": "[AR-00][P0] 架構升級執行基線、業務規則驗證表與 Agent 任務圖"
+    },
+    {
+      "issue": 181,
+      "url": "https://github.com/skydreamer0/startup/issues/181",
+      "updatedAt": "2026-11-07T01:33:27Z",
+      "sha256": "54accbcef7c65c603678f6789332428817854549e749669ef73c157fd9cf6800",
+      "checklistCount": null,
+      "title": "[AR-01][P0] 領域模組重整、依賴圖與 CI 邊界防線"
+    },
+    {
+      "issue": 182,
+      "url": "https://github.com/skydreamer0/startup/issues/182",
+      "updatedAt": "2026-11-07T01:33:48Z",
+      "sha256": "36ac7ddcaeadfb88b72964fd84e02789b1cba802d4902387802b204173ce181a",
+      "checklistCount": null,
+      "title": "[AR-02][P0] 版本化 API 契約、runtime validation 與前後端相容遷移"
+    },
+    {
+      "issue": 183,
+      "url": "https://github.com/skydreamer0/startup/issues/183",
+      "updatedAt": "2026-11-07T01:34:12Z",
+      "sha256": "0b125d1d53e175f048091b60cacc5f479f1295663d7aec57aa4ee274aba6e58d",
+      "checklistCount": null,
+      "title": "[AR-03][P0] Tenant／門店／庫位模型與商品包裝、單位歷史契約"
+    },
+    {
+      "issue": 184,
+      "url": "https://github.com/skydreamer0/startup/issues/184",
+      "updatedAt": "2026-11-07T01:34:34Z",
+      "sha256": "da625968393d8eee619af45ba0f8fe3430ab48bab0947e691c64b23d6ed2aeb9",
+      "checklistCount": null,
+      "title": "[AR-04][P0] 身分與租戶權威統一、資料列隔離及可稽核權限"
+    },
+    {
+      "issue": 185,
+      "url": "https://github.com/skydreamer0/startup/issues/185",
+      "updatedAt": "2026-11-07T01:34:59Z",
+      "sha256": "c8347660506446bdd35ea778280ba9e8d7f1a1fe0a92dae067aab46e301cd002",
+      "checklistCount": null,
+      "title": "[AR-05][P0] 精確金額、數量、時間及政策版本核心"
+    },
+    {
+      "issue": 186,
+      "url": "https://github.com/skydreamer0/startup/issues/186",
+      "updatedAt": "2026-11-07T01:35:20Z",
+      "sha256": "54999a81d5d93928e0a0bab191f78203a55b0fc143615cad1054a9be9ada038e",
+      "checklistCount": null,
+      "title": "[AR-06][P0] 通用業務命令與同交易協調，保留既有結帳恢復契約"
+    },
+    {
+      "issue": 187,
+      "url": "https://github.com/skydreamer0/startup/issues/187",
+      "updatedAt": "2026-11-07T01:35:44Z",
+      "sha256": "319d9dacf6b35b4caa27b5016a56a75e96594d9d662896b0fddf12d3fc34ab63",
+      "checklistCount": null,
+      "title": "[AR-07][P0] 庫存核心升級：不可變流水、批次庫位餘額與全部 writer 切換"
+    },
+    {
+      "issue": 188,
+      "url": "https://github.com/skydreamer0/startup/issues/188",
+      "updatedAt": "2026-11-07T01:36:09Z",
+      "sha256": "d645444ea240b1eaa391d9585e0f5959fdfcd67e801f299458efa9bf8fce1802",
+      "checklistCount": null,
+      "title": "[AR-08][P0] 銷售、付款、退款與歷史成本統一交易事實"
+    },
+    {
+      "issue": 189,
+      "url": "https://github.com/skydreamer0/startup/issues/189",
+      "updatedAt": "2026-11-07T01:36:32Z",
+      "sha256": "43b90661e12022bed9b1ad33697424f75b98ec601135c3915e085e3ceb84babe",
+      "checklistCount": null,
+      "title": "[AR-09][P1] 正式收貨文件、分次收貨與 revision-bound 過帳"
+    },
+    {
+      "issue": 190,
+      "url": "https://github.com/skydreamer0/startup/issues/190",
+      "updatedAt": "2026-11-07T01:36:58Z",
+      "sha256": "7a8120086d8ecafb14d00a113b87a237649eeabeab69df9a6e39dbfd0f35f080",
+      "checklistCount": null,
+      "title": "[AR-10][P1] 實物退回、隔離放行、移位與盤點更正閉環"
+    },
+    {
+      "issue": 191,
+      "url": "https://github.com/skydreamer0/startup/issues/191",
+      "updatedAt": "2026-11-07T01:37:33Z",
+      "sha256": "497f5a23a3689a89f9e33ae9ef5443f45e0873ca96938d4605027de6205f2768",
+      "checklistCount": null,
+      "title": "[AR-11][P1] 保留庫存、分次交付與 B2B／Rx 出庫領域邊界"
+    },
+    {
+      "issue": 192,
+      "url": "https://github.com/skydreamer0/startup/issues/192",
+      "updatedAt": "2026-11-07T01:37:57Z",
+      "sha256": "7a17e4dc1e7d218558cd729f6ca60cedcf051e6cad88a11f0ba88805120fefd9",
+      "checklistCount": null,
+      "title": "[AR-12][P1] 報表讀模型、日結對帳與可重建投影"
+    },
+    {
+      "issue": 193,
+      "url": "https://github.com/skydreamer0/startup/issues/193",
+      "updatedAt": "2026-11-07T01:38:22Z",
+      "sha256": "8b02d8fdb84464e138b4c0479b6e6240780f73988967c35e115725fd67347f86",
+      "checklistCount": null,
+      "title": "[AR-13][P1] Transactional Outbox、可恢復 Worker 與副作用去重"
+    },
+    {
+      "issue": 194,
+      "url": "https://github.com/skydreamer0/startup/issues/194",
+      "updatedAt": "2026-11-07T01:38:50Z",
+      "sha256": "b625afa2ec028fdf4eeb559f50ba68a63e8b89a7a02bcb4fb078c45d5f8a4a55",
+      "checklistCount": null,
+      "title": "[AR-14][P1] 原圖與附件儲存、來源追溯及一致性生命週期"
+    },
+    {
+      "issue": 195,
+      "url": "https://github.com/skydreamer0/startup/issues/195",
+      "updatedAt": "2026-11-07T01:39:18Z",
+      "sha256": "b2d48007fd15d5acdc85bc5d85bf1ec3265539323d435d13b8d89c23567e6bca",
+      "checklistCount": null,
+      "title": "[AR-15][P1] 本地 OCR Adapter、評測與人工覆核安全接線"
+    },
+    {
+      "issue": 196,
+      "url": "https://github.com/skydreamer0/startup/issues/196",
+      "updatedAt": "2026-11-07T01:39:56Z",
+      "sha256": "6a247d43e4ccd1de8d1d534035fb7c73fe8fa8aefc967608a09c25a99ed9c6a8",
+      "checklistCount": null,
+      "title": "[AR-16][P1] 受控擴充套件 SDK、Module Manifest 與啟停相容性"
+    },
+    {
+      "issue": 197,
+      "url": "https://github.com/skydreamer0/startup/issues/197",
+      "updatedAt": "2026-11-07T01:40:29Z",
+      "sha256": "6f644ba8753d916112da949506247789c8d22dd1a5c2da72c0f1c37ee1b6d931",
+      "checklistCount": null,
+      "title": "[AR-17][P1] 外部整合 Adapter、傳送意圖與不確定結果對帳"
+    },
+    {
+      "issue": 198,
+      "url": "https://github.com/skydreamer0/startup/issues/198",
+      "updatedAt": "2026-11-07T01:40:59Z",
+      "sha256": "75d24aacbd237af16fe7ff9ec5779db5a85bf475ff168111cc791945730cf1e3",
+      "checklistCount": null,
+      "title": "[AR-18][P1] 掃描／標籤／收據裝置契約與耐久列印工作"
+    },
+    {
+      "issue": 199,
+      "url": "https://github.com/skydreamer0/startup/issues/199",
+      "updatedAt": "2026-11-07T01:41:51Z",
+      "sha256": "af198e36a084e4b1544df84d1a01787bb3fea1ee0aba701f505d34d70f4188cd",
+      "checklistCount": null,
+      "title": "[AR-19][P1] 前端模組化、草稿／提交狀態與多終端資料新鮮度"
+    },
+    {
+      "issue": 200,
+      "url": "https://github.com/skydreamer0/startup/issues/200",
+      "updatedAt": "2026-11-07T01:42:24Z",
+      "sha256": "70d79b67426f2d8a37c02c5b8d4834fd1db5671867612465bd52683ff72190f7",
+      "checklistCount": null,
+      "title": "[AR-20][P0] 安裝／升級／Schema Migration 與正式部署邊界"
+    },
+    {
+      "issue": 201,
+      "url": "https://github.com/skydreamer0/startup/issues/201",
+      "updatedAt": "2026-11-07T01:42:59Z",
+      "sha256": "f5ddf369496dca297d06b85cd777dcfb0427dd4cd0619fc73d5b2bcfac1fb5e4",
+      "checklistCount": null,
+      "title": "[AR-21][P0] DB＋原圖一致備份、乾淨主機還原與恢復後防重送"
+    },
+    {
+      "issue": 202,
+      "url": "https://github.com/skydreamer0/startup/issues/202",
+      "updatedAt": "2026-11-07T01:43:44Z",
+      "sha256": "065d0a4fcf2f94b628bc27dada278387e40416d42ef479c05c08db33f278b0a5",
+      "checklistCount": null,
+      "title": "[AR-22][P1] 可觀測性、容量餘裕與效能回歸預算"
+    },
+    {
+      "issue": 203,
+      "url": "https://github.com/skydreamer0/startup/issues/203",
+      "updatedAt": "2026-11-07T01:44:35Z",
+      "sha256": "26292f877aa2625bd1ed23db106b56ac3a51acd8201282ed9f5cf6b8edb76788",
+      "checklistCount": null,
+      "title": "[AR-23][P0] 全系統切換、擴充性實證與 G0–G7 驗收收尾"
+    }
+  ],
+  "roadmapComments": [
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6074599107",
+      "sha256": "b23856bdc49859298f47a37a527fd429e5d130c208e539fc49de513d33886c96",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6084726258",
+      "sha256": "1b0f24da12826edc5fe4700c0adf917a3d4f8fcb01a56c705f2a8a193f52fef2",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6106259728",
+      "sha256": "60978c58e9955d56e2705c70bd3c0861719b7002acce8aa9d611c0a3942cb6fd",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6108350895",
+      "sha256": "f8ce1c54d5cff2644c2578e7310c68bacb6a494e9ba49ed27dbdeb78755efd89",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6108602455",
+      "sha256": "13dada4af017a58355c13fb63efd11242ddcb55cfefcce7fb05d964f73b7f95c",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6111461857",
+      "sha256": "f1da7e4c97872450c5ac667cc928f3e858fa16119c125fd70fabf4ab2c6e8856",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6117874313",
+      "sha256": "7fbdb7583161f7a9667157f2a801cb5fbd10e7fcdfa34d41604d0468994b1129",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6118448505",
+      "sha256": "b548f0f0993a8213b8af6366808350cf72c7d28c0010b38976814da05c3e160e",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6119992428",
+      "sha256": "9916cdf7e67753a5155941759a33c69099768851d25ef3a4262ec79e8ace124c",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6123680958",
+      "sha256": "7fc053b6ec467280d3a53bff9e4d811b0751bb6f7d4bf4294d4ef903a4e4315e",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6138225822",
+      "sha256": "fed241c632b3ee8329a32e60026c0bad8595682439750ac714ed524e2a3f7c33",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6198842659",
+      "sha256": "aab3a89f6b42c0b14276646fbd8cb587a0c063ce064de648f1c3b9b9b4eedb51",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6249107907",
+      "sha256": "13a92697ac38c63166e733c5b4d271ef9a9421b5a70005fdf40663680c3934c8",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6308847842",
+      "sha256": "9e38cccaaff71342c9da7f83293572407cfe8555b826fc57d45fc4e1149faa8c",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6331185482",
+      "sha256": "0cce5ff6d2ea2f40906b664daf4c7666d54bf11065f9d137a43792a8905a4527",
+      "updatedAt": null
+    },
+    {
+      "url": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6700557196",
+      "sha256": "2056a204001ffb4f462131f0959fcbaf21493f6017f59100b45bc1805717aa6b",
+      "updatedAt": null
+    }
+  ],
+  "pullsRestPages": [
+    {
+      "page": 1,
+      "count": 11
+    },
+    {
+      "page": 2,
+      "count": 0
+    }
+  ],
+  "limitations": ["GitHub issue-search did not return PRs reliably; complete PR inventory uses REST pulls pages instead.", "No production deployment or live capability configuration was inspected."]
+}

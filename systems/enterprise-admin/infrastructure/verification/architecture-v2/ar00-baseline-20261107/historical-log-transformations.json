@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Disclosed privacy and whitespace normalization for historical failed-run publication copies only; no transformation of accepted b6ceab9 proof artifacts.",
+  "logs": [
+    {
+      "file": "review-fix-attempt1.log",
+      "originalSha256": "d9ea85ec9ace38817b1baff76ef6e15e07da737670ed0065cc6818216cecba5f",
+      "publishedSha256": "9857d12b79d5feec5ac680965238153a5072b4d18986fc777c37c83773eb3cd7",
+      "checkoutPrefixReplacements": 2,
+      "trailingWhitespaceLinesNormalized": 4,
+      "transformations": [
+        "Replace cloud checkout absolute path prefix with <checkout>/",
+        "Remove trailing ASCII spaces and tabs from log lines"
+      ],
+      "note": "Historical failed-run transcript only. Assertions, error text, counts and source-relative locations are unchanged. Original bytes remain retained outside the public repository; the original hash is a provenance receipt, not a downloadable artifact or passing check."
+    },
+    {
+      "file": "review-fix-attempt2.log",
+      "originalSha256": "96c8637c050d2b291a1b74a0bd9c889aff8510ea5b60d40e671afb5b5ef52628",
+      "publishedSha256": "e0a0149603acab756980bf01c27c32d16f93b7c6529eb10231646f319ca1b749",
+      "checkoutPrefixReplacements": 2,
+      "trailingWhitespaceLinesNormalized": 2,
+      "transformations": [
+        "Replace cloud checkout absolute path prefix with <checkout>/",
+        "Remove trailing ASCII spaces and tabs from log lines"
+      ],
+      "note": "Historical failed-run transcript only. Assertions, error text, counts and source-relative locations are unchanged. Original bytes remain retained outside the public repository; the original hash is a provenance receipt, not a downloadable artifact or passing check."
+    }
+  ]
+}

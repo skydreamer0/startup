@@ -1,0 +1,371 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: checked baseline is valid and inventory source matches
+ok 1 - checked baseline is valid and inventory source matches
+  ---
+  duration_ms: 25.377498
+  type: 'test'
+  ...
+# Subtest: current baseline stays active; no dependency is dispatched early
+ok 2 - current baseline stays active; no dependency is dispatched early
+  ---
+  duration_ms: 5.1149
+  type: 'test'
+  ...
+# Subtest: readiness does not mutate manifest
+ok 3 - readiness does not mutate manifest
+  ---
+  duration_ms: 4.210066
+  type: 'test'
+  ...
+# Subtest: engineering readiness does not wait for an unrelated policy
+ok 4 - engineering readiness does not wait for an unrelated policy
+  ---
+  duration_ms: 1.4939
+  type: 'test'
+  ...
+# Subtest: integration dependency is separate from contract start
+ok 5 - integration dependency is separate from contract start
+  ---
+  duration_ms: 1.162798
+  type: 'test'
+  ...
+# Subtest: scheduler caps suggestions at three and respects active slots
+ok 6 - scheduler caps suggestions at three and respects active slots
+  ---
+  duration_ms: 0.824095
+  type: 'test'
+  ...
+# Subtest: scheduler reserves locks for suggested work as well as active work
+ok 7 - scheduler reserves locks for suggested work as well as active work
+  ---
+  duration_ms: 1.028859
+  type: 'test'
+  ...
+# Subtest: unknown dependency rejected
+ok 8 - unknown dependency rejected
+  ---
+  duration_ms: 3.48663
+  type: 'test'
+  ...
+# Subtest: self dependency rejected
+ok 9 - self dependency rejected
+  ---
+  duration_ms: 3.254716
+  type: 'test'
+  ...
+# Subtest: cycles include integration edges
+ok 10 - cycles include integration edges
+  ---
+  duration_ms: 3.699367
+  type: 'test'
+  ...
+# Subtest: duplicate IDs rejected
+ok 11 - duplicate IDs rejected
+  ---
+  duration_ms: 3.306763
+  type: 'test'
+  ...
+# Subtest: missing declared overlap lock rejected
+ok 12 - missing declared overlap lock rejected
+  ---
+  duration_ms: 3.119425
+  type: 'test'
+  ...
+# Subtest: unregistered shared write collision rejected
+ok 13 - unregistered shared write collision rejected
+  ---
+  duration_ms: 2.4226
+  type: 'test'
+  ...
+# Subtest: prefix collision is segment based
+ok 14 - prefix collision is segment based
+  ---
+  duration_ms: 0.078947
+  type: 'test'
+  ...
+# Subtest: path traversal rejected
+ok 15 - path traversal rejected
+  ---
+  duration_ms: 2.825769
+  type: 'test'
+  ...
+# Subtest: absolute path rejected
+ok 16 - absolute path rejected
+  ---
+  duration_ms: 3.536835
+  type: 'test'
+  ...
+# Subtest: wildcard scope must be expanded explicitly
+ok 17 - wildcard scope must be expanded explicitly
+  ---
+  duration_ms: 2.532002
+  type: 'test'
+  ...
+# Subtest: shared core lock owner cannot vary
+ok 18 - shared core lock owner cannot vary
+  ---
+  duration_ms: 3.395034
+  type: 'test'
+  ...
+# Subtest: four active workers rejected
+ok 19 - four active workers rejected
+  ---
+  duration_ms: 3.195498
+  type: 'test'
+  ...
+# Subtest: active overlapping writer rejected
+ok 20 - active overlapping writer rejected
+  ---
+  duration_ms: 3.110041
+  type: 'test'
+  ...
+# Subtest: active before prerequisite completion rejected
+ok 21 - active before prerequisite completion rejected
+  ---
+  duration_ms: 2.61798
+  type: 'test'
+  ...
+# Subtest: complete task without evidence rejected
+ok 22 - complete task without evidence rejected
+  ---
+  duration_ms: 3.254856
+  type: 'test'
+  ...
+# Subtest: author self-review is not independent acceptance
+ok 23 - author self-review is not independent acceptance
+  ---
+  duration_ms: 2.882483
+  type: 'test'
+  ...
+# Subtest: review of another SHA does not complete a check
+ok 24 - review of another SHA does not complete a check
+  ---
+  duration_ms: 2.824277
+  type: 'test'
+  ...
+# Subtest: focused pass does not set task PASS
+ok 25 - focused pass does not set task PASS
+  ---
+  duration_ms: 3.375676
+  type: 'test'
+  ...
+# Subtest: unapproved decision cannot activate a task
+ok 26 - unapproved decision cannot activate a task
+  ---
+  duration_ms: 2.939208
+  type: 'test'
+  ...
+# Subtest: policy approval requires a source
+ok 27 - policy approval requires a source
+  ---
+  duration_ms: 3.013668
+  type: 'test'
+  ...
+# Subtest: missing decision and gate rejected
+ok 28 - missing decision and gate rejected
+  ---
+  duration_ms: 2.533184
+  type: 'test'
+  ...
+# Subtest: unknown policy gate rejected
+ok 29 - unknown policy gate rejected
+  ---
+  duration_ms: 2.882564
+  type: 'test'
+  ...
+# Subtest: evidence accepts its complete executed fixture
+ok 30 - evidence accepts its complete executed fixture
+  ---
+  duration_ms: 0.138696
+  type: 'test'
+  ...
+# Subtest: PASS requires exit zero
+ok 31 - PASS requires exit zero
+  ---
+  duration_ms: 0.105637
+  type: 'test'
+  ...
+# Subtest: PASS cannot hide dirty source
+ok 32 - PASS cannot hide dirty source
+  ---
+  duration_ms: 0.099378
+  type: 'test'
+  ...
+# Subtest: executed evidence requires artifact hash
+ok 33 - executed evidence requires artifact hash
+  ---
+  duration_ms: 0.212436
+  type: 'test'
+  ...
+# Subtest: short SHA is rejected
+ok 34 - short SHA is rejected
+  ---
+  duration_ms: 0.124085
+  type: 'test'
+  ...
+# Subtest: NOT_RUN has no pretend exit code
+ok 35 - NOT_RUN has no pretend exit code
+  ---
+  duration_ms: 0.218224
+  type: 'test'
+  ...
+# Subtest: SKIP cannot complete required acceptance
+ok 36 - SKIP cannot complete required acceptance
+  ---
+  duration_ms: 2.80709
+  type: 'test'
+  ...
+# Subtest: missing source requirement owner is rejected
+ok 37 - missing source requirement owner is rejected
+  ---
+  duration_ms: 7.036335
+  type: 'test'
+  ...
+# Subtest: lost requirement row is rejected
+ok 38 - lost requirement row is rejected
+  ---
+  duration_ms: 7.661785
+  type: 'test'
+  ...
+# Subtest: unowned model is rejected
+ok 39 - unowned model is rejected
+  ---
+  duration_ms: 5.867508
+  type: 'test'
+  ...
+# Subtest: source fingerprint drift is rejected
+ok 40 - source fingerprint drift is rejected
+  ---
+  duration_ms: 11.725424
+  type: 'test'
+  ...
+# Subtest: CLI refuses unknown and missing options
+ok 41 - CLI refuses unknown and missing options
+  ---
+  duration_ms: 104.540737
+  type: 'test'
+  ...
+# Subtest: CLI plan and verification are deterministic read-only
+ok 42 - CLI plan and verification are deterministic read-only
+  ---
+  duration_ms: 123.469963
+  type: 'test'
+  ...
+# Subtest: omitted mounted endpoint is rejected
+ok 43 - omitted mounted endpoint is rejected
+  ---
+  duration_ms: 12.07377
+  type: 'test'
+  ...
+# Subtest: omitted schema model is rejected
+ok 44 - omitted schema model is rejected
+  ---
+  duration_ms: 10.991623
+  type: 'test'
+  ...
+# Subtest: omitted runtime source fingerprint is rejected
+ok 45 - omitted runtime source fingerprint is rejected
+  ---
+  duration_ms: 12.589567
+  type: 'test'
+  ...
+# Subtest: malformed evidence ledger rejected
+ok 46 - malformed evidence ledger rejected
+  ---
+  duration_ms: 2.676708
+  type: 'test'
+  ...
+# Subtest: PASS cannot hide failed or skipped subcases
+ok 47 - PASS cannot hide failed or skipped subcases
+  ---
+  duration_ms: 0.238855
+  type: 'test'
+  ...
+# Subtest: integration lock prerequisites cannot deadlock AR09 and AR13/14
+not ok 48 - integration lock prerequisites cannot deadlock AR09 and AR13/14
+  ---
+  duration_ms: 7.616963
+  type: 'test'
+  location: '<checkout>/scripts/architecture/plan.test.mjs:62:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert(p.ready.includes('AR-13'))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://<checkout>/scripts/architecture/plan.test.mjs:62:164)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: evidence from seven different heads cannot assemble one completed task
+ok 49 - evidence from seven different heads cannot assemble one completed task
+  ---
+  duration_ms: 3.88315
+  type: 'test'
+  ...
+# Subtest: one different tree cannot join otherwise matching subject evidence
+ok 50 - one different tree cannot join otherwise matching subject evidence
+  ---
+  duration_ms: 3.19006
+  type: 'test'
+  ...
+# Subtest: rewritten requirement text with original hash is rejected
+ok 51 - rewritten requirement text with original hash is rejected
+  ---
+  duration_ms: 11.13473
+  type: 'test'
+  ...
+# Subtest: rewritten requirement text with recomputed hash is rejected
+ok 52 - rewritten requirement text with recomputed hash is rejected
+  ---
+  duration_ms: 10.058607
+  type: 'test'
+  ...
+# Subtest: deleting all \#29 requirements and matching count is rejected
+ok 53 - deleting all \#29 requirements and matching count is rejected
+  ---
+  duration_ms: 11.092672
+  type: 'test'
+  ...
+# Subtest: alternative manifest cannot claim sourceChecked without source verification
+ok 54 - alternative manifest cannot claim sourceChecked without source verification
+  ---
+  duration_ms: 48.407199
+  type: 'test'
+  ...
+# Subtest: G gate cannot become PASS from a status toggle
+ok 55 - G gate cannot become PASS from a status toggle
+  ---
+  duration_ms: 3.348025
+  type: 'test'
+  ...
+# Subtest: G gate evidence is scoped and bound to one source
+ok 56 - G gate evidence is scoped and bound to one source
+  ---
+  duration_ms: 5.211134
+  type: 'test'
+  ...
+1..56
+# tests 56
+# suites 0
+# pass 55
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 622.369216

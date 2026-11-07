@@ -1,0 +1,8 @@
+(node:60) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "result": "PASS",
+  "tasks": 24,
+  "errors": [],
+  "sourceChecked": true
+}

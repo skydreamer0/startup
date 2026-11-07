@@ -1,0 +1,1649 @@
+{
+  "schemaVersion": 1,
+  "snapshotVersion": "2026-11-07.1",
+  "repository": "skydreamer0/startup",
+  "capturedAt": "2026-11-07T02:12:28.881686+00:00",
+  "sourceHead": "67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+  "sourceTree": "cc5230b00434655a286e2e5b87e0db3187383580",
+  "master": {
+    "sha": "d703e416952b0e02a8241a86057d248a5c7b4662",
+    "tree": "15cf360798d2523ae155dad9c52504b783092c29"
+  },
+  "roadmap": "https://github.com/skydreamer0/startup/issues/37#issuecomment-6700557196",
+  "maxWorkers": 3,
+  "schedulerMode": "read-only",
+  "locks": [
+    {
+      "id": "schema-migrations",
+      "owner": "integration-owner",
+      "paths": ["systems/enterprise-admin/backend/prisma"]
+    },
+    {
+      "id": "package-locks",
+      "owner": "integration-owner",
+      "paths": ["systems/enterprise-admin/package.json", "systems/enterprise-admin/pnpm-lock.yaml", "systems/enterprise-admin/pnpm-workspace.yaml", "systems/enterprise-admin/backend/package.json", "systems/enterprise-admin/backend/package-lock.json", "systems/enterprise-admin/admin-ui/package.json", "systems/enterprise-admin/pos-ui/package.json", "systems/enterprise-admin/packages"]
+    },
+    {
+      "id": "composition",
+      "owner": "integration-owner",
+      "paths": ["systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/backend/src/server.ts", "systems/enterprise-admin/backend/src/composition", "systems/enterprise-admin/backend/src/application"]
+    },
+    {
+      "id": "backend-domain",
+      "owner": "slice-owner",
+      "paths": ["systems/enterprise-admin/backend/src/modules"]
+    },
+    {
+      "id": "platform-kernel",
+      "owner": "slice-owner",
+      "paths": ["systems/enterprise-admin/backend/src/platform", "systems/enterprise-admin/backend/src/kernel", "systems/enterprise-admin/backend/src/lib", "systems/enterprise-admin/backend/src/middleware"]
+    },
+    {
+      "id": "frontend",
+      "owner": "slice-owner",
+      "paths": ["systems/enterprise-admin/admin-ui/src", "systems/enterprise-admin/pos-ui/src"]
+    },
+    {
+      "id": "deploy",
+      "owner": "slice-owner",
+      "paths": ["systems/enterprise-admin/deploy", "systems/enterprise-admin/docker-compose.yml", "systems/enterprise-admin/nginx", "systems/enterprise-admin/backend/Dockerfile", "systems/enterprise-admin/admin-ui/Dockerfile", "systems/enterprise-admin/pos-ui/Dockerfile", "systems/enterprise-admin/.env.production.example"]
+    },
+    {
+      "id": "plans-context",
+      "owner": "slice-owner",
+      "paths": ["systems/enterprise-admin/ROADMAP.md", "systems/enterprise-admin/CONTEXT.md", "systems/enterprise-admin/infrastructure/plans", "systems/enterprise-admin/infrastructure/standards", "scripts/architecture", "docs/architecture.md", "scripts/validate-agent-context.sh", ".github/workflows"]
+    },
+    {
+      "id": "device",
+      "owner": "slice-owner",
+      "paths": ["systems/enterprise-admin/local-print-agent"]
+    },
+    {
+      "id": "ocr",
+      "owner": "slice-owner",
+      "paths": ["scripts/ocr-evaluation"]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D01",
+      "name": "金額精度、捨入、折扣、找零",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D02",
+      "name": "退款期間、歸屬與分攤",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D03",
+      "name": "成本來源及估價",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D04",
+      "name": "單位、拆零與換算",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D05",
+      "name": "退回放行與差異處理角色",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D06",
+      "name": "Rx 存取、保存、藥師角色",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D07",
+      "name": "正式主機、裝置及操作員",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D08",
+      "name": "備份故障域、RPO/RTO、保存及維護者",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    },
+    {
+      "id": "D09",
+      "name": "負載、延遲與資源門檻",
+      "status": "UNAPPROVED",
+      "approvalSource": null,
+      "testProfile": "TEST_ONLY",
+      "scope": "activation-only"
+    }
+  ],
+  "activationGates": [
+    {
+      "id": "G0",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G0-AC01",
+          "description": "| **G0：既有操作可用** | 任何包含相關 Admin／POS 路徑的試用 | 批號合法角色讀到 fixture、非法角色仍 403；403 不畫成 empty；新增表單真分頁資料不 crash／可取消；exact scan；確認量更新。1440×900／1024×768／1180×820 普通點擊無遮擋；保留 mobile=true 取消失敗的回歸，固定模式通過不代替其他模式 |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    },
+    {
+      "id": "G1",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G1-AC01",
+          "description": "| **G1：共同 posting／command 安全** | 任何正式數量寫入前 | 真 PG 測最後一件、重複商品列、同 key 同 payload 回原結果／不同 payload conflict、lost response／重啟、途中 rollback、唯一單號、scope。涵蓋 POS↔一般訂單、POS↔調整／匯入、收貨↔出庫等**本次啟用的混合 writer**；啟用 reservation 時加 reservation↔checkout。未啟用入口驗證 API/job 拒絕，不要求先實作所有 writer。逐筆驗 order/payment-record/allocation/movement/balance/command 原子一致；checkout 的 Decimal／最小貨幣單位、折扣／捨入、split payment／找零／部分退款皆驗 API–DB 金額一致，不能延到財務報表才驗 |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    },
+    {
+      "id": "G2",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G2-AC01",
+          "description": "| **G2：遷移與開帳** | 以此系統作真實庫存權威前 | 舊差異與 opening physical stock 經確認；baseline＋後續 movements 可重建 projection；未知資料明示。dry-run、migration fail-fast、版本／rollback 相容與全部 writer cutover 清單；未轉接 writer API/job 已拒絕 |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    },
+    {
+      "id": "G3",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G3-AC01",
+          "description": "| **G3：入庫 OCR／收貨** | 草稿試用先驗草稿部分；合成 receipt posting 加 G1＋最小單位／bin；真資料成為庫存權威再加 G2 | 有碼、無碼、破損／讀不到碼、unknown code 皆到同一 draft；條碼不自動證明 lot/expiry；衝突阻止過帳。critical fields＋evidence revision 改動使 approval 失效；posting 同一 transaction 內再比對 business/evidence revision 與有效 approval，並行修改不符時整筆拒絕。late OCR 不蓋人改。商品／單位不明不可正式數量過帳；lot／expiry 不明只可草稿或依已確認政策入隔離，不能直接釋出。ready 原圖、部分到貨／拒收／隔離、合法第二批與重送防重可區分，posted line→batch→全部 bins→source photo 可查 |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    },
+    {
+      "id": "G4",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G4-AC01",
+          "description": "| **G4：零售／手動出庫／退回／移位** | 每個 subtype 啟用前 | 實際 lot/bin allocation 持久化、eligible FEFO、退款未收貨不補庫、回收先隔離；移位總量守恆。B2B dispatch／ack 不重複扣，退供應商來源／方向獨立；partial／reservation／handover 按當次啟用範圍驗，未啟用者不能偷走 generic order |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    },
+    {
+      "id": "G5",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G5-AC01",
+          "description": "| **G5：QR／主機列印** | 開啟此設備流程前 | QR 為批次級、同批多盒共碼不算箱數；掃描只讀批次與全部 bins，unknown／跨店拒絕；標籤上印出的 bin 文字是可能過時的位置提示。print retry／uncertain／同 ID 重印不過帳，主機 allowlist／ACL、真 Deli 型號＋標籤尺寸／協定＋host transport 實測；如貼標才釋出另驗該人工作業 |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    },
+    {
+      "id": "G6",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G6-AC01",
+          "description": "| **G6：報表／處方的功能 gate** | 對應功能啟用前 | 近效期／滯銷具資料時間、缺資料標記、lot/bin/action 狀態，移位不算銷售；money／成本／折扣／退款對帳通過後財務報表才作依據。Rx 輔助需 ACL、原圖／候選／藥師核對與未解欄位；完整處方交付另驗 revision-bound approval、partial 與實際批次，無自動臨床替代／健保申報承諾 |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    },
+    {
+      "id": "G7",
+      "status": "NOT_RUN",
+      "source": "https://github.com/skydreamer0/startup/issues/37",
+      "requiredChecks": [
+        {
+          "id": "G7-AC01",
+          "description": "| **G7：部署、恢復與代表性負載** | 每次實店啟用／擴大範圍前 | 最終專用主機 Compose、單 URL、DB/schema/assets readiness、重開機／LAN、DB＋原圖 manifest 還原、ACL/dedupe/pending jobs 對帳。數千 SKU 代表性資料、末端搜尋／分頁及 2–3 條已啟用流程重疊，前景 p50/p95／DB waits／CPU/RAM／event loop／payload 與背景 OCR 開關比較，按事先同意門檻判定 |"
+        }
+      ],
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "scope": null,
+      "reviewer": null
+    }
+  ],
+  "openPullRequests": [
+    {
+      "number": 204,
+      "head": "67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+      "base": "aa6aae0154834d106f25c636af4c78b222e7a7dc",
+      "headRef": "chore/pharmacy-feature-integration-20261107",
+      "baseRef": "fix/pharmacy-archive-audit-20261102",
+      "title": "chore(pharmacy): verify settlement and receiving on security stack",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-11-07T02:07:27Z"
+    },
+    {
+      "number": 179,
+      "head": "43b81a4d5e805ba0c2edaa5411a681b8132252a1",
+      "base": "d703e416952b0e02a8241a86057d248a5c7b4662",
+      "headRef": "test/receiving-lifecycle-evidence-20261107",
+      "baseRef": "master",
+      "title": "test(receiving): extend CAS and unknown-navigation evidence",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-11-07T01:58:12Z"
+    },
+    {
+      "number": 178,
+      "head": "182ef155fc8baa350816e1f56a1be5a8fb82e57e",
+      "base": "d703e416952b0e02a8241a86057d248a5c7b4662",
+      "headRef": "fix/issue30-refund-reconciliation-20261107",
+      "baseRef": "master",
+      "title": "fix(shifts): preserve first close and settlement confirmation",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-11-07T01:45:39Z"
+    },
+    {
+      "number": 177,
+      "head": "3565155f10fd67548fc60a5ae1760c434afe182b",
+      "base": "d703e416952b0e02a8241a86057d248a5c7b4662",
+      "headRef": "dependabot/npm_and_yarn/systems/enterprise-admin/frontend-patch-minor-490a331adc",
+      "baseRef": "master",
+      "title": "chore(deps): bump the frontend-patch-minor group across 1 directory with 8 updates",
+      "draft": false,
+      "author": "dependabot[bot]",
+      "updatedAt": "2026-11-04T07:12:05Z"
+    },
+    {
+      "number": 176,
+      "head": "0d675e4f74b553cbb581dafe61c2216260228dea",
+      "base": "d703e416952b0e02a8241a86057d248a5c7b4662",
+      "headRef": "dependabot/npm_and_yarn/systems/enterprise-admin/backend/backend-patch-minor-5c665f80cf",
+      "baseRef": "master",
+      "title": "chore(deps): bump the backend-patch-minor group across 1 directory with 5 updates",
+      "draft": false,
+      "author": "dependabot[bot]",
+      "updatedAt": "2026-11-04T07:10:47Z"
+    },
+    {
+      "number": 175,
+      "head": "aa6aae0154834d106f25c636af4c78b222e7a7dc",
+      "base": "eec16cd04d105505bfab154abb420fa1b6ac29c3",
+      "headRef": "fix/pharmacy-archive-audit-20261102",
+      "baseRef": "fix/pharmacy-audit-closeout-20261102",
+      "title": "fix(deps): close remaining archive dependency audit paths",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-11-07T01:15:07Z"
+    },
+    {
+      "number": 174,
+      "head": "eec16cd04d105505bfab154abb420fa1b6ac29c3",
+      "base": "2a5d860fd29811f247ca6b0d1f5f9f7075763f91",
+      "headRef": "fix/pharmacy-audit-closeout-20261102",
+      "baseRef": "fix/pharmacy-169-acceptance-timeout",
+      "title": "fix(deps): patch compatible pharmacy audit paths (partial remediation)",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-11-02T13:21:34Z"
+    },
+    {
+      "number": 173,
+      "head": "2a5d860fd29811f247ca6b0d1f5f9f7075763f91",
+      "base": "5b1e7adb966920c4c6eef640605d87fc262dc936",
+      "headRef": "fix/pharmacy-169-acceptance-timeout",
+      "baseRef": "chore/pharmacy-gap-acceptance-20261027",
+      "title": "fix(ci): allow pharmacy acceptance cleanup to complete",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-11-02T02:36:33Z"
+    },
+    {
+      "number": 172,
+      "head": "1899065821839fae70ffd6166af8ce23516bb053",
+      "base": "d703e416952b0e02a8241a86057d248a5c7b4662",
+      "headRef": "docs/work-principle-20261031",
+      "baseRef": "master",
+      "title": "docs: add shared work principle to agent instructions",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-11-01T03:17:51Z"
+    },
+    {
+      "number": 169,
+      "head": "5b1e7adb966920c4c6eef640605d87fc262dc936",
+      "base": "d703e416952b0e02a8241a86057d248a5c7b4662",
+      "headRef": "chore/pharmacy-gap-acceptance-20261027",
+      "baseRef": "master",
+      "title": "test(backend): preserve isolated pharmacy gap acceptance",
+      "draft": true,
+      "author": "skydreamer0",
+      "updatedAt": "2026-10-27T16:33:06Z"
+    },
+    {
+      "number": 166,
+      "head": "30e8b8f44294b45b3c97749662537cab6bbc11e5",
+      "base": "d703e416952b0e02a8241a86057d248a5c7b4662",
+      "headRef": "fix/dashboard-missing-rates",
+      "baseRef": "master",
+      "title": "fix(admin-ui): keep missing Dashboard supplier rates neutral",
+      "draft": false,
+      "author": "skydreamer0",
+      "updatedAt": "2026-10-27T13:54:58Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "AR-00",
+      "issue": 180,
+      "url": "https://github.com/skydreamer0/startup/issues/180",
+      "title": "[AR-00][P0] 架構升級執行基線、業務規則驗證表與 Agent 任務圖",
+      "dependsOn": [],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/infrastructure/plans/architecture-v2", "systems/enterprise-admin/ROADMAP.md", "systems/enterprise-admin/CONTEXT.md", "scripts/architecture"],
+      "newPaths": [],
+      "writePaths": ["systems/enterprise-admin/infrastructure/plans/architecture-v2", "systems/enterprise-admin/ROADMAP.md", "systems/enterprise-admin/CONTEXT.md", "scripts/architecture"],
+      "exclusiveLocks": ["plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-00-AC01",
+          "description": "現有所有啟用 writer 與既有需求皆有 owner、去向和測試，沒有需求遺失。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC02",
+          "description": "manifest 無循環/不存在相依，overlap 檔案鎖可驗證；相依完成才可派工。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC03",
+          "description": "基線 PASS/FAIL/SKIP/NOT_RUN 分列，未執行不算通過。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC04",
+          "description": "政策未決不阻擋不相關 ready task，也不能使功能偷偷啟用。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC05",
+          "description": "機器可讀 evidence 與 GitHub checkbox 分開；軟體完成不等於 G0–G7/實店完成。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-TOOLS",
+          "description": "Plan graph, locks, policy, evidence rejection tests and baseline source hash verification",
+          "kind": "node",
+          "command": "node --test scripts/architecture/plan.test.mjs && node scripts/architecture/verify-plan.mjs"
+        },
+        {
+          "id": "AR-00-CONTEXT",
+          "description": "Repository context and whitespace",
+          "kind": "static",
+          "command": "./scripts/validate-agent-context.sh && git diff --check"
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": [],
+      "status": "active",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": "baseline-owner",
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-01",
+      "issue": 181,
+      "url": "https://github.com/skydreamer0/startup/issues/181",
+      "title": "[AR-01][P0] 領域模組重整、依賴圖與 CI 邊界防線",
+      "dependsOn": ["AR-00"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts", "systems/enterprise-admin/backend/package.json", "systems/enterprise-admin/backend/Dockerfile", "systems/enterprise-admin/package.json", "systems/enterprise-admin/packages/types", "scripts/validate-agent-context.sh", ".github/workflows"],
+      "newPaths": ["systems/enterprise-admin/backend/src/composition", "systems/enterprise-admin/backend/src/application", "systems/enterprise-admin/backend/src/kernel", "systems/enterprise-admin/backend/src/platform", "scripts/architecture/check-boundaries.mjs"],
+      "writePaths": ["systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts", "systems/enterprise-admin/backend/src/composition", "systems/enterprise-admin/backend/src/application", "systems/enterprise-admin/backend/src/kernel", "systems/enterprise-admin/backend/src/platform", "systems/enterprise-admin/backend/package.json", "systems/enterprise-admin/backend/Dockerfile", "systems/enterprise-admin/package.json", "systems/enterprise-admin/packages/types", "scripts/architecture/check-boundaries.mjs", "scripts/validate-agent-context.sh", ".github/workflows"],
+      "exclusiveLocks": ["package-locks", "composition", "backend-domain", "platform-kernel", "deploy", "plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-01-AC01",
+          "description": "刻意增加循環、deep import、domain Prisma import 的 mutation fixture 均使 CI 失敗。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-01-AC02",
+          "description": "一個真正使用者流程完成新邊界改造，訂單/庫存/金額/unknown recovery 回歸不變。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-01-AC03",
+          "description": "backend、兩 SPA、共同型別在 clean install 與最終 Docker image build/test 通過。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-01-AC04",
+          "description": "舊 facade 移除條件及所有 callers 完整列出；沒有另一份庫存/財務 authority。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": [],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-02",
+      "issue": 182,
+      "url": "https://github.com/skydreamer0/startup/issues/182",
+      "title": "[AR-02][P0] 版本化 API 契約、runtime validation 與前後端相容遷移",
+      "dependsOn": ["AR-01"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/packages/types", "systems/enterprise-admin/backend/src/modules", "systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/admin-ui/src/api", "systems/enterprise-admin/pos-ui/src/services", "systems/enterprise-admin/infrastructure/api", "scripts/architecture"],
+      "newPaths": ["systems/enterprise-admin/packages/contracts"],
+      "writePaths": ["systems/enterprise-admin/packages/contracts", "systems/enterprise-admin/packages/types", "systems/enterprise-admin/backend/src/modules", "systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/admin-ui/src/api", "systems/enterprise-admin/pos-ui/src/services", "systems/enterprise-admin/infrastructure/api", "scripts/architecture"],
+      "exclusiveLocks": ["package-locks", "composition", "backend-domain", "frontend", "plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-02-AC01",
+          "description": "generate 後零非預期 diff；破壞性變更在 CI 擋下。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-02-AC02",
+          "description": "0.1/0.2、最大範圍、非法日期、未知狀態、重複參數、錯 scope/版本契約案例。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-02-AC03",
+          "description": "v1 已提交 unknown 命令在升級後查回相同 JSON；新舊 client 混用不產生兩筆事實。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-02-AC04",
+          "description": "DTO 不外洩成本/病人/認證資訊；兩 SPA 與 backend final-image build 通過。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": [],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-03",
+      "issue": 183,
+      "url": "https://github.com/skydreamer0/startup/issues/183",
+      "title": "[AR-03][P0] Tenant／門店／庫位模型與商品包裝、單位歷史契約",
+      "dependsOn": ["AR-02"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts", "systems/enterprise-admin/admin-ui/src/api"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/organization", "systems/enterprise-admin/backend/src/modules/catalog"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/organization", "systems/enterprise-admin/backend/src/modules/catalog", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts", "systems/enterprise-admin/admin-ui/src/api"],
+      "exclusiveLocks": ["schema-migrations", "backend-domain", "platform-kernel", "frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-03-AC01",
+          "description": "兩租戶×兩門店、跨租戶/跨店 FK 拒絕；同 SKU 不混資料。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-03-AC02",
+          "description": "舊資料 upgrade 可重跑，未知 lot/bin/cost 明確保留；無假歷史。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-03-AC03",
+          "description": "改包裝內容量不改舊單換算，未知換算不能結帳/收貨；前導零條碼不丟失。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-03-AC04",
+          "description": "新舊 lookup/QR 仍可讀；多店功能沒有因 schema 存在就宣稱已交付。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D04"],
+      "activationGates": ["G1", "G2"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-04",
+      "issue": 184,
+      "url": "https://github.com/skydreamer0/startup/issues/184",
+      "title": "[AR-04][P0] 身分與租戶權威統一、資料列隔離及可稽核權限",
+      "dependsOn": ["AR-03"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/middleware", "systems/enterprise-admin/backend/src/lib/prisma.ts", "systems/enterprise-admin/backend/src/lib/tenant.context.ts", "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts", "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts", "systems/enterprise-admin/backend/src/modules/auth", "systems/enterprise-admin/backend/src/modules/roles", "systems/enterprise-admin/backend/src/modules/audit-logs"],
+      "newPaths": ["systems/enterprise-admin/backend/src/platform/access"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/middleware", "systems/enterprise-admin/backend/src/lib/prisma.ts", "systems/enterprise-admin/backend/src/lib/tenant.context.ts", "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts", "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts", "systems/enterprise-admin/backend/src/modules/auth", "systems/enterprise-admin/backend/src/modules/roles", "systems/enterprise-admin/backend/src/modules/audit-logs", "systems/enterprise-admin/backend/src/platform/access"],
+      "exclusiveLocks": ["schema-migrations", "backend-domain", "platform-kernel"],
+      "requiredChecks": [
+        {
+          "id": "AR-04-AC01",
+          "description": "真 PG A/B tenant、兩 store、raw query、relation、upsert、並行連線重用、worker、非法 header/old token 全部測試。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-04-AC02",
+          "description": "runtime role 不能繞 RLS 或直接修改 append-only 事實；migration role 不進 HTTP app。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-04-AC03",
+          "description": "每一公開/受保護 route 有明確矩陣；不破壞員工碼登入/恢復流程。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-04-AC04",
+          "description": "role revoke、新權限/模組停用、敏感匯出均由後端拒絕且稽核。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D06"],
+      "activationGates": ["G0", "G1"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-05",
+      "issue": 185,
+      "url": "https://github.com/skydreamer0/startup/issues/185",
+      "title": "[AR-05][P0] 精確金額、數量、時間及政策版本核心",
+      "dependsOn": ["AR-02"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/lib/business-day.ts", "systems/enterprise-admin/backend/src/lib/batch-expiry.ts"],
+      "newPaths": ["systems/enterprise-admin/backend/src/kernel", "systems/enterprise-admin/backend/src/modules/policies", "systems/enterprise-admin/packages/contracts"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/kernel", "systems/enterprise-admin/backend/src/modules/policies", "systems/enterprise-admin/backend/src/lib/business-day.ts", "systems/enterprise-admin/backend/src/lib/batch-expiry.ts", "systems/enterprise-admin/packages/contracts"],
+      "exclusiveLocks": ["schema-migrations", "package-locks", "backend-domain", "platform-kernel"],
+      "requiredChecks": [
+        {
+          "id": "AR-05-AC01",
+          "description": "0.1+0.2、百分比、多列折扣餘數、邊界/overflow/負值/超精度、拆分付款分攤可重現。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-05-AC02",
+          "description": "性質測試：分攤合計=原額、不可退款超過可退、format/parse roundtrip；固定 seed 保存反例。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-05-AC03",
+          "description": "改政策/現行成本/包裝不改歷史已過帳結果。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-05-AC04",
+          "description": "UTC/Taipei/其他主機 TZ、午夜等待、閏日及跨日退款測試。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D01", "D02", "D03", "D04"],
+      "activationGates": ["G1"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-06",
+      "issue": 186,
+      "url": "https://github.com/skydreamer0/startup/issues/186",
+      "title": "[AR-06][P0] 通用業務命令與同交易協調，保留既有結帳恢復契約",
+      "dependsOn": ["AR-02", "AR-04", "AR-05"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/pos-ui/src/store/checkoutRecoveryStore.ts"],
+      "newPaths": ["systems/enterprise-admin/backend/src/platform/commands", "systems/enterprise-admin/backend/src/application"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/platform/commands", "systems/enterprise-admin/backend/src/application", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/pos-ui/src/store/checkoutRecoveryStore.ts"],
+      "exclusiveLocks": ["schema-migrations", "composition", "backend-domain", "platform-kernel", "frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-06-AC01",
+          "description": "真 PG 多終端同 key 只一筆，改 payload 409且零寫入；不同 key 搶最後1件只成功一次。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-06-AC02",
+          "description": "commit 前各寫入點故障全部 rollback；commit 後丟回應/API SIGKILL，GET/replay 回原結果。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-06-AC03",
+          "description": "真 deadlock/serialization 測試與 generic connection failure 分開；不以字串含 deadlock 就重試。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-06-AC04",
+          "description": "舊 v1 unknown intent 經新版本仍恢復；交易中外部副作用 mutation test 失敗。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-06-AC05",
+          "description": "新收貨/退款命令可復用引擎但維持自己的授權、revision與業務限制。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": ["G1"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-07",
+      "issue": 187,
+      "url": "https://github.com/skydreamer0/startup/issues/187",
+      "title": "[AR-07][P0] 庫存核心升級：不可變流水、批次庫位餘額與全部 writer 切換",
+      "dependsOn": ["AR-03", "AR-05", "AR-06"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/lib/inventory-posting.ts", "systems/enterprise-admin/backend/src/lib/sale-stock.ts", "systems/enterprise-admin/backend/src/lib/batch-expiry.ts", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/backend/src/modules/excel"],
+      "newPaths": [],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/lib/inventory-posting.ts", "systems/enterprise-admin/backend/src/lib/sale-stock.ts", "systems/enterprise-admin/backend/src/lib/batch-expiry.ts", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/backend/src/modules/excel"],
+      "exclusiveLocks": ["schema-migrations", "backend-domain", "platform-kernel"],
+      "requiredChecks": [
+        {
+          "id": "AR-07-AC01",
+          "description": "真 PG 混合 writer、同批追加、最後1件、重複商品列、多批FEFO、隔離/過期、午夜等待、失敗rollback。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-07-AC02",
+          "description": "movement、allocation、balance、product實物投影、可售/保留定義逐筆可對帳；移位守恆。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-07-AC03",
+          "description": "同批不同庫位/狀態不串量；成本來源不可被後續成本編輯改寫。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-07-AC04",
+          "description": "runtime DB role 不能改已過帳 entry；重建可重跑且不修飾原差異。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-07-AC05",
+          "description": "每個原 writer 有「已切換＋測試」證據才移除舊入口；#29 不因本切片就整單關閉。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D03", "D04", "D05"],
+      "activationGates": ["G1", "G2", "G4"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-08",
+      "issue": 188,
+      "url": "https://github.com/skydreamer0/startup/issues/188",
+      "title": "[AR-08][P0] 銷售、付款、退款與歷史成本統一交易事實",
+      "dependsOn": ["AR-05", "AR-06", "AR-07"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/backend/src/modules/shifts", "systems/enterprise-admin/backend/src/modules/daily-settlements"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/sales", "systems/enterprise-admin/backend/src/modules/payments", "systems/enterprise-admin/backend/src/application"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/backend/src/modules/shifts", "systems/enterprise-admin/backend/src/modules/daily-settlements", "systems/enterprise-admin/backend/src/modules/sales", "systems/enterprise-admin/backend/src/modules/payments", "systems/enterprise-admin/backend/src/application"],
+      "exclusiveLocks": ["schema-migrations", "composition", "backend-domain"],
+      "requiredChecks": [
+        {
+          "id": "AR-08-AC01",
+          "description": "100元現金60+卡40、找零、折扣分攤、同日/隔日/部分退款，API/DB/收據/日結可逐筆對帳。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-08-AC02",
+          "description": "同 command 重送不重複付款/退款/庫存；兩退款競爭超額僅合法部分成功。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-08-AC03",
+          "description": "改商品成本/售價/包裝/政策後歷史訂單及毛利不變。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-08-AC04",
+          "description": "provider timeout/本機僅登記/已確認退款不混淆；舊缺失不可當0。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-08-AC05",
+          "description": "所有交易測試真 PG，金額 unit tests 不代替DB原子性證據。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D01", "D02", "D03"],
+      "activationGates": ["G1", "G4", "G6"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-09",
+      "issue": 189,
+      "url": "https://github.com/skydreamer0/startup/issues/189",
+      "title": "[AR-09][P1] 正式收貨文件、分次收貨與 revision-bound 過帳",
+      "dependsOn": ["AR-06", "AR-07"],
+      "integrationDependsOn": ["AR-14"],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/receiving-drafts", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/admin-ui/src/pages/Receiving", "systems/enterprise-admin/admin-ui/src/api/receivingDrafts.ts"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/receiving"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/receiving", "systems/enterprise-admin/backend/src/modules/receiving-drafts", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/admin-ui/src/pages/Receiving", "systems/enterprise-admin/admin-ui/src/api/receivingDrafts.ts"],
+      "exclusiveLocks": ["schema-migrations", "backend-domain", "frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-09-AC01",
+          "description": "真 API/PG 訂10收6+4、其中1件隔離、拒收不算可售、同批追加、重送、並發改單/過帳、rollback。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-09-AC02",
+          "description": "approval 後改lot/expiry/package/cost/source revision被拒；非關鍵註記依明訂規則處理。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-09-AC03",
+          "description": "每次 posted line 能回查原單/版本/實際lot/bin/movement/cost；未到貨不提前入帳。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-09-AC04",
+          "description": "UI 保存/續作/查回失敗不丟資料，部分成功顯示逐行狀態，不整頁假成功。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D03", "D04"],
+      "activationGates": ["G1", "G3"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-10",
+      "issue": 190,
+      "url": "https://github.com/skydreamer0/startup/issues/190",
+      "title": "[AR-10][P1] 實物退回、隔離放行、移位與盤點更正閉環",
+      "dependsOn": ["AR-07", "AR-08"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/admin-ui/src/pages/Inventory"],
+      "newPaths": [],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/modules/product-batches", "systems/enterprise-admin/backend/src/modules/pos", "systems/enterprise-admin/admin-ui/src/pages/Inventory"],
+      "exclusiveLocks": ["schema-migrations", "backend-domain", "frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-10-AC01",
+          "description": "部分退回、重送、兩人同時退超原數量、退款沒退貨、未知lot、過期不可再售。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-10-AC02",
+          "description": "A移3至B總量不變；中途失敗全rollback；隔離量不能被 checkout 選走。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-10-AC03",
+          "description": "盤點與銷售並發不丟帳，reversal重送只一次，已消耗來源不可盲目反轉。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-10-AC04",
+          "description": "每一 action 可由 UI→原文件→movement→lot/bin→actor/reason 查回；後端拒絕權限不足。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D03", "D04", "D05"],
+      "activationGates": ["G1", "G2", "G4"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-11",
+      "issue": 191,
+      "url": "https://github.com/skydreamer0/startup/issues/191",
+      "title": "[AR-11][P1] 保留庫存、分次交付與 B2B／Rx 出庫領域邊界",
+      "dependsOn": ["AR-07", "AR-08"],
+      "integrationDependsOn": ["AR-13", "AR-14"],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/modules/crm", "systems/enterprise-admin/admin-ui/src/pages/Orders"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/fulfillment", "systems/enterprise-admin/backend/src/modules/prescriptions"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/orders", "systems/enterprise-admin/backend/src/modules/inventory", "systems/enterprise-admin/backend/src/modules/crm", "systems/enterprise-admin/backend/src/modules/fulfillment", "systems/enterprise-admin/backend/src/modules/prescriptions", "systems/enterprise-admin/admin-ui/src/pages/Orders"],
+      "exclusiveLocks": ["schema-migrations", "backend-domain", "frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-11-AC01",
+          "description": "最後庫存POS與reservation競爭、過期釋出與交付同時、重送/重啟，available不為負。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-11-AC02",
+          "description": "7→4→3每次movement與成本/付款關聯正確；重複ack不扣庫。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-11-AC03",
+          "description": "batch封鎖/到期後不可用舊保留偷出庫；取消不回補已交量。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-11-AC04",
+          "description": "Rx審核revision、防越權、未核准拒絕；真PG＋built UI/API資料鏈。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D04", "D05", "D06"],
+      "activationGates": ["G1", "G4", "G6"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-12",
+      "issue": 192,
+      "url": "https://github.com/skydreamer0/startup/issues/192",
+      "title": "[AR-12][P1] 報表讀模型、日結對帳與可重建投影",
+      "dependsOn": ["AR-08"],
+      "integrationDependsOn": ["AR-10", "AR-13"],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/src/modules/reports", "systems/enterprise-admin/backend/src/modules/analytics", "systems/enterprise-admin/backend/src/modules/dashboard", "systems/enterprise-admin/backend/src/modules/daily-settlements", "systems/enterprise-admin/backend/src/modules/shifts", "systems/enterprise-admin/backend/src/modules/expenses", "systems/enterprise-admin/admin-ui/src/pages/Reports"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/reporting", "systems/enterprise-admin/admin-ui/src/pages/Dashboard", "systems/enterprise-admin/admin-ui/src/pages/Expenses"],
+      "writePaths": ["systems/enterprise-admin/backend/src/modules/reports", "systems/enterprise-admin/backend/src/modules/analytics", "systems/enterprise-admin/backend/src/modules/dashboard", "systems/enterprise-admin/backend/src/modules/daily-settlements", "systems/enterprise-admin/backend/src/modules/shifts", "systems/enterprise-admin/backend/src/modules/expenses", "systems/enterprise-admin/backend/src/modules/reporting", "systems/enterprise-admin/admin-ui/src/pages/Reports", "systems/enterprise-admin/admin-ui/src/pages/Dashboard", "systems/enterprise-admin/admin-ui/src/pages/Expenses"],
+      "exclusiveLocks": ["backend-domain", "frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-12-AC01",
+          "description": "相同交易矩陣在訂單、收據、日結、margin、ranking加總一致，跨日/部分退款按policy。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-12-AC02",
+          "description": "更新主檔成本不改歷史；缺失資料標明；未完成投影明示stale/截止點。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-12-AC03",
+          "description": "投影刪除重建/重複事件/worker崩潰可恢復，reconcile零非預期差異。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-12-AC04",
+          "description": "匯出與畫面同篩選/時區，跨租戶與成本權限測試。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-12-AC05",
+          "description": "查詢使用實測 EXPLAIN、適當索引與分頁；不將全月明細拉進Node逐筆聚合當長期方案。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D01", "D02", "D03"],
+      "activationGates": ["G6"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-13",
+      "issue": 193,
+      "url": "https://github.com/skydreamer0/startup/issues/193",
+      "title": "[AR-13][P1] Transactional Outbox、可恢復 Worker 與副作用去重",
+      "dependsOn": ["AR-06"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/server.ts"],
+      "newPaths": ["systems/enterprise-admin/backend/src/platform/events", "systems/enterprise-admin/backend/src/platform/jobs", "systems/enterprise-admin/backend/src/platform/commands", "systems/enterprise-admin/backend/src/worker.ts", "systems/enterprise-admin/deploy"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/platform/events", "systems/enterprise-admin/backend/src/platform/jobs", "systems/enterprise-admin/backend/src/platform/commands", "systems/enterprise-admin/backend/src/server.ts", "systems/enterprise-admin/backend/src/worker.ts", "systems/enterprise-admin/deploy"],
+      "exclusiveLocks": ["schema-migrations", "composition", "platform-kernel", "deploy"],
+      "requiredChecks": [
+        {
+          "id": "AR-13-AC01",
+          "description": "rollback沒有可見事件；commit後kill publisher仍可恢復。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-13-AC02",
+          "description": "重複/亂序/缺版本、雙worker、lease過期後舊worker回寫均測試；本地效果不重複。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-13-AC03",
+          "description": "poison job隔離、不阻塞其他queue；retry上限與operator重放具稽核。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-13-AC04",
+          "description": "撤權/停用後worker重新檢查scope/capability；敏感payload不外洩。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-13-AC05",
+          "description": "真PG程序中斷測試，不以記憶體EventEmitter或setTimeout代替durable queue。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": ["G1", "G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-14",
+      "issue": 194,
+      "url": "https://github.com/skydreamer0/startup/issues/194",
+      "title": "[AR-14][P1] 原圖與附件儲存、來源追溯及一致性生命週期",
+      "dependsOn": ["AR-04", "AR-13"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/admin-ui/src/pages/Receiving", "systems/enterprise-admin/packages/types", "systems/enterprise-admin/docker-compose.yml", "systems/enterprise-admin/infrastructure/standards/production_runbook.md"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/evidence", "systems/enterprise-admin/backend/src/platform/storage"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/evidence", "systems/enterprise-admin/backend/src/platform/storage", "systems/enterprise-admin/admin-ui/src/pages/Receiving", "systems/enterprise-admin/packages/types", "systems/enterprise-admin/docker-compose.yml", "systems/enterprise-admin/infrastructure/standards/production_runbook.md"],
+      "exclusiveLocks": ["schema-migrations", "package-locks", "backend-domain", "platform-kernel", "frontend", "deploy", "plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-14-AC01",
+          "description": "寫檔前/後、DB commit前/後故障均不產生指向不存在原圖的READY引用。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-14-AC02",
+          "description": "重複上傳/並發/大檔/非法型態/跨租戶讀/路徑穿越測試。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-14-AC03",
+          "description": "原圖hash固定，derived結果可重建；已過帳文件依然回查原始revision。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-14-AC04",
+          "description": "未引用孤兒與遺失檔案能報告；清理不刪有效文件。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D06"],
+      "activationGates": ["G3", "G6", "G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-15",
+      "issue": 195,
+      "url": "https://github.com/skydreamer0/startup/issues/195",
+      "title": "[AR-15][P1] 本地 OCR Adapter、評測與人工覆核安全接線",
+      "dependsOn": ["AR-09", "AR-13", "AR-14"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/admin-ui/src/pages/Receiving", "systems/enterprise-admin/packages/types", "scripts/ocr-evaluation"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/evidence"],
+      "writePaths": ["systems/enterprise-admin/backend/src/modules/evidence", "systems/enterprise-admin/admin-ui/src/pages/Receiving", "systems/enterprise-admin/packages/types", "scripts/ocr-evaluation"],
+      "exclusiveLocks": ["package-locks", "backend-domain", "frontend", "ocr"],
+      "requiredChecks": [
+        {
+          "id": "AR-15-AC01",
+          "description": "fake/真引擎證據分列；各critical field錯誤/缺值/相互矛盾不得自動接受。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-15-AC02",
+          "description": "先人工修正後OCR晚到、重複來源、取消/重啟/lease失效不覆寫草稿或重複過帳。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-15-AC03",
+          "description": "cold offline/外網封鎖測試、CPU/RAM報告與對結帳p95影響實測。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-15-AC04",
+          "description": "原圖/page/region可追溯；只有後續有權者核准的revision能進AR-09命令。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D06", "D07", "D09"],
+      "activationGates": ["G3", "G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-16",
+      "issue": 196,
+      "url": "https://github.com/skydreamer0/startup/issues/196",
+      "title": "[AR-16][P1] 受控擴充套件 SDK、Module Manifest 與啟停相容性",
+      "dependsOn": ["AR-01", "AR-02", "AR-04", "AR-13"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/admin-ui/src/App.tsx", "systems/enterprise-admin/pos-ui/src/App.tsx"],
+      "newPaths": ["systems/enterprise-admin/backend/src/platform/extensions", "systems/enterprise-admin/backend/src/composition", "systems/enterprise-admin/packages/extension-contracts", "systems/enterprise-admin/extensions/near-expiry-assistant"],
+      "writePaths": ["systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/backend/src/platform/extensions", "systems/enterprise-admin/backend/src/composition", "systems/enterprise-admin/packages/extension-contracts", "systems/enterprise-admin/admin-ui/src/App.tsx", "systems/enterprise-admin/pos-ui/src/App.tsx", "systems/enterprise-admin/extensions/near-expiry-assistant"],
+      "exclusiveLocks": ["package-locks", "composition", "platform-kernel", "frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-16-AC01",
+          "description": "新增近效期清單/提醒，不改checkout/inventory內部；保留人工後續行動。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-16-AC02",
+          "description": "缺依賴、版本不合、越權、無schema、設定壞值、循環與未核准模組均拒絕。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-16-AC03",
+          "description": "模組throw/timeout/disabled時仍能結帳；不可信擴充無DB憑證/任意檔案權限。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-16-AC04",
+          "description": "disable/re-enable/upgrade保留歷史與pending狀態；後端權限不可由前端繞過。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": ["G0", "G1"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-17",
+      "issue": 197,
+      "url": "https://github.com/skydreamer0/startup/issues/197",
+      "title": "[AR-17][P1] 外部整合 Adapter、傳送意圖與不確定結果對帳",
+      "dependsOn": ["AR-08", "AR-13", "AR-16"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/accounting", "systems/enterprise-admin/backend/src/modules/line"],
+      "newPaths": ["systems/enterprise-admin/backend/src/modules/integrations"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/modules/accounting", "systems/enterprise-admin/backend/src/modules/line", "systems/enterprise-admin/backend/src/modules/integrations"],
+      "exclusiveLocks": ["schema-migrations", "backend-domain"],
+      "requiredChecks": [
+        {
+          "id": "AR-17-AC01",
+          "description": "並發同意圖只產生一邏輯delivery；provider成功/local失敗、重啟、重複webhook、換provider/account都可解釋。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-17-AC02",
+          "description": "不支援idempotency/query的provider遇UNKNOWN不盲送；顯示待核對且可追溯。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-17-AC03",
+          "description": "malformed config不變mock成功；撤權/停用阻止新外發。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-17-AC04",
+          "description": "既有mock成果明標mock，真外發 NOT_RUN。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": ["G1", "G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-18",
+      "issue": 198,
+      "url": "https://github.com/skydreamer0/startup/issues/198",
+      "title": "[AR-18][P1] 掃描／標籤／收據裝置契約與耐久列印工作",
+      "dependsOn": ["AR-13", "AR-16"],
+      "integrationDependsOn": ["AR-07"],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/local-print-agent", "systems/enterprise-admin/admin-ui/src/services/localLabelPrinter.ts", "systems/enterprise-admin/admin-ui/src/components", "systems/enterprise-admin/pos-ui/src/services", "systems/enterprise-admin/pos-ui/src/components"],
+      "newPaths": ["systems/enterprise-admin/backend/src/platform"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/platform", "systems/enterprise-admin/local-print-agent", "systems/enterprise-admin/admin-ui/src/services/localLabelPrinter.ts", "systems/enterprise-admin/admin-ui/src/components", "systems/enterprise-admin/pos-ui/src/services", "systems/enterprise-admin/pos-ui/src/components"],
+      "exclusiveLocks": ["schema-migrations", "platform-kernel", "frontend", "device"],
+      "requiredChecks": [
+        {
+          "id": "AR-18-AC01",
+          "description": "print-disabled端到端、重送/重啟、hash不合、UNKNOWN、未配對/錯Origin/跨租戶拒絕。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-18-AC02",
+          "description": "商品/批次QR不混淆，跨庫位/長藥名/中文字/極端SKU可讀可解碼。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-18-AC03",
+          "description": "真紙尺寸/掃描、BLE、Windows啟動復原、收據機各列實機證據；無裝置維持NOT_RUN。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-18-AC04",
+          "description": "agent離線或列印失敗不回滾已完成銷售、不造成再扣庫存。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D07"],
+      "activationGates": ["G5"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-19",
+      "issue": 199,
+      "url": "https://github.com/skydreamer0/startup/issues/199",
+      "title": "[AR-19][P1] 前端模組化、草稿／提交狀態與多終端資料新鮮度",
+      "dependsOn": ["AR-02", "AR-06"],
+      "integrationDependsOn": ["AR-08", "AR-09", "AR-12", "AR-16"],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/admin-ui/src", "systems/enterprise-admin/pos-ui/src"],
+      "newPaths": [],
+      "writePaths": ["systems/enterprise-admin/admin-ui/src", "systems/enterprise-admin/pos-ui/src"],
+      "exclusiveLocks": ["frontend"],
+      "requiredChecks": [
+        {
+          "id": "AR-19-AC01",
+          "description": "兩終端、兩帳號、late response、並發叫回掛單、重啟/刷新、午夜/resume、失回應恢復。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-19-AC02",
+          "description": "built UI→真API→合成PG完整交易/收貨/退款/追溯；mock證據分開。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-19-AC03",
+          "description": "1440/1366/1180/1024及390px、長藥名、鍵盤focus、200% native zoom；Safari/iPad/觸控未測不代填PASS。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-19-AC04",
+          "description": "新模組接入shell不用修改checkout內部；更新不遺失v1 frozen intent。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D06", "D07"],
+      "activationGates": ["G0"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-20",
+      "issue": 200,
+      "url": "https://github.com/skydreamer0/startup/issues/200",
+      "title": "[AR-20][P0] 安裝／升級／Schema Migration 與正式部署邊界",
+      "dependsOn": ["AR-01", "AR-04"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/Dockerfile", "systems/enterprise-admin/backend/src/config/env.ts", "systems/enterprise-admin/backend/src/lib/readiness.ts", "systems/enterprise-admin/docker-compose.yml", "systems/enterprise-admin/admin-ui/Dockerfile", "systems/enterprise-admin/pos-ui/Dockerfile", "systems/enterprise-admin/nginx", "systems/enterprise-admin/.env.production.example", "systems/enterprise-admin/infrastructure/standards/production_runbook.md", "systems/enterprise-admin/infrastructure/standards/dependency_management.md"],
+      "newPaths": ["systems/enterprise-admin/deploy", "scripts/migrations"],
+      "writePaths": ["systems/enterprise-admin/backend/Dockerfile", "systems/enterprise-admin/backend/src/config/env.ts", "systems/enterprise-admin/backend/src/lib/readiness.ts", "systems/enterprise-admin/docker-compose.yml", "systems/enterprise-admin/admin-ui/Dockerfile", "systems/enterprise-admin/pos-ui/Dockerfile", "systems/enterprise-admin/nginx", "systems/enterprise-admin/.env.production.example", "systems/enterprise-admin/deploy", "systems/enterprise-admin/infrastructure/standards/production_runbook.md", "systems/enterprise-admin/infrastructure/standards/dependency_management.md", "scripts/migrations"],
+      "exclusiveLocks": ["platform-kernel", "deploy", "plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-20-AC01",
+          "description": "clean install、從凍結舊schema upgrade、中斷backfill續跑、schema drift/錯密碼/磁碟滿/worker crash可理解失敗。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-20-AC02",
+          "description": "未授權DDL與錯version無寫入；API重啟不跑migration，migration不能使用runtime role。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-20-AC03",
+          "description": "final image實際啟動＋真API/PG測試，WAN斷線可啟動；憑證/裝置實機另列。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-20-AC04",
+          "description": "rollback僅使用確認相容版本；舊v1 frozen command仍可恢復。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D07"],
+      "activationGates": ["G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-21",
+      "issue": 201,
+      "url": "https://github.com/skydreamer0/startup/issues/201",
+      "title": "[AR-21][P0] DB＋原圖一致備份、乾淨主機還原與恢復後防重送",
+      "dependsOn": ["AR-14", "AR-20"],
+      "integrationDependsOn": ["AR-17", "AR-18"],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/infrastructure/standards/production_runbook.md"],
+      "newPaths": ["systems/enterprise-admin/backend/src/platform", "systems/enterprise-admin/deploy", "scripts/recovery"],
+      "writePaths": ["systems/enterprise-admin/backend/prisma", "systems/enterprise-admin/backend/src/platform", "systems/enterprise-admin/deploy", "systems/enterprise-admin/infrastructure/standards/production_runbook.md", "scripts/recovery"],
+      "exclusiveLocks": ["schema-migrations", "platform-kernel", "deploy", "plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-21-AC01",
+          "description": "損毀備份、缺原圖、錯key/schema/版本均拒絕安全啟用；有效備份在乾淨環境真還原。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-21-AC02",
+          "description": "備份前/後成功命令、pending外發、UNKNOWN print、重啟舊client各有案例，不重複副作用。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-21-AC03",
+          "description": "量測實際恢復時間與資料損失窗口；符合核准RPO/RTO才勾營運gate。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-21-AC04",
+          "description": "演練只用合成資料，輸出hash/row counts/對帳與清理證據；無授權不碰正式備份。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D07", "D08"],
+      "activationGates": ["G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-22",
+      "issue": 202,
+      "url": "https://github.com/skydreamer0/startup/issues/202",
+      "title": "[AR-22][P1] 可觀測性、容量餘裕與效能回歸預算",
+      "dependsOn": ["AR-01", "AR-06"],
+      "integrationDependsOn": ["AR-07", "AR-08", "AR-13", "AR-15", "AR-19", "AR-20"],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/backend/src/server.ts", "systems/enterprise-admin/backend/src/middleware/error.middleware.ts", "systems/enterprise-admin/infrastructure/standards/observability.md", "systems/enterprise-admin/infrastructure/standards/slo_error_budget.md"],
+      "newPaths": ["systems/enterprise-admin/backend/src/platform/observability", "systems/enterprise-admin/deploy", "scripts/performance"],
+      "writePaths": ["systems/enterprise-admin/backend/src/app.ts", "systems/enterprise-admin/backend/src/server.ts", "systems/enterprise-admin/backend/src/middleware/error.middleware.ts", "systems/enterprise-admin/backend/src/platform/observability", "systems/enterprise-admin/deploy", "systems/enterprise-admin/infrastructure/standards/observability.md", "systems/enterprise-admin/infrastructure/standards/slo_error_budget.md", "scripts/performance"],
+      "exclusiveLocks": ["composition", "platform-kernel", "deploy", "plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-22-AC01",
+          "description": "單筆錯帳/UNKNOWN/worker失敗可由correlation追到相關事實，無敏感log。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-22-AC02",
+          "description": "基線與新版同資料/硬體比較；噪音與not-run明示，不能宣稱未量測的加速倍數。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-22-AC03",
+          "description": "真PG並發、資源壓力、磁碟接近滿、worker kill不造成負庫存/重複付款。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-22-AC04",
+          "description": "清楚列最小/建議資源與擴容觸發條件；RPO/RTO另由AR-21驗。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D07", "D09"],
+      "activationGates": ["G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    {
+      "id": "AR-23",
+      "issue": 203,
+      "url": "https://github.com/skydreamer0/startup/issues/203",
+      "title": "[AR-23][P0] 全系統切換、擴充性實證與 G0–G7 驗收收尾",
+      "dependsOn": ["AR-00", "AR-01", "AR-02", "AR-03", "AR-04", "AR-05", "AR-06", "AR-07", "AR-08", "AR-09", "AR-10", "AR-11", "AR-12", "AR-13", "AR-14", "AR-15", "AR-16", "AR-17", "AR-18", "AR-19", "AR-20", "AR-21", "AR-22"],
+      "integrationDependsOn": [],
+      "substeps": ["contract/schema (only if needed)", "implementation", "consumer cutover", "integration and independent review"],
+      "sourcePaths": ["systems/enterprise-admin/backend/src", "systems/enterprise-admin/admin-ui/src", "systems/enterprise-admin/pos-ui/src", "systems/enterprise-admin/ROADMAP.md", "systems/enterprise-admin/CONTEXT.md", "docs/architecture.md", ".github/workflows"],
+      "newPaths": ["systems/enterprise-admin/infrastructure/verification/architecture-v2"],
+      "writePaths": ["systems/enterprise-admin/backend/src", "systems/enterprise-admin/admin-ui/src", "systems/enterprise-admin/pos-ui/src", "systems/enterprise-admin/infrastructure/verification/architecture-v2", "systems/enterprise-admin/ROADMAP.md", "systems/enterprise-admin/CONTEXT.md", "docs/architecture.md", ".github/workflows"],
+      "exclusiveLocks": ["composition", "backend-domain", "platform-kernel", "frontend", "plans-context"],
+      "requiredChecks": [
+        {
+          "id": "AR-23-AC01",
+          "description": "exact SHA測試矩陣：unit/property、真PG、真HTTP、built browser、device/store五層分列。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-23-AC02",
+          "description": "每筆交易只有一份權威事實；投影可重建、原圖可回查、非預期差異為0。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-23-AC03",
+          "description": "24個AR工作包的implementation/verification/activation狀態分開，依據連回原父票。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-23-AC04",
+          "description": "完成擴充模組與故障隔離實證，不只是空manifest示範。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-23-AC05",
+          "description": "升級/還原/資料保留/未完政策/實機驗收明列，完整raw artifacts hash與清理收據保存。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-23-AC06",
+          "description": "#37 G0–G7只有各自完整證據才放行；未核准政策或無裝置可保留軟體完成，但不得宣布整店可上線。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": ["D01", "D02", "D03", "D04", "D05", "D06", "D07", "D08", "D09"],
+      "activationGates": ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7"],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    }
+  ],
+  "sourceSnapshotSha256": "a05ab6fdef18744a36af349d69095bb455f11c588e6df15da9661043e25851b2"
+}
