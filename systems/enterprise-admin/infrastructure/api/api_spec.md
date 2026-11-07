@@ -247,6 +247,20 @@ mocked 邊界測試及隔離 HTTP/PostgreSQL 測試分別為
 
 
 
+## Shift close and daily settlement confirmation
+
+`PATCH /shifts/:id/close` 與 `POST /daily-settlements/:id/confirm` 沿用
+`manage:shifts`、原請求欄位及成功回應。資料不存在或屬於其他 tenant 時回 `404`。
+首次讀取已關班／已確認時仍回 `400`；若讀取後狀態改變，條件更新未命中則回
+`409 CONFLICT`，不覆寫先完成的交班金額、備註、時間或日結確認時間。
+成功關班以讀取時的班別狀態作更新條件；日結確認只更新 `confirmedAt = null`
+的資料。兩者均在同一更新條件中限制目前 tenant，其他資料庫錯誤不自動重送。
+收到衝突後應重新讀取現況，不將失敗回應視為可另覆寫的授權。
+
+此修正不決定退款歸屬日、付款方式分攤、gross/net、捨入或容差，也不改日結金額。
+`settlement-transition.test.ts` 為 mocked persistence 回歸；真 HTTP／PostgreSQL
+競爭與付款對帳須另行驗收，不能由此測試宣稱完成。
+
 ## Private receiving drafts (candidate, no posting)
 All routes below use the existing `/api/v1/admin` mount, authenticated active actor and backend tenant context. No client actor/tenant parameter can choose an owner. Reads require `read:products`; PUT also requires `create:products`. Responses use `{success:true,data:...}` and `Cache-Control: no-store`.
 

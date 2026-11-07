@@ -6,10 +6,10 @@ import { runOwnedBrowser } from './owned-browser-process.mjs';
 import { receivingBrowserScope } from './acceptance.mjs';
 
 test('evidence names the tested scope and explicit lifecycle gates left unverified', () => {
-  assert.ok(receivingBrowserScope.verified.some(item => item.includes('loser choice is displayed only')));
-  assert.ok(receivingBrowserScope.notVerified.includes('save next revision after presenting CAS choice'));
+  assert.ok(receivingBrowserScope.verified.some(item => item.includes('explicit retained next revision')));
+  assert.ok(!receivingBrowserScope.notVerified.includes('save next revision after presenting CAS choice'));
   assert.ok(receivingBrowserScope.notVerified.includes('cross-tenant browser isolation'));
-  assert.ok(receivingBrowserScope.notVerified.includes('pending/unknown-outcome navigation guard'));
+  assert.ok(receivingBrowserScope.verified.some(item => item.includes('pending/unknown browser Back')));
   assert.ok(receivingBrowserScope.notVerified.includes('read-only actor attempted PUT rejection'));
 });
 
