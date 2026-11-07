@@ -27,8 +27,9 @@ needed. The tools only read files and print JSON. `plan.mjs` supports `--manifes
 and `--evidence` for reviewed fixture/state files; it cannot launch a task.
 An alternate `--manifest` cannot be combined with `--check-source`: source checks
 are only reported when the repository baseline was actually loaded and checked.
-The default evidence ledger is empty, so AR-00 stays active and AR-01 is blocked
-until its acceptance and independent review are recorded. This PR does not
+The default evidence ledger records only the executed tooling/context checks;
+AR-00 stays active and AR-01 is blocked
+until its full acceptance and independent review are recorded. This PR does not
 manufacture completion evidence to make later tasks look ready.
 
 ## Records and meaning
@@ -38,7 +39,7 @@ manufacture completion evidence to make later tasks look ready.
 - [requirements-map.md](requirements-map.md) and [requirements.json](requirements.json): 235 source checklist occurrences, immutable text hashes, accountable AR owners and required acceptance check IDs. Checked source boxes remain historical metadata, never fresh PASS.
 - [requirements-sources.json](requirements-sources.json) preserves the original 13 issue bodies as untrusted evidence data. Their body hashes must match the pinned source-snapshot digest; the verifier reconstructs every checklist occurrence and compares exact text, checkbox, line, section, ID and hash.
 - [source-inventory.md](source-inventory.md) and [source-inventory.json](source-inventory.json): 122 mounted HTTP endpoints, 33 schema models, reviewed effects/owners, 137 source fingerprints, 96 lexical write/raw candidates and non-HTTP entries. The lexical index is bounded source evidence, not a security/data-flow proof.
-- [evidence-schema.json](evidence-schema.json), [evidence.json](evidence.json): versioned result format and new AR acceptance ledger. Existing business evidence remains at its original commit/PR/harness, not copied into a fresh green result.
+- [evidence-schema.json](evidence-schema.json), [evidence.json](evidence.json): versioned result format and new AR acceptance ledger. Existing business evidence remains at its original commit/PR/harness, not copied into a fresh green result. The [bounded AR-00 receipt](../../verification/architecture-v2/ar00-baseline-20261107/README.md) preserves executed logs, hashes and initial failed review controls.
 
 Implementation, exact-source verification and activation are separate. All new
 AR work starts NOT_RUN. A policy blocks only its dependent activation, not a

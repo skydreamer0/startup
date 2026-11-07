@@ -1,0 +1,28 @@
+{
+  "head": "b6ceab9ea87b027610f9cf7b4a5e043220107da1",
+  "tree": "e5cdf6911a67ae83700f3d77160866cb86b23d46",
+  "taskPreexistingFieldsAllUnchanged": true,
+  "locksUnchanged": true,
+  "decisionsUnchanged": true,
+  "allGateRequiredDescriptionsExactSource37Text": true,
+  "baselineEvidence": [],
+  "changedSourcePaths": [
+    "scripts/architecture/plan.mjs",
+    "scripts/architecture/plan.test.mjs",
+    "scripts/architecture/verify-plan.mjs",
+    "systems/enterprise-admin/CONTEXT.md",
+    "systems/enterprise-admin/ROADMAP.md",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/README.md",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/decisions.md",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/evidence-schema.json",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/evidence.json",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements-map.md",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements-sources.json",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements.json",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.md",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-snapshot.json",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/upstream-checks.json"
+  ]
+}

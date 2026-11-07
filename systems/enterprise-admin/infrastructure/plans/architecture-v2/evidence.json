@@ -1,1 +1,100 @@
-[]
+[
+  {
+    "id": "ar00-b6ceab9-tools",
+    "taskId": "AR-00",
+    "checkIds": [
+      "AR-00-TOOLS"
+    ],
+    "subject": {
+      "sha": "b6ceab9ea87b027610f9cf7b4a5e043220107da1",
+      "tree": "e5cdf6911a67ae83700f3d77160866cb86b23d46",
+      "dirty": false
+    },
+    "command": "node --test scripts/architecture/plan.test.mjs && node scripts/architecture/verify-plan.mjs --check-source && node scripts/architecture/plan.mjs",
+    "executor": "baseline-author",
+    "recordedAt": "2026-11-07T02:30:12Z",
+    "environment": "Isolated Linux cloud checkout, Node 22.23.4. No dependencies installed for AR-00 and no database/application/real external effect run.",
+    "scope": "AR-00 planning tools and source-index controls only",
+    "result": "PASS",
+    "exitCode": 0,
+    "artifacts": [
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/plan-tests-b6ceab9-node22.log",
+        "sha256": "62187013c815049e5a010eccee67fa3c9d96fa0ef171127907c34ed10f1e2247"
+      },
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/verify-plan-b6ceab9-node22.log",
+        "sha256": "cf485dee94957206195f1aa3da19ec4f245037aac8aece63711240b0a530c32b"
+      },
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/plan-b6ceab9-node22.json",
+        "sha256": "04e7a1ebb58553902c4c59ade235dad02f627a4277ad9b4129a2c5cc1d366353"
+      },
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/independent-review-b6ceab9-tests.log",
+        "sha256": "d827c8958c60acefdf2fd625bf105f1bb9eb47c76ba68b18d1440672237693b1"
+      },
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/independent-review-b6ceab9-negative-controls.json",
+        "sha256": "6141f5cb8cfbe0df49712eea8a9b44bb99c428a9d9e517e25c1b62d5470a7f91"
+      },
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/independent-review-b6ceab9-scope.json",
+        "sha256": "4c9ec6ee24910d4fa5ceeaed3696378ba83d6efd60934859905c6c1a3da00971"
+      }
+    ],
+    "limitations": [
+      "Not full AR-00 requirement acceptance, source-level writer cutover, native pharmacy behavior, current-head hosted CI, policy/device/store activation or G0–G7 completion.",
+      "CLI and write/raw candidate semantics are curated manual indexes; the automatic source coverage checks only mounted routes, schema models and runtime fingerprints."
+    ],
+    "review": {
+      "reviewer": "independent-reviewer",
+      "sha": "b6ceab9ea87b027610f9cf7b4a5e043220107da1",
+      "result": "PASS"
+    },
+    "counts": {
+      "passed": 56,
+      "failed": 0,
+      "skipped": 0,
+      "notRun": 0
+    }
+  },
+  {
+    "id": "ar00-b6ceab9-context",
+    "taskId": "AR-00",
+    "checkIds": [
+      "AR-00-CONTEXT"
+    ],
+    "subject": {
+      "sha": "b6ceab9ea87b027610f9cf7b4a5e043220107da1",
+      "tree": "e5cdf6911a67ae83700f3d77160866cb86b23d46",
+      "dirty": false
+    },
+    "command": "./scripts/validate-agent-context.sh && git diff --check 67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+    "executor": "baseline-author",
+    "recordedAt": "2026-11-07T02:30:12Z",
+    "environment": "Isolated Linux cloud checkout, Node 22.23.4. No dependencies installed for AR-00 and no database/application/real external effect run.",
+    "scope": "AR-00 planning tools and source-index controls only",
+    "result": "PASS",
+    "exitCode": 0,
+    "artifacts": [
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/context-b6ceab9.log",
+        "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+      },
+      {
+        "uri": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-baseline-20261107/diff-b6ceab9.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "limitations": [
+      "Not full AR-00 requirement acceptance, source-level writer cutover, native pharmacy behavior, current-head hosted CI, policy/device/store activation or G0–G7 completion.",
+      "CLI and write/raw candidate semantics are curated manual indexes; the automatic source coverage checks only mounted routes, schema models and runtime fingerprints."
+    ],
+    "review": {
+      "reviewer": "independent-reviewer",
+      "sha": "b6ceab9ea87b027610f9cf7b4a5e043220107da1",
+      "result": "PASS"
+    }
+  }
+]
