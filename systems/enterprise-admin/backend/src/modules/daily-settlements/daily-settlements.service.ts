@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
@@ -147,9 +148,17 @@ export class DailySettlementService {
     if (!settlement) throw new AppError(404, 'Daily settlement not found');
     if (settlement.confirmedAt) throw new AppError(400, 'Settlement is already confirmed');
 
-    return prisma.dailySettlement.update({
-      where: { id },
-      data: { confirmedAt: new Date() },
-    });
+    try {
+      // Confirmation is a one-way transition, not a replaceable timestamp.
+      return await prisma.dailySettlement.update({
+        where: { id, tenantId, confirmedAt: null },
+        data: { confirmedAt: new Date() },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new AppError(409, 'Settlement changed before confirmation; reload and confirm');
+      }
+      throw error;
+    }
   }
 }
