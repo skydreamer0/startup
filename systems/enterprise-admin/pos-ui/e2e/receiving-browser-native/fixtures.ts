@@ -16,8 +16,12 @@ async function bounded<T>(work: Promise<T>, ms: number, message: string): Promis
 }
 
 type Credentials = { email: string; password: string; secondEmail: string; secondPassword: string; productId: string };
-type Entry = { method: string; url: string; api: boolean; allowed: boolean; status?: number };
-type Harness = { requests: Entry[]; unexpected: string[]; forbidden: Entry[]; saveCalls: number; viewport: number };
+type Entry = { method: string; url: string; api: boolean; allowed: boolean; fontStub: boolean; status?: number; expectedRevision?: number };
+export type NavigationGuard = { phase: 'pending' | 'unknown'; action: 'back'; fromUrl: string; blockedUrl: string;
+  retainedUrl: string; dialogVisible: boolean; discardDisabled: boolean; expectedTitle: string; retainedTitle: string; saveCalls: number };
+type CasResolution = { draftUrl: string; expectedRevision: number; savedRevision: number; originalTitle: string; winnerTitle: string;
+  retainedTitle: string; reopenedTitle: string; reopenedRevision: number; history: { revision: number; title: string }[] };
+type Harness = { requests: Entry[]; unexpected: string[]; forbidden: Entry[]; saveCalls: number; viewport: number; navigationGuards: NavigationGuard[]; casResolution: CasResolution | null };
 const headingSelector = 'main.receipt-draft-editor > h1';
 const headingText = '人工收貨草稿';
 
@@ -41,14 +45,18 @@ async function platformFontEvidence(page: Page, target: Locator) {
 export const test = base.extend<{ harness: Harness }>({
   harness: [async ({ page, context }, use, info) => {
     const credentials = JSON.parse(await readFile(process.env.RECEIVING_BROWSER_CREDENTIAL_FILE!, 'utf8')) as Credentials;
-    const state: Harness = { requests: [], unexpected: [], forbidden: [], saveCalls: 0, viewport: page.viewportSize()!.width };
+    const state: Harness = { requests: [], unexpected: [], forbidden: [], saveCalls: 0, viewport: page.viewportSize()!.width, navigationGuards: [], casResolution: null };
     context.on('request', request => {
       const url = new URL(request.url());
       const api = url.pathname.startsWith('/api/');
       const fontStub = url.hostname === 'fonts.googleapis.com' && request.method() === 'GET' && request.resourceType() === 'stylesheet';
       const allowed = fontStub || (api ? receivingRequestAllowed(request.method(), request.url())
         : url.origin === origin && request.method() === 'GET');
-      const entry = { method: request.method(), url: request.url(), api, allowed, fontStub };
+      const entry: Entry = { method: request.method(), url: request.url(), api, allowed, fontStub };
+      if (request.method() === 'PUT' && url.pathname.startsWith('/api/v1/admin/receiving-drafts/')) {
+        const body = request.postDataJSON() as { expectedRevision?: number } | null;
+        entry.expectedRevision = body?.expectedRevision;
+      }
       state.requests.push(entry);
       if (!allowed) { state.forbidden.push(entry); state.unexpected.push(`${entry.method} ${url.origin}${url.pathname}`); }
       if (request.method() === 'PUT' && url.pathname.startsWith('/api/v1/admin/receiving-drafts/')) state.saveCalls++;
@@ -84,7 +92,7 @@ export const test = base.extend<{ harness: Harness }>({
       expect(state.unexpected, 'Browser network is limited to this built app and receiving API allowlist').toEqual([]);
       const ledgerPath = info.outputPath('receiving-browser-ledger.json');
       await writeFile(ledgerPath, JSON.stringify({ requests: state.requests, unexpected: state.unexpected, forbidden: state.forbidden,
-        viewport: state.viewport, title: info.title, titlePath: info.titlePath, retry: info.retry, saveCalls: state.saveCalls }), { flag: 'wx' });
+        viewport: state.viewport, title: info.title, titlePath: info.titlePath, retry: info.retry, saveCalls: state.saveCalls, navigationGuards: state.navigationGuards, casResolution: state.casResolution }), { flag: 'wx' });
       await info.attach('receiving-browser-ledger.json', { path: ledgerPath, contentType: 'application/json' });
     } catch (error) { cleanupError = error; }
     if (primaryError) throw primaryError;
