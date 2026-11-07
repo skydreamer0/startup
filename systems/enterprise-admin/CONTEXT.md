@@ -68,6 +68,12 @@ system-root pnpm workspace. There is no shared `packages/ui` extraction by defau
 
 ## Reading and evidence rules
 
+For the architecture upgrade, start with [AR-00's versioned execution baseline](infrastructure/plans/architecture-v2/README.md)
+after this context. It maps the current writers, original requirements and AR-00–23
+DAG, and provides read-only plan/evidence checks under `scripts/architecture/`.
+It does not replace #37, authorize an action or mark policy/device/store gates passed.
+
+
 Follow `CONTEXT-MAP.md` → this context → navigation → relevant MODULE → nearest
 source. Read only the selected journey and affected contract/ADR. For a new task,
 record exact base/head, allowed files and the smallest evidence needed to prove
