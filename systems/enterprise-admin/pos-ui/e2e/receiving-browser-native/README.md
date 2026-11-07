@@ -25,8 +25,12 @@ The per-case ledger includes only synthetic draft titles, revision numbers and
 observed navigation state. It does not record login bodies or tokens. Acceptance
 rejects missing lifecycle receipts, wrong revisions, changed historical titles,
 another draft's guard observations, unexpected extra writes or missing real API
-history reads. Existing hosted ownership, browser sandbox, deadlines, source,
-HTTP drain, append-only snapshot and owned cleanup gates are unchanged.
+history reads. The post-run snapshot requires six saved heads and exactly ten
+immutable revisions. Each CAS head and its v1/v2/v3 payloads must match the
+browser receipt and successful API saves, including the retained v3 content.
+Duplicate identities, missing/orphan revisions, different actors, rewritten
+history and unrelated business writes fail the comparator. Hosted ownership,
+browser sandbox, deadlines, source, HTTP drain and owned cleanup gates remain.
 
 `receivingBrowserScope.verified` describes the conditional scope of a successful
 native run of that exact source. Merely loading that constant, passing control
@@ -51,10 +55,16 @@ Source changes require a fresh native run and independent evidence review.
 
 ## Acceptance boundary
 
-The lifecycle increment is implemented but its native browser/API/PostgreSQL
-execution is **NOT RUN** at this checkpoint. Local control tests are synthetic;
-TypeScript and test collection are not browser evidence. Existing historical
-native results remain tied to their own source, without being relabelled.
+The first lifecycle head `a04cb6a669f694774810101f644bc3d424b8f96c` ran all
+seven browser cases successfully in hosted run `42324083366`, but the complete
+receiving job **FAILED**: the snapshot comparator still expected eight revisions
+and CAS v2 instead of the new ten revisions and CAS v3. Its original failure
+receipt remains authoritative; it is not retroactively accepted.
+
+This comparator correction requires a fresh exact-head hosted run and artifact
+review. An offline replay of the failed run is only a regression check, not
+native acceptance. Local controls, TypeScript and test collection likewise do
+not establish browser evidence. See the PR for the current exact-head result.
 
 Opening another actor's saved draft/history, cross-tenant browser isolation and
 read-only actor PUT rejection remain outside these cases. Sidebar/query changes,
