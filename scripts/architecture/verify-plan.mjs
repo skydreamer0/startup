@@ -126,9 +126,96 @@ export function verifyManifest(m, evidence = []) {
   return errors;
 }
 
+const backendPackage = 'systems/enterprise-admin/backend/package.json';
+const backendDockerfile = 'systems/enterprise-admin/backend/Dockerfile';
+const backendSeed = 'systems/enterprise-admin/backend/prisma/seed.ts';
+const cliKinds = new Set(['package-script', 'prisma-seed', 'docker-command', 'curated']);
+const nonempty = value => typeof value === 'string' && Boolean(value.trim());
+const cliKey = c => JSON.stringify([c?.path, c?.kind, c?.entry]);
+const cliDefinition = c => JSON.stringify([c?.path, c?.kind, c?.entry, c?.command]);
+
+// Source declarations only: commands are data, never executed. Unsupported Docker
+// syntax fails closed instead of guessing effective image or shell semantics.
+export function configuredCliEntries(packageSource, dockerSource) {
+  const pkg = JSON.parse(packageSource), entries = [];
+  if (!pkg || !pkg.scripts || typeof pkg.scripts !== 'object' || Array.isArray(pkg.scripts)) throw Error('CLI package scripts must be an object');
+  for (const [entry, command] of Object.entries(pkg.scripts)) {
+    if (!nonempty(entry) || !nonempty(command)) throw Error('CLI package script must be a named command');
+    entries.push({ path: backendPackage, kind: 'package-script', entry, command });
+  }
+  if (pkg.prisma != null && (typeof pkg.prisma !== 'object' || Array.isArray(pkg.prisma))) throw Error('CLI prisma configuration must be an object');
+  if (pkg.prisma && Object.hasOwn(pkg.prisma, 'seed')) {
+    if (!nonempty(pkg.prisma.seed)) throw Error('CLI Prisma seed must be a command');
+    entries.push({ path: backendPackage, kind: 'prisma-seed', entry: 'prisma.seed', command: pkg.prisma.seed });
+  }
+  const aliases = new Set();
+  let stage = null;
+  for (const raw of dockerSource.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (/^#\s*escape\s*=/i.test(line)) throw Error('CLI Docker escape directive requires review');
+    if (!line || line.startsWith('#')) continue;
+    if (/\\$/.test(line) || line.includes('<<')) throw Error('CLI Docker continuation/heredoc requires review');
+    const instruction = line.match(/^([a-z]+)\s+(.*)$/i);
+    if (!instruction) throw Error('CLI Docker instruction requires review');
+    const [, rawName, value] = instruction, name = rawName.toUpperCase();
+    if (name === 'FROM') {
+      const from = value.match(/^(\S+)(?:\s+AS\s+([a-z0-9_-]+))?$/i);
+      if (!from) throw Error('CLI Docker FROM syntax requires review');
+      stage = { inherited: aliases.has(from[1].toLowerCase()) || /^\d+$/.test(from[1]) || from[1].includes('$'), commands: [] };
+      if (from[2]) aliases.add(from[2].toLowerCase());
+    } else if (name === 'CMD' || name === 'ENTRYPOINT') {
+      if (!stage) throw Error('CLI Docker command precedes FROM');
+      let argv;
+      try { argv = JSON.parse(value); } catch { throw Error('CLI Docker startup requires single-line JSON exec form'); }
+      if (!Array.isArray(argv) || !argv.length || argv.some(arg => typeof arg !== 'string') || !nonempty(argv[0])) throw Error('CLI Docker startup argv invalid');
+      if (stage.commands.some(c => c.entry === name)) throw Error('CLI Docker duplicate startup instruction requires review');
+      stage.commands.push({ path: backendDockerfile, kind: 'docker-command', entry: name, command: JSON.stringify(argv) });
+    }
+  }
+  if (!stage || stage.inherited || !stage.commands.length) throw Error('CLI Docker final stage requires explicit startup declarations and external base');
+  return [...entries, ...stage.commands];
+}
+
+export function verifyCliInventory(inventory, ids, configured = null) {
+  const errors = [], keys = new Set();
+  if (!Array.isArray(inventory.cli)) errors.push('invalid CLI inventory: array required');
+  for (const c of list(inventory.cli)) {
+    const key = cliKey(c);
+    if (keys.has(key)) errors.push(`duplicate CLI ${key}`);
+    keys.add(key);
+    if (!c || !safePath(c.path) || !cliKinds.has(c.kind) || !nonempty(c.entry) || !nonempty(c.owner) || !nonempty(c.effect) || !Array.isArray(c.destination) || !c.destination.length || c.destination.some(d => !ids.has(d))) {
+      errors.push(`invalid CLI ${key}`);
+      continue;
+    }
+    if ((c.kind !== 'curated' && !nonempty(c.command)) ||
+        (['package-script', 'prisma-seed'].includes(c.kind) && c.path !== backendPackage) ||
+        (c.kind === 'prisma-seed' && c.entry !== 'prisma.seed') ||
+        (c.kind === 'docker-command' && (c.path !== backendDockerfile || !['CMD', 'ENTRYPOINT'].includes(c.entry))) ||
+        (c.kind === 'curated' && [backendPackage, backendDockerfile].includes(c.path))) errors.push(`invalid CLI definition ${key}`);
+  }
+  // The seed implementation is a pinned reviewed administrative writer, not a
+  // claim that arbitrary command targets or their transitive effects are resolved.
+  const required = new Set([backendPackage, backendDockerfile, backendSeed, ...list(inventory.cli).map(c => c?.path)]);
+  for (const file of required) {
+    const fingerprints = list(inventory.sourceFiles).filter(f => f?.path === file);
+    if (fingerprints.length !== 1 || !hash.test(fingerprints[0]?.sha256)) errors.push(`CLI source fingerprint required exactly once: ${file}`);
+  }
+  if (configured !== null) {
+    const actual = list(inventory.cli).filter(c => c?.kind !== 'curated').map(cliDefinition).sort();
+    if (JSON.stringify(actual) !== JSON.stringify(configured.map(cliDefinition).sort())) errors.push('CLI configured entry coverage mismatch');
+  }
+  return errors;
+}
+
 export function verifyInventory(inventory, requirements, m, checkSource = false) {
   const errors=[], ids=new Set(m.tasks.map(t=>t.id)), checks=new Set(m.tasks.flatMap(t=>t.requiredChecks.map(c=>c.id)));
   if(inventory.sourceHead!==m.sourceHead || inventory.sourceTree!==m.sourceTree)errors.push('inventory source differs');
+  let configured = null;
+  if (checkSource) {
+    try { configured = configuredCliEntries(fs.readFileSync(path.join(root, backendPackage), 'utf8'), fs.readFileSync(path.join(root, backendDockerfile), 'utf8')); }
+    catch (error) { errors.push(`CLI source declarations invalid: ${error.message}`); }
+  }
+  errors.push(...verifyCliInventory(inventory, ids, configured));
   for(const [model,info] of Object.entries(inventory.models)) if(!info.owner || !info.destination.length || info.destination.some(d=>!ids.has(d)))errors.push(`unowned model ${model}`);
   const routeKeys=new Set();
   for(const r of inventory.routes){const key=`${r.method} ${r.path}`;if(routeKeys.has(key)||!r.owner||!r.destination.length||r.destination.some(d=>!ids.has(d)))errors.push(`unowned/duplicate route ${key}`);routeKeys.add(key);}

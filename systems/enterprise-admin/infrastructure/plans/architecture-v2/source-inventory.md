@@ -6,6 +6,8 @@ tree `cc5230b00434655a286e2e5b87e0db3187383580`. This inspection is read-only.
 with its exact route statement/line, all model owners, test paths, CLI entries
 and source hashes. `verify-plan --check-source` checks the 122 endpoint set,
 33-model set, runtime-file coverage and 137 fingerprints against the checkout.
+It also compares backend package scripts, the separate Prisma seed hook and
+explicit final-stage Docker startup argv against their source declarations.
 
 ## Mounted route groups and effects
 
@@ -50,7 +52,9 @@ per endpoint; AR-04 must prove effective authorization with real PG/HTTP cases.
 ## Non-HTTP and external effects
 
 - `backend/src/server.ts` only readiness-checks and starts Express. No durable production worker entry or runtime cron was found in the reviewed source. The test-only checkout command worker is not production background processing. AR-13 introduces durable jobs.
-- `backend/package.json` lists db:migrate, db:seed and db:reset; `prisma/seed.ts` mutates data. Docker CMD runs `migrate deploy`. The inventory preserves these entries, but does not invoke them.
+- `backend/package.json` 的 13 個 scripts 全部納入來源集合比對，包含 db:migrate、db:seed、db:reset；`prisma.seed` 是另外一個入口，不能由 npm db:seed 代替。`prisma/seed.ts` 會修改資料，其來源指紋必須保留。db:studio 是可編輯資料的互動管理入口，不能當成唯讀工具。
+- Docker 最終 stage 的 CMD 以完整 exec-form argv 記錄：`["sh","-c","./node_modules/.bin/prisma migrate deploy && node dist/server.js"]`。來源新增 ENTRYPOINT 或改變任一 argv 都需更新並審閱清冊；未支援的 Docker 語法拒絕通過。沒有執行任何列出的命令。
+- 所有 CLI 入口均驗證 kind、owner、effect、AR destination 與唯一來源指紋。Python 入口標記為 `curated`，只有既列項目的結構及指紋檢查，沒有自動發現全部 Python 入口的宣稱。
 - `backend/scripts/`, root CI/test helpers and Prisma diagnostics are individually listed. Most scripts are opt-in synthetic harnesses, not automatically enabled application writers. Their guards and external environment must be independently rechecked before execution.
 - Local-print-agent API/CLI can write device receipts and send BLE; Admin label client and POS receipt/scan consumers are outside the Express quantity authority. No actual paper, device/OS permission or print transport tested here.
 - Existing `scripts/ocr-evaluation/evaluator.py` and `verify.py` evaluate synthetic six-field text. They are reused; no OCR engine/model installation or real-image accuracy claim.

@@ -2288,7 +2288,8 @@
       "command": "tsx watch src/server.ts",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2296,7 +2297,8 @@
       "command": "tsc",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2304,7 +2306,8 @@
       "command": "node dist/server.js",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2312,7 +2315,8 @@
       "command": "prisma generate",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2320,7 +2324,8 @@
       "command": "prisma migrate dev",
       "effect": "DB mutation is prohibited for this baseline; owned synthetic harness only for future tests",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2328,7 +2333,8 @@
       "command": "tsx prisma/seed.ts",
       "effect": "DB mutation is prohibited for this baseline; owned synthetic harness only for future tests",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2336,15 +2342,17 @@
       "command": "prisma migrate reset --force",
       "effect": "DB mutation is prohibited for this baseline; owned synthetic harness only for future tests",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
       "entry": "db:studio",
       "command": "prisma studio",
-      "effect": "Build/test/development entry; not a production writer inventory bypass",
+      "effect": "Interactive database administration can mutate rows; not invoked or authorized by this baseline",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2352,7 +2360,8 @@
       "command": "vitest run",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2360,7 +2369,8 @@
       "command": "vitest",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2368,7 +2378,8 @@
       "command": "vitest run --coverage",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2376,7 +2387,8 @@
       "command": "eslint src/",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "package-script"
     },
     {
       "path": "systems/enterprise-admin/backend/package.json",
@@ -2384,36 +2396,50 @@
       "command": "prettier --write 'src/**/*.ts'",
       "effect": "Build/test/development entry; not a production writer inventory bypass",
       "owner": "platform",
+      "destination": ["AR-20"],
+      "kind": "package-script"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "kind": "prisma-seed",
+      "entry": "prisma.seed",
+      "command": "tsx prisma/seed.ts",
+      "effect": "Independent Prisma seed hook mutates data; not invoked or authorized by this baseline",
+      "owner": "platform",
       "destination": ["AR-20"]
     },
     {
       "path": "systems/enterprise-admin/backend/Dockerfile",
       "entry": "CMD",
-      "command": "prisma migrate deploy && node dist/server.js",
+      "command": "[\"sh\",\"-c\",\"./node_modules/.bin/prisma migrate deploy && node dist/server.js\"]",
       "effect": "DDL on image start currently exists; AR-20 must separate it; NOT EXECUTED",
       "owner": "platform",
-      "destination": ["AR-20"]
+      "destination": ["AR-20"],
+      "kind": "docker-command"
     },
     {
       "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
       "entry": "main/local loopback HTTP",
       "effect": "Device I/O with local idempotency receipts; no stock authority; real print prohibited here",
       "owner": "device",
-      "destination": ["AR-18"]
+      "destination": ["AR-18"],
+      "kind": "curated"
     },
     {
       "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
       "entry": "main",
       "effect": "Render/discover/print/reprint device command; hardware side effects, not invoked",
       "owner": "device",
-      "destination": ["AR-18"]
+      "destination": ["AR-18"],
+      "kind": "curated"
     },
     {
       "path": "scripts/ocr-evaluation/evaluator.py",
       "entry": "CLI evaluator",
       "effect": "Synthetic text evaluator only; no OCR engine, business writer or external AI",
       "owner": "evidence",
-      "destination": ["AR-15"]
+      "destination": ["AR-15"],
+      "kind": "curated"
     }
   ],
   "backgroundRuntime": {

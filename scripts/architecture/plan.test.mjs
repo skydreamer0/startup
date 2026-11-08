@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { root,planDir,readJson,verifyManifest,verifyInventory,validateEvidence,overlaps,digest } from './verify-plan.mjs';
+import { root,planDir,readJson,verifyManifest,verifyInventory,validateEvidence,overlaps,digest,configuredCliEntries,verifyCliInventory } from './verify-plan.mjs';
 import { schedule } from './plan.mjs';
 const fresh=()=>readJson(path.join(root,planDir,'manifest.json'));
 const evidence=(task,checks)=>({id:`test-${task}`,taskId:task,checkIds:checks,subject:{sha:'a'.repeat(40),tree:'b'.repeat(40),dirty:false},command:'synthetic fixture only',executor:'author',recordedAt:'2026-11-07T00:00:00Z',environment:'TEST_ONLY',scope:'scheduler test, not pharmacy acceptance',result:'PASS',exitCode:0,artifacts:[{uri:'fixture://synthetic',sha256:'c'.repeat(64)}],limitations:['Synthetic validator test only'],review:{reviewer:'reviewer',sha:'a'.repeat(40),result:'PASS'}});
@@ -68,3 +68,154 @@ test('deleting all #29 requirements and matching count is rejected',()=>{const m
 test('alternative manifest cannot claim sourceChecked without source verification',()=>{const r=spawnSync(process.execPath,['scripts/architecture/verify-plan.mjs','--manifest',path.join(root,planDir,'manifest.json'),'--check-source'],{cwd:root,encoding:'utf8'});assert.equal(r.status,1);assert.match(r.stderr,/cannot be combined/);assert(!r.stdout.includes('sourceChecked'));});
 test('G gate cannot become PASS from a status toggle',()=>fails(m=>m.activationGates[1].status='PASS',/PASS requires|missing exact scoped reviewed PASS/));
 test('G gate evidence is scoped and bound to one source',()=>{const m=fresh(),g=m.activationGates[1],e=evidence('AR-23',[g.requiredChecks[0].id]);g.status='PASS';g.scope='synthetic-scope';g.reviewer='reviewer';g.verificationSubject={sha:e.subject.sha,tree:e.subject.tree};g.completionEvidence=[e.id];e.gateIds=[g.id];e.scope=g.scope;assert.deepEqual(verifyManifest(m,[e]),[]);e.scope='another-scope';assert.match(verifyManifest(m,[e]).join('\n'),/missing exact scoped reviewed PASS/);});
+
+function cliErrors(change, checkSource = true) {
+  const inventory = readJson(path.join(root, planDir, 'source-inventory.json'));
+  change(inventory);
+  return verifyInventory(inventory, readJson(path.join(root, planDir, 'requirements.json')), fresh(), checkSource).join('\n');
+}
+
+test('source-checked inventory cannot omit all non-HTTP entries', () => {
+  assert.match(cliErrors(i => { i.cli = []; }), /CLI.*coverage mismatch/);
+});
+
+test('source-checked inventory cannot omit a backend package command', () => {
+  assert.match(cliErrors(i => { i.cli = i.cli.filter(c => c.entry !== 'db:reset'); }), /CLI.*coverage mismatch/);
+});
+
+test('source-checked inventory cannot substitute an administrative command', () => {
+  assert.match(cliErrors(i => { i.cli.find(c => c.entry === 'db:reset').command = 'echo safe'; }), /CLI.*coverage mismatch/);
+});
+
+test('CLI ownership and AR destinations are required even without source checking', () => {
+  for (const change of [c => { c.owner = ''; }, c => { c.destination = []; }, c => { c.destination = ['AR-99']; }]) {
+    assert.match(cliErrors(i => change(i.cli[0]), false), /invalid CLI/);
+  }
+});
+
+test('duplicate CLI entries cannot conceal a missing entry', () => {
+  assert.match(cliErrors(i => { i.cli.push({ ...i.cli[0] }); }), /duplicate CLI/);
+});
+
+test('non-HTTP entry fingerprints cannot be removed from the frozen inventory', () => {
+  for (const file of ['backend/package.json', 'backend/Dockerfile', 'backend/prisma/seed.ts']) {
+    assert.match(cliErrors(i => { i.sourceFiles = i.sourceFiles.filter(f => !f.path.endsWith(file)); }), /CLI.*fingerprint/);
+  }
+});
+
+test('Prisma seed hook is distinct from the npm seed script and cannot be omitted', () => {
+  assert.match(cliErrors(i => { i.cli = i.cli.filter(c => c.kind !== 'prisma-seed'); }), /CLI.*coverage mismatch/);
+});
+
+test('Docker startup argv cannot be omitted or replaced by a descriptive approximation', () => {
+  assert.match(cliErrors(i => { i.cli = i.cli.filter(c => c.entry !== 'CMD'); }), /CLI.*coverage mismatch/);
+  assert.match(cliErrors(i => { i.cli.find(c => c.entry === 'CMD').command = 'prisma migrate deploy && node dist/server.js'; }), /CLI.*coverage mismatch/);
+});
+
+const packagePath = 'systems/enterprise-admin/backend/package.json';
+const dockerPath = 'systems/enterprise-admin/backend/Dockerfile';
+const cliFixture = () => readJson(path.join(root, planDir, 'source-inventory.json'));
+const cliTaskIds = () => new Set(fresh().tasks.map(t => t.id));
+const packageFixture = () => readJson(path.join(root, packagePath));
+const dockerFixture = () => fs.readFileSync(path.join(root, dockerPath), 'utf8');
+const declaredCli = (pkg = packageFixture(), docker = dockerFixture()) => configuredCliEntries(JSON.stringify(pkg), docker);
+
+test('frozen source has 13 scripts, one separate Prisma hook and literal Docker argv', () => {
+  const actual = declaredCli();
+  assert.equal(actual.filter(c => c.kind === 'package-script').length, 13);
+  assert.equal(actual.filter(c => c.kind === 'prisma-seed').length, 1);
+  assert.deepEqual(actual.filter(c => c.kind === 'docker-command'), [{
+    path: dockerPath, kind: 'docker-command', entry: 'CMD',
+    command: JSON.stringify(['sh', '-c', './node_modules/.bin/prisma migrate deploy && node dist/server.js']),
+  }]);
+  assert.deepEqual(verifyCliInventory(cliFixture(), cliTaskIds(), actual), []);
+});
+
+test('new, removed and changed source scripts require an inventory update', () => {
+  for (const change of [p => { p.scripts['admin:writer'] = 'echo unreviewed'; }, p => { delete p.scripts['db:reset']; }, p => { p.scripts['db:reset'] = 'echo changed'; }]) {
+    const pkg = packageFixture(); change(pkg);
+    assert.match(verifyCliInventory(cliFixture(), cliTaskIds(), declaredCli(pkg)).join('\n'), /CLI.*coverage mismatch/);
+  }
+});
+
+test('new inventory declarations without source cannot pass', () => {
+  assert.match(cliErrors(i => { i.cli.push({ ...i.cli[0], entry: 'admin:invented', command: 'echo extra' }); }), /CLI.*coverage mismatch/);
+});
+
+test('Prisma hook source changes cannot borrow npm seed coverage', () => {
+  for (const change of [p => { delete p.prisma.seed; }, p => { p.prisma.seed = 'echo changed'; }]) {
+    const pkg = packageFixture(); change(pkg);
+    assert.match(verifyCliInventory(cliFixture(), cliTaskIds(), declaredCli(pkg)).join('\n'), /CLI.*coverage mismatch/);
+  }
+});
+
+test('command strings are inert data, including shell metacharacters', () => {
+  const pkg = packageFixture();
+  pkg.scripts['test:inert'] = '$(never-execute-this) ; exit 99';
+  assert.equal(declaredCli(pkg).find(c => c.entry === 'test:inert').command, pkg.scripts['test:inert']);
+});
+
+test('malformed package script and seed declarations fail closed', () => {
+  for (const pkg of [null, {}, { scripts: [] }, { scripts: { seed: null } }, { scripts: { '': 'echo invalid' } }, { scripts: {}, prisma: [] }, { scripts: {}, prisma: { seed: [] } }, { scripts: {}, prisma: { seed: ' ' } }]) {
+    assert.throws(() => declaredCli(pkg), /CLI/);
+  }
+});
+
+test('final-stage Docker startup preserves argv and supports an explicit ENTRYPOINT', () => {
+  const docker = 'FROM node:22 AS builder\nCMD ["ignored-builder"]\nFROM node:22\n entrypoint ["sh", "-c"]\nCMD ["echo final", ""]\n';
+  assert.deepEqual(declaredCli(packageFixture(), docker).filter(c => c.kind === 'docker-command').map(c => [c.entry, c.command]), [
+    ['ENTRYPOINT', '["sh","-c"]'], ['CMD', '["echo final",""]'],
+  ]);
+});
+
+test('added Docker ENTRYPOINT and changed CMD argv fail inventory comparison', () => {
+  for (const docker of [dockerFixture() + '\nENTRYPOINT ["wrapper"]\n', dockerFixture().replace('"sh", "-c"', '"sh", "-e", "-c"')]) {
+    assert.match(verifyCliInventory(cliFixture(), cliTaskIds(), declaredCli(packageFixture(), docker)).join('\n'), /CLI.*coverage mismatch/);
+  }
+});
+
+test('Docker JSON whitespace does not change argv identity', () => {
+  const docker = dockerFixture().replace('["sh", "-c", ', '[ "sh" , "-c" , ');
+  assert.deepEqual(declaredCli(packageFixture(), docker), declaredCli());
+});
+
+test('unsupported or ambiguous Docker startup syntax fails closed', () => {
+  for (const docker of [
+    'FROM node:22\nCMD echo shell', 'FROM node:22\nCMD []', 'FROM node:22\nCMD [1]',
+    'FROM node:22\nCMD [""]', 'FROM node:22\nCMD ["x",]', 'CMD ["x"]',
+    'FROM node:22\nCMD ["x"]\nCMD ["y"]', 'FROM node:22',
+    'FROM node:22 AS builder\nCMD ["x"]\nFROM builder\nCMD ["y"]',
+    'FROM node:22\nCMD ["x"]\nFROM 0\nCMD ["y"]',
+    'FROM $BASE\nCMD ["x"]', 'FROM --platform=linux/amd64 node:22\nCMD ["x"]',
+    '# escape=`\nFROM node:22\nCMD ["x"]', 'FROM node:22\nRUN <<EOF\nCMD ["x"]\nEOF',
+    'FROM node:22\nCMD ["x", ' + String.fromCharCode(92) + '\n"y"]',
+  ]) assert.throws(() => declaredCli(packageFixture(), docker), /CLI Docker/);
+});
+
+test('CLI metadata rejects malformed arrays, paths, kinds and ownership', () => {
+  for (const change of [
+    i => { i.cli = null; }, i => { i.cli = [null]; },
+    i => { i.cli[0].path = '../outside'; }, i => { i.cli[0].kind = 'unknown'; },
+    i => { i.cli[0].entry = ' '; }, i => { i.cli[0].effect = ' '; },
+    i => { i.cli[0].command = 42; }, i => { i.cli[0].destination = 'AR-20'; },
+    i => { i.cli[0].owner = 42; }, i => { i.cli[0].destination = ['AR-99']; },
+  ]) assert.match(cliErrors(change, false), /invalid CLI/);
+});
+
+test('configured declarations cannot be relabelled curated or moved to another path', () => {
+  for (const change of [c => { c.kind = 'curated'; }, c => { c.path = 'other/package.json'; }]) {
+    assert.match(cliErrors(i => change(i.cli[0])), /invalid CLI|CLI.*coverage mismatch/);
+  }
+});
+
+test('CLI source fingerprints must be valid and unique', () => {
+  for (const change of [
+    i => { i.sourceFiles.find(f => f.path === packagePath).sha256 = 'bad'; },
+    i => { i.sourceFiles.push({ ...i.sourceFiles.find(f => f.path === dockerPath) }); },
+  ]) assert.match(cliErrors(change, false), /CLI.*fingerprint/);
+});
+
+test('curated Python entries retain metadata and source-fingerprint checks', () => {
+  assert.match(cliErrors(i => { i.cli.find(c => c.kind === 'curated').owner = ''; }, false), /invalid CLI/);
+  assert.match(cliErrors(i => { const p = i.cli.find(c => c.kind === 'curated').path; i.sourceFiles = i.sourceFiles.filter(f => f.path !== p); }), /CLI.*fingerprint/);
+});

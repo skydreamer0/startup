@@ -18,6 +18,7 @@ read-only scheduling tool, not a second roadmap or operational activation.
 
     node scripts/architecture/verify-plan.mjs --check-source
     node --test scripts/architecture/plan.test.mjs
+    node --test systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs
     node scripts/architecture/plan.mjs
     ./scripts/validate-agent-context.sh
     git diff --check
@@ -31,6 +32,26 @@ The default evidence ledger records only the executed tooling/context checks;
 AR-00 stays active and AR-01 is blocked
 until its full acceptance and independent review are recorded. This PR does not
 manufacture completion evidence to make later tasks look ready.
+
+## 非 HTTP 入口清冊的有界檢查
+
+`source-inventory.json` 以 `kind` 區分套件 script、獨立 Prisma seed hook、
+Docker 啟動指令及人工整理的 Python 入口。`--check-source` 重新讀取 backend
+`package.json` 與 `Dockerfile`，精確比對 13 個 scripts、1 個 `prisma.seed`
+hook，以及目前最終 stage 的 1 個 CMD（保留完整 JSON argv，不以描述替代）。
+新增、刪除或改寫來源宣告都必須對應到清冊；每筆入口必須有 owner、effect、
+有效 AR destination 及唯一來源指紋，另保留既有 `prisma/seed.ts` 實作指紋。
+
+Docker 解析僅支援已審閱的單行 exec-form 宣告；續行、heredoc、escape directive、
+重複啟動指令、stage 繼承或動態 base 等未支援格式會拒絕通過，要求另行審閱。
+這不是 Docker builder 或 shell parser，不解析外部 base image 的繼承行為。
+Python `curated` 入口仍需人工核對是否完整；此檢查不遍歷命令引用的所有程式，
+也不證明完整 writer/data-flow、部署啟用狀態或真實 DB、HTTP、設備行為。
+所有命令都是待比對文字，未執行 seed、reset、migration、容器或設備操作。
+
+[本次收尾收據](../../verification/architecture-v2/ar00-closeout-20261108/README.md)
+分開記錄候選來源恢復、重新執行測試與獨立審查，不沿用遺失的歷史 log。本切片不把 AR-00 AC01 或任何其他
+完整驗收改成 PASS；AR-00、D01–D09、G0–G7 與營運啟用狀態維持原值。
 
 ## Records and meaning
 
