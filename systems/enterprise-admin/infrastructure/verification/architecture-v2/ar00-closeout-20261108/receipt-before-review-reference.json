@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-architecture-acceptance-receipt",
+  "recordedAt": "2026-11-08T12:56:45.363001Z",
+  "source": {
+    "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+    "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+    "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+    "dirty": false
+  },
+  "remoteBaseline": {
+    "commit": "84d754b29332ed868f92fd3e954f90011a2d338e",
+    "tree": "d31409bb8ad7c7ecaa67bafb6a633db60a33be80",
+    "basePr204": "67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+    "master": "d703e416952b0e02a8241a86057d248a5c7b4662"
+  },
+  "materialization": {
+    "baselineMaterializedFiles": 242,
+    "sourceMaterializedFiles": 243,
+    "baselineLeafEntries": 1284,
+    "sourceLeafEntries": 1285,
+    "completeTreeIdentityVerified": true,
+    "completeCheckout": false,
+    "note": "All materialized source bytes were checked against remote Git blob hashes. Unread objects were not fabricated; other leaf paths remain in the complete tree metadata. This is not an executable full application checkout or a full git archive."
+  },
+  "recovery": {
+    "originalGateTestSha256": "b37be0d10ec11d021788ac8888e9c8a34635cb840bc68876bf51174b7773bb01",
+    "historicalGateLogSha256": "802444a4101a7a0ffcd8f37707ed59e53d053d773749c236c00f807d2fc29603",
+    "historicalLog": "recovered-historical-17.log",
+    "currentGateTestSha256": "5a185748f6198afe0f5770fe3fa36f4a7ec4e5458afd1848cd449dd3acf1d41a",
+    "gateChange": "Explicitly update verifier blob pin, provenance comment and pin-test title. All original behavioral assertions run.",
+    "cli": "Five source files reconstructed from retained edit procedures on the fixed remote baseline; historical 78/78 raw logs and historical manifest were unavailable. Fresh results below replace no historical receipt.",
+    "historicalReceipt": "Original receipt-p2.json bytes were not recoverable; no replacement is represented as the historical file."
+  },
+  "results": [
+    {
+      "id": "CLI-REGRESSION",
+      "result": "PASS",
+      "scope": "Configured backend package scripts, Prisma hook, Docker startup argv and source/metadata rejection controls",
+      "command": "node --test scripts/architecture/plan.test.mjs",
+      "exitCode": 0,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [
+        {
+          "path": "candidate-plan-tests.log",
+          "sha256": "e98152ecde474f636ae6cea01f35c30ceefab5490ecd09a4c42cf5d25b52ae39"
+        }
+      ],
+      "counts": {
+        "passed": 78,
+        "failed": 0,
+        "skipped": 0,
+        "notRun": 0
+      }
+    },
+    {
+      "id": "GATE-CONTROLS",
+      "result": "PASS",
+      "scope": "Declared 24-task planner and evidence/policy/activation validator, including all 276 task pairs, 512 policy combinations and six verifier mutations",
+      "command": "node --test systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "exitCode": 0,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [
+        {
+          "path": "candidate-gate-tests.log",
+          "sha256": "4efe4a303885439c696faa64845c5179ef563367ed339aa722ee0cebde5650ba"
+        }
+      ],
+      "counts": {
+        "passed": 17,
+        "failed": 0,
+        "skipped": 0,
+        "notRun": 0
+      }
+    },
+    {
+      "id": "SOURCE-CHECK",
+      "result": "PASS",
+      "scope": "122 mounted routes, 33 models, 137 pinned files, frozen requirements and supported CLI declarations",
+      "command": "node scripts/architecture/verify-plan.mjs --check-source",
+      "exitCode": 0,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [
+        {
+          "path": "candidate-source.log",
+          "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+        }
+      ]
+    },
+    {
+      "id": "CONTEXT",
+      "result": "PASS",
+      "scope": "Repository context existence, tracked state, required patterns and links",
+      "command": "./scripts/validate-agent-context.sh",
+      "exitCode": 0,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [
+        {
+          "path": "candidate-context.log",
+          "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+        }
+      ]
+    },
+    {
+      "id": "STATIC",
+      "result": "PASS",
+      "scope": "Three source files syntax, tracked whitespace and unchanged implementation source; receipt files still uncommitted during this check",
+      "command": "node --check scripts/architecture/verify-plan.mjs && node --check scripts/architecture/plan.test.mjs && node --check systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs && git diff --check && git diff --quiet HEAD -- scripts/architecture systems/enterprise-admin/infrastructure/plans/architecture-v2 systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "exitCode": 0,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [
+        {
+          "path": "candidate-static.log",
+          "sha256": "3f767695e9fecbf71db3cb440bc001d57d2358172e7e87194bb282aa6f40becf"
+        }
+      ]
+    },
+    {
+      "id": "BASELINE-CLI-GAP",
+      "result": "FAIL",
+      "scope": "Historical #205 verifier incorrectly accepts three inventory omissions/substitutions; expected rejection failed",
+      "command": "node systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/baseline-cli-gap-probe.mjs ../baseline",
+      "exitCode": 1,
+      "subject": {
+        "remoteCommit": "84d754b29332ed868f92fd3e954f90011a2d338e",
+        "localEquivalentCommit": "0f5ac6f0223cd06a87cccf3d3ce354774ae85cbd",
+        "tree": "d31409bb8ad7c7ecaa67bafb6a633db60a33be80",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [
+        {
+          "path": "baseline-cli-rejection-gap.log",
+          "sha256": "353605f37a3f3f92fb800eec1596f0710181837bcce0a120621a9c84d44c8ace"
+        },
+        {
+          "path": "baseline-cli-gap-probe.mjs",
+          "sha256": "298ba831569b9d02077e105fb4fdc6ae7544d9b260c72303de97e1219b2850e4"
+        }
+      ],
+      "reason": "Pinned-baseline diagnostic now fails with exit 1 when an invalid CLI inventory is accepted. All three expected rejection properties fail on the old source; the new regression tests reject them."
+    },
+    {
+      "id": "NODE22-FOCUSED",
+      "result": "NOT_RUN",
+      "scope": "New 78/17 focused suites under Node 22",
+      "command": null,
+      "exitCode": null,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [],
+      "reason": "Not executed by this bounded architecture slice; older results are not transferred."
+    },
+    {
+      "id": "APPLICATION",
+      "result": "NOT_RUN",
+      "scope": "Application runtime, backend/frontend builds, lint and full suites",
+      "command": null,
+      "exitCode": null,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [],
+      "reason": "Not executed by this bounded architecture slice; older results are not transferred."
+    },
+    {
+      "id": "NATIVE-DB-HTTP",
+      "result": "NOT_RUN",
+      "scope": "Native API/PostgreSQL and settlement concurrency",
+      "command": null,
+      "exitCode": null,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [],
+      "reason": "Not executed by this bounded architecture slice; older results are not transferred."
+    },
+    {
+      "id": "DEVICES-STORE",
+      "result": "NOT_RUN",
+      "scope": "Physical devices, printing, real-store acceptance",
+      "command": null,
+      "exitCode": null,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [],
+      "reason": "Not executed by this bounded architecture slice; older results are not transferred."
+    },
+    {
+      "id": "HOSTED-NEW-HEAD",
+      "result": "NOT_RUN",
+      "scope": "Hosted CI for the new publication head",
+      "command": null,
+      "exitCode": null,
+      "subject": {
+        "localCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+        "publishedEquivalentCommit": "586f2baa8278a262521757bea8da629ba7111649",
+        "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+        "dirty": false
+      },
+      "executor": "integration author",
+      "environment": "isolated cloud workspace; Node 24.22.1; Linux; synthetic filesystem fixtures only",
+      "limitations": [
+        "No application, database, network, hardware or operational activation performed."
+      ],
+      "artifacts": [],
+      "reason": "Not executed by this bounded architecture slice; older results are not transferred."
+    }
+  ],
+  "skipSummary": {
+    "newExecutedSuitesSkippedCases": 0,
+    "skippedChecks": [],
+    "note": "NOT_RUN scopes remain explicit and are not counted as skipped or passing cases."
+  },
+  "acceptance": [
+    {
+      "id": "AR-00-AC01",
+      "result": "NOT_RUN",
+      "scope": "All enabled writers, transitive effects, actual activation and complete source-to-test semantic ownership",
+      "reason": "CLI declaration completeness is improved, but curated Python entries, command target closure and 96 lexical write/raw candidates are not complete writer/data-flow authorization proof."
+    },
+    {
+      "id": "AR-00-AC02",
+      "result": "PASS",
+      "scope": "Declared planner graph: no cycle or unknown dependency, file overlap locks, at most three workers and completed prerequisites; synthetic execution of the full 24-task DAG. No real worker dispatch."
+    },
+    {
+      "id": "AR-00-AC03",
+      "result": "PASS",
+      "scope": "This receipt separates new executed PASS, historical rejection-expectation FAIL, zero new skipped cases and explicit NOT_RUN environment/application/device scopes. It does not transfer old CI."
+    },
+    {
+      "id": "AR-00-AC04",
+      "result": "PASS",
+      "scope": "Pure planner/validator separates engineering readiness from all nine activation-only decisions and TEST_ONLY policy profiles; no live policy approval or operating activation."
+    },
+    {
+      "id": "AR-00-AC05",
+      "result": "PASS",
+      "scope": "Evidence validation and unchanged GitHub checkboxes remain separate; source/tree/scope/independent-review gates reject completion and activation bypass. No issue checkbox or task/decision/G status was changed."
+    }
+  ],
+  "separationEvidence": {
+    "issue180": {
+      "url": "https://github.com/skydreamer0/startup/issues/180",
+      "observedAt": "2026-11-08T12:54:57Z",
+      "state": "open",
+      "uncheckedAcceptanceItems": 5,
+      "checkedAcceptanceItems": 0,
+      "snapshot": "issue180-readback.json",
+      "snapshotSha256": "3efcda8875202711b996b283cbc354f36e8ec4abefe7a8a55f4d699cb2e1b9b7"
+    },
+    "unchangedGitBlobs": {
+      "manifest.json": "953d682851d8f6f6c414c5147ea9117894b2262d",
+      "evidence.json": "d1bd1ed5947b6349095cd3a0fe60776254047dba"
+    },
+    "states": {
+      "AR-00": "active / NOT_RUN overall",
+      "AR-01": "blocked",
+      "D01-D09": "UNAPPROVED",
+      "G0-G7": "NOT_RUN",
+      "activation": "BLOCKED"
+    },
+    "note": "This bounded receipt does not promote the canonical completion ledger or close #180."
+  },
+  "independentReview": {
+    "status": "pending final receipt review",
+    "sourceReviewed": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+    "treeReviewed": "79df6dc6b2e8088623291a687ae07d3ed28796e3"
+  },
+  "publication": {
+    "sourceTreeReadback": "source-tree-readback.json",
+    "sourceTreeReadbackSha256": "93b95b1d50284a44d9eddf1bdc50df51c3f51319670e6f16487d84d251a70cb4",
+    "sourceLeafEntriesCompared": 1285,
+    "changedExistingPaths": 5,
+    "addedPaths": 1,
+    "unchangedExistingLeafEntries": 1279,
+    "ciIdentityTransfer": false,
+    "branchUpdate": "pending final receipt integration"
+  },
+  "limitations": [
+    "Focused 78/17 suites are manually invoked and are not newly wired into CI.",
+    "No runtime/schema/migration/lockfile/workflow/application-source change.",
+    "No install, database, real prescription/payment, printer, user computer, merge or deployment action.",
+    "Preparation could not reconstruct the remote commit object metadata from the connector response. A separately named local commit with an identical complete tree was used; no original remote commit identity was fabricated.",
+    "The conservative Docker reader rejects any literal <<, including one inside otherwise valid JSON argv. This is a known false rejection, not a safety bypass; external base-image inherited startup is not analyzed."
+  ]
+}

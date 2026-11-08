@@ -1,0 +1,265 @@
+{
+  "checks": 64,
+  "results": [
+    {
+      "name": "baseline-15-declarations",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-dev",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-dev",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-build",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-build",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-start",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-start",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-db:generate",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-db:generate",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-db:migrate",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-db:migrate",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-db:seed",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-db:seed",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-db:reset",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-db:reset",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-db:studio",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-db:studio",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-test",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-test",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-test:watch",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-test:watch",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-test:coverage",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-test:coverage",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-lint",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-lint",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-package-script-format",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-package-script-format",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-prisma-seed-prisma.seed",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-prisma-seed-prisma.seed",
+      "result": "PASS"
+    },
+    {
+      "name": "omit-docker-command-CMD",
+      "result": "PASS"
+    },
+    {
+      "name": "replace-docker-command-CMD",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-dev",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-dev",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-build",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-build",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-start",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-start",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-db:generate",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-db:generate",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-db:migrate",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-db:migrate",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-db:seed",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-db:seed",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-db:reset",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-db:reset",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-db:studio",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-db:studio",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-test",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-test",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-test:watch",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-test:watch",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-test:coverage",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-test:coverage",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-lint",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-lint",
+      "result": "PASS"
+    },
+    {
+      "name": "source-delete-format",
+      "result": "PASS"
+    },
+    {
+      "name": "source-change-format",
+      "result": "PASS"
+    },
+    {
+      "name": "source-add-new-script",
+      "result": "PASS"
+    },
+    {
+      "name": "json-structural-whitespace-and-CRLF-equivalent",
+      "result": "PASS"
+    },
+    {
+      "name": "script-command-quoted-whitespace-preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Docker-argv-whitespace-preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Docker-argv-order-preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Docker-json-unicode-escape-normalized-semantically",
+      "result": "PASS"
+    },
+    {
+      "name": "curated-deletion-is-disclosed-noncoverage",
+      "result": "PASS"
+    }
+  ],
+  "limitations": {
+    "curatedDeletion": "not discovered, as disclosed",
+    "validExecArgWithLiteralShift": "CLI Docker continuation/heredoc requires review"
+  }
+}

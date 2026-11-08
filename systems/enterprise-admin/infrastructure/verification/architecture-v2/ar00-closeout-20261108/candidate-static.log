@@ -1,0 +1,8 @@
+$ node --version
+v24.22.1
+$ node --check scripts/architecture/verify-plan.mjs
+$ node --check scripts/architecture/plan.test.mjs
+$ node --check systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs
+$ git diff --check
+$ git diff --quiet HEAD -- scripts/architecture systems/enterprise-admin/infrastructure/plans/architecture-v2 systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs
+Syntax/whitespace PASS; implementation source still matches committed subject. New receipt files are not yet committed.

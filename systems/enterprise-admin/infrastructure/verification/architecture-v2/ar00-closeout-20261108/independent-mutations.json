@@ -1,0 +1,54 @@
+[
+  {
+    "name": "gate-self-review",
+    "exitCode": 1,
+    "detectedByBehaviorAssertions": true,
+    "failedTests": [
+      "\u2716 all eight activation gates require scoped independent source-bound evidence (14.171807ms)",
+      "\u2716 task and gate self-review controls change only executor, preserving reviewer identity (5.652721ms)"
+    ]
+  },
+  {
+    "name": "task-self-review",
+    "exitCode": 1,
+    "detectedByBehaviorAssertions": true,
+    "failedTests": [
+      "\u2716 every task rejects wrong task, source SHA, tree, review SHA and self-review (3.122458ms)",
+      "\u2716 task and gate self-review controls change only executor, preserving reviewer identity (1.710046ms)"
+    ]
+  },
+  {
+    "name": "both-self-review",
+    "exitCode": 1,
+    "detectedByBehaviorAssertions": true,
+    "failedTests": [
+      "\u2716 every task rejects wrong task, source SHA, tree, review SHA and self-review (4.594393ms)",
+      "\u2716 all eight activation gates require scoped independent source-bound evidence (12.987539ms)",
+      "\u2716 task and gate self-review controls change only executor, preserving reviewer identity (1.209975ms)"
+    ]
+  },
+  {
+    "name": "integration-completion",
+    "exitCode": 1,
+    "detectedByBehaviorAssertions": true,
+    "failedTests": [
+      "\u2716 completion and READY controls isolate unfinished integration and non-PASS G gates (3.830867ms)"
+    ]
+  },
+  {
+    "name": "gate-PASS",
+    "exitCode": 1,
+    "detectedByBehaviorAssertions": true,
+    "failedTests": [
+      "\u2716 completion and READY controls isolate unfinished integration and non-PASS G gates (3.805179ms)"
+    ]
+  },
+  {
+    "name": "integration-and-gate",
+    "exitCode": 1,
+    "detectedByBehaviorAssertions": true,
+    "failedTests": [
+      "\u2716 completion and READY controls isolate unfinished integration and non-PASS G gates (2.279399ms)"
+    ]
+  }
+]
