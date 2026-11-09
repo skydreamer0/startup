@@ -1,0 +1,1027 @@
+{
+  "packetSha256": "464317449dd9bd1d28bdf3e313702aba820b4fc16385023b0e4649122c5c060e",
+  "baseline": [
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "gitBlob": "12d264cee6129a28e8757b5dc90b395fe0b74f93",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "scripts/ocr-evaluation/evaluator.py",
+      "gitBlob": "69d8248589b187c96b72bed106c6495398f7bd83",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "scripts/ocr-evaluation/verify.py",
+      "gitBlob": "4d96c88c22799b39bb21087b69961292500e811c",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/app.ts",
+      "gitBlob": "19c7b50dada0cb5f337c5567d0926bb04ad01622",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/config/env.ts",
+      "gitBlob": "f88563754519c3ada4ca366a7893cbd5be425c83",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "scripts/ocr-evaluation/tests/test_evaluator.py",
+      "gitBlob": "55a4aa49c0f28e28b12395579ff59104e4927f36",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/Dockerfile",
+      "gitBlob": "4cb36d0360e945a2e1b0a7d924161aaa84af23b8",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "gitBlob": "c2f5c037c1cdd6c4f89e56de24e015ecc5ecd830",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/seed.ts",
+      "gitBlob": "fb0861b034860e72fbbd9814238a09212c605737",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/admin-route-policy.ts",
+      "gitBlob": "1988cde436bff1d9cb6ad32cb318d26a76b9d0da",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/errors.ts",
+      "gitBlob": "0df064580f552bbecebf509eefef7304de0e7bc3",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "gitBlob": "1e890535b862f66456d0f56bd3ec31a175230d82",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/jwt.ts",
+      "gitBlob": "4100e0b234db2e741b1b24a5c315311d233b1a56",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/password.ts",
+      "gitBlob": "9ea5d908bb59ee0a367ebd6506994373e0128569",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/batch-expiry.ts",
+      "gitBlob": "ca4a648f0ead4eb334a0ec476a56ae72af6cb97a",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/business-day.ts",
+      "gitBlob": "03f39c906d1dfb15dbf7a5a1b43ec6936495e2d2",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/plan-features.ts",
+      "gitBlob": "c267fe54378cba859c2a5111a9d735d7baffe08e",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+      "gitBlob": "9f61e6a37b9a78840d7b7a033eb59746d05fe2f6",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/product-import-preview.ts",
+      "gitBlob": "e6645d200e1dc81aee65d33d32a7655307d6fb06",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "gitBlob": "c69e60907251dfe90717bf2a60891f18592aaa4f",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "gitBlob": "6aa55081e30d9af09ebc63ba36ca6ad15cdec002",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+      "gitBlob": "80b74559bda0423212faa0888b54536b7a228f6c",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+      "gitBlob": "1f3d3d13ab49d1ecf9588f4637fe56f7239b0081",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/sale-stock.ts",
+      "gitBlob": "a9ea1b364fc67b6ae114dc9e3a6ec0b7d8d3b46d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant.context.ts",
+      "gitBlob": "6fb6862af9dbb00a4306ab4645fbd50c97134be7",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+      "gitBlob": "6eda759e123eb8f149b31d370b9e795ec6927b18",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/error.middleware.ts",
+      "gitBlob": "fbbe542111f7108351d29a1e2900ee5b63aaf1c4",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/route-policy.ts",
+      "gitBlob": "eab747c0b727c7b792ae51294f41ff3605af49c5",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/plan.middleware.ts",
+      "gitBlob": "30b2206770f5a22409fc78a5469a96073fbaaa39",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+      "gitBlob": "0ccca2b939167e8afd0532435d216c65668458e6",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "gitBlob": "8ff3610b5fe8952af17626e70de82c5b13f5b4f9",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+      "gitBlob": "e02ee76f314b3bb5fb78f63db2e6155e0dd3c04a",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+      "gitBlob": "6017ab737570fa3dcd75f0ef4c23380b614ffc62",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/provider.factory.ts",
+      "gitBlob": "f35c89f670e2da4651742d82d8d87716984ff9b1",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+      "gitBlob": "c75a0bb00d7d0e4d064ebb2c35680ad7ba430faf",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.controller.ts",
+      "gitBlob": "05a4a57314855ffc18aaf0d967c1aa19f276a229",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/quickbooks.provider.ts",
+      "gitBlob": "e86796036a15138a6c4fe6640db72c5ed7803d1c",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/xero.provider.ts",
+      "gitBlob": "33608c9c071da5b9e16afa2858cb8d79ebfddd7c",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "gitBlob": "bcbe8796af1fc20350c00f2a163350c6586c2c75",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.controller.ts",
+      "gitBlob": "6808f7d357db8d9469e2d7c9aa88f2bb6557810d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/types.ts",
+      "gitBlob": "3b955d30bf6539e26f3b3b0222fbd9338ab454a5",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/mock.provider.ts",
+      "gitBlob": "d07567b68e5e6ac89707a0c563919af02ef13583",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.shared.ts",
+      "gitBlob": "506e8f1d1c11475a7bcf49f3d7c40c431e4aa21f",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.types.ts",
+      "gitBlob": "bbb8c67bddff896ba2ebf1e1a1aef645cae203c8",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.ts",
+      "gitBlob": "824ad08f78abc610ce13e89b831ee79f2528eccd",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/operations-analytics.service.ts",
+      "gitBlob": "97218be0f92a3693538ef87adbf0fdaff4528f56",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.service.ts",
+      "gitBlob": "d9639341622bdc069e7658af6219b255113991d2",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.routes.ts",
+      "gitBlob": "4253b228c14c685df78462883d9e7d145d32105f",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+      "gitBlob": "cfdd38b9aa939207e70f305304a69225607260b7",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.controller.ts",
+      "gitBlob": "3b318b2290c76dfe7210f3e85fa0ad4778e230b3",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.controller.ts",
+      "gitBlob": "704511030d8fe89174578b469750ae608943068b",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "gitBlob": "f7b31216dc519e93edc7006088c757135cef2c7d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.schema.ts",
+      "gitBlob": "e4b8cd85d416f149b7447cb11e2db673130f950d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.service.ts",
+      "gitBlob": "ea4936860a2d50c3f7b5efb4d203c7bcb81a542b",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.schema.ts",
+      "gitBlob": "d7f1901cbe4803fd002b70c975accc515f94e5f5",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.service.ts",
+      "gitBlob": "180db977d793fff10cf47df20828e3c06f90cb78",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.controller.ts",
+      "gitBlob": "43112264457c968ca6d99a0730be37ca0f2d1bde",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.schema.ts",
+      "gitBlob": "7e7e32a3bba5938ad0b8055a68ead6875a00802b",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "gitBlob": "255715df8acd05c79a116518230230405511e0a4",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "gitBlob": "282a01d47114d5a32f3d254babab7771763b66c4",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "gitBlob": "2fb143305834093c4652afab4b37dcd490973eeb",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.controller.ts",
+      "gitBlob": "bc4291982d8199386a8951cff3f875c209cfe6f2",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.schema.ts",
+      "gitBlob": "8a5c0c003084449c7aeb69dca867bc6ed754ad17",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.controller.ts",
+      "gitBlob": "a35ceaa45a7f53a1291817fde3c8a95098744511",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "gitBlob": "ce2e651d606febf87d07e960cacfa9fccd872835",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.service.ts",
+      "gitBlob": "44d38346b47fd5e75982d4e454e6563276420f21",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.routes.ts",
+      "gitBlob": "2367f44ed41e0de6b9d8d76f86c29f0084958ceb",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.controller.ts",
+      "gitBlob": "18adb5ca4fcf83e72c4ec22cf8818de35b14e57a",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+      "gitBlob": "f0ecf1f8f5edea93490757e731704729ff466cdc",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "gitBlob": "0b4c97efed5129b2a5fc03e7310812e33cc994de",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "gitBlob": "0aacfb505aa4348d700a7172af7df34cd6b03233",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "gitBlob": "5020ff4306adb36d463615eea597f738b5ae99ed",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "gitBlob": "b2da3bae5ab4d96c54e2f2987f63239ff030a2ec",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.controller.ts",
+      "gitBlob": "53686c39b27e2302a4310e9fe106b8e08605cd0b",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.controller.ts",
+      "gitBlob": "9747d4b421d5a9a484fecdb286bfced13aa497a9",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.service.ts",
+      "gitBlob": "ac6dc0d5f0ac0755a081a75ce798d40a85161886",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.schema.ts",
+      "gitBlob": "5e7115f1dfb6bb87a8f06dfadea14dfa537abc60",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "gitBlob": "cbb444886f6dbbd540fab528af24d4f3bafd6adb",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.controller.ts",
+      "gitBlob": "dcefa1f68c666225b2836bd60667bd2d836a5462",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.schema.ts",
+      "gitBlob": "a6c64f494a5efe26696feaea956840f9ff1b4c1e",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages-identifier-policy.ts",
+      "gitBlob": "32c89f5f954db79df6e5af9a117f498cd53abbcb",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.controller.ts",
+      "gitBlob": "5694f6426b86e1bd9907ce693db40520a8b9dfd4",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "gitBlob": "c8030f72fbc4ab9be549d97bad0f19fba92b38ea",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.controller.ts",
+      "gitBlob": "6b854ae87fb3d4ce25e06c17bca62c357e6ebb31",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "gitBlob": "ba3578ce46a78de5609f353341e980b4818c296a",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.service.ts",
+      "gitBlob": "5b2228796d310a1313f3e885d7680233f9ab645e",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "gitBlob": "2c630a44ab0a699a5b46484d1ef5d87696158a34",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.controller.ts",
+      "gitBlob": "9795cbd3a2615a6f72c325b9ba3d668484472ccb",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "gitBlob": "be49f6a4c33c7ed2d1b01f757974e53d0352b174",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+      "gitBlob": "f29fe444a0d5136f137f239a2068500f9ea37898",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "gitBlob": "f9e972eefc7234d4791642618bff0efb63a7a6b0",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "gitBlob": "63814fd9fe8933ae050bd8a342066e669547ede6",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/order-number.ts",
+      "gitBlob": "ca3d3d96e25730946aab381711409ba913529b14",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.service.ts",
+      "gitBlob": "c406c54ccd9689d5c2a3719c1d9a6394883118f3",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.schema.ts",
+      "gitBlob": "9964d6b2f0569665df6d2becdf16e6f9f62d14e1",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "gitBlob": "4c311a6fc538fa13f38470a9234cae7380c74bef",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.controller.ts",
+      "gitBlob": "d44a4823b62aa2cfcdbf504cc54cd1c4a5d0a922",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-identifier.schema.ts",
+      "gitBlob": "1c96b67ba6ece7c2045f4163ff6eb3572c6a05c0",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.controller.ts",
+      "gitBlob": "094c58bdf22994269dd19b900b437a69969be85e",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/receipt.service.ts",
+      "gitBlob": "59164e1f00fc5bbcda6d2bd6b279c919a13ac5d7",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+      "gitBlob": "c18cd3aa0d531ce61cd74ebd378fdf85dcbce3f5",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.schema.ts",
+      "gitBlob": "0e414aa342e4f70682aea64835b90d0f9716ad6d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+      "gitBlob": "8a7279c02bb39dcdb3b1b55c356e1576702c1ae9",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.service.ts",
+      "gitBlob": "28e9d78b21de94a4e6c8a0a0649e3120ea71c1ae",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.service.ts",
+      "gitBlob": "e1edf1356c3cf7445ca084a8e5db9b67566a6056",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.schema.ts",
+      "gitBlob": "48e2e9dbf364a8081f8f1cd857a12335dbe6e326",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.schema.ts",
+      "gitBlob": "d9b7dfb4bc5d4ea9be4e6b939e88386ef53576fa",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "gitBlob": "7890e6494d7002e6729e81e995c2bdaad7967cbb",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "gitBlob": "c526c521c315b5781e28bd2d704da255d9c85443",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+      "gitBlob": "727f0b580a865c48d448307c39692816c8627ef6",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/cashflow.service.ts",
+      "gitBlob": "6ce1ec911fad89c2a1dc90f68ca850a920f137fe",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.controller.ts",
+      "gitBlob": "535c9be17ef30a013fc0c47b46ba6116482cc5c7",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "gitBlob": "ec1c0070cd49499a8a757a1ca599cfe3002594d0",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/margin.service.ts",
+      "gitBlob": "334cd6e5a0efe37105242e1d1f8de5841fe31293",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/sales-ranking.service.ts",
+      "gitBlob": "0508d93dd4f83817e309ab744a28922a1f078e37",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts",
+      "gitBlob": "410823965f69c86c7b013070fd3032c008feafa0",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+      "gitBlob": "bfa85c73873f9cc1573ea23445e345ee5356172e",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "gitBlob": "4605ca73d390e3f5f0d81b709cf12d062c8fb7a2",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "gitBlob": "2496b3f50b570a61e554792d47c63ab425eed871",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.controller.ts",
+      "gitBlob": "87e26415a1925b8e891f31effdaa670f5f276e4d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.controller.ts",
+      "gitBlob": "a309274b5dd1a80f5366c8816b8e0fd7b33fd136",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.schema.ts",
+      "gitBlob": "a78564b2d054098e34fbf5338ecebc1121661eca",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "gitBlob": "61976780f22ac1365aedd6b639b6bce646b51c07",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "gitBlob": "44c4118fd9a52dc6085de1801bb727ff6250c2d1",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.routes.ts",
+      "gitBlob": "d6088cb7c3d2567043d2e935db3f9fd16ee6ca60",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.service.ts",
+      "gitBlob": "b860dafd64e8775f0016f5d39780f697790f60c1",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "gitBlob": "77656682831e3f5ad762796006669e6e7cb19cab",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "gitBlob": "743d28e5ed92d6af5d7867aec6df22ae1e3012c4",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/server.ts",
+      "gitBlob": "bd2b5d35905a152f62efcd3fdb9d0bd53e4a97e9",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/setupTests.ts",
+      "gitBlob": "6a8bec92e0afd9dd75c017d1d77f9fa8b7c3bdc8",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "scripts/architecture/verify-plan.mjs",
+      "gitBlob": "c0710b7ca8c310dca6326275022d274b1a00566f",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "gitBlob": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "gitBlob": "99a2fe96721a624b4eb21630a0abdafa549cfb94",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.schema.ts",
+      "gitBlob": "c476ec61899d6ce599472e9b8eed5932b270d8a8",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/types/express.d.ts",
+      "gitBlob": "2ca9f70509bbd968c553494a95e93f759dda9ca0",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/pyproject.toml",
+      "gitBlob": "ed1bd528351d4a6c36e74b9b32ecb5849516a842",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/docker-compose.yml",
+      "gitBlob": "a5365a902cd3963fa877ae63782327c092b8ee8a",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+      "gitBlob": "4e9c9c75010d13a9cc3f29bd89fc41ef590d277b",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+      "gitBlob": "3b6e7e9351e80a2694043fab87cd003d59fbdde3",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-snapshot.json",
+      "gitBlob": "dfd720bfc60b14f074a491d25cb51d12513d5a5b",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+      "gitBlob": "953d682851d8f6f6c414c5147ea9117894b2262d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements-sources.json",
+      "gitBlob": "7eb864e69b022e2bcc5b50eae1af80bee2123468",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements.json",
+      "gitBlob": "1869bf2e82dde931351d7e9ec2ab6d8f950abd5a",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/line.service.test.ts",
+      "gitBlob": "3cd878db17f9d5d44bce7efaf28e9bf75cf590d1",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/accounting.service.test.ts",
+      "gitBlob": "48a9f110c0ec5056e99ba34fc8d33299d111eebf",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/accounting.provider-factory.test.ts",
+      "gitBlob": "f9dcbbdca1ecf91376c170c4b62d6e74a989e1a9",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs",
+      "gitBlob": "6f84aef4718bcf0956873bf42d9be167ed8a62cd",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/src/__tests__/offlineQueue.test.ts",
+      "gitBlob": "b87c41bb26f48bd1191f94ce1cf4e35e7e995841",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "scripts/architecture/plan.mjs",
+      "gitBlob": "406f08fd2f1994cf4f069e9717f0fea9284825e8",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "scripts/validate-agent-context.sh",
+      "gitBlob": "93950306f5479f97f2f2aa86c2ef48166c5bfbff",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "scripts/architecture/plan.test.mjs",
+      "gitBlob": "d4ff8c4ecc8584f9774424b509c8178b9231fa95",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "gitBlob": "4824f4f811a65476b747b9b5077618da77d7f9bd",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "docs/agents/domain.md",
+      "gitBlob": "0c5eaf7df75f5639885d9958e816414c64e4ac6b",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/package.json",
+      "gitBlob": "76610c465e5165b8cac3ff0e8ad241f52d994369",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+      "gitBlob": "dda0f83aa1c6cc886f1c93da633a11a2c34928db",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/MODULE.md",
+      "gitBlob": "8c78b053a6ae0e4773c02e77530a7c356cd014e5",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/packages/types/MODULE.md",
+      "gitBlob": "469eb571bc59f68b53f9422c7c6ce69430241332",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/README.md",
+      "gitBlob": "5df0a55b8993b1363548262466d856e2da2b4c36",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/agent_context.md",
+      "gitBlob": "47095e63d77788df2cd709fb4633145cb9c38c1d",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": ".github/pull_request_template.md",
+      "gitBlob": "3bb81cdcae1f626699400a45f6979e94016c4ee3",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "gitBlob": "7936804b8635188a691fe1eaa2eaa4d8d268e7f8",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/api/api_spec.md",
+      "gitBlob": "540f71d491a6f978e088b4667b94ac5ab36c1f03",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/ROADMAP.md",
+      "gitBlob": "34ca9d259c10c9ebee5cb532fb8d02e660964ee6",
+      "matchesVerifiedRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/adr/README.md",
+      "gitBlob": "89727afe47eb8aeb6ac4a24bf00c2ab6cf80ccd6",
+      "matchesVerifiedRemote": true
+    }
+  ],
+  "packet": [
+    {
+      "path": "scripts/architecture/http-writers-contract.test.mjs",
+      "match": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-mutation.test.mjs",
+      "match": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-spec.mjs",
+      "match": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.mjs",
+      "match": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.test.mjs",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/http-writers-access-expenses.json",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/README.md",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/context.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/gate-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-verifier.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/original-source-verifier.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/plan-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/receipt.json",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-contract.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-mutation.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-spec.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/whitespace.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/context.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/gate-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/http-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/http-verifier.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/original-source-verifier.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/plan-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/receipt.json",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-contract.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-mutation.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-spec.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-verify.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-verify.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/whitespace.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/SHA256SUMS",
+      "match": true
+    }
+  ],
+  "originalAuthorEvidence": [
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-verifier.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-contract.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/whitespace.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/original-source-verifier.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/plan-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-tests.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-mutation.test.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/receipt.json",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/context.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-spec.mjs.log",
+      "match": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/gate-tests.log",
+      "match": true
+    }
+  ],
+  "independentEvidenceReferences": {
+    "originalReviewerReceipt": {
+      "actual": "52b403bc321f7138dd3fbeb34b1fbb934122e098301974499816d1a88593b287",
+      "declared": "52b403bc321f7138dd3fbeb34b1fbb934122e098301974499816d1a88593b287"
+    },
+    "originalReviewerProbe": {
+      "actual": "f1be7781c7adc38d03aaf1ccaba3c10320b44c5ade356f7d45fe347a3f6291df",
+      "declared": "f1be7781c7adc38d03aaf1ccaba3c10320b44c5ade356f7d45fe347a3f6291df"
+    }
+  }
+}

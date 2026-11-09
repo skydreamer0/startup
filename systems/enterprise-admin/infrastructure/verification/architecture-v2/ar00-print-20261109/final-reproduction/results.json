@@ -1,0 +1,91 @@
+[
+  {
+    "id": "print-inventory",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "scripts/architecture/verify-print-inventory.py"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "inventory-tests",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "scripts/architecture/test_print_inventory.py"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "worker-controls",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "scripts/architecture/test_print_worker_controls.py"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "node-regression",
+    "command": [
+      "node",
+      "--test",
+      "scripts/architecture/plan.test.mjs",
+      "scripts/architecture/seed-migrations.test.mjs",
+      "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "plan-source",
+    "command": [
+      "node",
+      "scripts/architecture/verify-plan.mjs",
+      "--check-source"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "seed-source",
+    "command": [
+      "node",
+      "scripts/architecture/verify-seed-migrations.mjs"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "context",
+    "command": [
+      "bash",
+      "scripts/validate-agent-context.sh"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "source-whitespace",
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "c56946e01fcd7df291555ea5e7085fb354dd1094",
+      "f0ba66ecb16739a006bcc9e40e994ea509cb85ec"
+    ],
+    "exitCode": 0,
+    "status": "PASS"
+  },
+  {
+    "id": "syntax",
+    "operation": "ast.parse unchanged UTF-8 source text; no imports",
+    "paths": [
+      "scripts/architecture/verify-print-inventory.py",
+      "scripts/architecture/test_print_inventory.py",
+      "scripts/architecture/test_print_worker_controls.py"
+    ],
+    "status": "PASS"
+  }
+]

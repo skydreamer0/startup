@@ -1,0 +1,4528 @@
+{
+  "schemaVersion": 1,
+  "verificationSubject": {
+    "repository": "skydreamer0/startup",
+    "pullRequest": 205,
+    "head": "b66e1f96447bbc5034110843b4349aef7ca44c4b",
+    "tree": "eb5d6286792df789fae0870c884980b792a3673d"
+  },
+  "purpose": "Curated source-effects map for seed and packaged migrations. Mechanical source detection is separate and cannot establish domain meaning or runtime acceptance.",
+  "scope": {
+    "files": "backend Prisma seed; package/Docker startup declarations; all 16 packaged migration.sql files and migration_lock.toml; selected existing tests/harnesses. All paths are repository-relative.",
+    "evidence": "SOURCE_INSPECTION_ONLY",
+    "runtime": "NOT_RUN",
+    "exclusions": [
+      "No seed, migrate dev/deploy/reset, app, PostgreSQL, Docker image, hardware or external integration was executed.",
+      "This source-inspection record provides no deployment, merge, environment or device execution evidence.",
+      "No claim that source associations are complete test coverage outside the inspected set.",
+      "No AR check or G0-G7 acceptance status is changed."
+    ]
+  },
+  "runtimeChecks": [
+    {
+      "action": "seed execution",
+      "status": "NOT_RUN",
+      "reason": "Read-only source mapping scope."
+    },
+    {
+      "action": "migration clean install",
+      "status": "NOT_RUN",
+      "reason": "Read-only source mapping scope."
+    },
+    {
+      "action": "populated schema upgrade/backfill",
+      "status": "NOT_RUN",
+      "reason": "Read-only source mapping scope."
+    },
+    {
+      "action": "rollback and interruption recovery",
+      "status": "NOT_RUN",
+      "reason": "Read-only source mapping scope."
+    },
+    {
+      "action": "application startup",
+      "status": "NOT_RUN",
+      "reason": "Read-only source mapping scope."
+    },
+    {
+      "action": "native PostgreSQL assertions",
+      "status": "NOT_RUN",
+      "reason": "Read-only source mapping scope."
+    },
+    {
+      "action": "browser/HTTP/device/store acceptance",
+      "status": "NOT_RUN",
+      "reason": "Read-only source mapping scope."
+    }
+  ],
+  "referenceSources": [
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "gitBlobSha": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+      "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+      "gitBlobSha": "953d682851d8f6f6c414c5147ea9117894b2262d",
+      "sha256": "571ce7103c56c5dc54ec83c99801cbe40f1755959133151fa295bb48116a5a8b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "gitBlobSha": "c2f5c037c1cdd6c4f89e56de24e015ecc5ecd830",
+      "sha256": "4ee60fd190bdba17170d3516cf816548cdf64023696ac1ba5f0e011f7a5c09ae"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "gitBlobSha": "6aa55081e30d9af09ebc63ba36ca6ad15cdec002",
+      "sha256": "583998dbfaf464693fffa470c9bec65420da931d03c16fc3175ae07bd241ad78"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/server.ts",
+      "gitBlobSha": "bd2b5d35905a152f62efcd3fdb9d0bd53e4a97e9",
+      "sha256": "68aa4c8cb222c384a5b6b30e9cb6d37e9470c931c50512d82b7b5511c9c12c1d"
+    }
+  ],
+  "seed": {
+    "source": {
+      "path": "systems/enterprise-admin/backend/prisma/seed.ts",
+      "gitBlobSha": "fb0861b034860e72fbbd9814238a09212c605737",
+      "sha256": "5d56cf8012d505137e314019835d17e5b37f5d8e17acf50dbd7061f7e0637f38"
+    },
+    "client": "new PrismaClient() imported directly from @prisma/client at lines 1-4; no application tenant extension",
+    "boundary": "main() sequential calls are not enclosed in a whole-seed transaction. Individual nested order/items create is distinct from the later movement createMany.",
+    "callSiteCounts": {
+      "total": 25,
+      "writes": 22,
+      "reads": 2,
+      "lifecycle": 1,
+      "nestedRelationWriteSites": 1,
+      "nestedOrderItemRows": 2
+    },
+    "calls": [
+      {
+        "id": "seed-001",
+        "line": 63,
+        "delegate": "tenant",
+        "operation": "upsert",
+        "targetModels": [
+          "Tenant"
+        ],
+        "ownership": [
+          "organization/access"
+        ],
+        "destination": [
+          "AR-03",
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-03-AC01",
+          "AR-03-AC02",
+          "AR-03-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Resolve slug default globally; create System Default with plan pro when absent; empty update retains existing name/plan/settings.",
+          "Resolved tenant.id becomes tenantId for subsequent explicit seed writes."
+        ],
+        "scopeLimitations": [
+          "Uses standalone unextended PrismaClient, not request tenant middleware.",
+          "No empty/disposable database or environment opt-in guard.",
+          "Receipt test setup assumes the default admin can log in, but does not directly execute this seed call or validate rerun/foreign-tenant behavior."
+        ],
+        "existingTestRefs": [
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Tenant",
+            "owner": "organization/access",
+            "destination": [
+              "AR-03",
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-002",
+        "line": 78,
+        "delegate": "permission",
+        "operation": "upsert",
+        "targetModels": [
+          "Permission"
+        ],
+        "ownership": [
+          "access"
+        ],
+        "destination": [
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "For each PERMISSIONS entry, create global action/resource permission if absent; empty update does not refresh descriptions."
+        ],
+        "scopeLimitations": [
+          "Global permission catalog intentionally has no tenant field.",
+          "Static catalog is not proof that all current route permissions are seeded.",
+          "Receipt test setup assumes the default admin can log in, but does not directly execute this seed call or validate rerun/foreign-tenant behavior."
+        ],
+        "existingTestRefs": [
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Permission",
+            "owner": "access",
+            "destination": [
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-003",
+        "line": 88,
+        "delegate": "role",
+        "operation": "upsert",
+        "targetModels": [
+          "Role"
+        ],
+        "ownership": [
+          "access"
+        ],
+        "destination": [
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Create default-tenant SUPER_ADMIN system role when absent; empty update preserves existing role metadata."
+        ],
+        "scopeLimitations": [
+          "Uniqueness is name+tenantId; no role revocation or metadata reconciliation.",
+          "Receipt test setup assumes the default admin can log in, but does not directly execute this seed call or validate rerun/foreign-tenant behavior."
+        ],
+        "existingTestRefs": [
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Role",
+            "owner": "access",
+            "destination": [
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-004",
+        "line": 102,
+        "delegate": "rolePermission",
+        "operation": "upsert",
+        "targetModels": [
+          "RolePermission"
+        ],
+        "ownership": [
+          "access"
+        ],
+        "destination": [
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Add join rows granting every resolved seed permission to SUPER_ADMIN; retain existing rows."
+        ],
+        "scopeLimitations": [
+          "Join has no tenant field; scope derives from earlier role lookup.",
+          "Does not remove grants absent from the seed catalog.",
+          "Receipt test setup assumes the default admin can log in, but does not directly execute this seed call or validate rerun/foreign-tenant behavior."
+        ],
+        "existingTestRefs": [
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "RolePermission",
+            "owner": "access",
+            "destination": [
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-005",
+        "line": 111,
+        "delegate": "role",
+        "operation": "upsert",
+        "targetModels": [
+          "Role"
+        ],
+        "ownership": [
+          "access"
+        ],
+        "destination": [
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Create default-tenant CONTENT_EDITOR system role when absent; empty update retains existing metadata."
+        ],
+        "scopeLimitations": [
+          "Name+tenantId selector is scoped; no reconciliation of existing grants."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Role",
+            "owner": "access",
+            "destination": [
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-006",
+        "line": 123,
+        "delegate": "rolePermission",
+        "operation": "upsert",
+        "targetModels": [
+          "RolePermission"
+        ],
+        "ownership": [
+          "access"
+        ],
+        "destination": [
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Add CONTENT_EDITOR joins for every seed permission whose action is read."
+        ],
+        "scopeLimitations": [
+          "The role description mentions users/roles, but actual filter grants all seeded read resources.",
+          "No removal of existing non-read permissions."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "RolePermission",
+            "owner": "access",
+            "destination": [
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-007",
+        "line": 133,
+        "delegate": "user",
+        "operation": "upsert",
+        "targetModels": [
+          "User"
+        ],
+        "ownership": [
+          "access"
+        ],
+        "destination": [
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Create default admin identity with an Argon2 hash from a hard-coded development password, active status, employeeCode and tenantId; literal password is intentionally not copied into this inventory.",
+          "Existing global email match updates employeeCode only; it does not reset password, status or tenant."
+        ],
+        "scopeLimitations": [
+          "Selector uses global unique email without tenant predicate.",
+          "An existing account with that email in a different tenant is not rejected before its role association.",
+          "Unique employeeCode collision can fail after earlier seed writes have committed.",
+          "Receipt test setup assumes the default admin can log in, but does not directly execute this seed call or validate rerun/foreign-tenant behavior."
+        ],
+        "existingTestRefs": [
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "User",
+            "owner": "access",
+            "destination": [
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-008",
+        "line": 150,
+        "delegate": "userRole",
+        "operation": "upsert",
+        "targetModels": [
+          "UserRole"
+        ],
+        "ownership": [
+          "access"
+        ],
+        "destination": [
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Add association between resolved admin user and default-tenant SUPER_ADMIN role."
+        ],
+        "scopeLimitations": [
+          "Join has no tenant field or composite same-tenant constraint in the inspected migration/schema.",
+          "Prior global email match can connect an existing user from another tenant; no explicit check here.",
+          "Receipt test setup assumes the default admin can log in, but does not directly execute this seed call or validate rerun/foreign-tenant behavior."
+        ],
+        "existingTestRefs": [
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "UserRole",
+            "owner": "access",
+            "destination": [
+              "AR-04"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-009",
+        "line": 158,
+        "delegate": "customer",
+        "operation": "upsert",
+        "targetModels": [
+          "Customer"
+        ],
+        "ownership": [
+          "CRM"
+        ],
+        "destination": [
+          "AR-01",
+          "AR-11"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-11-AC04"
+        ],
+        "effects": [
+          "Create default-tenant WALK_IN placeholder when absent; empty update retains prior values."
+        ],
+        "scopeLimitations": [
+          "This is seed setup, not a POS checkout or customer counter update."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Customer",
+            "owner": "CRM",
+            "destination": [
+              "AR-01",
+              "AR-11"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-010",
+        "line": 170,
+        "delegate": "tag",
+        "operation": "upsert",
+        "targetModels": [
+          "Tag"
+        ],
+        "ownership": [
+          "CRM"
+        ],
+        "destination": [
+          "AR-01",
+          "AR-11"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-11-AC04"
+        ],
+        "effects": [
+          "Create default-tenant VIP tag and color if absent; retain existing row."
+        ],
+        "scopeLimitations": [
+          "No tag reconciliation on rerun."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Tag",
+            "owner": "CRM",
+            "destination": [
+              "AR-01",
+              "AR-11"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-011",
+        "line": 175,
+        "delegate": "tag",
+        "operation": "upsert",
+        "targetModels": [
+          "Tag"
+        ],
+        "ownership": [
+          "CRM"
+        ],
+        "destination": [
+          "AR-01",
+          "AR-11"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-11-AC04"
+        ],
+        "effects": [
+          "Create default-tenant Newbie tag and color if absent; retain existing row."
+        ],
+        "scopeLimitations": [
+          "No tag reconciliation on rerun."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Tag",
+            "owner": "CRM",
+            "destination": [
+              "AR-01",
+              "AR-11"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-012",
+        "line": 203,
+        "delegate": "customer",
+        "operation": "upsert",
+        "targetModels": [
+          "Customer"
+        ],
+        "ownership": [
+          "CRM"
+        ],
+        "destination": [
+          "AR-01",
+          "AR-11"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-11-AC04"
+        ],
+        "effects": [
+          "Create two demo customers with synthetic spend/count caches and interaction timestamps when absent; existing rows are not overwritten."
+        ],
+        "scopeLimitations": [
+          "Caches are seeded values, not derived from durable orders.",
+          "No matching historical transaction reconstruction."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Customer",
+            "owner": "CRM",
+            "destination": [
+              "AR-01",
+              "AR-11"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-013",
+        "line": 210,
+        "delegate": "interaction",
+        "operation": "create",
+        "targetModels": [
+          "Interaction"
+        ],
+        "ownership": [
+          "CRM"
+        ],
+        "destination": [
+          "AR-01",
+          "AR-11"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-11-AC04"
+        ],
+        "effects": [
+          "Insert a STORE_VISIT interaction for each resolved demo customer on every invocation."
+        ],
+        "scopeLimitations": [
+          "Not idempotent: reruns append interactions.",
+          "No encompassing seed transaction; partial prior writes remain if this or a later step fails."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Interaction",
+            "owner": "CRM",
+            "destination": [
+              "AR-01",
+              "AR-11"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-014",
+        "line": 221,
+        "delegate": "customerTag",
+        "operation": "upsert",
+        "targetModels": [
+          "CustomerTag"
+        ],
+        "ownership": [
+          "CRM"
+        ],
+        "destination": [
+          "AR-01",
+          "AR-11"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-11-AC04"
+        ],
+        "effects": [
+          "Add a customer/tag join selected by the resolved customer.totalSpent threshold; VIP above 10000, Newbie otherwise."
+        ],
+        "scopeLimitations": [
+          "Existing customer cache, not necessarily the literal seed cache, drives the tag selection.",
+          "Does not remove an obsolete other tag; join scope relies on earlier tenant-scoped resolutions."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "CustomerTag",
+            "owner": "CRM",
+            "destination": [
+              "AR-01",
+              "AR-11"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-015",
+        "line": 230,
+        "delegate": "productCategory",
+        "operation": "upsert",
+        "targetModels": [
+          "ProductCategory"
+        ],
+        "ownership": [
+          "catalog"
+        ],
+        "destination": [
+          "AR-03"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-03-AC01",
+          "AR-03-AC02",
+          "AR-03-AC03"
+        ],
+        "effects": [
+          "Create default-tenant Health Supplements category when absent."
+        ],
+        "scopeLimitations": [
+          "Existing metadata is retained."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "ProductCategory",
+            "owner": "catalog",
+            "destination": [
+              "AR-03"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-016",
+        "line": 235,
+        "delegate": "productCategory",
+        "operation": "upsert",
+        "targetModels": [
+          "ProductCategory"
+        ],
+        "ownership": [
+          "catalog"
+        ],
+        "destination": [
+          "AR-03"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-03-AC01",
+          "AR-03-AC02",
+          "AR-03-AC03"
+        ],
+        "effects": [
+          "Create default-tenant OTC Drugs category when absent."
+        ],
+        "scopeLimitations": [
+          "Existing metadata is retained."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "ProductCategory",
+            "owner": "catalog",
+            "destination": [
+              "AR-03"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-017",
+        "line": 241,
+        "delegate": "supplier",
+        "operation": "upsert",
+        "targetModels": [
+          "Supplier"
+        ],
+        "ownership": [
+          "catalog"
+        ],
+        "destination": [
+          "AR-03"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-03-AC01",
+          "AR-03-AC02",
+          "AR-03-AC03"
+        ],
+        "effects": [
+          "Create first fixed-ID supplier with default tenant and demo contact/performance fields when absent."
+        ],
+        "scopeLimitations": [
+          "where.id is globally scoped, not tenant-scoped.",
+          "An existing fixed ID from another tenant is returned unchanged and used in product create payloads."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Supplier",
+            "owner": "catalog",
+            "destination": [
+              "AR-03"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-018",
+        "line": 256,
+        "delegate": "supplier",
+        "operation": "upsert",
+        "targetModels": [
+          "Supplier"
+        ],
+        "ownership": [
+          "catalog"
+        ],
+        "destination": [
+          "AR-03"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-03-AC01",
+          "AR-03-AC02",
+          "AR-03-AC03"
+        ],
+        "effects": [
+          "Create second fixed-ID supplier with default tenant and demo contact/performance fields when absent."
+        ],
+        "scopeLimitations": [
+          "where.id is globally scoped, not tenant-scoped.",
+          "An existing fixed ID from another tenant is returned unchanged and used in product create payloads."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Supplier",
+            "owner": "catalog",
+            "destination": [
+              "AR-03"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-019",
+        "line": 280,
+        "delegate": "product",
+        "operation": "upsert",
+        "targetModels": [
+          "Product"
+        ],
+        "ownership": [
+          "catalog"
+        ],
+        "destination": [
+          "AR-03",
+          "AR-07",
+          "AR-20"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-03-AC01",
+          "AR-03-AC02",
+          "AR-03-AC03",
+          "AR-07-AC02",
+          "AR-07-AC05",
+          "AR-20-AC01",
+          "AR-20-AC02",
+          "AR-20-AC03"
+        ],
+        "effects": [
+          "For four SKU+tenant matches, create product metadata and physical stockQuantity if absent; on existing product reset stockQuantity to the seed fixture value."
+        ],
+        "scopeLimitations": [
+          "Direct physical projection writer bypasses InventoryPostingService, movements, receipt command and balance reconciliation.",
+          "Rerun can overwrite live/sold stock if misdirected; no target ownership guard.",
+          "Existing product cost/category/supplier metadata is not refreshed, while later batch cost is reset from seed literals."
+        ],
+        "existingTestRefs": [
+          "test-stock-contention",
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Product",
+            "owner": "catalog",
+            "destination": [
+              "AR-03"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-020",
+        "line": 287,
+        "delegate": "productBatch",
+        "operation": "upsert",
+        "targetModels": [
+          "ProductBatch"
+        ],
+        "ownership": [
+          "inventory"
+        ],
+        "destination": [
+          "AR-07",
+          "AR-10",
+          "AR-20"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-07-AC02",
+          "AR-07-AC05",
+          "AR-10-AC04",
+          "AR-20-AC01",
+          "AR-20-AC02",
+          "AR-20-AC03"
+        ],
+        "effects": [
+          "For each resolved product, create or overwrite SKU-SEED batch, expiry 2027-12-31 UTC, RELEASED status, quantity and cost."
+        ],
+        "scopeLimitations": [
+          "Direct batch mutation bypasses receipt/posting service and release authority/reason/initial audit.",
+          "No InventoryTransaction IN or ProductBatchChange is created here; equality of batch and aggregate seed quantities is not opening provenance.",
+          "Rerun overwrites batch quantity, status, expiry and cost; existing source history is not reconciled."
+        ],
+        "existingTestRefs": [
+          "test-inventory-receipt",
+          "test-batch-change-schema",
+          "test-stock-contention"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "ProductBatch",
+            "owner": "inventory",
+            "destination": [
+              "AR-07",
+              "AR-10"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-021",
+        "line": 316,
+        "delegate": "customer",
+        "operation": "findMany",
+        "targetModels": [
+          "Customer"
+        ],
+        "ownership": [
+          "CRM"
+        ],
+        "destination": [
+          "AR-01",
+          "AR-11",
+          "AR-04"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-11-AC04",
+          "AR-04-AC01",
+          "AR-04-AC02"
+        ],
+        "effects": [
+          "Read all customers with no where/orderBy; first returned row supplies the demo order customerId."
+        ],
+        "scopeLimitations": [
+          "Read-only call with downstream write influence.",
+          "No tenant predicate; default-tenant order can reference a foreign-tenant customer because selector and relation do not enforce same-tenant here.",
+          "Unordered results are not a stable fixture selection."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Customer",
+            "owner": "CRM",
+            "destination": [
+              "AR-01",
+              "AR-11"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-022",
+        "line": 317,
+        "delegate": "product",
+        "operation": "findMany",
+        "targetModels": [
+          "Product"
+        ],
+        "ownership": [
+          "catalog"
+        ],
+        "destination": [
+          "AR-03",
+          "AR-04",
+          "AR-07"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-03-AC01",
+          "AR-03-AC02",
+          "AR-03-AC03",
+          "AR-04-AC01",
+          "AR-04-AC02",
+          "AR-07-AC02",
+          "AR-07-AC05"
+        ],
+        "effects": [
+          "Read all products with no where/orderBy; first two returned rows supply demo OrderItem and OUT movement product IDs."
+        ],
+        "scopeLimitations": [
+          "Read-only call with downstream write influence.",
+          "No tenant predicate; foreign-tenant products may be selected.",
+          "Guard checks length > 0, but body dereferences dbProducts[1]; no explicit length >= 2 check.",
+          "Unordered results are not stable fixture selection."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Product",
+            "owner": "catalog",
+            "destination": [
+              "AR-03"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-023",
+        "line": 320,
+        "delegate": "order",
+        "operation": "create",
+        "targetModels": [
+          "Order"
+        ],
+        "ownership": [
+          "sales/payments"
+        ],
+        "destination": [
+          "AR-08",
+          "AR-04",
+          "AR-06",
+          "AR-07"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-08-AC03",
+          "AR-08-AC05",
+          "AR-04-AC01",
+          "AR-04-AC02",
+          "AR-06-AC01",
+          "AR-06-AC04",
+          "AR-07-AC02",
+          "AR-07-AC05"
+        ],
+        "effects": [
+          "Insert completed/paid default-tenant demo order with literal total 1890 and a nested items.create array containing two OrderItem rows (quantities 2 and 1, unit prices 890 and 110).",
+          "Nested child writes share the Prisma nested create boundary with the parent order; the later movement createMany is a separate call."
+        ],
+        "scopeLimitations": [
+          "Reruns create additional orders, not replay an existing command.",
+          "Bypasses CheckoutCommand, order-number counter, InventoryPostingService, OrderPayment and SaleBatchAllocation.",
+          "No product/batch debit or customer spend/count increment accompanies this order call.",
+          "Uses globally read customer/product IDs; no same-tenant relation validation or transaction with later movement creation."
+        ],
+        "existingTestRefs": [
+          "test-stock-contention",
+          "test-checkout-command",
+          "test-order-sequence"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "Order",
+            "owner": "sales/payments",
+            "destination": [
+              "AR-08"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-024",
+        "line": 337,
+        "delegate": "inventoryTransaction",
+        "operation": "createMany",
+        "targetModels": [
+          "InventoryTransaction"
+        ],
+        "ownership": [
+          "inventory"
+        ],
+        "destination": [
+          "AR-07",
+          "AR-10",
+          "AR-04",
+          "AR-20"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-07-AC02",
+          "AR-07-AC05",
+          "AR-10-AC04",
+          "AR-04-AC01",
+          "AR-04-AC02",
+          "AR-20-AC01",
+          "AR-20-AC02",
+          "AR-20-AC03"
+        ],
+        "effects": [
+          "Insert two OUT movement rows with quantities 2 and 1 and referenceId=created demo order.id."
+        ],
+        "scopeLimitations": [
+          "Does not debit product or batch, link receipt/batch allocation, snapshot sale cost or use the common posting service.",
+          "Separate call after order commit: a failure can leave completed/paid order with no corresponding OUT rows.",
+          "productId comes from unscoped product read; tenantId is fixed to default tenant, not proven to match product."
+        ],
+        "existingTestRefs": [
+          "test-stock-contention",
+          "test-inventory-receipt"
+        ],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": [
+          {
+            "model": "InventoryTransaction",
+            "owner": "inventory",
+            "destination": [
+              "AR-07",
+              "AR-10"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seed-025",
+        "line": 354,
+        "delegate": "$client",
+        "operation": "$disconnect",
+        "targetModels": [],
+        "ownership": [
+          "platform"
+        ],
+        "destination": [
+          "AR-20"
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-00-AC03",
+          "AR-20-AC01",
+          "AR-20-AC02",
+          "AR-20-AC03"
+        ],
+        "effects": [
+          "Disconnect standalone Prisma client in finally after the main promise chain."
+        ],
+        "scopeLimitations": [
+          "Lifecycle operation, not a data writer, transaction rollback or cleanup of inserted rows.",
+          "catch invokes process.exit(1), so process termination/finally cleanup ordering is not runtime-verified."
+        ],
+        "existingTestRefs": [],
+        "missingCoverage": [
+          "No direct execution/assertion of this seed call was identified in the bounded inspected test set. Related service or schema coverage does not verify the seed caller."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+        "runtimeStatus": "NOT_RUN",
+        "modelOwnership": []
+      }
+    ],
+    "nestedWrites": [
+      {
+        "id": "seed-023-items",
+        "line": 327,
+        "operation": "create",
+        "rowLines": [
+          329,
+          330
+        ],
+        "ownership": [
+          "sales/payments"
+        ],
+        "destination": [
+          "AR-08",
+          "AR-07",
+          "AR-04"
+        ],
+        "effects": [
+          "Two child OrderItem records under order.create; no tenantId field on OrderItem."
+        ],
+        "scopeLimitations": [
+          "One nested-write site creates two rows; count separately from 25 top-level Prisma calls.",
+          "Child product identities are selected by unscoped findMany; nested create does not demonstrate tenant-safe relation semantics."
+        ],
+        "existingTestRefs": [
+          "test-stock-contention",
+          "test-checkout-command"
+        ],
+        "runtimeStatus": "NOT_RUN",
+        "parentCall": "seed-023",
+        "relation": "items",
+        "targetModels": [
+          "OrderItem"
+        ],
+        "modelOwnership": [
+          {
+            "model": "OrderItem",
+            "owner": "sales/payments",
+            "destination": [
+              "AR-08"
+            ]
+          }
+        ],
+        "checkIds": [
+          "AR-00-AC01",
+          "AR-08-AC03",
+          "AR-08-AC05",
+          "AR-04-AC01"
+        ],
+        "missingCoverage": [
+          "No direct seed nested-create, unscoped product selection, rerun or order/movement partial-failure assertions identified in this inspected set."
+        ],
+        "evidenceStatus": "SOURCE_INSPECTION_ONLY"
+      }
+    ],
+    "globalLimitations": [
+      "No target database ownership, non-production environment or explicit opt-in guard.",
+      "Uses application schema DATABASE_URL resolution through a standalone client; exact target is not read or contacted.",
+      "Direct stock/batch and order/movement writes bypass runtime services and cannot be treated as accepted production writers.",
+      "Existing upsert branches do not make the seed globally idempotent: interactions/orders/movements append; stock resets.",
+      "No direct seed invocation/assertion identified in the bounded inspected tests; absence of a seed-named test in the exact tree is not proof of repository-wide coverage absence."
+    ]
+  },
+  "entryChains": [
+    {
+      "id": "package-seed",
+      "source": {
+        "path": "systems/enterprise-admin/backend/package.json",
+        "gitBlobSha": "12d264cee6129a28e8757b5dc90b395fe0b74f93",
+        "sha256": "92e4a0bc6ccfe4b92b11e5bc36714a0e3fcfc4e39255a69a8e0c050aec4c187e"
+      },
+      "line": 14,
+      "command": "tsx prisma/seed.ts",
+      "chain": [
+        "npm run db:seed",
+        "tsx prisma/seed.ts",
+        "main()",
+        "25 Prisma call sites; nested OrderItem create"
+      ],
+      "effects": [
+        "Standalone data mutation path distinct from HTTP/service routing. npm scripts.db:seed directly invokes seed source."
+      ],
+      "ownership": [
+        "platform"
+      ],
+      "destination": [
+        "AR-20",
+        "AR-04"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03",
+        "AR-04-AC02"
+      ],
+      "existingTestRefs": [
+        "test-inventory-receipt"
+      ],
+      "missingCoverage": [
+        "No direct bounded seed clean/repeat/partial-failure/tenant-isolation execution assertions found in inspected test set.",
+        "Explicit invocation would mutate whichever database Prisma resolves; target was not inspected or contacted."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "prisma-seed",
+      "source": {
+        "path": "systems/enterprise-admin/backend/package.json",
+        "gitBlobSha": "12d264cee6129a28e8757b5dc90b395fe0b74f93",
+        "sha256": "92e4a0bc6ccfe4b92b11e5bc36714a0e3fcfc4e39255a69a8e0c050aec4c187e"
+      },
+      "line": 67,
+      "command": "tsx prisma/seed.ts",
+      "chain": [
+        "package.json prisma.seed hook",
+        "tsx prisma/seed.ts",
+        "main()"
+      ],
+      "effects": [
+        "Independent Prisma seed hook invokes same source; package script and hook must both remain inventoried.",
+        "db:migrate is prisma migrate dev and db:reset is prisma migrate reset --force. These are separate mutating engine entrypoints; hook behavior depends on the invoked Prisma flow/version."
+      ],
+      "ownership": [
+        "platform"
+      ],
+      "destination": [
+        "AR-20",
+        "AR-04"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03",
+        "AR-04-AC02"
+      ],
+      "existingTestRefs": [],
+      "missingCoverage": [
+        "No seed hook, migrate dev or forced reset was run.",
+        "Do not infer seed ran merely because a deployed migration engine ran; Docker declaration contains migrate deploy, not db:seed."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "docker-startup",
+      "source": {
+        "path": "systems/enterprise-admin/backend/Dockerfile",
+        "gitBlobSha": "4cb36d0360e945a2e1b0a7d924161aaa84af23b8",
+        "sha256": "39ab93a4f596fa6601804ca0f05d5a277bebb8d2328222e057d8caf408536132"
+      },
+      "line": 44,
+      "command": [
+        "sh",
+        "-c",
+        "./node_modules/.bin/prisma migrate deploy && node dist/server.js"
+      ],
+      "chain": [
+        "final stage CMD",
+        "Prisma migrate deploy reads packaged 16 migration.sql files and migration_lock.toml; engine may apply pending SQL/history changes",
+        "on command success (shell &&), node dist/server.js",
+        "configuration validation and read-only readiness precede listener"
+      ],
+      "effects": [
+        "Current default image start attempts migration deploy before API process, so restarts are not a migration-free entrypoint. Pending migrations can execute DDL, default/type changes, counter backfill and install triggers/FKs.",
+        "Prisma deployment engine history bookkeeping is an inferred engine effect, not a SQL statement enumerated in the 16 files.",
+        "package start only invokes node dist/server.js. Docker builder generate/build and image packaging are not seed runs.",
+        "Current readiness uses migration-name/history presence and read-only DB transaction; it does not compare SQL checksums or perform schema drift reconciliation."
+      ],
+      "ownership": [
+        "platform"
+      ],
+      "destination": [
+        "AR-20",
+        "AR-04"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03",
+        "AR-04-AC02"
+      ],
+      "existingTestRefs": [
+        "test-readiness",
+        "test-health",
+        "test-health-controls",
+        "harness-health-image"
+      ],
+      "missingCoverage": [
+        "AR-20-AC02 requires migration/runtime-role separation and restart without migration; this source still couples deploy to default CMD.",
+        "Health harness overrides Docker entrypoint, explicitly migrates an empty fixture, then launches node; it does not prove default CMD is migration-free or permissions segregated.",
+        "No actual image, app, DB, populated upgrade/interruption/rollback, WAN-offline or device acceptance was run."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    }
+  ],
+  "migrations": [
+    {
+      "id": "20260301164756_init",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+        "gitBlobSha": "88db581bd70d662c20b6beb3930372e39c4dbe3d",
+        "sha256": "6b0060dc422813b62c27abb2386cb4f5948ec064bb71053fcfbdcfd6c5b2babd"
+      },
+      "targets": [
+        "Tenant",
+        "User",
+        "Role",
+        "Permission",
+        "RolePermission",
+        "UserRole",
+        "AuditLog",
+        "Customer",
+        "Tag",
+        "CustomerTag",
+        "Interaction",
+        "Supplier",
+        "ProductCategory",
+        "Product",
+        "Order",
+        "OrderItem",
+        "InventoryTransaction",
+        "Expense"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Tenant",
+          "owner": "organization/access",
+          "destination": [
+            "AR-03",
+            "AR-04"
+          ]
+        },
+        {
+          "model": "User",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "Role",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "Permission",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "RolePermission",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "UserRole",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "AuditLog",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "Customer",
+          "owner": "CRM",
+          "destination": [
+            "AR-01",
+            "AR-11"
+          ]
+        },
+        {
+          "model": "Tag",
+          "owner": "CRM",
+          "destination": [
+            "AR-01",
+            "AR-11"
+          ]
+        },
+        {
+          "model": "CustomerTag",
+          "owner": "CRM",
+          "destination": [
+            "AR-01",
+            "AR-11"
+          ]
+        },
+        {
+          "model": "Interaction",
+          "owner": "CRM",
+          "destination": [
+            "AR-01",
+            "AR-11"
+          ]
+        },
+        {
+          "model": "Supplier",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "ProductCategory",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "Product",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "Order",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "OrderItem",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "InventoryTransaction",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        },
+        {
+          "model": "Expense",
+          "owner": "reporting/payments",
+          "destination": [
+            "AR-08",
+            "AR-12"
+          ]
+        }
+      ],
+      "ownership": [
+        "organization/access",
+        "access",
+        "CRM",
+        "catalog",
+        "sales/payments",
+        "inventory",
+        "reporting/payments",
+        "platform"
+      ],
+      "destination": [
+        "AR-03",
+        "AR-04",
+        "AR-01",
+        "AR-11",
+        "AR-08",
+        "AR-07",
+        "AR-10",
+        "AR-12",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-03-AC01",
+        "AR-03-AC02",
+        "AR-03-AC03",
+        "AR-04-AC01",
+        "AR-04-AC02",
+        "AR-11-AC04",
+        "AR-08-AC03",
+        "AR-08-AC05",
+        "AR-07-AC02",
+        "AR-07-AC05",
+        "AR-10-AC04",
+        "AR-12-AC01",
+        "AR-12-AC02",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Create 18 initial tables, primary keys, lookup indexes and globally unique email/slug/action-resource/name/SKU/contact keys as written. Later tenant-composite uniqueness changes are separate migrations.",
+        "Initial roles.tenant_id is nullable and its tenant FK uses SET NULL; many monetary fields begin DOUBLE PRECISION.",
+        "Initial FK relations are predominantly ID-only, including order->customer, item->product and movement->product; a tenant column on both rows does not enforce same-tenant identity."
+      ],
+      "dmlBackfillEffects": [
+        "No INSERT/UPDATE/DELETE backfill or seed rows. Defaults apply only as SQL column defaults; no opening inventory provenance is manufactured."
+      ],
+      "triggersAndCascades": [
+        "No custom functions or triggers.",
+        "Declared delete cascades include tenant-owned users/audit/CRM/catalog/orders/movements/expenses, role/user permission joins, customer tags/interactions, order items and product movements.",
+        "Deletion of referenced customers/products is restricted for orders/items; optional audit-user/category/supplier/role-tenant links use SET NULL. See exact foreignKeys for all 26 declarations, not a global deletion permission."
+      ],
+      "foreignKeys": [
+        {
+          "name": "users_tenant_id_fkey",
+          "line": 334,
+          "table": "users",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "roles_tenant_id_fkey",
+          "line": 337,
+          "table": "roles",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "SET NULL",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "role_permissions_role_id_fkey",
+          "line": 340,
+          "table": "role_permissions",
+          "columns": [
+            "role_id"
+          ],
+          "referencedTable": "roles",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "role_permissions_permission_id_fkey",
+          "line": 343,
+          "table": "role_permissions",
+          "columns": [
+            "permission_id"
+          ],
+          "referencedTable": "permissions",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "user_roles_user_id_fkey",
+          "line": 346,
+          "table": "user_roles",
+          "columns": [
+            "user_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "user_roles_role_id_fkey",
+          "line": 349,
+          "table": "user_roles",
+          "columns": [
+            "role_id"
+          ],
+          "referencedTable": "roles",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "audit_logs_tenant_id_fkey",
+          "line": 352,
+          "table": "audit_logs",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "audit_logs_user_id_fkey",
+          "line": 355,
+          "table": "audit_logs",
+          "columns": [
+            "user_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "SET NULL",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "customers_tenant_id_fkey",
+          "line": 358,
+          "table": "customers",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "tags_tenant_id_fkey",
+          "line": 361,
+          "table": "tags",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "customer_tags_customer_id_fkey",
+          "line": 364,
+          "table": "customer_tags",
+          "columns": [
+            "customer_id"
+          ],
+          "referencedTable": "customers",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "customer_tags_tag_id_fkey",
+          "line": 367,
+          "table": "customer_tags",
+          "columns": [
+            "tag_id"
+          ],
+          "referencedTable": "tags",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "interactions_tenant_id_fkey",
+          "line": 370,
+          "table": "interactions",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "interactions_customer_id_fkey",
+          "line": 373,
+          "table": "interactions",
+          "columns": [
+            "customer_id"
+          ],
+          "referencedTable": "customers",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "suppliers_tenant_id_fkey",
+          "line": 376,
+          "table": "suppliers",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_categories_tenant_id_fkey",
+          "line": 379,
+          "table": "product_categories",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "products_tenant_id_fkey",
+          "line": 382,
+          "table": "products",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "products_category_id_fkey",
+          "line": 385,
+          "table": "products",
+          "columns": [
+            "category_id"
+          ],
+          "referencedTable": "product_categories",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "SET NULL",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "products_supplier_id_fkey",
+          "line": 388,
+          "table": "products",
+          "columns": [
+            "supplier_id"
+          ],
+          "referencedTable": "suppliers",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "SET NULL",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "orders_tenant_id_fkey",
+          "line": 391,
+          "table": "orders",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "orders_customer_id_fkey",
+          "line": 394,
+          "table": "orders",
+          "columns": [
+            "customer_id"
+          ],
+          "referencedTable": "customers",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "order_items_order_id_fkey",
+          "line": 397,
+          "table": "order_items",
+          "columns": [
+            "order_id"
+          ],
+          "referencedTable": "orders",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "order_items_product_id_fkey",
+          "line": 400,
+          "table": "order_items",
+          "columns": [
+            "product_id"
+          ],
+          "referencedTable": "products",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "inventory_transactions_tenant_id_fkey",
+          "line": 403,
+          "table": "inventory_transactions",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "inventory_transactions_product_id_fkey",
+          "line": 406,
+          "table": "inventory_transactions",
+          "columns": [
+            "product_id"
+          ],
+          "referencedTable": "products",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "expenses_tenant_id_fkey",
+          "line": 409,
+          "table": "expenses",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-inventory-receipt",
+        "test-stock-contention",
+        "harness-health-image",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "No direct populated pre-init upgrade, full legacy FK/cascade matrix or initial schema rollback assertions were identified in the inspected set.",
+        "Harnesses apply prior migrations as setup; successful setup would not itself prove every initial table constraint or tenant boundary."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20260516000001_phase9_pos_schema",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+        "gitBlobSha": "0e7c185d5caf60681d43dc69a751584fd1ab29a6",
+        "sha256": "c23777946c2449bfc65bb10ed5a0fcf3afb0ae23b445c6dc9cad9fccdd9bb882"
+      },
+      "targets": [
+        "OrderItem",
+        "Order",
+        "User"
+      ],
+      "modelOwnership": [
+        {
+          "model": "OrderItem",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "Order",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "User",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        }
+      ],
+      "ownership": [
+        "sales/payments",
+        "access",
+        "platform"
+      ],
+      "destination": [
+        "AR-08",
+        "AR-04",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-08-AC03",
+        "AR-08-AC05",
+        "AR-04-AC01",
+        "AR-04-AC02",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Add item discount_rate default 0 and nullable final_unit_price (DOUBLE PRECISION); add order discount_amount default 0, discount_note and sales_staff_id; add users.employee_code.",
+        "Index sales_staff_id and make employee_code globally unique."
+      ],
+      "dmlBackfillEffects": [
+        "Existing rows receive zero discount defaults; nullable final price/staff/code remain unknown. No explicit data rewrite or cost-history backfill."
+      ],
+      "triggersAndCascades": [
+        "No custom triggers. Order sales_staff_id references user ID with ON DELETE SET NULL and ON UPDATE CASCADE; tenant equality is not part of that FK."
+      ],
+      "foreignKeys": [
+        {
+          "name": "orders_sales_staff_id_fkey",
+          "line": 20,
+          "table": "orders",
+          "columns": [
+            "sales_staff_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "SET NULL",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-stock-contention",
+        "test-inventory-receipt"
+      ],
+      "missingCoverage": [
+        "Inspected service tests exercise discounts/auth assumptions, not a populated migration probe for each new column/default or employee-code collision on upgrade."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20260516140834_phase_8_sales_foundation",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+        "gitBlobSha": "054ae24a18346987150b0fddcafadfd2bf45cffc",
+        "sha256": "10b818024a8eebae2b942ecb9394a90199f4e522393d48a20a21a5cb98e96bf2"
+      },
+      "targets": [
+        "Role",
+        "Customer",
+        "ProductCategory",
+        "Product",
+        "Tag",
+        "Order",
+        "Shift",
+        "ProductBatch",
+        "DailySettlement"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Role",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "Customer",
+          "owner": "CRM",
+          "destination": [
+            "AR-01",
+            "AR-11"
+          ]
+        },
+        {
+          "model": "ProductCategory",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "Product",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "Tag",
+          "owner": "CRM",
+          "destination": [
+            "AR-01",
+            "AR-11"
+          ]
+        },
+        {
+          "model": "Order",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "Shift",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "ProductBatch",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        },
+        {
+          "model": "DailySettlement",
+          "owner": "reporting/payments",
+          "destination": [
+            "AR-08",
+            "AR-12"
+          ]
+        }
+      ],
+      "ownership": [
+        "access",
+        "CRM",
+        "catalog",
+        "sales/payments",
+        "inventory",
+        "reporting/payments",
+        "platform"
+      ],
+      "destination": [
+        "AR-04",
+        "AR-01",
+        "AR-11",
+        "AR-03",
+        "AR-08",
+        "AR-07",
+        "AR-10",
+        "AR-12",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-04-AC01",
+        "AR-04-AC02",
+        "AR-11-AC04",
+        "AR-03-AC01",
+        "AR-03-AC02",
+        "AR-03-AC03",
+        "AR-08-AC03",
+        "AR-08-AC05",
+        "AR-07-AC02",
+        "AR-07-AC05",
+        "AR-10-AC04",
+        "AR-12-AC01",
+        "AR-12-AC02",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Drop old global unique indexes for customers.phone/line_uid, categories.name, products.sku, roles.name and tags.name; recreate as tenant composite unique indexes.",
+        "Make roles.tenant_id NOT NULL and replace tenant FK SET NULL with RESTRICT.",
+        "Add orders.order_number (nullable indexed), order_type=WALK_IN and payment_method=CASH defaults, nullable shift_id.",
+        "Create shifts, product_batches and daily_settlements with listed primary/unique/lookup indexes. Monetary fields begin DOUBLE PRECISION."
+      ],
+      "dmlBackfillEffects": [
+        "No explicit repair/backfill of null role tenants before NOT NULL, no historical batches or settlement rows inserted.",
+        "Existing order rows gain WALK_IN/CASH defaults; no payment provenance is inferred or written beyond those defaults."
+      ],
+      "triggersAndCascades": [
+        "No custom triggers. New tenant FKs cascade on delete for shifts/batches/settlements; batch product FK cascades; staff and shift settlement parents RESTRICT; order.shift is SET NULL.",
+        "ID-only staff/product/shift references do not establish same-tenant identities."
+      ],
+      "foreignKeys": [
+        {
+          "name": "roles_tenant_id_fkey",
+          "line": 133,
+          "table": "roles",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "orders_shift_id_fkey",
+          "line": 136,
+          "table": "orders",
+          "columns": [
+            "shift_id"
+          ],
+          "referencedTable": "shifts",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "SET NULL",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "shifts_tenant_id_fkey",
+          "line": 139,
+          "table": "shifts",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "shifts_staff_id_fkey",
+          "line": 142,
+          "table": "shifts",
+          "columns": [
+            "staff_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_batches_tenant_id_fkey",
+          "line": 145,
+          "table": "product_batches",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_batches_product_id_fkey",
+          "line": 148,
+          "table": "product_batches",
+          "columns": [
+            "product_id"
+          ],
+          "referencedTable": "products",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "daily_settlements_tenant_id_fkey",
+          "line": 151,
+          "table": "daily_settlements",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "daily_settlements_shift_id_fkey",
+          "line": 154,
+          "table": "daily_settlements",
+          "columns": [
+            "shift_id"
+          ],
+          "referencedTable": "shifts",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-stock-contention",
+        "test-inventory-receipt",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "No inspected test migrates a populated legacy roles table containing null tenant IDs; migration can be rejected rather than repairing such rows.",
+        "Service tests do not prove full historical unique-index transition, cash classification, shift cascade or settlement backfill acceptance."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20260519000001_phase_6_accounting_sync",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+        "gitBlobSha": "ccd1c51cbc019617c1ba43f0d9a9b00dfa7ad8ff",
+        "sha256": "c346a40f40b63130ada9d9e46d74cc31fa2195f7a7c696a59de25a8b43ff512a"
+      },
+      "targets": [
+        "AccountingSyncLog"
+      ],
+      "modelOwnership": [
+        {
+          "model": "AccountingSyncLog",
+          "owner": "integrations",
+          "destination": [
+            "AR-17"
+          ]
+        }
+      ],
+      "ownership": [
+        "integrations",
+        "platform"
+      ],
+      "destination": [
+        "AR-17",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-17-AC01",
+        "AR-17-AC04",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Create accounting_sync_logs with provider/entity/status/external/error/timestamp fields and nonunique tenant/entity and tenant indexes."
+      ],
+      "dmlBackfillEffects": [
+        "No DML/backfill; schema creation does not send provider traffic or ensure idempotent delivery."
+      ],
+      "triggersAndCascades": [
+        "No custom triggers. Tenant FK cascades on DELETE and UPDATE.",
+        "No uniqueness or FK on entity_type/entity_id is added."
+      ],
+      "foreignKeys": [
+        {
+          "name": "accounting_sync_logs_tenant_id_fkey",
+          "line": 24,
+          "table": "accounting_sync_logs",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "harness-health-image",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "No dedicated accounting table migration/constraint assertions or real provider delivery evidence in this inspected set."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20260519000001_phase_6_line_integration",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+        "gitBlobSha": "6e734f1cd87f35d52465fb40c858026efabda9f6",
+        "sha256": "c586f4d1d3374ead74e6e87ca7513b8e204c5f4d62588cb0018ad33113728c0e"
+      },
+      "targets": [
+        "Customer",
+        "MessageBroadcast"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Customer",
+          "owner": "CRM",
+          "destination": [
+            "AR-01",
+            "AR-11"
+          ]
+        },
+        {
+          "model": "MessageBroadcast",
+          "owner": "integrations",
+          "destination": [
+            "AR-17"
+          ]
+        }
+      ],
+      "ownership": [
+        "CRM",
+        "integrations",
+        "platform"
+      ],
+      "destination": [
+        "AR-01",
+        "AR-11",
+        "AR-17",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-11-AC04",
+        "AR-17-AC01",
+        "AR-17-AC04",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Add customers.line_user_id with global unique index, distinct from existing tenant-composite line_uid.",
+        "Create message_broadcasts with target_segment/sent_count/status/sent_at/created_by fields and tenant/date indexes."
+      ],
+      "dmlBackfillEffects": [
+        "No DML/backfill or external message transmission; new line_user_id remains null for legacy rows."
+      ],
+      "triggersAndCascades": [
+        "No custom triggers. MessageBroadcast tenant FK cascades on DELETE and UPDATE.",
+        "created_by is text without an actor FK in this migration; broadcast storage is not a delivery guarantee."
+      ],
+      "foreignKeys": [
+        {
+          "name": "message_broadcasts_tenant_id_fkey",
+          "line": 30,
+          "table": "message_broadcasts",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "harness-health-image",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "No inspected test covers populated LINE identity migration, global line_user_id collisions, broadcast FK matrix or external send outcomes."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20260520000001_arch_fix_5_float_to_decimal",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+        "gitBlobSha": "92dd80ac684175fe45c91245fed7387f32f35864",
+        "sha256": "3af6bfbed2cf592131abe741d02b8f33d9bdec90f56bf9a91b354be88fea9e1e"
+      },
+      "targets": [
+        "Product",
+        "Order",
+        "OrderItem",
+        "Expense",
+        "Shift",
+        "ProductBatch",
+        "DailySettlement"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Product",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "Order",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "OrderItem",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "Expense",
+          "owner": "reporting/payments",
+          "destination": [
+            "AR-08",
+            "AR-12"
+          ]
+        },
+        {
+          "model": "Shift",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "ProductBatch",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        },
+        {
+          "model": "DailySettlement",
+          "owner": "reporting/payments",
+          "destination": [
+            "AR-08",
+            "AR-12"
+          ]
+        }
+      ],
+      "ownership": [
+        "catalog",
+        "sales/payments",
+        "reporting/payments",
+        "inventory",
+        "platform"
+      ],
+      "destination": [
+        "AR-03",
+        "AR-08",
+        "AR-12",
+        "AR-07",
+        "AR-10",
+        "AR-05",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-03-AC01",
+        "AR-03-AC02",
+        "AR-03-AC03",
+        "AR-08-AC03",
+        "AR-08-AC05",
+        "AR-12-AC01",
+        "AR-12-AC02",
+        "AR-07-AC02",
+        "AR-07-AC05",
+        "AR-10-AC04",
+        "AR-05-AC01",
+        "AR-05-AC03",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "ALTER 15 monetary columns across seven tables from floating point to DECIMAL(12,4) using explicit ::DECIMAL(12,4) casts.",
+        "Columns: Product cost_price/retail_price; Order total_amount/discount_amount; OrderItem unit_price/final_unit_price; Expense amount; Shift opening_cash/closing_cash; ProductBatch cost_price; DailySettlement total_sales/cash_amount/card_amount/line_pay_amount/other_amount."
+      ],
+      "dmlBackfillEffects": [
+        "Type conversion rewrites/coerces existing monetary values; it may round excess precision and can reject values outside DECIMAL(12,4) range. This is data-affecting DDL, despite no INSERT/UPDATE statement.",
+        "No reconstructing missing historical cost, payment or refund allocation; discount_rate stays floating point."
+      ],
+      "triggersAndCascades": [
+        "No new FK, custom function or trigger. Existing FK actions remain."
+      ],
+      "foreignKeys": [],
+      "existingTestRefs": [
+        "test-stock-contention",
+        "test-inventory-receipt",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "No inspected populated Float-to-Decimal migration fixtures for excess precision, overflow, special float values or restoration/rollback.",
+        "Decimal-backed runtime assertions do not establish exactness of old rounded floating values."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20260522140840_phase_9_7_split_payment",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+        "gitBlobSha": "65e6187f975d9dea84fce77130cbcdff5ec2f470",
+        "sha256": "177b99d569521c9cca3c7483b528eb3b49355d592200441fab51168e41cadf56"
+      },
+      "targets": [
+        "OrderPayment"
+      ],
+      "modelOwnership": [
+        {
+          "model": "OrderPayment",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        }
+      ],
+      "ownership": [
+        "sales/payments",
+        "platform"
+      ],
+      "destination": [
+        "AR-08",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-08-AC03",
+        "AR-08-AC05",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Create order_payments with method and DECIMAL(12,4) amount; index order_id and tenant_id."
+      ],
+      "dmlBackfillEffects": [
+        "No old payment backfill and no provider transaction. Legacy completed orders may still lack payment rows."
+      ],
+      "triggersAndCascades": [
+        "No custom triggers or amount check. Order and tenant FKs cascade on DELETE/UPDATE independently; the order FK is ID-only, not order+tenant composite."
+      ],
+      "foreignKeys": [
+        {
+          "name": "order_payments_order_id_fkey",
+          "line": 19,
+          "table": "order_payments",
+          "columns": [
+            "order_id"
+          ],
+          "referencedTable": "orders",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "order_payments_tenant_id_fkey",
+          "line": 22,
+          "table": "order_payments",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-checkout-command",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "Inspected checkout tests exercise payment creation and rollback, not populated legacy split-payment backfill, decimal conversion or every cross-tenant FK combination."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261006090000_sale_batch_allocations",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+        "gitBlobSha": "4419b8546b3676634f512861327dc3cd135bd9c0",
+        "sha256": "ab3f07660a2427ddff453f5e4565e1c1fdd7a7c6060aa42709c670ec9f1ac4ea"
+      },
+      "targets": [
+        "ProductBatch",
+        "SaleBatchAllocation",
+        "Order",
+        "OrderItem",
+        "InventoryTransaction"
+      ],
+      "modelOwnership": [
+        {
+          "model": "ProductBatch",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        },
+        {
+          "model": "SaleBatchAllocation",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        },
+        {
+          "model": "Order",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "OrderItem",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "InventoryTransaction",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        }
+      ],
+      "ownership": [
+        "inventory",
+        "sales/payments",
+        "platform"
+      ],
+      "destination": [
+        "AR-07",
+        "AR-10",
+        "AR-08",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-07-AC02",
+        "AR-07-AC05",
+        "AR-10-AC04",
+        "AR-08-AC03",
+        "AR-08-AC05",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Create BatchStockStatus enum RELEASED/QUARANTINE/BLOCKED and add nonnull ProductBatch.status default QUARANTINE.",
+        "Create sale_batch_allocations with positive quantity CHECK, unique order_item_id+batch_id and tenant/order/batch/movement indexes.",
+        "Add parent composite unique keys for orders(id,tenant), order_items(id,order,product), inventory_transactions(id,product,tenant), product_batches(id,product,tenant)."
+      ],
+      "dmlBackfillEffects": [
+        "Existing batches become QUARANTINE by added column default, an eligibility change; no quantities are repaired.",
+        "No historical sale allocations, movements or release decisions are backfilled."
+      ],
+      "triggersAndCascades": [
+        "No custom triggers. Allocation tenant FK cascades; composite order/item/batch/movement references restrict deletes and cascade updates.",
+        "Composite links tie allocation tenant/product/order identity to referenced rows; they do not globally fix the older ID-only relations."
+      ],
+      "foreignKeys": [
+        {
+          "name": "sale_batch_allocations_tenant_id_fkey",
+          "line": 52,
+          "table": "sale_batch_allocations",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "sale_batch_allocations_order_id_tenant_id_fkey",
+          "line": 55,
+          "table": "sale_batch_allocations",
+          "columns": [
+            "order_id",
+            "tenant_id"
+          ],
+          "referencedTable": "orders",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "sale_batch_allocations_order_item_id_order_id_product_id_fkey",
+          "line": 58,
+          "table": "sale_batch_allocations",
+          "columns": [
+            "order_item_id",
+            "order_id",
+            "product_id"
+          ],
+          "referencedTable": "order_items",
+          "referencedColumns": [
+            "id",
+            "order_id",
+            "product_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "sale_batch_allocations_batch_id_product_id_tenant_id_fkey",
+          "line": 61,
+          "table": "sale_batch_allocations",
+          "columns": [
+            "batch_id",
+            "product_id",
+            "tenant_id"
+          ],
+          "referencedTable": "product_batches",
+          "referencedColumns": [
+            "id",
+            "product_id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "sale_batch_allocations_movement_id_product_id_tenant_id_fkey",
+          "line": 64,
+          "table": "sale_batch_allocations",
+          "columns": [
+            "movement_id",
+            "product_id",
+            "tenant_id"
+          ],
+          "referencedTable": "inventory_transactions",
+          "referencedColumns": [
+            "id",
+            "product_id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-stock-contention",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "Runtime suite asserts default quarantine and allocation guards; no inspected populated pre-migration release-state/old-order preservation probe specifically for this migration."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261006100000_atomic_batch_receipts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+        "gitBlobSha": "4b7de729e72c255b16a6483684e335a227328c26",
+        "sha256": "c2f15be427ac1bfb0a325148703497013eca50913c5a90bfb0e6dc7ee98c47fb"
+      },
+      "targets": [
+        "InventoryTransaction"
+      ],
+      "modelOwnership": [
+        {
+          "model": "InventoryTransaction",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        }
+      ],
+      "ownership": [
+        "inventory",
+        "platform"
+      ],
+      "destination": [
+        "AR-07",
+        "AR-10",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-07-AC02",
+        "AR-07-AC05",
+        "AR-10-AC04",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Add nullable batch_id and cost_price_at_receipt DECIMAL(12,4), tenant+batch index and composite receipt batch/product/tenant FK.",
+        "Add CHECK: when batch_id is present, movement must be IN, positive quantity and nonnull nonnegative receipt cost."
+      ],
+      "dmlBackfillEffects": [
+        "No balance changes, historical lot invention or receipt provenance backfill. Legacy movement fields remain null."
+      ],
+      "triggersAndCascades": [
+        "No custom trigger. Composite batch FK restricts delete and cascades update.",
+        "The check permits legacy/unlinked rows with null batch_id; it does not force every IN/OUT into the current receipt authority."
+      ],
+      "foreignKeys": [
+        {
+          "name": "inventory_transactions_receipt_batch_fkey",
+          "line": 10,
+          "table": "inventory_transactions",
+          "columns": [
+            "batch_id",
+            "product_id",
+            "tenant_id"
+          ],
+          "referencedTable": "product_batches",
+          "referencedColumns": [
+            "id",
+            "product_id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-inventory-receipt",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "Service/SQL guard tests do not validate a populated legacy migration preserving every historical row or the seed bypass path."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261006110000_checkout_commands",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+        "gitBlobSha": "7e6a14d8e9d15a8d0c87cce5b6821618416aaae0",
+        "sha256": "84609ab16f74d3a12ed4ea843b872c6891b6d6e97304b4e9431bb197e44637f1"
+      },
+      "targets": [
+        "CheckoutCommand"
+      ],
+      "modelOwnership": [
+        {
+          "model": "CheckoutCommand",
+          "owner": "commands/sales",
+          "destination": [
+            "AR-06"
+          ]
+        }
+      ],
+      "ownership": [
+        "commands/sales",
+        "platform"
+      ],
+      "destination": [
+        "AR-06",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-06-AC01",
+        "AR-06-AC04",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Create CheckoutCommandStatus enum PENDING/SUCCEEDED and checkout_commands with tenant+kind+command_id unique key.",
+        "CHECK enforces PENDING has null order/result/completion; SUCCEEDED has nonnull order/time, object result and result.id matching order_id."
+      ],
+      "dmlBackfillEffects": [
+        "No historical commands/results backfilled; a preexisting order does not gain command replay identity."
+      ],
+      "triggersAndCascades": [
+        "No custom trigger; schema does not by itself make a successful row immutable. Tenant FK cascades; order+tenant FK restricts delete and cascades update."
+      ],
+      "foreignKeys": [
+        {
+          "name": "checkout_commands_tenant_id_fkey",
+          "line": 24,
+          "table": "checkout_commands",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "checkout_commands_order_id_tenant_id_fkey",
+          "line": 27,
+          "table": "checkout_commands",
+          "columns": [
+            "order_id",
+            "tenant_id"
+          ],
+          "referencedTable": "orders",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-checkout-command",
+        "harness-order-sequence-upgrade"
+      ],
+      "missingCoverage": [
+        "Current command protocol tests are not proof of migrating/restoring existing v1 unknown intents across all future schema versions or SQL UPDATE protection."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261009010000_taipei_order_sequence",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+        "gitBlobSha": "c6b8ae4db9041a54502a299ae4218f9ac8c0a2db",
+        "sha256": "df6e3de02052c08874c4adc307bca65d0383d86bd692653793948a99a1f3d553"
+      },
+      "targets": [
+        "Order",
+        "OrderNumberCounter"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Order",
+          "owner": "sales/payments",
+          "destination": [
+            "AR-08"
+          ]
+        },
+        {
+          "model": "OrderNumberCounter",
+          "owner": "commands/sales",
+          "destination": [
+            "AR-06"
+          ]
+        }
+      ],
+      "ownership": [
+        "sales/payments",
+        "commands/sales",
+        "platform"
+      ],
+      "destination": [
+        "AR-08",
+        "AR-06",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-08-AC03",
+        "AR-08-AC05",
+        "AR-06-AC01",
+        "AR-06-AC04",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Explicit BEGIN/COMMIT and SHARE ROW EXCLUSIVE lock on orders cover duplicate preflight, unique index and counter insert.",
+        "Abort with diagnostic details on duplicate nonnull tenant/order_number; add nullable business_date and unique tenant+order_number.",
+        "Create order_number_counters keyed tenant+business_date with last_sequence range 0..99999."
+      ],
+      "dmlBackfillEffects": [
+        "CTE reads legacy POS-YYYYMMDD-suffix numbers; validates printed calendar date and inserts per-tenant/printed-day max into order_number_counters.",
+        "Suffix longer than five digits seeds 99999; malformed dates/text are excluded. Date printed on old number is preserved rather than reinterpreted from created_at.",
+        "No UPDATE to old orders or historical business_date backfill; old business_date remains NULL.",
+        "This is the one explicit INSERT backfill in the 16 migration sources. It is a once-applied migration, not a repeatable arbitrary SQL repair."
+      ],
+      "triggersAndCascades": [
+        "No custom persistent functions/triggers. Counter tenant FK cascades on DELETE and UPDATE."
+      ],
+      "foreignKeys": [
+        {
+          "name": "order_number_counters_tenant_id_fkey",
+          "line": 30,
+          "table": "order_number_counters",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "CASCADE",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "harness-order-sequence-upgrade",
+        "test-order-sequence",
+        "test-order-sequence-controls"
+      ],
+      "missingCoverage": [
+        "Existing migration harness covers selected populated upgrade/duplicate/overflow/null/malformed fixtures, not interrupted backfill recovery, arbitrary production data, migration-role segregation or rollout authorization."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261009120000_product_batch_changes",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+        "gitBlobSha": "50bc81517a849b0172827db05831925825eb9de4",
+        "sha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4"
+      },
+      "targets": [
+        "ProductBatchChange",
+        "User",
+        "Product"
+      ],
+      "modelOwnership": [
+        {
+          "model": "ProductBatchChange",
+          "owner": "inventory",
+          "destination": [
+            "AR-07",
+            "AR-10"
+          ]
+        },
+        {
+          "model": "User",
+          "owner": "access",
+          "destination": [
+            "AR-04"
+          ]
+        },
+        {
+          "model": "Product",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        }
+      ],
+      "ownership": [
+        "inventory",
+        "access",
+        "catalog",
+        "platform"
+      ],
+      "destination": [
+        "AR-07",
+        "AR-10",
+        "AR-04",
+        "AR-03",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-07-AC02",
+        "AR-07-AC05",
+        "AR-10-AC04",
+        "AR-04-AC01",
+        "AR-04-AC02",
+        "AR-03-AC01",
+        "AR-03-AC02",
+        "AR-03-AC03",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Create ProductBatchChangeOperation enum STATUS/EXPIRY/COST/INITIAL_RELEASE; create product_batch_changes with JSONB before/after, bounded reason and TIMESTAMPTZ creation time.",
+        "Add history/product/actor indexes and parent composite users/products id+tenant unique keys.",
+        "CHECK validates exact snapshot keys/string formats/status, operation-specific single-field change, INITIAL_RELEASE nonexistence-to-RELEASED shape and trimmed nonblank reason."
+      ],
+      "dmlBackfillEffects": [
+        "No backfill, stock rewrite, role grant or change to posting rows.",
+        "Snapshot checker validates date string shape, not by itself calendar validity or live source truth."
+      ],
+      "triggersAndCascades": [
+        "batch_change_valid_snapshot is an immutable SQL predicate, not a writer.",
+        "reject_product_batch_change_mutation raises 23514; row trigger rejects UPDATE/DELETE and statement trigger rejects TRUNCATE.",
+        "All audit tenant/product/batch/actor FKs use RESTRICT for DELETE and UPDATE; audit history prevents parent deletion/identity rewriting once referenced."
+      ],
+      "foreignKeys": [
+        {
+          "name": "product_batch_changes_tenant_id_fkey",
+          "line": 36,
+          "table": "product_batch_changes",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_batch_changes_product_id_tenant_id_fkey",
+          "line": 39,
+          "table": "product_batch_changes",
+          "columns": [
+            "product_id",
+            "tenant_id"
+          ],
+          "referencedTable": "products",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_batch_changes_batch_id_product_id_tenant_id_fkey",
+          "line": 42,
+          "table": "product_batch_changes",
+          "columns": [
+            "batch_id",
+            "product_id",
+            "tenant_id"
+          ],
+          "referencedTable": "product_batches",
+          "referencedColumns": [
+            "id",
+            "product_id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_batch_changes_actor_id_tenant_id_fkey",
+          "line": 45,
+          "table": "product_batch_changes",
+          "columns": [
+            "actor_id",
+            "tenant_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-batch-change-schema"
+      ],
+      "missingCoverage": [
+        "Inspected native contract tests cover selected snapshot/FK/truncate/rollback cases but were not run here; no complete migration-role versus runtime-role grant/RLS matrix.",
+        "Trigger presence does not prove every direct batch writer creates a required audit row; seed direct release does not."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261015160000_medicine_label_metadata",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+        "gitBlobSha": "83fd6432ca71a7e8e37ad003de8796bab0af6475",
+        "sha256": "b5d751f54c935de55461e4f45eab73a688a7e361c2d013d10e194de53c42d5e6"
+      },
+      "targets": [
+        "Product"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Product",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        }
+      ],
+      "ownership": [
+        "catalog",
+        "platform"
+      ],
+      "destination": [
+        "AR-03",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-03-AC01",
+        "AR-03-AC02",
+        "AR-03-AC03",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Add nullable strength, dosage_form, generic_name, nhi_code and license_number text fields."
+      ],
+      "dmlBackfillEffects": [
+        "No DML/default backfill; existing medicine metadata remains NULL. No stock or identity authority is invented."
+      ],
+      "triggersAndCascades": [
+        "No new FK/function/trigger. This migration adds no stock-location field."
+      ],
+      "foreignKeys": [],
+      "existingTestRefs": [
+        "harness-health-image"
+      ],
+      "missingCoverage": [
+        "No direct populated medicine-label migration preservation/null-state assertions in the inspected test set; runtime label correctness and devices are outside this map."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261015170000_medicine_label_three_line_metadata",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+        "gitBlobSha": "b522e08515139a402f496cc7001febbdb3ed864f",
+        "sha256": "706fb801d756441bdb19bba29bf82adc3f91cf91cd6e807297c67b40fd959423"
+      },
+      "targets": [
+        "Product"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Product",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        }
+      ],
+      "ownership": [
+        "catalog",
+        "platform"
+      ],
+      "destination": [
+        "AR-03",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-03-AC01",
+        "AR-03-AC02",
+        "AR-03-AC03",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Add nullable english_name text field."
+      ],
+      "dmlBackfillEffects": [
+        "No DML/default backfill; existing English names remain NULL."
+      ],
+      "triggersAndCascades": [
+        "No new FK/function/trigger or stock changes."
+      ],
+      "foreignKeys": [],
+      "existingTestRefs": [
+        "harness-health-image"
+      ],
+      "missingCoverage": [
+        "No direct populated English-name migration, label rendering or device assertions in the inspected test set."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261016090000_product_package_mapping",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+        "gitBlobSha": "8dd76439f27c290490378389a15785cc284cce4e",
+        "sha256": "bb867d580feb54f554502d2a02d5602f7d8ea873dd1629eb3d63b462c64850c6"
+      },
+      "targets": [
+        "Product",
+        "ProductPackage",
+        "ProductPackageRevision",
+        "ProductPackageIdentifier"
+      ],
+      "modelOwnership": [
+        {
+          "model": "Product",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "ProductPackage",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "ProductPackageRevision",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        },
+        {
+          "model": "ProductPackageIdentifier",
+          "owner": "catalog",
+          "destination": [
+            "AR-03"
+          ]
+        }
+      ],
+      "ownership": [
+        "catalog",
+        "platform"
+      ],
+      "destination": [
+        "AR-03",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-03-AC01",
+        "AR-03-AC02",
+        "AR-03-AC03",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Add nullable Product.stock_unit_label with trimmed length CHECK. Create package identity, immutable revision and literal identifier tables and their indexes.",
+        "Enforce positive package/revision, 1..50 identifiers, nullable-or-positive units_per_package, ordered validity interval, nonblank reviewed fields and complete retirement metadata.",
+        "One unretired revision per tenant/package via partial unique index; deferred current-revision FK links package head to exact package/revision/tenant.",
+        "Identifier namespace MANUFACTURER/GTIN and literal length check; uniqueness is within revision, not global code uniqueness."
+      ],
+      "dmlBackfillEffects": [
+        "No package/barcode inference or history backfill; unknown conversion can stay NULL, and old Product.stock_unit_label remains NULL.",
+        "No stock quantities, batches, movements or payments are created by migration SQL."
+      ],
+      "triggersAndCascades": [
+        "guard_package_revision_history rejects DELETE and changes other than a one-way retirement.",
+        "guard_package_identity rejects DELETE/identity rewrite and permits same or next revision only.",
+        "guard_package_identifier_history rejects UPDATE/DELETE.",
+        "Deferred constraint triggers guard_package_identifier_set on revision/identifier INSERT verify complete declared identifier count and current head at transaction end; their SQL SELECTs read packages/revisions/identifiers but do not backfill them.",
+        "guard_product_stock_unit forbids changing an already nonnull reviewed unit label.",
+        "Composite tenant/product/package/actor/retirement actor/revision FKs restrict deletes; identity FKs restrict update; tenant-only FKs cascade update. Deferred current-revision FK defaults to NO ACTION.",
+        "No explicit TRUNCATE guard is declared for package tables in this file; do not equate row mutation guards with all-role append-only authority."
+      ],
+      "foreignKeys": [
+        {
+          "name": "product_packages_tenant_id_fkey",
+          "line": 71,
+          "table": "product_packages",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_packages_product_id_tenant_id_fkey",
+          "line": 74,
+          "table": "product_packages",
+          "columns": [
+            "product_id",
+            "tenant_id"
+          ],
+          "referencedTable": "products",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_package_revisions_tenant_id_fkey",
+          "line": 77,
+          "table": "product_package_revisions",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_package_revisions_package_id_tenant_id_fkey",
+          "line": 80,
+          "table": "product_package_revisions",
+          "columns": [
+            "package_id",
+            "tenant_id"
+          ],
+          "referencedTable": "product_packages",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_package_revisions_actor_id_tenant_id_fkey",
+          "line": 83,
+          "table": "product_package_revisions",
+          "columns": [
+            "actor_id",
+            "tenant_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_package_revisions_retired_by_id_tenant_id_fkey",
+          "line": 86,
+          "table": "product_package_revisions",
+          "columns": [
+            "retired_by_id",
+            "tenant_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_package_identifiers_tenant_id_fkey",
+          "line": 89,
+          "table": "product_package_identifiers",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_package_identifiers_revision_id_tenant_id_fkey",
+          "line": 92,
+          "table": "product_package_identifiers",
+          "columns": [
+            "revision_id",
+            "tenant_id"
+          ],
+          "referencedTable": "product_package_revisions",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "RESTRICT",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "product_package_current_revision_fkey",
+          "line": 98,
+          "table": "product_packages",
+          "columns": [
+            "id",
+            "revision",
+            "tenant_id"
+          ],
+          "referencedTable": "product_package_revisions",
+          "referencedColumns": [
+            "package_id",
+            "revision",
+            "tenant_id"
+          ],
+          "onDelete": "NO ACTION (implicit)",
+          "onUpdate": "NO ACTION (implicit)",
+          "deferrableInitiallyDeferred": true
+        }
+      ],
+      "existingTestRefs": [
+        "test-product-packages"
+      ],
+      "missingCoverage": [
+        "Native package tests cover selected FK/history/late-insert/revision/conversion cases, not a populated upgrade/backfill or complete permission/TRUNCATE threat matrix.",
+        "Parser discovery of triggers cannot prove domain revision semantics or packaging acceptance; these are curated source interpretations."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "id": "20261018141500_private_receiving_drafts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+        "gitBlobSha": "84e643e73335bb0f96b9cc625db7f43d1b143827",
+        "sha256": "62b8f47494273707eac8ce05f67d7b62ecb6cfc11f140ad18c1df94639dc9b35"
+      },
+      "targets": [
+        "ReceivingDraft",
+        "ReceivingDraftRevision"
+      ],
+      "modelOwnership": [
+        {
+          "model": "ReceivingDraft",
+          "owner": "receiving",
+          "destination": [
+            "AR-09"
+          ]
+        },
+        {
+          "model": "ReceivingDraftRevision",
+          "owner": "receiving",
+          "destination": [
+            "AR-09"
+          ]
+        }
+      ],
+      "ownership": [
+        "receiving",
+        "platform"
+      ],
+      "destination": [
+        "AR-09",
+        "AR-20"
+      ],
+      "checkIds": [
+        "AR-00-AC01",
+        "AR-00-AC03",
+        "AR-09-AC02",
+        "AR-09-AC03",
+        "AR-20-AC01",
+        "AR-20-AC02",
+        "AR-20-AC03"
+      ],
+      "ddlEffects": [
+        "Create UUID-keyed private receiving_drafts and draft+revision-keyed receiving_draft_revisions, JSONB payloads and revision>0 checks.",
+        "Create tenant/owner/head composite uniqueness and update/history lookup indexes."
+      ],
+      "dmlBackfillEffects": [
+        "No inventory backfill, release or posting. The migration stores manual drafts, not a receipt authority."
+      ],
+      "triggersAndCascades": [
+        "Composite owner+tenant and revision draft+tenant+owner FKs restrict deletes and cascade updates; tenant FK restricts deletes.",
+        "reject_receiving_draft_revision_change raises on row UPDATE/DELETE through append-only trigger.",
+        "No explicit TRUNCATE guard in this file; mutable draft head CAS is service behavior, not a trigger established by this migration."
+      ],
+      "foreignKeys": [
+        {
+          "name": "receiving_drafts_tenant_id_fkey",
+          "line": 8,
+          "table": "receiving_drafts",
+          "columns": [
+            "tenant_id"
+          ],
+          "referencedTable": "tenants",
+          "referencedColumns": [
+            "id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "receiving_drafts_owner_id_tenant_id_fkey",
+          "line": 9,
+          "table": "receiving_drafts",
+          "columns": [
+            "owner_id",
+            "tenant_id"
+          ],
+          "referencedTable": "users",
+          "referencedColumns": [
+            "id",
+            "tenant_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        },
+        {
+          "name": "receiving_draft_revisions_draft_id_tenant_id_owner_id_fkey",
+          "line": 18,
+          "table": "receiving_draft_revisions",
+          "columns": [
+            "draft_id",
+            "tenant_id",
+            "owner_id"
+          ],
+          "referencedTable": "receiving_drafts",
+          "referencedColumns": [
+            "id",
+            "tenant_id",
+            "owner_id"
+          ],
+          "onDelete": "RESTRICT",
+          "onUpdate": "CASCADE",
+          "deferrableInitiallyDeferred": false
+        }
+      ],
+      "existingTestRefs": [
+        "test-receiving-drafts",
+        "test-receiving-controls"
+      ],
+      "missingCoverage": [
+        "Inspected native suite covers CAS/private reads/FKs/revision UPDATE/DELETE and zero stock side effects, not populated upgrade, TRUNCATE/role grants or formal receipt posting."
+      ],
+      "evidenceStatus": "SOURCE_INSPECTION_ONLY",
+      "runtimeStatus": "NOT_RUN"
+    }
+  ],
+  "testEvidence": [
+    {
+      "id": "test-readiness",
+      "path": "systems/enterprise-admin/backend/src/lib/__tests__/readiness.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/lib/__tests__/readiness.test.ts",
+        "gitBlobSha": "e22f9a62612fa6c0926565425d96f234f9008c8a",
+        "sha256": "cdede32f9dc7ff4a0b3a84f65c20372265fca44460f863ae10888fa87a36a2ef"
+      },
+      "scope": "Mocked query unit contract, not migration engine/database execution",
+      "assertions": [
+        {
+          "line": 11,
+          "text": "All expected migration names with finished/non-rolled-back rows produce ready."
+        },
+        {
+          "line": 15,
+          "text": "Missing expected migration and rolled-back-only history produce MIGRATIONS_PENDING."
+        },
+        {
+          "line": 23,
+          "text": "Rolled-back failed attempt followed by successful retry is accepted."
+        },
+        {
+          "line": 28,
+          "text": "Unfinished unrolled-back history produces MIGRATION_FAILED even if another row succeeded."
+        },
+        {
+          "line": 33,
+          "text": "Database errors are reduced to DATABASE_UNAVAILABLE; missing history becomes MIGRATION_HISTORY_UNAVAILABLE."
+        }
+      ],
+      "limitations": [
+        "Mocks contain synthetic migration names, not all 16 real SQL effects.",
+        "No role/DDL privilege test, package checksum comparison or seed execution."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-health",
+      "path": "systems/enterprise-admin/backend/src/__tests__/health.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/health.test.ts",
+        "gitBlobSha": "56200f5a4b03acad7817db9af9108663bcd49be3",
+        "sha256": "57de981bb040fe3e5bcab6a9c9851f9a5e6d5da6ee9ef2d8aac992f0cdf4480d"
+      },
+      "scope": "Supertest HTTP route assertions with mocked readiness",
+      "assertions": [
+        {
+          "line": 10,
+          "text": "Liveness stays 200 while readiness returns 503 DATABASE_UNAVAILABLE and no-store."
+        },
+        {
+          "line": 20,
+          "text": "Ready dependency state yields 200."
+        },
+        {
+          "line": 26,
+          "text": "Pending/failed/missing migration history/files and timeout each yield fixed 503 code."
+        }
+      ],
+      "limitations": [
+        "Does not launch Docker CMD or apply a migration."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-health-controls",
+      "path": "systems/enterprise-admin/backend/scripts/health-readiness/ci.test.mjs",
+      "source": {
+        "path": "systems/enterprise-admin/backend/scripts/health-readiness/ci.test.mjs",
+        "gitBlobSha": "628259d795a6b73097b32ff2731b4dc1a8c8b72d",
+        "sha256": "c2b12ba0ffa49b9ae4894af946a3de5e880bd9db971812fd70e258de5c2747e7"
+      },
+      "scope": "Pure disposable-service guard controls",
+      "assertions": [
+        {
+          "line": 10,
+          "text": "Only the identified disposable PostgreSQL service is accepted."
+        },
+        {
+          "line": 11,
+          "text": "Different container/database/image, host networking, privilege, mounts and unexpected trust are rejected."
+        }
+      ],
+      "limitations": [
+        "Guard controls are not real app/PG acceptance; not executed in this task."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "harness-health-image",
+      "path": "systems/enterprise-admin/backend/scripts/health-readiness/verify.cjs",
+      "source": {
+        "path": "systems/enterprise-admin/backend/scripts/health-readiness/verify.cjs",
+        "gitBlobSha": "7ecd710ab7db875b3485840af04e71217635fb2f",
+        "sha256": "5043b295fb58b6778536f7021e5e00e0da95d5762be51598cc8bb0f8ae8750a1"
+      },
+      "scope": "Opt-in owned-database final-image verification harness source",
+      "assertions": [
+        {
+          "line": 119,
+          "text": "Asserts Node22/Alpine, explicit synthetic fixture name, no ambient DATABASE_URL/.env, exact DB identity and initially zero tables."
+        },
+        {
+          "line": 133,
+          "text": "Runs migrate deploy against only the owned empty fixture; asserts migration process status zero."
+        },
+        {
+          "line": 146,
+          "text": "Launches compiled dist/server.js and expects ready 200."
+        },
+        {
+          "line": 158,
+          "text": "Pending/missing packaged files and failed/rolled-back history produce readiness 503 and recovery back to 200."
+        },
+        {
+          "line": 185,
+          "text": "Database outage leaves liveness 200/readiness 503; blocked startup exits 1 without listening."
+        },
+        {
+          "line": 193,
+          "text": "Missing required configuration exits 1; output is checked for canary leakage; tenant/user counts stay zero."
+        }
+      ],
+      "limitations": [
+        "Harness overrides image entrypoint and explicitly migrates fixture before launching node; it does not validate default Docker CMD migration-on-restart separation.",
+        "Covers empty installation and health fault behavior, not all populated upgrades, seed, drift repair, runtime/migration role separation or WAN-offline acceptance."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-inventory-receipt",
+      "path": "systems/enterprise-admin/backend/src/__tests__/inventory-receipt.integration.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/inventory-receipt.integration.test.ts",
+        "gitBlobSha": "33661daa225c38900c30e3b1dd741f16696be799",
+        "sha256": "4422a4f1b13504a7af246d742f185ade4d556c6a636e85fa1d7766bc28bf5471"
+      },
+      "scope": "Existing real API/Prisma/PG receipt service regression source; no runtime result collected",
+      "assertions": [
+        {
+          "line": 35,
+          "text": "Setup expects the seeded demo administrator can log in; this is an indirect fixture assumption, not a seed invocation or replay test."
+        },
+        {
+          "line": 74,
+          "text": "Receipt increases aggregate quantity, creates quarantined batch and durable IN movement together."
+        },
+        {
+          "line": 81,
+          "text": "Duplicate receipt conflict leaves original quantity/movement count unchanged."
+        },
+        {
+          "line": 98,
+          "text": "Runtime product/batch services reject direct quantity edits and unbatched positive opening stock."
+        },
+        {
+          "line": 121,
+          "text": "Cross-tenant receipt is rejected."
+        },
+        {
+          "line": 132,
+          "text": "Movement persistence failure rolls back product, batch and movement writes."
+        },
+        {
+          "line": 140,
+          "text": "Fresh client reads receipt cost/batch provenance; unaudited cost correction is rejected."
+        },
+        {
+          "line": 152,
+          "text": "SQL receipt FK and positive-quantity constraints reject crossed identity/deletion/zero quantity."
+        },
+        {
+          "line": 180,
+          "text": "CSV metadata import creates zero stock and no fabricated lot."
+        }
+      ],
+      "limitations": [
+        "These services intentionally differ from direct seed upserts; passing them would not validate seed reruns, unscoped reads, partial failure or stock resets.",
+        "Existing test setup requires database/auth configuration; no whole-seed assertion."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-stock-contention",
+      "path": "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts",
+        "gitBlobSha": "40aee4f15da2d8ec9ab39323c725e8c7e85e253f",
+        "sha256": "e1d2ea73d986ac6cf83a46cc733866469b6d8a8ad1f0074fef858d54e5fde006"
+      },
+      "scope": "Existing PostgreSQL service contention/FEFO/allocation source",
+      "assertions": [
+        {
+          "line": 145,
+          "text": "Both POS and general order persist two-lot allocations and conserved aggregate/batch remainder."
+        },
+        {
+          "line": 173,
+          "text": "Expired, expiry-day, quarantined and blocked lots are excluded."
+        },
+        {
+          "line": 234,
+          "text": "Injected later allocation failure rolls back order, product/batch debit, movement and prior allocation."
+        },
+        {
+          "line": 246,
+          "text": "Unreviewed batches default to QUARANTINE."
+        },
+        {
+          "line": 257,
+          "text": "Allocation FK identity, positive quantity and referenced batch deletion restrictions are exercised."
+        },
+        {
+          "line": 285,
+          "text": "Money-only refund leaves physical stock, movements and allocations unchanged."
+        },
+        {
+          "line": 365,
+          "text": "Only one racing buyer obtains the final unit."
+        },
+        {
+          "line": 461,
+          "text": "Foreign-tenant product is rejected without debit."
+        }
+      ],
+      "limitations": [
+        "Does not invoke standalone seed or assert complete migration upgrade/backfill/cascade matrix.",
+        "Hooks inject controlled service faults; source existence is not current native execution evidence."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-checkout-command",
+      "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+        "gitBlobSha": "8b3b865b5a0b8ba8470a0b1a7af2aa1629cd9518",
+        "sha256": "6fed80cf143bfa298f624d086fdd78583362f2b307c170c88ff577fc9ec6de8c"
+      },
+      "scope": "Existing PostgreSQL command/HTTP/process fault regression source",
+      "assertions": [
+        {
+          "line": 123,
+          "text": "Concurrent identical command copies return one original sale; one order/payment/movement/allocation."
+        },
+        {
+          "line": 148,
+          "text": "Changed committed payload returns HTTP 409 without extra writes."
+        },
+        {
+          "line": 180,
+          "text": "Lookup/replay is tenant-isolated under existing POS permission."
+        },
+        {
+          "line": 226,
+          "text": "Injected failure after each listed persistence stage rolls all sale writes back; original command can be retried."
+        },
+        {
+          "line": 236,
+          "text": "PostgreSQL payment insertion rejection rolls back order/items/stock/command."
+        },
+        {
+          "line": 249,
+          "text": "Confirmed process crash before commit leaves no sale; new process recovers."
+        },
+        {
+          "line": 263,
+          "text": "Lost response after commit replays stored result once after process restart."
+        },
+        {
+          "line": 277,
+          "text": "Cross-tenant order reference and mismatched JSON result.id are rejected by SQL constraints."
+        }
+      ],
+      "limitations": [
+        "No direct seed order call or old production database upgrade is tested by this file.",
+        "Protocol behavior is stronger than bare checkout_commands DDL, which contains no general UPDATE/DELETE immutability trigger."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-order-sequence",
+      "path": "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+        "gitBlobSha": "4e9a43602c3e115200c101bb290f89f10c547399",
+        "sha256": "30378b1d240275497c06c0f0951aeabb1e23acfa4034e171023812039e6cdb16"
+      },
+      "scope": "Existing PostgreSQL order counter and command protocol source",
+      "assertions": [
+        {
+          "line": 90,
+          "text": "Concurrent different commands receive distinct order numbers."
+        },
+        {
+          "line": 97,
+          "text": "Commands on opposite Taipei dates use separate counters and business dates."
+        },
+        {
+          "line": 114,
+          "text": "Replay retains original number after midnight/price/shift changes; fresh client sees one counter sequence."
+        },
+        {
+          "line": 129,
+          "text": "Late failure rolls back number claim and all sale writes."
+        },
+        {
+          "line": 146,
+          "text": "99999 is allowed once; overflow rejects without wrapping or partial sale."
+        },
+        {
+          "line": 157,
+          "text": "Tenants can share a printed number; same-tenant duplicate is rejected."
+        },
+        {
+          "line": 182,
+          "text": "Legacy business_date NULL rows are read using persisted timestamps at Taipei boundaries without rewrite."
+        }
+      ],
+      "limitations": [
+        "Service tests are not the populated SQL upgrade harness; seed bypasses numbering entirely."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "harness-order-sequence-upgrade",
+      "path": "systems/enterprise-admin/backend/scripts/order-sequence-migration.mjs",
+      "source": {
+        "path": "systems/enterprise-admin/backend/scripts/order-sequence-migration.mjs",
+        "gitBlobSha": "d0ddb3d75f176c969bef383cfe37c9f2de645c24",
+        "sha256": "bfc826e3070ac61cf9e13f3235e14cad4ce371a50596ec42084c2435969bd1c5"
+      },
+      "scope": "Owned synthetic schema SQL migration harness source",
+      "assertions": [
+        {
+          "line": 19,
+          "text": "Applies each migration preceding the Taipei sequence migration as setup."
+        },
+        {
+          "line": 30,
+          "text": "Read-only diagnostics expose duplicate IDs without changing old-order fingerprint."
+        },
+        {
+          "line": 32,
+          "text": "Duplicate migration attempt rejects with no order changes and no partial business_date/counter DDL."
+        },
+        {
+          "line": 51,
+          "text": "Successful upgrade retains every old order field and leaves all old business_date values NULL."
+        },
+        {
+          "line": 54,
+          "text": "Counter values preserve printed date, tenant maximum and overflow exhaustion; malformed inputs are reported."
+        },
+        {
+          "line": 59,
+          "text": "New unique index and counter bound reject invalid writes."
+        },
+        {
+          "line": 65,
+          "text": "Drops only owned schema and verifies its absence."
+        }
+      ],
+      "limitations": [
+        "Setup application of earlier migrations is not individual per-migration semantic proof.",
+        "Finite fixture does not establish generic rerunnable interrupted migration, role separation, production execution or all pathological data."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-order-sequence-controls",
+      "path": "systems/enterprise-admin/backend/scripts/order-sequence-ci.test.mjs",
+      "source": {
+        "path": "systems/enterprise-admin/backend/scripts/order-sequence-ci.test.mjs",
+        "gitBlobSha": "3c8b1f4a105a4cce08cc21652051199496507bf9",
+        "sha256": "2159c03535e51534079e3f6fab73eff66713c85773b7ce19a98fb72d9e9f98f5"
+      },
+      "scope": "Pure source/service/report guard controls",
+      "assertions": [
+        {
+          "line": 7,
+          "text": "Only equal exact synthetic URLs are accepted."
+        },
+        {
+          "line": 16,
+          "text": "Actual native-file guard rejects unsafe connection variants."
+        },
+        {
+          "line": 21,
+          "text": "Service guard rejects wrong binding/network/mount/privilege/identity."
+        },
+        {
+          "line": 49,
+          "text": "Report validation rejects skipped, omitted, failed, substituted or wrong-source cases."
+        }
+      ],
+      "limitations": [
+        "No PostgreSQL migration or application execution here."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-batch-change-schema",
+      "path": "systems/enterprise-admin/backend/src/__tests__/batch-change-schema.integration.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/batch-change-schema.integration.test.ts",
+        "gitBlobSha": "5d4dacf5e2ccc8a7b8d70227265e954b1767ec2e",
+        "sha256": "7f2e336bf2737f1b7701bef8ddf0e7eebab27dd984969a3b0d0f458daaaa4923"
+      },
+      "scope": "Explicit-opt-in PostgreSQL audit schema/service contract source",
+      "assertions": [
+        {
+          "line": 33,
+          "text": "Composite tenant/product/batch/actor FK mismatches reject with zero inserted audits, including legacy crossed batches."
+        },
+        {
+          "line": 45,
+          "text": "Application tenant extension rejects missing context and scopes audit reads/writes."
+        },
+        {
+          "line": 54,
+          "text": "Malformed reason, snapshot shape/precision and operation mismatch are rejected."
+        },
+        {
+          "line": 72,
+          "text": "INITIAL_RELEASE records nonexistence, exact decimal string and DB creation time."
+        },
+        {
+          "line": 92,
+          "text": "TRUNCATE and UPDATE reject; referenced parent deletion/identity rewrite rejects; history remains equal."
+        },
+        {
+          "line": 107,
+          "text": "Database audit-insert failure rolls back correction or initial receipt stock/batch/movement writes."
+        }
+      ],
+      "limitations": [
+        "Native suite is skipped without its explicit database opt-in; no execution collected.",
+        "Does not require every independent seed batch write to emit audit or establish DB-role privilege policy."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-product-packages",
+      "path": "systems/enterprise-admin/backend/src/__tests__/product-packages.integration.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/product-packages.integration.test.ts",
+        "gitBlobSha": "e131330133d0a15703df2fb2a604643c08e5232a",
+        "sha256": "e59d84de8192d4005574e14076d0814176a8fa78b932eeaed9107289ed93457b"
+      },
+      "scope": "Explicit-opt-in native PostgreSQL and real HTTP package contract source",
+      "assertions": [
+        {
+          "line": 64,
+          "text": "Literal identifiers and namespaces retain case/whitespace/leading-zero behavior and tenant separation."
+        },
+        {
+          "line": 99,
+          "text": "Retired history persists and revision replacement creates a new row."
+        },
+        {
+          "line": 227,
+          "text": "Concurrent stale saves have one winner and one current revision."
+        },
+        {
+          "line": 236,
+          "text": "Cross-tenant product/actor/revision FK attempts reject."
+        },
+        {
+          "line": 243,
+          "text": "Revision UPDATE/DELETE, identifier UPDATE/late INSERT and reviewed stock-unit replacement reject."
+        },
+        {
+          "line": 254,
+          "text": "Authenticated permissions and tenant-isolated HTTP maintenance/lookup/confirmation are checked."
+        },
+        {
+          "line": 272,
+          "text": "Unknown conversion/stale resolution fail without business stock/order/payment/movement effects."
+        }
+      ],
+      "limitations": [
+        "Native suite is skipped without explicit owned database opt-in; not executed here.",
+        "No explicit TRUNCATE guard test or populated migration upgrade proof in this file."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-receiving-drafts",
+      "path": "systems/enterprise-admin/backend/src/__tests__/receiving-drafts.integration.test.ts",
+      "source": {
+        "path": "systems/enterprise-admin/backend/src/__tests__/receiving-drafts.integration.test.ts",
+        "gitBlobSha": "5c318e8fe3fed794740390c19ae8cdd35523176a",
+        "sha256": "22dce41ee3246c097c05b3b01c70bfbf89f7c2c1eaf39b87725c8efe881e9fa1"
+      },
+      "scope": "Explicit-opt-in native PostgreSQL and real authenticated HTTP private-draft source",
+      "assertions": [
+        {
+          "line": 50,
+          "text": "Incomplete private draft and revision one persist together."
+        },
+        {
+          "line": 55,
+          "text": "Concurrent create/CAS has one winner and retains immutable revisions."
+        },
+        {
+          "line": 70,
+          "text": "Cross-tenant and same-tenant different-owner reads/updates/history return private 404/empty list."
+        },
+        {
+          "line": 101,
+          "text": "Composite owner/tenant FKs reject; historical revision UPDATE/DELETE reject append-only."
+        },
+        {
+          "line": 123,
+          "text": "Snapshot insert failure rolls back the head CAS."
+        },
+        {
+          "line": 130,
+          "text": "Stock/order/payment/movement snapshot remains unchanged."
+        }
+      ],
+      "limitations": [
+        "Native suite is skipped without explicit owned database opt-in; not executed here.",
+        "Draft CAS belongs to the service, not a SQL migration trigger; no TRUNCATE privilege or formal receiving acceptance proven."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    },
+    {
+      "id": "test-receiving-controls",
+      "path": "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.test.mjs",
+      "source": {
+        "path": "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.test.mjs",
+        "gitBlobSha": "c6e2ac719cb7601729f29c5ce23665c37e0c68b2",
+        "sha256": "16e9a69e7da679dfe4c45716f6aa7a777123877ccc7a34971b65dd12f560d21b"
+      },
+      "scope": "Pure connection/service/report/cleanup guard test source",
+      "assertions": [
+        {
+          "line": 11,
+          "text": "Rejects non-exact URL pair and unsafe service identity/bindings."
+        },
+        {
+          "line": 26,
+          "text": "Requires exactly ten named native cases with no skips/duplicates."
+        },
+        {
+          "line": 34,
+          "text": "Actual native source guard is probed before Prisma import."
+        },
+        {
+          "line": 39,
+          "text": "Cleanup source retains append-only snapshots and uses only the owned DB drop; no TRUNCATE/DISABLE TRIGGER/DELETE FROM."
+        }
+      ],
+      "limitations": [
+        "Control tests do not execute SQL migration or actual native acceptance here."
+      ],
+      "result": "NOT_RUN",
+      "associationBasis": "Curated source inspection; no execution result imported from historical receipts."
+    }
+  ],
+  "migrationLock": {
+    "source": {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/migration_lock.toml",
+      "gitBlobSha": "044d57cdb0d5b5bff3475112359a4ee70439bf78",
+      "sha256": "99836963713b4f5b269ad49af0ed3d7b0b2e336115c2f92dc9ac683d139d0900"
+    },
+    "provider": "postgresql",
+    "effects": [
+      "Prisma migration engine provider declaration; no SQL, DML, schema mutation or runtime invocation."
+    ],
+    "ownership": [
+      "platform"
+    ],
+    "destination": [
+      "AR-20"
+    ],
+    "checkIds": [
+      "AR-20-AC01",
+      "AR-20-AC02"
+    ],
+    "runtimeStatus": "NOT_RUN"
+  },
+  "boundedInspectionSummary": {
+    "migrationSqlCount": 16,
+    "seedCallCount": 25,
+    "testSourceCount": 14,
+    "explicitBackfillFiles": [
+      "20261009010000_taipei_order_sequence"
+    ],
+    "dataAffectingDdlExamples": [
+      "Existing batch status becomes QUARANTINE by column default.",
+      "Legacy monetary values are cast to DECIMAL(12,4).",
+      "Earlier migration order discount/type/payment-method defaults affect existing rows."
+    ],
+    "limits": "Association lists report tests read, not all repository tests. Generic clean-schema application is not individual domain acceptance. Semantics are curated and require independent review."
+  }
+}

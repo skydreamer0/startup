@@ -1,0 +1,1490 @@
+{
+  "sourceCommit": "d281e3039899fdcbad59d9c30f972a953b7a30d6",
+  "sourceTree": "5dab462c41563b49f8f1c06e0e85c752ea4bd505",
+  "baseLocalCommit": "f516b8ba15ce9b863416bfa31b0091717490bd30",
+  "baseRemoteCommit": "a8db89cb75ad2062f979c97194ba09acdcf977f9",
+  "baseTree": "e7c363ab792d47917b909cc799c55b2586cdb7b3",
+  "leafCount": 1493,
+  "changedFiles": [
+    "scripts/architecture/http-writers-mutation.test.mjs",
+    "scripts/architecture/http-writers-spec.mjs",
+    "scripts/architecture/http-writers-verify.mjs",
+    "scripts/architecture/http-writers-verify.test.mjs"
+  ],
+  "unchangedLeaves": 1489,
+  "materializedFiles": 365,
+  "missingMaterializedLeaves": 1128,
+  "worktreeMismatchReadCommittedObject": [
+    "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/README.md"
+  ],
+  "pins": {
+    "count": 27,
+    "valuesAndOrderEqual": true,
+    "otherSpecFieldsEqual": true,
+    "actualSourceBytesMatchAll": true,
+    "flaggedEntryIsSourceFingerprint": true,
+    "scalarValues": "NOT_RECORDED"
+  },
+  "records": [
+    {
+      "path": ".github/pull_request_template.md",
+      "gitBlob": "3bb81cdcae1f626699400a45f6979e94016c4ee3"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "gitBlob": "7936804b8635188a691fe1eaa2eaa4d8d268e7f8"
+    },
+    {
+      "path": "AGENTS.md",
+      "gitBlob": "810bbfc9e4343ec9a43e107e3863105031f365f2"
+    },
+    {
+      "path": "CONTEXT-MAP.md",
+      "gitBlob": "7057286e27f60fe56f6a5b698248191cb5a6257e"
+    },
+    {
+      "path": "docs/agents/domain.md",
+      "gitBlob": "0c5eaf7df75f5639885d9958e816414c64e4ac6b"
+    },
+    {
+      "path": "docs/agents/navigation.md",
+      "gitBlob": "9e404a3eae48fd90c359ad1f28de4623c400cdbd"
+    },
+    {
+      "path": "scripts/architecture/http-writers-contract.test.mjs",
+      "gitBlob": "a0fdc9e30b653ec54c2771c9af66b98116c1edb3"
+    },
+    {
+      "path": "scripts/architecture/http-writers-mutation.test.mjs",
+      "gitBlob": "51d09f42876e25bab82ce3fd56e47d578fddaa14"
+    },
+    {
+      "path": "scripts/architecture/http-writers-spec.mjs",
+      "gitBlob": "af8aa75b30e757b6528976757e6ef1a5c82bbb4f"
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.mjs",
+      "gitBlob": "ae51324e1603ca86840e4edb8cb3b00fe2788c71"
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.test.mjs",
+      "gitBlob": "419c9f44ca37aab370e189bca3e7b30cdd0381bb"
+    },
+    {
+      "path": "scripts/architecture/plan.mjs",
+      "gitBlob": "406f08fd2f1994cf4f069e9717f0fea9284825e8"
+    },
+    {
+      "path": "scripts/architecture/plan.test.mjs",
+      "gitBlob": "d4ff8c4ecc8584f9774424b509c8178b9231fa95"
+    },
+    {
+      "path": "scripts/architecture/seed-migrations.test.mjs",
+      "gitBlob": "c032f1d2efcd4fbbdb261a9ac90896797ec05f17"
+    },
+    {
+      "path": "scripts/architecture/test_print_inventory.py",
+      "gitBlob": "641cc59fc121f248cf54a7a35cbd3da4060b8288"
+    },
+    {
+      "path": "scripts/architecture/test_print_worker_controls.py",
+      "gitBlob": "34fc718cedb10483645c7cb5ff86373d22dd4b85"
+    },
+    {
+      "path": "scripts/architecture/verify-plan.mjs",
+      "gitBlob": "c0710b7ca8c310dca6326275022d274b1a00566f"
+    },
+    {
+      "path": "scripts/architecture/verify-print-inventory.py",
+      "gitBlob": "cc6d46efed0eff1250fd72fdcaf1ef02d41166ce"
+    },
+    {
+      "path": "scripts/architecture/verify-seed-migrations.mjs",
+      "gitBlob": "10f289bba79d5280e36bd5661e408debd8d0156d"
+    },
+    {
+      "path": "scripts/ocr-evaluation/evaluator.py",
+      "gitBlob": "69d8248589b187c96b72bed106c6495398f7bd83"
+    },
+    {
+      "path": "scripts/ocr-evaluation/tests/test_evaluator.py",
+      "gitBlob": "55a4aa49c0f28e28b12395579ff59104e4927f36"
+    },
+    {
+      "path": "scripts/ocr-evaluation/verify.py",
+      "gitBlob": "4d96c88c22799b39bb21087b69961292500e811c"
+    },
+    {
+      "path": "scripts/validate-agent-context.sh",
+      "gitBlob": "93950306f5479f97f2f2aa86c2ef48166c5bfbff"
+    },
+    {
+      "path": "systems/enterprise-admin/CONTEXT.md",
+      "gitBlob": "84549529bbda1de703d8f864ccef496966c2d5e3"
+    },
+    {
+      "path": "systems/enterprise-admin/ROADMAP.md",
+      "gitBlob": "34ca9d259c10c9ebee5cb532fb8d02e660964ee6"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+      "gitBlob": "dda0f83aa1c6cc886f1c93da633a11a2c34928db"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/__tests__/MedicineLabelDialog.test.tsx",
+      "gitBlob": "d66c2e93afd78308edbafeb71a5ea984696326d6"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/components/MedicineLabelDialog.tsx",
+      "gitBlob": "94ac550bba2103c682a28ca29ba4deaa2270aebc"
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/services/localLabelPrinter.ts",
+      "gitBlob": "e1a84381550d4e5b62e6f33e68452b2ae309a925"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/Dockerfile",
+      "gitBlob": "4cb36d0360e945a2e1b0a7d924161aaa84af23b8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/MODULE.md",
+      "gitBlob": "5db09717f98624217a67b8e311d9d882e8e628de"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "gitBlob": "12d264cee6129a28e8757b5dc90b395fe0b74f93"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+      "gitBlob": "88db581bd70d662c20b6beb3930372e39c4dbe3d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+      "gitBlob": "0e7c185d5caf60681d43dc69a751584fd1ab29a6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+      "gitBlob": "054ae24a18346987150b0fddcafadfd2bf45cffc"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+      "gitBlob": "ccd1c51cbc019617c1ba43f0d9a9b00dfa7ad8ff"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+      "gitBlob": "6e734f1cd87f35d52465fb40c858026efabda9f6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+      "gitBlob": "92dd80ac684175fe45c91245fed7387f32f35864"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+      "gitBlob": "65e6187f975d9dea84fce77130cbcdff5ec2f470"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+      "gitBlob": "4419b8546b3676634f512861327dc3cd135bd9c0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+      "gitBlob": "4b7de729e72c255b16a6483684e335a227328c26"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+      "gitBlob": "7e6a14d8e9d15a8d0c87cce5b6821618416aaae0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+      "gitBlob": "c6b8ae4db9041a54502a299ae4218f9ac8c0a2db"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+      "gitBlob": "50bc81517a849b0172827db05831925825eb9de4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+      "gitBlob": "83fd6432ca71a7e8e37ad003de8796bab0af6475"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+      "gitBlob": "b522e08515139a402f496cc7001febbdb3ed864f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+      "gitBlob": "8dd76439f27c290490378389a15785cc284cce4e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+      "gitBlob": "84e643e73335bb0f96b9cc625db7f43d1b143827"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/migration_lock.toml",
+      "gitBlob": "044d57cdb0d5b5bff3475112359a4ee70439bf78"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "gitBlob": "c2f5c037c1cdd6c4f89e56de24e015ecc5ecd830"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/seed.ts",
+      "gitBlob": "fb0861b034860e72fbbd9814238a09212c605737"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/health-readiness/ci.test.mjs",
+      "gitBlob": "628259d795a6b73097b32ff2731b4dc1a8c8b72d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/health-readiness/verify.cjs",
+      "gitBlob": "7ecd710ab7db875b3485840af04e71217635fb2f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/medicine-label-ci.requirements.txt",
+      "gitBlob": "5df32e05762481f2ddbee33019ded20f086886d6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/order-sequence-ci.test.mjs",
+      "gitBlob": "3c8b1f4a105a4cce08cc21652051199496507bf9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/order-sequence-migration.mjs",
+      "gitBlob": "d0ddb3d75f176c969bef383cfe37c9f2de645c24"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs",
+      "gitBlob": "6f84aef4718bcf0956873bf42d9be167ed8a62cd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.test.mjs",
+      "gitBlob": "c6e2ac719cb7601729f29c5ce23665c37e0c68b2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/accounting.provider-factory.test.ts",
+      "gitBlob": "f9dcbbdca1ecf91376c170c4b62d6e74a989e1a9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/accounting.service.test.ts",
+      "gitBlob": "48a9f110c0ec5056e99ba34fc8d33299d111eebf"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/batch-change-schema.integration.test.ts",
+      "gitBlob": "5d4dacf5e2ccc8a7b8d70227265e954b1767ec2e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "gitBlob": "8b3b865b5a0b8ba8470a0b1a7af2aa1629cd9518"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/health.test.ts",
+      "gitBlob": "56200f5a4b03acad7817db9af9108663bcd49be3"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/inventory-receipt.integration.test.ts",
+      "gitBlob": "33661daa225c38900c30e3b1dd741f16696be799"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/line.service.test.ts",
+      "gitBlob": "3cd878db17f9d5d44bce7efaf28e9bf75cf590d1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+      "gitBlob": "4e9a43602c3e115200c101bb290f89f10c547399"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/product-packages.integration.test.ts",
+      "gitBlob": "e131330133d0a15703df2fb2a604643c08e5232a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/receiving-drafts.integration.test.ts",
+      "gitBlob": "5c318e8fe3fed794740390c19ae8cdd35523176a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts",
+      "gitBlob": "40aee4f15da2d8ec9ab39323c725e8c7e85e253f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/app.ts",
+      "gitBlob": "19c7b50dada0cb5f337c5567d0926bb04ad01622"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/config/env.ts",
+      "gitBlob": "f88563754519c3ada4ca366a7893cbd5be425c83"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/__tests__/readiness.test.ts",
+      "gitBlob": "e22f9a62612fa6c0926565425d96f234f9008c8a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/admin-route-policy.ts",
+      "gitBlob": "1988cde436bff1d9cb6ad32cb318d26a76b9d0da"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/batch-expiry.ts",
+      "gitBlob": "ca4a648f0ead4eb334a0ec476a56ae72af6cb97a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/business-day.ts",
+      "gitBlob": "03f39c906d1dfb15dbf7a5a1b43ec6936495e2d2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/errors.ts",
+      "gitBlob": "0df064580f552bbecebf509eefef7304de0e7bc3"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "gitBlob": "1e890535b862f66456d0f56bd3ec31a175230d82"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/jwt.ts",
+      "gitBlob": "4100e0b234db2e741b1b24a5c315311d233b1a56"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "gitBlob": "c69e60907251dfe90717bf2a60891f18592aaa4f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/password.ts",
+      "gitBlob": "9ea5d908bb59ee0a367ebd6506994373e0128569"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/plan-features.ts",
+      "gitBlob": "c267fe54378cba859c2a5111a9d735d7baffe08e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+      "gitBlob": "9f61e6a37b9a78840d7b7a033eb59746d05fe2f6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/product-import-preview.ts",
+      "gitBlob": "e6645d200e1dc81aee65d33d32a7655307d6fb06"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "gitBlob": "6aa55081e30d9af09ebc63ba36ca6ad15cdec002"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/route-policy.ts",
+      "gitBlob": "eab747c0b727c7b792ae51294f41ff3605af49c5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/sale-stock.ts",
+      "gitBlob": "a9ea1b364fc67b6ae114dc9e3a6ec0b7d8d3b46d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+      "gitBlob": "1f3d3d13ab49d1ecf9588f4637fe56f7239b0081"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+      "gitBlob": "80b74559bda0423212faa0888b54536b7a228f6c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant.context.ts",
+      "gitBlob": "6fb6862af9dbb00a4306ab4645fbd50c97134be7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+      "gitBlob": "6eda759e123eb8f149b31d370b9e795ec6927b18"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/error.middleware.ts",
+      "gitBlob": "fbbe542111f7108351d29a1e2900ee5b63aaf1c4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/plan.middleware.ts",
+      "gitBlob": "30b2206770f5a22409fc78a5469a96073fbaaa39"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+      "gitBlob": "0ccca2b939167e8afd0532435d216c65668458e6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+      "gitBlob": "e02ee76f314b3bb5fb78f63db2e6155e0dd3c04a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+      "gitBlob": "c75a0bb00d7d0e4d064ebb2c35680ad7ba430faf"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+      "gitBlob": "6017ab737570fa3dcd75f0ef4c23380b614ffc62"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.controller.ts",
+      "gitBlob": "05a4a57314855ffc18aaf0d967c1aa19f276a229"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "gitBlob": "8ff3610b5fe8952af17626e70de82c5b13f5b4f9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.service.ts",
+      "gitBlob": "d9639341622bdc069e7658af6219b255113991d2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/provider.factory.ts",
+      "gitBlob": "f35c89f670e2da4651742d82d8d87716984ff9b1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/mock.provider.ts",
+      "gitBlob": "d07567b68e5e6ac89707a0c563919af02ef13583"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/quickbooks.provider.ts",
+      "gitBlob": "e86796036a15138a6c4fe6640db72c5ed7803d1c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/types.ts",
+      "gitBlob": "3b955d30bf6539e26f3b3b0222fbd9338ab454a5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/xero.provider.ts",
+      "gitBlob": "33608c9c071da5b9e16afa2858cb8d79ebfddd7c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.controller.ts",
+      "gitBlob": "6808f7d357db8d9469e2d7c9aa88f2bb6557810d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "gitBlob": "bcbe8796af1fc20350c00f2a163350c6586c2c75"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.shared.ts",
+      "gitBlob": "506e8f1d1c11475a7bcf49f3d7c40c431e4aa21f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.types.ts",
+      "gitBlob": "bbb8c67bddff896ba2ebf1e1a1aef645cae203c8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.ts",
+      "gitBlob": "824ad08f78abc610ce13e89b831ee79f2528eccd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/operations-analytics.service.ts",
+      "gitBlob": "97218be0f92a3693538ef87adbf0fdaff4528f56"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+      "gitBlob": "cfdd38b9aa939207e70f305304a69225607260b7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.controller.ts",
+      "gitBlob": "3b318b2290c76dfe7210f3e85fa0ad4778e230b3"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.routes.ts",
+      "gitBlob": "4253b228c14c685df78462883d9e7d145d32105f"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.schema.ts",
+      "gitBlob": "e4b8cd85d416f149b7447cb11e2db673130f950d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.service.ts",
+      "gitBlob": "ea4936860a2d50c3f7b5efb4d203c7bcb81a542b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.controller.ts",
+      "gitBlob": "704511030d8fe89174578b469750ae608943068b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "gitBlob": "f7b31216dc519e93edc7006088c757135cef2c7d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.schema.ts",
+      "gitBlob": "d7f1901cbe4803fd002b70c975accc515f94e5f5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.service.ts",
+      "gitBlob": "180db977d793fff10cf47df20828e3c06f90cb78"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.controller.ts",
+      "gitBlob": "43112264457c968ca6d99a0730be37ca0f2d1bde"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "gitBlob": "255715df8acd05c79a116518230230405511e0a4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.schema.ts",
+      "gitBlob": "7e7e32a3bba5938ad0b8055a68ead6875a00802b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "gitBlob": "2fb143305834093c4652afab4b37dcd490973eeb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.controller.ts",
+      "gitBlob": "bc4291982d8199386a8951cff3f875c209cfe6f2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "gitBlob": "282a01d47114d5a32f3d254babab7771763b66c4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.schema.ts",
+      "gitBlob": "8a5c0c003084449c7aeb69dca867bc6ed754ad17"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "gitBlob": "ce2e651d606febf87d07e960cacfa9fccd872835"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.controller.ts",
+      "gitBlob": "a35ceaa45a7f53a1291817fde3c8a95098744511"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.routes.ts",
+      "gitBlob": "2367f44ed41e0de6b9d8d76f86c29f0084958ceb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.service.ts",
+      "gitBlob": "44d38346b47fd5e75982d4e454e6563276420f21"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.controller.ts",
+      "gitBlob": "18adb5ca4fcf83e72c4ec22cf8818de35b14e57a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "gitBlob": "0b4c97efed5129b2a5fc03e7310812e33cc994de"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "gitBlob": "0aacfb505aa4348d700a7172af7df34cd6b03233"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+      "gitBlob": "f0ecf1f8f5edea93490757e731704729ff466cdc"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "gitBlob": "5020ff4306adb36d463615eea597f738b5ae99ed"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "gitBlob": "b2da3bae5ab4d96c54e2f2987f63239ff030a2ec"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.controller.ts",
+      "gitBlob": "53686c39b27e2302a4310e9fe106b8e08605cd0b"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.service.ts",
+      "gitBlob": "ac6dc0d5f0ac0755a081a75ce798d40a85161886"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.controller.ts",
+      "gitBlob": "9747d4b421d5a9a484fecdb286bfced13aa497a9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "gitBlob": "2c630a44ab0a699a5b46484d1ef5d87696158a34"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.schema.ts",
+      "gitBlob": "5e7115f1dfb6bb87a8f06dfadea14dfa537abc60"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "gitBlob": "cbb444886f6dbbd540fab528af24d4f3bafd6adb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages-identifier-policy.ts",
+      "gitBlob": "32c89f5f954db79df6e5af9a117f498cd53abbcb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.controller.ts",
+      "gitBlob": "dcefa1f68c666225b2836bd60667bd2d836a5462"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.schema.ts",
+      "gitBlob": "a6c64f494a5efe26696feaea956840f9ff1b4c1e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "gitBlob": "c8030f72fbc4ab9be549d97bad0f19fba92b38ea"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.controller.ts",
+      "gitBlob": "5694f6426b86e1bd9907ce693db40520a8b9dfd4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.service.ts",
+      "gitBlob": "c406c54ccd9689d5c2a3719c1d9a6394883118f3"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.controller.ts",
+      "gitBlob": "6b854ae87fb3d4ce25e06c17bca62c357e6ebb31"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "gitBlob": "ba3578ce46a78de5609f353341e980b4818c296a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.service.ts",
+      "gitBlob": "5b2228796d310a1313f3e885d7680233f9ab645e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.controller.ts",
+      "gitBlob": "9795cbd3a2615a6f72c325b9ba3d668484472ccb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "gitBlob": "f9e972eefc7234d4791642618bff0efb63a7a6b0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "gitBlob": "be49f6a4c33c7ed2d1b01f757974e53d0352b174"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+      "gitBlob": "f29fe444a0d5136f137f239a2068500f9ea37898"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "gitBlob": "63814fd9fe8933ae050bd8a342066e669547ede6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/order-number.ts",
+      "gitBlob": "ca3d3d96e25730946aab381711409ba913529b14"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.controller.ts",
+      "gitBlob": "094c58bdf22994269dd19b900b437a69969be85e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "gitBlob": "4c311a6fc538fa13f38470a9234cae7380c74bef"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.schema.ts",
+      "gitBlob": "9964d6b2f0569665df6d2becdf16e6f9f62d14e1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-identifier.schema.ts",
+      "gitBlob": "1c96b67ba6ece7c2045f4163ff6eb3572c6a05c0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.controller.ts",
+      "gitBlob": "d44a4823b62aa2cfcdbf504cc54cd1c4a5d0a922"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.schema.ts",
+      "gitBlob": "d9b7dfb4bc5d4ea9be4e6b939e88386ef53576fa"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.service.ts",
+      "gitBlob": "e1edf1356c3cf7445ca084a8e5db9b67566a6056"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/receipt.service.ts",
+      "gitBlob": "59164e1f00fc5bbcda6d2bd6b279c919a13ac5d7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+      "gitBlob": "8a7279c02bb39dcdb3b1b55c356e1576702c1ae9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+      "gitBlob": "c18cd3aa0d531ce61cd74ebd378fdf85dcbce3f5"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "gitBlob": "7890e6494d7002e6729e81e995c2bdaad7967cbb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.schema.ts",
+      "gitBlob": "0e414aa342e4f70682aea64835b90d0f9716ad6d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.service.ts",
+      "gitBlob": "28e9d78b21de94a4e6c8a0a0649e3120ea71c1ae"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "gitBlob": "c526c521c315b5781e28bd2d704da255d9c85443"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.schema.ts",
+      "gitBlob": "48e2e9dbf364a8081f8f1cd857a12335dbe6e326"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+      "gitBlob": "727f0b580a865c48d448307c39692816c8627ef6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/cashflow.service.ts",
+      "gitBlob": "6ce1ec911fad89c2a1dc90f68ca850a920f137fe"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/margin.service.ts",
+      "gitBlob": "334cd6e5a0efe37105242e1d1f8de5841fe31293"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.controller.ts",
+      "gitBlob": "535c9be17ef30a013fc0c47b46ba6116482cc5c7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "gitBlob": "ec1c0070cd49499a8a757a1ca599cfe3002594d0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/sales-ranking.service.ts",
+      "gitBlob": "0508d93dd4f83817e309ab744a28922a1f078e37"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+      "gitBlob": "bfa85c73873f9cc1573ea23445e345ee5356172e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "gitBlob": "4605ca73d390e3f5f0d81b709cf12d062c8fb7a2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts",
+      "gitBlob": "410823965f69c86c7b013070fd3032c008feafa0"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "gitBlob": "2496b3f50b570a61e554792d47c63ab425eed871"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.controller.ts",
+      "gitBlob": "87e26415a1925b8e891f31effdaa670f5f276e4d"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "gitBlob": "44c4118fd9a52dc6085de1801bb727ff6250c2d1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.schema.ts",
+      "gitBlob": "a78564b2d054098e34fbf5338ecebc1121661eca"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "gitBlob": "61976780f22ac1365aedd6b639b6bce646b51c07"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.controller.ts",
+      "gitBlob": "a309274b5dd1a80f5366c8816b8e0fd7b33fd136"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.routes.ts",
+      "gitBlob": "d6088cb7c3d2567043d2e935db3f9fd16ee6ca60"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.service.ts",
+      "gitBlob": "b860dafd64e8775f0016f5d39780f697790f60c1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "gitBlob": "77656682831e3f5ad762796006669e6e7cb19cab"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "gitBlob": "743d28e5ed92d6af5d7867aec6df22ae1e3012c4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.schema.ts",
+      "gitBlob": "c476ec61899d6ce599472e9b8eed5932b270d8a8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "gitBlob": "99a2fe96721a624b4eb21630a0abdafa549cfb94"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/server.ts",
+      "gitBlob": "bd2b5d35905a152f62efcd3fdb9d0bd53e4a97e9"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/setupTests.ts",
+      "gitBlob": "6a8bec92e0afd9dd75c017d1d77f9fa8b7c3bdc8"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/types/express.d.ts",
+      "gitBlob": "2ca9f70509bbd968c553494a95e93f759dda9ca0"
+    },
+    {
+      "path": "systems/enterprise-admin/docker-compose.yml",
+      "gitBlob": "a5365a902cd3963fa877ae63782327c092b8ee8a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/adr/adr_023_local_ble_medicine_label_bridge.md",
+      "gitBlob": "206ebf16e04f6208cd237b1cc0143c096da0cf2b"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/api/api_spec.md",
+      "gitBlob": "540f71d491a6f978e088b4667b94ac5ab36c1f03"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/evidence.json",
+      "gitBlob": "d1bd1ed5947b6349095cd3a0fe60776254047dba"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/http-writers-access-expenses.json",
+      "gitBlob": "2d92e7256782eee7a7423d0f6a4c516470a544f4"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+      "gitBlob": "953d682851d8f6f6c414c5147ea9117894b2262d"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json",
+      "gitBlob": "b08513d42f68cef6576c95db5e28005ddaeee117"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-inventory.json",
+      "gitBlob": "d0825616432af73d4ff4a10d7b39cb0c93fcec11"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-verification.md",
+      "gitBlob": "024caf62f4a090e058149579aae6bac3ca0617cc"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements-sources.json",
+      "gitBlob": "7eb864e69b022e2bcc5b50eae1af80bee2123468"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements.json",
+      "gitBlob": "1869bf2e82dde931351d7e9ec2ab6d8f950abd5a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-effects.json",
+      "gitBlob": "be5b8871dc0dc30b7892da4fcbb241a70a8cbee4"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-inventory.json",
+      "gitBlob": "5af7a14671cbd64f81c15b694cd1678318cd010a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "gitBlob": "1509eaf57cef5aa699b80dbdb5542375e0768f3a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-snapshot.json",
+      "gitBlob": "dfd720bfc60b14f074a491d25cb51d12513d5a5b"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/README.md",
+      "gitBlob": "5df0a55b8993b1363548262466d856e2da2b4c36"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/agent_context.md",
+      "gitBlob": "47095e63d77788df2cd709fb4633145cb9c38c1d"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/git_workflow.md",
+      "gitBlob": "6888163594528848f81b29a6dc8906549ada1214"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "gitBlob": "4824f4f811a65476b747b9b5077618da77d7f9bd"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/README.md",
+      "gitBlob": "5ab621cc1dea1034b357206cd3063e8d2478968e"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/SHA256SUMS",
+      "gitBlob": "d8c4da75cb422f913c62cea4fd6ac9b289f4be39"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/context.log",
+      "gitBlob": "f7ed28eda45505e8989f810da450c844522ae32a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/gate-tests.log",
+      "gitBlob": "be3fc6ba622c39b7c9a82bd271f6ec88be271a67"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/http-tests.log",
+      "gitBlob": "4ab8948de86de24c8c11736b4c361876945b9928"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/http-verifier.log",
+      "gitBlob": "1dbb55036e07b5ddf09eac791d0df4a5d67081ad"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/original-source-verifier.log",
+      "gitBlob": "02470200df1375847d4097ec9e27a718e5640bf1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/plan-tests.log",
+      "gitBlob": "2819d8fb746d111d677096b272f2231728695cbe"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/receipt.json",
+      "gitBlob": "0b453d8651abcfe1a2f424f19abe804423aba8d2"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/reviewed-freeze-SHA256SUMS",
+      "gitBlob": "48eb375ca2b244f858f7572c63616937279573d9"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-contract.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-mutation.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-spec.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-verify.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-verify.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/whitespace.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/context.log",
+      "gitBlob": "f7ed28eda45505e8989f810da450c844522ae32a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/gate-tests.log",
+      "gitBlob": "f7f5cde399abf1b36fa999972ffe256a8e6cf812"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-tests.log",
+      "gitBlob": "fb95debc8a40f9c547215329de9aab9dca1189bd"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-verifier.log",
+      "gitBlob": "618abd10ba33168e42b42034b26d9943f8f94f1c"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/original-source-verifier.log",
+      "gitBlob": "02470200df1375847d4097ec9e27a718e5640bf1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/plan-tests.log",
+      "gitBlob": "374d109f0870b43f97da7360cbe922caa9165828"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/receipt.json",
+      "gitBlob": "63e516409d5f6d9f7aa4af881c421cc5bac77131"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-contract.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-mutation.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-spec.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/whitespace.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-integration/REVIEW.md",
+      "gitBlob": "a693c4d25198adf9b3f1f2ed2f3d2908d14b21ca"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-integration/byte-and-receipt-checks.json",
+      "gitBlob": "e94d02be5c45eec1b7aef7a1065f2edd201ac852"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-integration/remote-materialized-blobs.json",
+      "gitBlob": "29787a523c2483a6c69d2ce213635e075cd4a536"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-integration/remote-tree-comparison.json",
+      "gitBlob": "ac8cda16537421938cd31e4347ccba742b34e0ec"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-integration/reviewer-integration-receipt.json",
+      "gitBlob": "03e2619b8cd80a847c17906314d1a53778c97fe9"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/PORTABLE-REPLAY.md",
+      "gitBlob": "57fd6c25d70637c4f8305737606794fe22551f19"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/REVIEW.md",
+      "gitBlob": "535c2e538d9b2e47e253a649870dedf1b02a3bd2"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/SHA256SUMS.publication",
+      "gitBlob": "161daf91bc118d7652cd7f8989a7374696f51b57"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/context-rerun.log",
+      "gitBlob": "f7ed28eda45505e8989f810da450c844522ae32a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/context.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/expense-dataflow-probe.cjs",
+      "gitBlob": "3e2258273156a46684b650e5c0b55ddbfd2349f0"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/expense-dataflow-probe.log",
+      "gitBlob": "54c367fc2fcf39a236fe343166c0a9c493a837ea"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/expense-dataflow-replay.portable.cjs",
+      "gitBlob": "50730341b4d2793c18f1a04712ba07bd8f39f468"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/gate-tests.log",
+      "gitBlob": "92b8275e01cb3ef7f10d58909f51032fc5be5dd1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/http-tests.log",
+      "gitBlob": "8d6e8d2c93e775bc99df7974fdcbb2370b0e3998"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/http-verifier.log",
+      "gitBlob": "618abd10ba33168e42b42034b26d9943f8f94f1c"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/original-artifacts.json",
+      "gitBlob": "074fd99913a59a8790d1413f074dd4a8b4cb107c"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/packet-checksums.log",
+      "gitBlob": "078fb472994a1b724c2a4736b7c4d8088d91b955"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/plan-tests.log",
+      "gitBlob": "868f1c8ad8007051c71b94921e81dcd2a83be761"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-adapter.diff",
+      "gitBlob": "a8683964e394b0832cd393ce9adfef9a3d8449b8"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-default-resolution.log",
+      "gitBlob": "8b889020d968d54641b635d2d5650d33d07aefc6"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-path-controls.json",
+      "gitBlob": "2f550d05c93590dc72ea35d7572c46538ac72877"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-replay-receipt.json",
+      "gitBlob": "ca99bfd2e82ffe9a4e6b2ea1d6a5d6d22f6ebe31"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-replay.log",
+      "gitBlob": "340dd56501937b7f7a238b828dbb88705a29c498"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/provenance.json",
+      "gitBlob": "b829c86eaa62ed0d46c8faafbd52fde258b640b2"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/reviewer-receipt.json",
+      "gitBlob": "b587b2dca8af54f60af0bd2175fe85166868d037"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/source-verifier.log",
+      "gitBlob": "02470200df1375847d4097ec9e27a718e5640bf1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/PUBLICATION.md",
+      "gitBlob": "63ae347e43b0f0bbcc3f68b0164fd44bf7b7c034"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/REVIEW.md",
+      "gitBlob": "71a374d9ee345c201cd471d758de20d2a90933a4"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/SHA256SUMS.publication",
+      "gitBlob": "b8af3ceba670c5419dee786a2433d8c85e66cea2"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/context.log",
+      "gitBlob": "f7ed28eda45505e8989f810da450c844522ae32a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/gate-tests.log",
+      "gitBlob": "30ce2cd6b0dd0d4482452c21e2637f03b66d37fc"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/http-tests.log",
+      "gitBlob": "3f298c07eb44417d2da1e46317c7b76afc294ee2"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/http-verifier.log",
+      "gitBlob": "1dbb55036e07b5ddf09eac791d0df4a5d67081ad"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/original-artifacts.json",
+      "gitBlob": "4a74256a998767f328a4f0a44bd7495512006e38"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/plan-tests.log",
+      "gitBlob": "bb5abae9e33833f78e7b989bd4b79f82e372e360"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/provenance.json",
+      "gitBlob": "75a3863dc164569d65f6c95c1aebf0f6a4587609"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/reviewer-receipt.json",
+      "gitBlob": "a73fa7c44011e575d5ef024942d91537d4ed52e1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/seal.log",
+      "gitBlob": "f87ce5ac1fe5fe29c49fc1b183765577ae6fa4f6"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/source-verifier.log",
+      "gitBlob": "02470200df1375847d4097ec9e27a718e5640bf1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/syntax.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/whitespace.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/baseline-provenance.json",
+      "gitBlob": "72449b96cc10551fdd1ae5d1f9c5cb968e3950b8"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/context.log",
+      "gitBlob": "f7ed28eda45505e8989f810da450c844522ae32a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/existing-node-tests.log",
+      "gitBlob": "739d71b08a70259f16bd4b3b23773199cb2c7e8c"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/http-tests.log",
+      "gitBlob": "7009c7408bc5d63dd7800a452e3237f5cb3e6de0"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/http-verifier.log",
+      "gitBlob": "1dbb55036e07b5ddf09eac791d0df4a5d67081ad"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/original-source-verifier.log",
+      "gitBlob": "02470200df1375847d4097ec9e27a718e5640bf1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/print-inventory-tests.log",
+      "gitBlob": "39b2fb0e54d5fc4564af5fd7289a6c4a02f81504"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/print-verifier.log",
+      "gitBlob": "bf270ad37900aa99d73ecc472afd9e8dfde78e64"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/print-worker-tests.log",
+      "gitBlob": "48b368b7f129c312487ef9dd63967691a2a44eaa"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/results.json",
+      "gitBlob": "b3ddbc3152abb015657f0d2f6520c0d4b888fbf8"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/seed-verifier.log",
+      "gitBlob": "73017e27897d2bc6abc068ec49b8b0c7601beef5"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/syntax-http-writers-contract.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/syntax-http-writers-mutation.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/syntax-http-writers-spec.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/syntax-http-writers-verify.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/syntax-http-writers-verify.test.mjs.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/whitespace.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/README.md",
+      "gitBlob": "dc1ea2aaab183fdaeb5e91fac423ce3df8e204b9"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/SHA256SUMS",
+      "gitBlob": "e3ae4ce466a64d09287fff0f23ec222a00fb83d7"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/base-materialized.json",
+      "gitBlob": "b23729624f32e37d25f2fea285a0dce0d1e10d8c"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/context.log",
+      "gitBlob": "f7ed28eda45505e8989f810da450c844522ae32a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/environment.json",
+      "gitBlob": "e11d7743b1a93221a52eb3c969a1a83bf4336f84"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/context.log",
+      "gitBlob": "f7ed28eda45505e8989f810da450c844522ae32a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/inventory-tests.log",
+      "gitBlob": "fa2724c1b03589791b92505a0cbd80bfed708d22"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/node-regression.log",
+      "gitBlob": "9c5f6639609eb021f860fed735c92795ee67c98b"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/plan-source.log",
+      "gitBlob": "02470200df1375847d4097ec9e27a718e5640bf1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/print-inventory.log",
+      "gitBlob": "bf270ad37900aa99d73ecc472afd9e8dfde78e64"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/results.json",
+      "gitBlob": "fd00b509ab72849b042e7c1840c06e8ccecd050b"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/seed-source.log",
+      "gitBlob": "73017e27897d2bc6abc068ec49b8b0c7601beef5"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/source-whitespace.log",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/worker-controls.log",
+      "gitBlob": "fe9444cdd066e48f6123e343020d289446fe1f30"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/README.md",
+      "gitBlob": "0c12122a517b35186868c4028035ab5325369270"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/addendum.json",
+      "gitBlob": "f59490dcc4c3f9c6b8cf33ae982377c08e6fc7d3"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/author-audit-replay.json",
+      "gitBlob": "e7513955692d9108390379426574dca881955750"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/probes-run/result.json",
+      "gitBlob": "bb0890543c30ba8b295f17453a1d823929916fc7"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/replay_print_review.py",
+      "gitBlob": "627c08d7889861cdcaab098f728abb3694c98231"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-review.json",
+      "gitBlob": "993b688284c1eb6cec2ca006fe8666a3da207a9a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/initial-worker-failure.log",
+      "gitBlob": "8b0575c974170e4172b272b696144660f00b190e"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/inventory-tests.log",
+      "gitBlob": "95fae6837bea37152e4406dfded8e358c56af737"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/log-provenance.json",
+      "gitBlob": "053a7550eca802f5cc752d2784855c9cbc1482a7"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/materialized-sources.json",
+      "gitBlob": "b410f6b6c10def9293c71df9f853c3aa3dab548f"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/node-regression.log",
+      "gitBlob": "0e8574fdb245bab48acdfe834271183f066df284"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/plan-source.log",
+      "gitBlob": "02470200df1375847d4097ec9e27a718e5640bf1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/print-source.log",
+      "gitBlob": "bf270ad37900aa99d73ecc472afd9e8dfde78e64"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/receipt.json",
+      "gitBlob": "3c5b7e5edd97b575f379f8f78232dfe3370322c7"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/reproduce.py",
+      "gitBlob": "70a37ef1fc32bc494ffdf4b8d1ce6c8ed805b356"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/seed-source.log",
+      "gitBlob": "73017e27897d2bc6abc068ec49b8b0c7601beef5"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/source-freeze.json",
+      "gitBlob": "53c937f4b4d2792d10cd0fff09863e6d1e03edfc"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/syntax.log",
+      "gitBlob": "aa349c105b882e0e10b43523b00ed0be7f131ae6"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/unchanged-acceptance.json",
+      "gitBlob": "c3c8b9d0c119ea052e24728a42c73db899678ca9"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/worker-controls.log",
+      "gitBlob": "463caf6bf280124d714bcc19d864ad71a07d7d30"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/.gitignore",
+      "gitBlob": "d24895d1f61771875cd485a9ae90fc6a18065ee2"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/README.md",
+      "gitBlob": "bce9356bb40c3c42c99f2fad8bfa3fc6afa83646"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/pyproject.toml",
+      "gitBlob": "ed1bd528351d4a6c36e74b9b32ecb5849516a842"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/requirements-tested.txt",
+      "gitBlob": "d50a70a98d4533e1c041ee57189812d5d71045bf"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/samples/experimental-english-30x50.tspl.bin",
+      "gitBlob": "79d5bb613dddd8dc55ed5d4fce076c0bbf5012fb"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/diagnose_windows.ps1",
+      "gitBlob": "cfa54a2d928d328a19dd0c2ceaa43c1b6a9fa393"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py",
+      "gitBlob": "1c4247be1bad717b161f8258c58527b7aec47f0b"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/prepare_suite.py",
+      "gitBlob": "267c9689b39c4a4b6f37e1603202dc0cd60fde95"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/scan_ble.py",
+      "gitBlob": "c6444fd4d4a148b6641208eaac9ed5dffe5850dd"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/__init__.py",
+      "gitBlob": "010569e4adbab296c57b91cabb004d5a8cadb361"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+      "gitBlob": "4e9c9c75010d13a9cc3f29bd89fc41ef590d277b"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/ble.py",
+      "gitBlob": "e48425377fbdcd80663d3aabd344a2a85258df54"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+      "gitBlob": "3b6e7e9351e80a2694043fab87cd003d59fbdde3"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/medicine_label.py",
+      "gitBlob": "f2be7722d8fc7cf7c9c9eb988a7735f7cd980586"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/raster.py",
+      "gitBlob": "8a1e87b93e7f389d7e83ff32b18a8f3ba7baa28e"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py",
+      "gitBlob": "b247190cec005c2f919226a9063a72bfeb4902b2"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/tspl.py",
+      "gitBlob": "e00af949fd54752dd982e34edf1f974d56384cb3"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_api.py",
+      "gitBlob": "804ce506728413978080723cfd8d08074a1f4ba7"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py",
+      "gitBlob": "cfa6305628ffeda1a969510b5c0151b7a4ede49f"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_medicine_label.py",
+      "gitBlob": "39ac18241117fe8d28698ab5650faa4718e63e1c"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_raster.py",
+      "gitBlob": "293b7cd6796faf985d15b243fc7a9f7741daee07"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_safety.py",
+      "gitBlob": "07d7beee5a2e9c9a522df29e6bc1768f3c89dc7d"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_transport.py",
+      "gitBlob": "2ec971c39580681d3a3f2192d18d4fa7034ac6b5"
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_tspl.py",
+      "gitBlob": "647282e43d0f84e8cd1c73515c595535f97f459a"
+    },
+    {
+      "path": "systems/enterprise-admin/package.json",
+      "gitBlob": "76610c465e5165b8cac3ff0e8ad241f52d994369"
+    },
+    {
+      "path": "systems/enterprise-admin/packages/types/MODULE.md",
+      "gitBlob": "469eb571bc59f68b53f9422c7c6ce69430241332"
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/MODULE.md",
+      "gitBlob": "8c78b053a6ae0e4773c02e77530a7c356cd014e5"
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/src/__tests__/offlineQueue.test.ts",
+      "gitBlob": "b87c41bb26f48bd1191f94ce1cf4e35e7e995841"
+    }
+  ]
+}

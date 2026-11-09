@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "scope": "bounded source inventory and reviewed references only",
+  "files": 28,
+  "effects": 26,
+  "testReferences": 33,
+  "originalPythonSuite": "NOT_RUN",
+  "device": "NOT_RUN",
+  "overallAC01": "NOT_RUN"
+}

@@ -1,0 +1,387 @@
+{
+  "schemaVersion": 1,
+  "verificationSubject": {
+    "repository": "skydreamer0/startup",
+    "pullRequest": 205,
+    "head": "b66e1f96447bbc5034110843b4349aef7ca44c4b",
+    "tree": "eb5d6286792df789fae0870c884980b792a3673d"
+  },
+  "scope": "Read-only literal seed-call and packaged startup-migration coverage. No application execution or database acceptance.",
+  "acceptance": "NOT_RUN",
+  "runtime": "NOT_RUN",
+  "limitations": [
+    "This is not a TypeScript AST or SQL semantic parser. Seed scanner supports the current literal client/delegate syntax only and rejects unsupported prisma binding uses.",
+    "All migration files are enumerated and exact SQL bytes are review-pinned. Any changed SQL needs human re-review of curated DDL, backfill, trigger and cascade effects before updating pins.",
+    "The source fingerprint, seed call slices, seed token body and curated semantic review pin are separate checks. Coordinated edits to all reviewed pins remain a review responsibility, not proof of equivalent behavior.",
+    "Node built-ins read files only. Commands are inert data. No package install, application import, environment loading, seed, migration, DB, HTTP, Docker, browser, deployment or device run.",
+    "Existing test references identify reviewed source only. All application/native checks and overall AR-00-AC01 remain NOT_RUN."
+  ],
+  "sourceFiles": [
+    {
+      "path": "systems/enterprise-admin/backend/prisma/seed.ts",
+      "sha256": "5d56cf8012d505137e314019835d17e5b37f5d8e17acf50dbd7061f7e0637f38"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "sha256": "92e4a0bc6ccfe4b92b11e5bc36714a0e3fcfc4e39255a69a8e0c050aec4c187e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/Dockerfile",
+      "sha256": "39ab93a4f596fa6601804ca0f05d5a277bebb8d2328222e057d8caf408536132"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "sha256": "4ee60fd190bdba17170d3516cf816548cdf64023696ac1ba5f0e011f7a5c09ae"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/migration_lock.toml",
+      "sha256": "99836963713b4f5b269ad49af0ed3d7b0b2e336115c2f92dc9ac683d139d0900"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+      "sha256": "6b0060dc422813b62c27abb2386cb4f5948ec064bb71053fcfbdcfd6c5b2babd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+      "sha256": "c23777946c2449bfc65bb10ed5a0fcf3afb0ae23b445c6dc9cad9fccdd9bb882"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+      "sha256": "10b818024a8eebae2b942ecb9394a90199f4e522393d48a20a21a5cb98e96bf2"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+      "sha256": "c346a40f40b63130ada9d9e46d74cc31fa2195f7a7c696a59de25a8b43ff512a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+      "sha256": "c586f4d1d3374ead74e6e87ca7513b8e204c5f4d62588cb0018ad33113728c0e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+      "sha256": "3af6bfbed2cf592131abe741d02b8f33d9bdec90f56bf9a91b354be88fea9e1e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+      "sha256": "177b99d569521c9cca3c7483b528eb3b49355d592200441fab51168e41cadf56"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+      "sha256": "ab3f07660a2427ddff453f5e4565e1c1fdd7a7c6060aa42709c670ec9f1ac4ea"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+      "sha256": "c2f15be427ac1bfb0a325148703497013eca50913c5a90bfb0e6dc7ee98c47fb"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+      "sha256": "84609ab16f74d3a12ed4ea843b872c6891b6d6e97304b4e9431bb197e44637f1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+      "sha256": "df6e3de02052c08874c4adc307bca65d0383d86bd692653793948a99a1f3d553"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+      "sha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+      "sha256": "b5d751f54c935de55461e4f45eab73a688a7e361c2d013d10e194de53c42d5e6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+      "sha256": "706fb801d756441bdb19bba29bf82adc3f91cf91cd6e807297c67b40fd959423"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+      "sha256": "bb867d580feb54f554502d2a02d5602f7d8ea873dd1629eb3d63b462c64850c6"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+      "sha256": "62b8f47494273707eac8ce05f67d7b62ecb6cfc11f140ad18c1df94639dc9b35"
+    }
+  ],
+  "seed": {
+    "source": "systems/enterprise-admin/backend/prisma/seed.ts",
+    "calls": [
+      {
+        "id": "seed-001",
+        "line": 63,
+        "delegate": "tenant",
+        "operation": "upsert",
+        "sourceSha256": "ba66d170e50ae95ec00f81cdd14c0589414aaee4204e95a5b121b4318eeba1db"
+      },
+      {
+        "id": "seed-002",
+        "line": 78,
+        "delegate": "permission",
+        "operation": "upsert",
+        "sourceSha256": "f3d26d4fdda4fd1c8a9403c36cec25b7527c5d84695071b711fc372e3f9d4ced"
+      },
+      {
+        "id": "seed-003",
+        "line": 88,
+        "delegate": "role",
+        "operation": "upsert",
+        "sourceSha256": "6979928f02ca99bd20804d08f95f34861d551713831797399d5187d66840a573"
+      },
+      {
+        "id": "seed-004",
+        "line": 102,
+        "delegate": "rolePermission",
+        "operation": "upsert",
+        "sourceSha256": "e1e2bfeca045cbfe195b47dc5fc9dfd5f920d81247a6a38994d77d0975e3f977"
+      },
+      {
+        "id": "seed-005",
+        "line": 111,
+        "delegate": "role",
+        "operation": "upsert",
+        "sourceSha256": "04fa8c66f795c2dcc2e7c4257142970b5a2b12edff4d4520f5a0dfa52718c448"
+      },
+      {
+        "id": "seed-006",
+        "line": 123,
+        "delegate": "rolePermission",
+        "operation": "upsert",
+        "sourceSha256": "65a1196a61022d820bc24735284b0bba4a751f490202dc18ee24f90d8d7b2345"
+      },
+      {
+        "id": "seed-007",
+        "line": 133,
+        "delegate": "user",
+        "operation": "upsert",
+        "sourceSha256": "fe52f3f3d535b927706ee92ef2382ee6c757601e169007ddfcf69d6ab6c27960"
+      },
+      {
+        "id": "seed-008",
+        "line": 150,
+        "delegate": "userRole",
+        "operation": "upsert",
+        "sourceSha256": "fb9f0d62135b46009194db42262a6ea1d6011211ff0bf1a382d64b81e9ca5092"
+      },
+      {
+        "id": "seed-009",
+        "line": 158,
+        "delegate": "customer",
+        "operation": "upsert",
+        "sourceSha256": "49438500194abbd7383cc2ce05dca71edfaca76752efdd116a6df9f866b5a370"
+      },
+      {
+        "id": "seed-010",
+        "line": 170,
+        "delegate": "tag",
+        "operation": "upsert",
+        "sourceSha256": "09ea12e365d79d021edab651c52668082542bc60e973da485d8605065f6842dd"
+      },
+      {
+        "id": "seed-011",
+        "line": 175,
+        "delegate": "tag",
+        "operation": "upsert",
+        "sourceSha256": "6f83737ce58a532d8d84d22e766e9e865ee1b4020c09980dc6c111099839cd5b"
+      },
+      {
+        "id": "seed-012",
+        "line": 203,
+        "delegate": "customer",
+        "operation": "upsert",
+        "sourceSha256": "d6141f70cd075ad0edd58ea53f6c258e0fcae48527287ff0ca55c90e97fe8305"
+      },
+      {
+        "id": "seed-013",
+        "line": 210,
+        "delegate": "interaction",
+        "operation": "create",
+        "sourceSha256": "4ee143bfe6fe793e70c2dbe73d23a287d67be3124f895b06ea56b0e1b8a8d907"
+      },
+      {
+        "id": "seed-014",
+        "line": 221,
+        "delegate": "customerTag",
+        "operation": "upsert",
+        "sourceSha256": "2b7ad23b20a319142a8353969d925e2077a04349843a4bc9f7d86e6235ffaac5"
+      },
+      {
+        "id": "seed-015",
+        "line": 230,
+        "delegate": "productCategory",
+        "operation": "upsert",
+        "sourceSha256": "3363e78976bb4fc46e6bcfba19d80598f5f62e447fb11aa695b134e70ab9bd79"
+      },
+      {
+        "id": "seed-016",
+        "line": 235,
+        "delegate": "productCategory",
+        "operation": "upsert",
+        "sourceSha256": "ff3e33b1fcdc6695f776e7363137e319d14383746645c402053506acf3b82e52"
+      },
+      {
+        "id": "seed-017",
+        "line": 241,
+        "delegate": "supplier",
+        "operation": "upsert",
+        "sourceSha256": "a619622820c0d93e19c6ccc6e42b55f9fd7f7ee17a143692cef06da727896007"
+      },
+      {
+        "id": "seed-018",
+        "line": 256,
+        "delegate": "supplier",
+        "operation": "upsert",
+        "sourceSha256": "2b76873422162f443d93f893cd1d11aa803636a3ccb8382c6bc8fbb242714542"
+      },
+      {
+        "id": "seed-019",
+        "line": 280,
+        "delegate": "product",
+        "operation": "upsert",
+        "sourceSha256": "afbc9ad1271ef98f77afc5c4033a585322518d66ae835c11304f8e14f89a4151"
+      },
+      {
+        "id": "seed-020",
+        "line": 287,
+        "delegate": "productBatch",
+        "operation": "upsert",
+        "sourceSha256": "feeb4c53685dc6f04266f41981ac5133f0b652de2598e7b8f4c26d7c6da8ce28"
+      },
+      {
+        "id": "seed-021",
+        "line": 316,
+        "delegate": "customer",
+        "operation": "findMany",
+        "sourceSha256": "230021d406983ba23ecc20915905f6784d70af761e221fcb6f6c4ce9852fcd91"
+      },
+      {
+        "id": "seed-022",
+        "line": 317,
+        "delegate": "product",
+        "operation": "findMany",
+        "sourceSha256": "5f060981ef861126658bc4b84e8a628cc0c7ed438e6dd0d2b0b4e996718d3837"
+      },
+      {
+        "id": "seed-023",
+        "line": 320,
+        "delegate": "order",
+        "operation": "create",
+        "sourceSha256": "741648bd0fe2a2a7d3e7d5c8baf1dd737b9a223c1ecde98ca61faabacb2ce363"
+      },
+      {
+        "id": "seed-024",
+        "line": 337,
+        "delegate": "inventoryTransaction",
+        "operation": "createMany",
+        "sourceSha256": "d79da899b0900bd484aab8573445750b5e68f62c9b6117dcffa2dcebefb683eb"
+      },
+      {
+        "id": "seed-025",
+        "line": 354,
+        "delegate": "$client",
+        "operation": "$disconnect",
+        "sourceSha256": "9d0e6f185040dc8ca360c59f6b05853a70af6cfa87e4fba21eda183c44943103"
+      }
+    ],
+    "tokenSha256": "a2e86975c0646f86b2f40dc3a7cf44fe5b6f0eee4feede6c3f4c18d974d3f984"
+  },
+  "entryChains": [
+    {
+      "id": "package-seed",
+      "source": "systems/enterprise-admin/backend/package.json",
+      "entry": "scripts.db:seed",
+      "command": "tsx prisma/seed.ts",
+      "targets": [
+        "systems/enterprise-admin/backend/prisma/seed.ts"
+      ]
+    },
+    {
+      "id": "prisma-seed",
+      "source": "systems/enterprise-admin/backend/package.json",
+      "entry": "prisma.seed",
+      "command": "tsx prisma/seed.ts",
+      "targets": [
+        "systems/enterprise-admin/backend/prisma/seed.ts"
+      ]
+    },
+    {
+      "id": "docker-startup",
+      "source": "systems/enterprise-admin/backend/Dockerfile",
+      "entry": "CMD",
+      "command": "[\"sh\",\"-c\",\"./node_modules/.bin/prisma migrate deploy && node dist/server.js\"]",
+      "targets": [
+        "systems/enterprise-admin/backend/prisma/migrations",
+        "systems/enterprise-admin/backend/dist/server.js"
+      ],
+      "order": [
+        "prisma migrate deploy",
+        "node dist/server.js"
+      ]
+    }
+  ],
+  "migrations": [
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+      "reviewedSqlSha256": "6b0060dc422813b62c27abb2386cb4f5948ec064bb71053fcfbdcfd6c5b2babd"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+      "reviewedSqlSha256": "c23777946c2449bfc65bb10ed5a0fcf3afb0ae23b445c6dc9cad9fccdd9bb882"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+      "reviewedSqlSha256": "10b818024a8eebae2b942ecb9394a90199f4e522393d48a20a21a5cb98e96bf2"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+      "reviewedSqlSha256": "c346a40f40b63130ada9d9e46d74cc31fa2195f7a7c696a59de25a8b43ff512a"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+      "reviewedSqlSha256": "c586f4d1d3374ead74e6e87ca7513b8e204c5f4d62588cb0018ad33113728c0e"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+      "reviewedSqlSha256": "3af6bfbed2cf592131abe741d02b8f33d9bdec90f56bf9a91b354be88fea9e1e"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+      "reviewedSqlSha256": "177b99d569521c9cca3c7483b528eb3b49355d592200441fab51168e41cadf56"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+      "reviewedSqlSha256": "ab3f07660a2427ddff453f5e4565e1c1fdd7a7c6060aa42709c670ec9f1ac4ea"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+      "reviewedSqlSha256": "c2f15be427ac1bfb0a325148703497013eca50913c5a90bfb0e6dc7ee98c47fb"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+      "reviewedSqlSha256": "84609ab16f74d3a12ed4ea843b872c6891b6d6e97304b4e9431bb197e44637f1"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+      "reviewedSqlSha256": "df6e3de02052c08874c4adc307bca65d0383d86bd692653793948a99a1f3d553"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+      "reviewedSqlSha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+      "reviewedSqlSha256": "b5d751f54c935de55461e4f45eab73a688a7e361c2d013d10e194de53c42d5e6"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+      "reviewedSqlSha256": "706fb801d756441bdb19bba29bf82adc3f91cf91cd6e807297c67b40fd959423"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+      "reviewedSqlSha256": "bb867d580feb54f554502d2a02d5602f7d8ea873dd1629eb3d63b462c64850c6"
+    },
+    {
+      "source": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+      "reviewedSqlSha256": "62b8f47494273707eac8ce05f67d7b62ecb6cfc11f140ad18c1df94639dc9b35"
+    }
+  ],
+  "reviewedEffectsSha256": "66de137128b09516e1cd57212b43c367c845f5c805fea94513ca6667bf3e16df"
+}

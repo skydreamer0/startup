@@ -1,0 +1,108 @@
+{
+  "capturedAt": "2026-11-07T02:11:09.724Z",
+  "head": "67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+  "checks": [
+    {
+      "name": "Backend CI",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128267302562"
+    },
+    {
+      "name": "Admin UI CI worker",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554662"
+    },
+    {
+      "name": "Exact SKU PostgreSQL and current POS browser acceptance",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554657"
+    },
+    {
+      "name": "Exact-head POS dialog Chrome acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554633"
+    },
+    {
+      "name": "POS UI CI worker",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554628"
+    },
+    {
+      "name": "Private receiving PostgreSQL acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554619"
+    },
+    {
+      "name": "Order sequence PostgreSQL acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554602"
+    },
+    {
+      "name": "Product pagination PostgreSQL acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554525"
+    },
+    {
+      "name": "Batch audit PostgreSQL acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554514"
+    },
+    {
+      "name": "Backend CI worker",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266554503"
+    },
+    {
+      "name": "final-alpine",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631054/job/128266502951"
+    },
+    {
+      "name": "CI change plan",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266502739"
+    },
+    {
+      "name": "Agent Context Validation",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631210/job/128266502501"
+    },
+    {
+      "name": "Dependency Review",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631255/job/128266502488"
+    },
+    {
+      "name": "Inventory FEFO trace PostgreSQL acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631079/job/128266501729"
+    },
+    {
+      "name": "Checkout abort retry PostgreSQL acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/actions/runs/42327631030/job/128266501553"
+    },
+    {
+      "name": "GitGuardian Security Checks",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/skydreamer0/startup/runs/128266497764"
+    }
+  ]
+}

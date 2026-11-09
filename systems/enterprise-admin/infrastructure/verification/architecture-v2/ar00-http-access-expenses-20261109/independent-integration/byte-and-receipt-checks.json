@@ -1,0 +1,1678 @@
+{
+  "httpFiles": [
+    {
+      "path": "scripts/architecture/http-writers-contract.test.mjs",
+      "sha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+      "matchesReviewedFreeze": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-mutation.test.mjs",
+      "sha256": "6ece27ac4cf8665bbf792359a9a0406c64bd8d6aaf1ee7c2f76ab5dd2948c2ad",
+      "matchesReviewedFreeze": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-spec.mjs",
+      "sha256": "e481dc36dbba0f59fd782f8ec5a6d8669b2bbc4a2646d74f28eea3c8f690a39d",
+      "matchesReviewedFreeze": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.mjs",
+      "sha256": "799c443d6b3c47c221ce2c17fb87789dcf064cc2ad7490dd58beaaa6c7433a1e",
+      "matchesReviewedFreeze": true
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.test.mjs",
+      "sha256": "47b30e5cc20dccd3c8b44d8123d36e4289b81fad982f6c385e7c8a5f4d1e441f",
+      "matchesReviewedFreeze": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/http-writers-access-expenses.json",
+      "sha256": "b4d54d31bb85688b7fc133f67d68fa823eaedf4049eb62b778001a8f2ea94e2d",
+      "matchesReviewedFreeze": true
+    }
+  ],
+  "materializedBaseFiles": [
+    {
+      "path": ".github/pull_request_template.md",
+      "sha": "3bb81cdcae1f626699400a45f6979e94016c4ee3",
+      "matchesRemote": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha": "7936804b8635188a691fe1eaa2eaa4d8d268e7f8",
+      "matchesRemote": true
+    },
+    {
+      "path": "AGENTS.md",
+      "sha": "810bbfc9e4343ec9a43e107e3863105031f365f2",
+      "matchesRemote": true
+    },
+    {
+      "path": "CONTEXT-MAP.md",
+      "sha": "7057286e27f60fe56f6a5b698248191cb5a6257e",
+      "matchesRemote": true
+    },
+    {
+      "path": "docs/agents/domain.md",
+      "sha": "0c5eaf7df75f5639885d9958e816414c64e4ac6b",
+      "matchesRemote": true
+    },
+    {
+      "path": "docs/agents/navigation.md",
+      "sha": "9e404a3eae48fd90c359ad1f28de4623c400cdbd",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/plan.mjs",
+      "sha": "406f08fd2f1994cf4f069e9717f0fea9284825e8",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/plan.test.mjs",
+      "sha": "d4ff8c4ecc8584f9774424b509c8178b9231fa95",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/seed-migrations.test.mjs",
+      "sha": "c032f1d2efcd4fbbdb261a9ac90896797ec05f17",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/test_print_inventory.py",
+      "sha": "641cc59fc121f248cf54a7a35cbd3da4060b8288",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/test_print_worker_controls.py",
+      "sha": "34fc718cedb10483645c7cb5ff86373d22dd4b85",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/verify-plan.mjs",
+      "sha": "c0710b7ca8c310dca6326275022d274b1a00566f",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/verify-print-inventory.py",
+      "sha": "cc6d46efed0eff1250fd72fdcaf1ef02d41166ce",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/architecture/verify-seed-migrations.mjs",
+      "sha": "10f289bba79d5280e36bd5661e408debd8d0156d",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/ocr-evaluation/evaluator.py",
+      "sha": "69d8248589b187c96b72bed106c6495398f7bd83",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/ocr-evaluation/tests/test_evaluator.py",
+      "sha": "55a4aa49c0f28e28b12395579ff59104e4927f36",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/ocr-evaluation/verify.py",
+      "sha": "4d96c88c22799b39bb21087b69961292500e811c",
+      "matchesRemote": true
+    },
+    {
+      "path": "scripts/validate-agent-context.sh",
+      "sha": "93950306f5479f97f2f2aa86c2ef48166c5bfbff",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/CONTEXT.md",
+      "sha": "84549529bbda1de703d8f864ccef496966c2d5e3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/ROADMAP.md",
+      "sha": "34ca9d259c10c9ebee5cb532fb8d02e660964ee6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+      "sha": "dda0f83aa1c6cc886f1c93da633a11a2c34928db",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/__tests__/MedicineLabelDialog.test.tsx",
+      "sha": "d66c2e93afd78308edbafeb71a5ea984696326d6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/components/MedicineLabelDialog.tsx",
+      "sha": "94ac550bba2103c682a28ca29ba4deaa2270aebc",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/services/localLabelPrinter.ts",
+      "sha": "e1a84381550d4e5b62e6f33e68452b2ae309a925",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/Dockerfile",
+      "sha": "4cb36d0360e945a2e1b0a7d924161aaa84af23b8",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/MODULE.md",
+      "sha": "5db09717f98624217a67b8e311d9d882e8e628de",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/package.json",
+      "sha": "12d264cee6129a28e8757b5dc90b395fe0b74f93",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+      "sha": "88db581bd70d662c20b6beb3930372e39c4dbe3d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+      "sha": "0e7c185d5caf60681d43dc69a751584fd1ab29a6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+      "sha": "054ae24a18346987150b0fddcafadfd2bf45cffc",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+      "sha": "ccd1c51cbc019617c1ba43f0d9a9b00dfa7ad8ff",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+      "sha": "6e734f1cd87f35d52465fb40c858026efabda9f6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+      "sha": "92dd80ac684175fe45c91245fed7387f32f35864",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+      "sha": "65e6187f975d9dea84fce77130cbcdff5ec2f470",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+      "sha": "4419b8546b3676634f512861327dc3cd135bd9c0",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+      "sha": "4b7de729e72c255b16a6483684e335a227328c26",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+      "sha": "7e6a14d8e9d15a8d0c87cce5b6821618416aaae0",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+      "sha": "c6b8ae4db9041a54502a299ae4218f9ac8c0a2db",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+      "sha": "50bc81517a849b0172827db05831925825eb9de4",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+      "sha": "83fd6432ca71a7e8e37ad003de8796bab0af6475",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+      "sha": "b522e08515139a402f496cc7001febbdb3ed864f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+      "sha": "8dd76439f27c290490378389a15785cc284cce4e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+      "sha": "84e643e73335bb0f96b9cc625db7f43d1b143827",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/migrations/migration_lock.toml",
+      "sha": "044d57cdb0d5b5bff3475112359a4ee70439bf78",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "sha": "c2f5c037c1cdd6c4f89e56de24e015ecc5ecd830",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/prisma/seed.ts",
+      "sha": "fb0861b034860e72fbbd9814238a09212c605737",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/health-readiness/ci.test.mjs",
+      "sha": "628259d795a6b73097b32ff2731b4dc1a8c8b72d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/health-readiness/verify.cjs",
+      "sha": "7ecd710ab7db875b3485840af04e71217635fb2f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/medicine-label-ci.requirements.txt",
+      "sha": "5df32e05762481f2ddbee33019ded20f086886d6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/order-sequence-ci.test.mjs",
+      "sha": "3c8b1f4a105a4cce08cc21652051199496507bf9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/order-sequence-migration.mjs",
+      "sha": "d0ddb3d75f176c969bef383cfe37c9f2de645c24",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs",
+      "sha": "6f84aef4718bcf0956873bf42d9be167ed8a62cd",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.test.mjs",
+      "sha": "c6e2ac719cb7601729f29c5ce23665c37e0c68b2",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/accounting.provider-factory.test.ts",
+      "sha": "f9dcbbdca1ecf91376c170c4b62d6e74a989e1a9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/accounting.service.test.ts",
+      "sha": "48a9f110c0ec5056e99ba34fc8d33299d111eebf",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/batch-change-schema.integration.test.ts",
+      "sha": "5d4dacf5e2ccc8a7b8d70227265e954b1767ec2e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+      "sha": "8b3b865b5a0b8ba8470a0b1a7af2aa1629cd9518",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/health.test.ts",
+      "sha": "56200f5a4b03acad7817db9af9108663bcd49be3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/inventory-receipt.integration.test.ts",
+      "sha": "33661daa225c38900c30e3b1dd741f16696be799",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/line.service.test.ts",
+      "sha": "3cd878db17f9d5d44bce7efaf28e9bf75cf590d1",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+      "sha": "4e9a43602c3e115200c101bb290f89f10c547399",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/product-packages.integration.test.ts",
+      "sha": "e131330133d0a15703df2fb2a604643c08e5232a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/receiving-drafts.integration.test.ts",
+      "sha": "5c318e8fe3fed794740390c19ae8cdd35523176a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts",
+      "sha": "40aee4f15da2d8ec9ab39323c725e8c7e85e253f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/app.ts",
+      "sha": "19c7b50dada0cb5f337c5567d0926bb04ad01622",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/config/env.ts",
+      "sha": "f88563754519c3ada4ca366a7893cbd5be425c83",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/__tests__/readiness.test.ts",
+      "sha": "e22f9a62612fa6c0926565425d96f234f9008c8a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/admin-route-policy.ts",
+      "sha": "1988cde436bff1d9cb6ad32cb318d26a76b9d0da",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/batch-expiry.ts",
+      "sha": "ca4a648f0ead4eb334a0ec476a56ae72af6cb97a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/business-day.ts",
+      "sha": "03f39c906d1dfb15dbf7a5a1b43ec6936495e2d2",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/errors.ts",
+      "sha": "0df064580f552bbecebf509eefef7304de0e7bc3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+      "sha": "1e890535b862f66456d0f56bd3ec31a175230d82",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/jwt.ts",
+      "sha": "4100e0b234db2e741b1b24a5c315311d233b1a56",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+      "sha": "c69e60907251dfe90717bf2a60891f18592aaa4f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/password.ts",
+      "sha": "9ea5d908bb59ee0a367ebd6506994373e0128569",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/plan-features.ts",
+      "sha": "c267fe54378cba859c2a5111a9d735d7baffe08e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+      "sha": "9f61e6a37b9a78840d7b7a033eb59746d05fe2f6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/product-import-preview.ts",
+      "sha": "e6645d200e1dc81aee65d33d32a7655307d6fb06",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+      "sha": "6aa55081e30d9af09ebc63ba36ca6ad15cdec002",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/route-policy.ts",
+      "sha": "eab747c0b727c7b792ae51294f41ff3605af49c5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/sale-stock.ts",
+      "sha": "a9ea1b364fc67b6ae114dc9e3a6ec0b7d8d3b46d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+      "sha": "1f3d3d13ab49d1ecf9588f4637fe56f7239b0081",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+      "sha": "80b74559bda0423212faa0888b54536b7a228f6c",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant.context.ts",
+      "sha": "6fb6862af9dbb00a4306ab4645fbd50c97134be7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+      "sha": "6eda759e123eb8f149b31d370b9e795ec6927b18",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/error.middleware.ts",
+      "sha": "fbbe542111f7108351d29a1e2900ee5b63aaf1c4",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/plan.middleware.ts",
+      "sha": "30b2206770f5a22409fc78a5469a96073fbaaa39",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+      "sha": "0ccca2b939167e8afd0532435d216c65668458e6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+      "sha": "e02ee76f314b3bb5fb78f63db2e6155e0dd3c04a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+      "sha": "c75a0bb00d7d0e4d064ebb2c35680ad7ba430faf",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+      "sha": "6017ab737570fa3dcd75f0ef4c23380b614ffc62",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.controller.ts",
+      "sha": "05a4a57314855ffc18aaf0d967c1aa19f276a229",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+      "sha": "8ff3610b5fe8952af17626e70de82c5b13f5b4f9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.service.ts",
+      "sha": "d9639341622bdc069e7658af6219b255113991d2",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/provider.factory.ts",
+      "sha": "f35c89f670e2da4651742d82d8d87716984ff9b1",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/mock.provider.ts",
+      "sha": "d07567b68e5e6ac89707a0c563919af02ef13583",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/quickbooks.provider.ts",
+      "sha": "e86796036a15138a6c4fe6640db72c5ed7803d1c",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/types.ts",
+      "sha": "3b955d30bf6539e26f3b3b0222fbd9338ab454a5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/xero.provider.ts",
+      "sha": "33608c9c071da5b9e16afa2858cb8d79ebfddd7c",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.controller.ts",
+      "sha": "6808f7d357db8d9469e2d7c9aa88f2bb6557810d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+      "sha": "bcbe8796af1fc20350c00f2a163350c6586c2c75",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.shared.ts",
+      "sha": "506e8f1d1c11475a7bcf49f3d7c40c431e4aa21f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.types.ts",
+      "sha": "bbb8c67bddff896ba2ebf1e1a1aef645cae203c8",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.ts",
+      "sha": "824ad08f78abc610ce13e89b831ee79f2528eccd",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/operations-analytics.service.ts",
+      "sha": "97218be0f92a3693538ef87adbf0fdaff4528f56",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+      "sha": "cfdd38b9aa939207e70f305304a69225607260b7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.controller.ts",
+      "sha": "3b318b2290c76dfe7210f3e85fa0ad4778e230b3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.routes.ts",
+      "sha": "4253b228c14c685df78462883d9e7d145d32105f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.schema.ts",
+      "sha": "e4b8cd85d416f149b7447cb11e2db673130f950d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.service.ts",
+      "sha": "ea4936860a2d50c3f7b5efb4d203c7bcb81a542b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.controller.ts",
+      "sha": "704511030d8fe89174578b469750ae608943068b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+      "sha": "f7b31216dc519e93edc7006088c757135cef2c7d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.schema.ts",
+      "sha": "d7f1901cbe4803fd002b70c975accc515f94e5f5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/auth/auth.service.ts",
+      "sha": "180db977d793fff10cf47df20828e3c06f90cb78",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.controller.ts",
+      "sha": "43112264457c968ca6d99a0730be37ca0f2d1bde",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+      "sha": "255715df8acd05c79a116518230230405511e0a4",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.schema.ts",
+      "sha": "7e7e32a3bba5938ad0b8055a68ead6875a00802b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+      "sha": "2fb143305834093c4652afab4b37dcd490973eeb",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.controller.ts",
+      "sha": "bc4291982d8199386a8951cff3f875c209cfe6f2",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+      "sha": "282a01d47114d5a32f3d254babab7771763b66c4",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.schema.ts",
+      "sha": "8a5c0c003084449c7aeb69dca867bc6ed754ad17",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+      "sha": "ce2e651d606febf87d07e960cacfa9fccd872835",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.controller.ts",
+      "sha": "a35ceaa45a7f53a1291817fde3c8a95098744511",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.routes.ts",
+      "sha": "2367f44ed41e0de6b9d8d76f86c29f0084958ceb",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.service.ts",
+      "sha": "44d38346b47fd5e75982d4e454e6563276420f21",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.controller.ts",
+      "sha": "18adb5ca4fcf83e72c4ec22cf8818de35b14e57a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+      "sha": "0b4c97efed5129b2a5fc03e7310812e33cc994de",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+      "sha": "0aacfb505aa4348d700a7172af7df34cd6b03233",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+      "sha": "f0ecf1f8f5edea93490757e731704729ff466cdc",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "sha": "5020ff4306adb36d463615eea597f738b5ae99ed",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "sha": "b2da3bae5ab4d96c54e2f2987f63239ff030a2ec",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.controller.ts",
+      "sha": "53686c39b27e2302a4310e9fe106b8e08605cd0b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.service.ts",
+      "sha": "ac6dc0d5f0ac0755a081a75ce798d40a85161886",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.controller.ts",
+      "sha": "9747d4b421d5a9a484fecdb286bfced13aa497a9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+      "sha": "2c630a44ab0a699a5b46484d1ef5d87696158a34",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.schema.ts",
+      "sha": "5e7115f1dfb6bb87a8f06dfadea14dfa537abc60",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+      "sha": "cbb444886f6dbbd540fab528af24d4f3bafd6adb",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages-identifier-policy.ts",
+      "sha": "32c89f5f954db79df6e5af9a117f498cd53abbcb",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.controller.ts",
+      "sha": "dcefa1f68c666225b2836bd60667bd2d836a5462",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.schema.ts",
+      "sha": "a6c64f494a5efe26696feaea956840f9ff1b4c1e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+      "sha": "c8030f72fbc4ab9be549d97bad0f19fba92b38ea",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.controller.ts",
+      "sha": "5694f6426b86e1bd9907ce693db40520a8b9dfd4",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.service.ts",
+      "sha": "c406c54ccd9689d5c2a3719c1d9a6394883118f3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.controller.ts",
+      "sha": "6b854ae87fb3d4ce25e06c17bca62c357e6ebb31",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+      "sha": "ba3578ce46a78de5609f353341e980b4818c296a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/line/line.service.ts",
+      "sha": "5b2228796d310a1313f3e885d7680233f9ab645e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.controller.ts",
+      "sha": "9795cbd3a2615a6f72c325b9ba3d668484472ccb",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+      "sha": "f9e972eefc7234d4791642618bff0efb63a7a6b0",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+      "sha": "be49f6a4c33c7ed2d1b01f757974e53d0352b174",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+      "sha": "f29fe444a0d5136f137f239a2068500f9ea37898",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+      "sha": "63814fd9fe8933ae050bd8a342066e669547ede6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/order-number.ts",
+      "sha": "ca3d3d96e25730946aab381711409ba913529b14",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.controller.ts",
+      "sha": "094c58bdf22994269dd19b900b437a69969be85e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+      "sha": "4c311a6fc538fa13f38470a9234cae7380c74bef",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/pos.schema.ts",
+      "sha": "9964d6b2f0569665df6d2becdf16e6f9f62d14e1",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-identifier.schema.ts",
+      "sha": "1c96b67ba6ece7c2045f4163ff6eb3572c6a05c0",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.controller.ts",
+      "sha": "d44a4823b62aa2cfcdbf504cc54cd1c4a5d0a922",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.schema.ts",
+      "sha": "d9b7dfb4bc5d4ea9be4e6b939e88386ef53576fa",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.service.ts",
+      "sha": "e1edf1356c3cf7445ca084a8e5db9b67566a6056",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/pos/receipt.service.ts",
+      "sha": "59164e1f00fc5bbcda6d2bd6b279c919a13ac5d7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+      "sha": "8a7279c02bb39dcdb3b1b55c356e1576702c1ae9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+      "sha": "c18cd3aa0d531ce61cd74ebd378fdf85dcbce3f5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+      "sha": "7890e6494d7002e6729e81e995c2bdaad7967cbb",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.schema.ts",
+      "sha": "0e414aa342e4f70682aea64835b90d0f9716ad6d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.service.ts",
+      "sha": "28e9d78b21de94a4e6c8a0a0649e3120ea71c1ae",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+      "sha": "c526c521c315b5781e28bd2d704da255d9c85443",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.schema.ts",
+      "sha": "48e2e9dbf364a8081f8f1cd857a12335dbe6e326",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+      "sha": "727f0b580a865c48d448307c39692816c8627ef6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/cashflow.service.ts",
+      "sha": "6ce1ec911fad89c2a1dc90f68ca850a920f137fe",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/margin.service.ts",
+      "sha": "334cd6e5a0efe37105242e1d1f8de5841fe31293",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.controller.ts",
+      "sha": "535c9be17ef30a013fc0c47b46ba6116482cc5c7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+      "sha": "ec1c0070cd49499a8a757a1ca599cfe3002594d0",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/reports/sales-ranking.service.ts",
+      "sha": "0508d93dd4f83817e309ab744a28922a1f078e37",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+      "sha": "bfa85c73873f9cc1573ea23445e345ee5356172e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "sha": "4605ca73d390e3f5f0d81b709cf12d062c8fb7a2",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts",
+      "sha": "410823965f69c86c7b013070fd3032c008feafa0",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "sha": "2496b3f50b570a61e554792d47c63ab425eed871",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.controller.ts",
+      "sha": "87e26415a1925b8e891f31effdaa670f5f276e4d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+      "sha": "44c4118fd9a52dc6085de1801bb727ff6250c2d1",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.schema.ts",
+      "sha": "a78564b2d054098e34fbf5338ecebc1121661eca",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+      "sha": "61976780f22ac1365aedd6b639b6bce646b51c07",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.controller.ts",
+      "sha": "a309274b5dd1a80f5366c8816b8e0fd7b33fd136",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.routes.ts",
+      "sha": "d6088cb7c3d2567043d2e935db3f9fd16ee6ca60",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.service.ts",
+      "sha": "b860dafd64e8775f0016f5d39780f697790f60c1",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "sha": "77656682831e3f5ad762796006669e6e7cb19cab",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "sha": "743d28e5ed92d6af5d7867aec6df22ae1e3012c4",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.schema.ts",
+      "sha": "c476ec61899d6ce599472e9b8eed5932b270d8a8",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "sha": "99a2fe96721a624b4eb21630a0abdafa549cfb94",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/server.ts",
+      "sha": "bd2b5d35905a152f62efcd3fdb9d0bd53e4a97e9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/setupTests.ts",
+      "sha": "6a8bec92e0afd9dd75c017d1d77f9fa8b7c3bdc8",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/types/express.d.ts",
+      "sha": "2ca9f70509bbd968c553494a95e93f759dda9ca0",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/docker-compose.yml",
+      "sha": "a5365a902cd3963fa877ae63782327c092b8ee8a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/adr/adr_023_local_ble_medicine_label_bridge.md",
+      "sha": "206ebf16e04f6208cd237b1cc0143c096da0cf2b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/api/api_spec.md",
+      "sha": "540f71d491a6f978e088b4667b94ac5ab36c1f03",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/evidence.json",
+      "sha": "d1bd1ed5947b6349095cd3a0fe60776254047dba",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+      "sha": "953d682851d8f6f6c414c5147ea9117894b2262d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json",
+      "sha": "b08513d42f68cef6576c95db5e28005ddaeee117",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-inventory.json",
+      "sha": "d0825616432af73d4ff4a10d7b39cb0c93fcec11",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-verification.md",
+      "sha": "024caf62f4a090e058149579aae6bac3ca0617cc",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements-sources.json",
+      "sha": "7eb864e69b022e2bcc5b50eae1af80bee2123468",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements.json",
+      "sha": "1869bf2e82dde931351d7e9ec2ab6d8f950abd5a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-effects.json",
+      "sha": "be5b8871dc0dc30b7892da4fcbb241a70a8cbee4",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-inventory.json",
+      "sha": "5af7a14671cbd64f81c15b694cd1678318cd010a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "sha": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-snapshot.json",
+      "sha": "dfd720bfc60b14f074a491d25cb51d12513d5a5b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/README.md",
+      "sha": "5df0a55b8993b1363548262466d856e2da2b4c36",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/agent_context.md",
+      "sha": "47095e63d77788df2cd709fb4633145cb9c38c1d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/standards/git_workflow.md",
+      "sha": "6888163594528848f81b29a6dc8906549ada1214",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "sha": "4824f4f811a65476b747b9b5077618da77d7f9bd",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/README.md",
+      "sha": "dc1ea2aaab183fdaeb5e91fac423ce3df8e204b9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/SHA256SUMS",
+      "sha": "e3ae4ce466a64d09287fff0f23ec222a00fb83d7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/base-materialized.json",
+      "sha": "b23729624f32e37d25f2fea285a0dce0d1e10d8c",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/context.log",
+      "sha": "f7ed28eda45505e8989f810da450c844522ae32a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/environment.json",
+      "sha": "e11d7743b1a93221a52eb3c969a1a83bf4336f84",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/context.log",
+      "sha": "f7ed28eda45505e8989f810da450c844522ae32a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/inventory-tests.log",
+      "sha": "fa2724c1b03589791b92505a0cbd80bfed708d22",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/node-regression.log",
+      "sha": "9c5f6639609eb021f860fed735c92795ee67c98b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/plan-source.log",
+      "sha": "02470200df1375847d4097ec9e27a718e5640bf1",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/print-inventory.log",
+      "sha": "bf270ad37900aa99d73ecc472afd9e8dfde78e64",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/results.json",
+      "sha": "fd00b509ab72849b042e7c1840c06e8ccecd050b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/seed-source.log",
+      "sha": "73017e27897d2bc6abc068ec49b8b0c7601beef5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/source-whitespace.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/final-reproduction/worker-controls.log",
+      "sha": "fe9444cdd066e48f6123e343020d289446fe1f30",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/README.md",
+      "sha": "0c12122a517b35186868c4028035ab5325369270",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/addendum.json",
+      "sha": "f59490dcc4c3f9c6b8cf33ae982377c08e6fc7d3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/author-audit-replay.json",
+      "sha": "e7513955692d9108390379426574dca881955750",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/probes-run/result.json",
+      "sha": "bb0890543c30ba8b295f17453a1d823929916fc7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/replay_print_review.py",
+      "sha": "627c08d7889861cdcaab098f728abb3694c98231",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-review.json",
+      "sha": "993b688284c1eb6cec2ca006fe8666a3da207a9a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/initial-worker-failure.log",
+      "sha": "8b0575c974170e4172b272b696144660f00b190e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/inventory-tests.log",
+      "sha": "95fae6837bea37152e4406dfded8e358c56af737",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/log-provenance.json",
+      "sha": "053a7550eca802f5cc752d2784855c9cbc1482a7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/materialized-sources.json",
+      "sha": "b410f6b6c10def9293c71df9f853c3aa3dab548f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/node-regression.log",
+      "sha": "0e8574fdb245bab48acdfe834271183f066df284",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/plan-source.log",
+      "sha": "02470200df1375847d4097ec9e27a718e5640bf1",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/print-source.log",
+      "sha": "bf270ad37900aa99d73ecc472afd9e8dfde78e64",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/receipt.json",
+      "sha": "3c5b7e5edd97b575f379f8f78232dfe3370322c7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/reproduce.py",
+      "sha": "70a37ef1fc32bc494ffdf4b8d1ce6c8ed805b356",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/seed-source.log",
+      "sha": "73017e27897d2bc6abc068ec49b8b0c7601beef5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/source-freeze.json",
+      "sha": "53c937f4b4d2792d10cd0fff09863e6d1e03edfc",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/syntax.log",
+      "sha": "aa349c105b882e0e10b43523b00ed0be7f131ae6",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/unchanged-acceptance.json",
+      "sha": "c3c8b9d0c119ea052e24728a42c73db899678ca9",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/worker-controls.log",
+      "sha": "463caf6bf280124d714bcc19d864ad71a07d7d30",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/.gitignore",
+      "sha": "d24895d1f61771875cd485a9ae90fc6a18065ee2",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/README.md",
+      "sha": "bce9356bb40c3c42c99f2fad8bfa3fc6afa83646",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/pyproject.toml",
+      "sha": "ed1bd528351d4a6c36e74b9b32ecb5849516a842",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/requirements-tested.txt",
+      "sha": "d50a70a98d4533e1c041ee57189812d5d71045bf",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/samples/experimental-english-30x50.tspl.bin",
+      "sha": "79d5bb613dddd8dc55ed5d4fce076c0bbf5012fb",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/diagnose_windows.ps1",
+      "sha": "cfa54a2d928d328a19dd0c2ceaa43c1b6a9fa393",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py",
+      "sha": "1c4247be1bad717b161f8258c58527b7aec47f0b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/prepare_suite.py",
+      "sha": "267c9689b39c4a4b6f37e1603202dc0cd60fde95",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/scan_ble.py",
+      "sha": "c6444fd4d4a148b6641208eaac9ed5dffe5850dd",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/__init__.py",
+      "sha": "010569e4adbab296c57b91cabb004d5a8cadb361",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+      "sha": "4e9c9c75010d13a9cc3f29bd89fc41ef590d277b",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/ble.py",
+      "sha": "e48425377fbdcd80663d3aabd344a2a85258df54",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+      "sha": "3b6e7e9351e80a2694043fab87cd003d59fbdde3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/medicine_label.py",
+      "sha": "f2be7722d8fc7cf7c9c9eb988a7735f7cd980586",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/raster.py",
+      "sha": "8a1e87b93e7f389d7e83ff32b18a8f3ba7baa28e",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py",
+      "sha": "b247190cec005c2f919226a9063a72bfeb4902b2",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/tspl.py",
+      "sha": "e00af949fd54752dd982e34edf1f974d56384cb3",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_api.py",
+      "sha": "804ce506728413978080723cfd8d08074a1f4ba7",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py",
+      "sha": "cfa6305628ffeda1a969510b5c0151b7a4ede49f",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_medicine_label.py",
+      "sha": "39ac18241117fe8d28698ab5650faa4718e63e1c",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_raster.py",
+      "sha": "293b7cd6796faf985d15b243fc7a9f7741daee07",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_safety.py",
+      "sha": "07d7beee5a2e9c9a522df29e6bc1768f3c89dc7d",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_transport.py",
+      "sha": "2ec971c39580681d3a3f2192d18d4fa7034ac6b5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_tspl.py",
+      "sha": "647282e43d0f84e8cd1c73515c595535f97f459a",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/package.json",
+      "sha": "76610c465e5165b8cac3ff0e8ad241f52d994369",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/packages/types/MODULE.md",
+      "sha": "469eb571bc59f68b53f9422c7c6ce69430241332",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/MODULE.md",
+      "sha": "8c78b053a6ae0e4773c02e77530a7c356cd014e5",
+      "matchesRemote": true
+    },
+    {
+      "path": "systems/enterprise-admin/pos-ui/src/__tests__/offlineQueue.test.ts",
+      "sha": "b87c41bb26f48bd1191f94ce1cf4e35e7e995841",
+      "matchesRemote": true
+    }
+  ],
+  "publicationFiles": [
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/provenance.json",
+      "sha256": "2e4f511250dea40da3a54b7c37d375d7525df71335d4ba28bc32e5828c504713",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/packet-checksums.log",
+      "sha256": "64a651c00b1d31a8865aff1d3700c24ead5d9541d43684c76b039dcd2a9f24de",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/http-verifier.log",
+      "sha256": "f662ff788be0b3a4e18f971988c91425d851b1cda981f92f21741700515e60cb",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/original-artifacts.json",
+      "sha256": "84eaa96b24f399c27e20317045f13f7d2df039fdd3e8a6cd75bf358fb8d5ead8",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-replay-receipt.json",
+      "sha256": "452e0dd690d905fd1bafa9fb4db495ca36575b0428f725d89fba4542a5d9ec8d",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-default-resolution.log",
+      "sha256": "e821b7a0b4f6c9da15fdc6332c707713e3a06e3dfedfe13709c56029ef41ac65",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/REVIEW.md",
+      "sha256": "9c12a12c0f60427961849b8e0be0202152647a40b792f4bdbfca08c966e0b797",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/PORTABLE-REPLAY.md",
+      "sha256": "97e084666a5cbfd54365b51bdab820f6ae052d8b8213d08619652fec498a904e",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/reviewer-receipt.json",
+      "sha256": "52b403bc321f7138dd3fbeb34b1fbb934122e098301974499816d1a88593b287",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/plan-tests.log",
+      "sha256": "bb148c858322ec80dbaab37f858d6261094ad343e990a059d65bcd9040d6122b",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-replay.log",
+      "sha256": "51d9b48ec65cfa353b905f1494cd2e4a3030bfcfc77ead3f32a743a1bf03de14",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/expense-dataflow-replay.portable.cjs",
+      "sha256": "c86ce6788a782c599eebce50f7681e13d0a3ab474e90811b0cfea194d75fc413",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/http-tests.log",
+      "sha256": "2b3d49d5b94382fa572ba4aecacdd4e9fbbc61b12fe50648ca6aa0aae283bc8d",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/expense-dataflow-probe.log",
+      "sha256": "6b5c3ea0db598e7c09e04970f095bea95f7d0582f1191f8cfc23d4c41cdcca14",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/source-verifier.log",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/context.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/context-rerun.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/SHA256SUMS.publication",
+      "sha256": "554239a4f4cc12764a55f0698bbf210fbed7aaae926d0275003e18a61c8a480c",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-path-controls.json",
+      "sha256": "93d7f00b71e8fcd183021b911185cb078e60760552f463e323c0017d4c074031",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/gate-tests.log",
+      "sha256": "716e8527e3300426760cf350c97d4052a5bea5b7681d8c4004e72dc55926a04d",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/expense-dataflow-probe.cjs",
+      "sha256": "f1be7781c7adc38d03aaf1ccaba3c10320b44c5ade356f7d45fe347a3f6291df",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-initial/portable-adapter.diff",
+      "sha256": "18e6a07d39e903c67f346102f9359e2fb9a268486e07fdb4fd97ba26fbd964ee",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/provenance.json",
+      "sha256": "92c0fd1bdf923aedb966532b78d5a1af2e4544e128df54ad946bd21c3ab47314",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/http-verifier.log",
+      "sha256": "85208165f9360441a15a094eba7954055efd5d912b7c9c22c83b394e8d4ad18b",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/original-artifacts.json",
+      "sha256": "e2d209589d79e4a97316f08ed709caaa3d2fa212ac09ba4911b8d877e6e21e99",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/seal.log",
+      "sha256": "20ac180c42384cfe04ac4a81d9aaa8aead6e1fcf1269655c5afaf57023d0e266",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/REVIEW.md",
+      "sha256": "b1b8e920b5325b6c2ca9918cbffb10501f3c50cb821db7a88d35d28ed9ecb059",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/reviewer-receipt.json",
+      "sha256": "96084391828836ec04caa3d631d6fe523898c0417c5da88ae27cf28917ca9adb",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/plan-tests.log",
+      "sha256": "21bb4613f2d0b9f4caa900dc5a2b6abfbc9dfa5d55ff501d026876ba69a057f2",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/http-tests.log",
+      "sha256": "1f9b44deb0226e419e35cd353270cb1aec9459033d2e09c561570c4b6e2db3a6",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/PUBLICATION.md",
+      "sha256": "3c7b363405c0e640974306c2a6e3bda209182c6bae75ed774907d638e9d866e4",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/source-verifier.log",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/context.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/SHA256SUMS.publication",
+      "sha256": "55f72628f4af1b54389ebb1492852057a18d097a14ee147d0965495f99744db6",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesPublication": true
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/independent-review-r1/gate-tests.log",
+      "sha256": "1bee1cbb1cefc42bed71f31af364e2fdc69f47659d8f8a6f6843e033d6b8f2e7",
+      "matchesPublication": true
+    }
+  ],
+  "originalR1SealPreserved": true,
+  "integratorLogReceipts": [
+    {
+      "check": "http-tests",
+      "sha256Matches": true,
+      "reportedExitCode": 0,
+      "countMatches": true,
+      "logSuccess": true
+    },
+    {
+      "check": "existing-node-tests",
+      "sha256Matches": true,
+      "reportedExitCode": 0,
+      "countMatches": true,
+      "logSuccess": true
+    },
+    {
+      "check": "print-inventory-tests",
+      "sha256Matches": true,
+      "reportedExitCode": 0,
+      "countMatches": true,
+      "logSuccess": true
+    },
+    {
+      "check": "print-worker-tests",
+      "sha256Matches": true,
+      "reportedExitCode": 0,
+      "countMatches": true,
+      "logSuccess": true
+    },
+    {
+      "check": "http-verifier",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "original-source-verifier",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "seed-verifier",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "print-verifier",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "context",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "whitespace",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "syntax-http-writers-contract.test.mjs",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "syntax-http-writers-mutation.test.mjs",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "syntax-http-writers-spec.mjs",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "syntax-http-writers-verify.mjs",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    },
+    {
+      "check": "syntax-http-writers-verify.test.mjs",
+      "sha256Matches": true,
+      "reportedExitCode": 0
+    }
+  ],
+  "integratorTestsRunByThisReviewer": false,
+  "worktreeTrackedChanges": [
+    "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/README.md"
+  ],
+  "reviewedDocs": {
+    "readme": {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/README.md",
+      "sha256": "dc283ae3f13b0b6b29384c897b581f8fcd95252a71fa4981a361f7d2bf04ea47"
+    },
+    "integrationResults": {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/results.json",
+      "sha256": "783ded6005851ba700c2026dc86b48dda62b2b138122109507b37801dc086da2"
+    }
+  }
+}

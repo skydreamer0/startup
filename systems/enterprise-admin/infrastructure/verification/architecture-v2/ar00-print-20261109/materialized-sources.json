@@ -1,0 +1,1157 @@
+[
+  {
+    "path": ".github/pull_request_template.md",
+    "gitBlob": "3bb81cdcae1f626699400a45f6979e94016c4ee3",
+    "sha256": "3164cb3dcc7a098e1d5a67ac3b775acbc485bdfe81cb13aa9b8736e347bb333b"
+  },
+  {
+    "path": ".github/workflows/ci.yml",
+    "gitBlob": "7936804b8635188a691fe1eaa2eaa4d8d268e7f8",
+    "sha256": "07d410f35256b499ff8b48403b72f8321d0c5079f4084191500f834f986606c9"
+  },
+  {
+    "path": "AGENTS.md",
+    "gitBlob": "810bbfc9e4343ec9a43e107e3863105031f365f2",
+    "sha256": "5e4915b12c1a7c744cb1b24c8dc06bcf2bb8df89dc29262ec4f714dbc2bd90f3"
+  },
+  {
+    "path": "CONTEXT-MAP.md",
+    "gitBlob": "7057286e27f60fe56f6a5b698248191cb5a6257e",
+    "sha256": "0f4964b2e849d4c04f8cfa7e05dcc0262cf3b5b20984ce95d54461212a99f2f7"
+  },
+  {
+    "path": "docs/agents/domain.md",
+    "gitBlob": "0c5eaf7df75f5639885d9958e816414c64e4ac6b",
+    "sha256": "77915e4072309de5a27e0acaccb10ce132534a15b9ed4e20cb63900195874b55"
+  },
+  {
+    "path": "docs/agents/navigation.md",
+    "gitBlob": "9e404a3eae48fd90c359ad1f28de4623c400cdbd",
+    "sha256": "87331f893ddb5c2359898b6962f1091aa7fadf846e802e8acbf7d9890a476e5d"
+  },
+  {
+    "path": "scripts/architecture/plan.mjs",
+    "gitBlob": "406f08fd2f1994cf4f069e9717f0fea9284825e8",
+    "sha256": "8ae5eef8172e483828046bc65722ae34aebfc82495f212af334329b8edbd48d0"
+  },
+  {
+    "path": "scripts/architecture/plan.test.mjs",
+    "gitBlob": "d4ff8c4ecc8584f9774424b509c8178b9231fa95",
+    "sha256": "57f227da7c0ecf13cf33c93abac6ed1f0a293a26821735ed862dcccb2b9f286d"
+  },
+  {
+    "path": "scripts/architecture/seed-migrations.test.mjs",
+    "gitBlob": "c032f1d2efcd4fbbdb261a9ac90896797ec05f17",
+    "sha256": "8b8349ba4580b5037c2d520887dbc4c34b7cece1edcb7a0b7de6f2ca0ced6e2f"
+  },
+  {
+    "path": "scripts/architecture/verify-plan.mjs",
+    "gitBlob": "c0710b7ca8c310dca6326275022d274b1a00566f",
+    "sha256": "0a2dce1320f459024b18c01aaf945cba64a27a0dba0b66fee8d8cc70f431e798"
+  },
+  {
+    "path": "scripts/architecture/verify-seed-migrations.mjs",
+    "gitBlob": "10f289bba79d5280e36bd5661e408debd8d0156d",
+    "sha256": "9ac23f12486921edc7fcba685eae3c9bcbf894f1549dfd6656ec3547c74d6de9"
+  },
+  {
+    "path": "scripts/ocr-evaluation/evaluator.py",
+    "gitBlob": "69d8248589b187c96b72bed106c6495398f7bd83",
+    "sha256": "d5828893fa1f2595ef8cfd35593abb4c6256a300e123742ffe2b58785677023f"
+  },
+  {
+    "path": "scripts/ocr-evaluation/tests/test_evaluator.py",
+    "gitBlob": "55a4aa49c0f28e28b12395579ff59104e4927f36",
+    "sha256": "327e39ff91dc7a07d0ea2e52fa1477eb697b6f6bb2983fb43f9b6bfafbf858e1"
+  },
+  {
+    "path": "scripts/ocr-evaluation/verify.py",
+    "gitBlob": "4d96c88c22799b39bb21087b69961292500e811c",
+    "sha256": "9d6d8094e04f2cdba65d3e5734ec0d83ce4229ec02a3e3382a3e528b28359fef"
+  },
+  {
+    "path": "scripts/validate-agent-context.sh",
+    "gitBlob": "93950306f5479f97f2f2aa86c2ef48166c5bfbff",
+    "sha256": "6bf9c0192768bbf0aaf1121ff8e3300b46ac24d7b58e81cd4a0419a2b5af4d1e"
+  },
+  {
+    "path": "systems/enterprise-admin/CONTEXT.md",
+    "gitBlob": "84549529bbda1de703d8f864ccef496966c2d5e3",
+    "sha256": "cf637c433d2a4afd57b6af7da7029c9e6178551b1bcd6bab354807fdbee3b5ae"
+  },
+  {
+    "path": "systems/enterprise-admin/ROADMAP.md",
+    "gitBlob": "34ca9d259c10c9ebee5cb532fb8d02e660964ee6",
+    "sha256": "a0b61044a57b5487555ed492899d8e393b6b283e908e06b0304278f1344a30be"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+    "gitBlob": "dda0f83aa1c6cc886f1c93da633a11a2c34928db",
+    "sha256": "0d0229e04f450eeea18df33d4d097e30ddca7e49d0f039001898bc5f247f6507"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/src/__tests__/MedicineLabelDialog.test.tsx",
+    "gitBlob": "d66c2e93afd78308edbafeb71a5ea984696326d6",
+    "sha256": "b408124091bc78b33669d7f34e04c1fffe156e5f6c4e5d32c255a6db8ac0764e"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/src/components/MedicineLabelDialog.tsx",
+    "gitBlob": "94ac550bba2103c682a28ca29ba4deaa2270aebc",
+    "sha256": "d83a6589ac6dcf91c1b5dc8fa8bae5d09a09f4243824b6a61d6eaf97a9d889b6"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/src/services/localLabelPrinter.ts",
+    "gitBlob": "e1a84381550d4e5b62e6f33e68452b2ae309a925",
+    "sha256": "93b0bb99fd93f0a39f6a00b031cfabf3803dd13ff4da76eacf935f76fded1692"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/Dockerfile",
+    "gitBlob": "4cb36d0360e945a2e1b0a7d924161aaa84af23b8",
+    "sha256": "39ab93a4f596fa6601804ca0f05d5a277bebb8d2328222e057d8caf408536132"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/MODULE.md",
+    "gitBlob": "5db09717f98624217a67b8e311d9d882e8e628de",
+    "sha256": "eddf59363f8a04ed70c5035e4ea228276f45a13142f00ce8306297f49473c037"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/package.json",
+    "gitBlob": "12d264cee6129a28e8757b5dc90b395fe0b74f93",
+    "sha256": "92e4a0bc6ccfe4b92b11e5bc36714a0e3fcfc4e39255a69a8e0c050aec4c187e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260301164756_init/migration.sql",
+    "gitBlob": "88db581bd70d662c20b6beb3930372e39c4dbe3d",
+    "sha256": "6b0060dc422813b62c27abb2386cb4f5948ec064bb71053fcfbdcfd6c5b2babd"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260516000001_phase9_pos_schema/migration.sql",
+    "gitBlob": "0e7c185d5caf60681d43dc69a751584fd1ab29a6",
+    "sha256": "c23777946c2449bfc65bb10ed5a0fcf3afb0ae23b445c6dc9cad9fccdd9bb882"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260516140834_phase_8_sales_foundation/migration.sql",
+    "gitBlob": "054ae24a18346987150b0fddcafadfd2bf45cffc",
+    "sha256": "10b818024a8eebae2b942ecb9394a90199f4e522393d48a20a21a5cb98e96bf2"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_accounting_sync/migration.sql",
+    "gitBlob": "ccd1c51cbc019617c1ba43f0d9a9b00dfa7ad8ff",
+    "sha256": "c346a40f40b63130ada9d9e46d74cc31fa2195f7a7c696a59de25a8b43ff512a"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260519000001_phase_6_line_integration/migration.sql",
+    "gitBlob": "6e734f1cd87f35d52465fb40c858026efabda9f6",
+    "sha256": "c586f4d1d3374ead74e6e87ca7513b8e204c5f4d62588cb0018ad33113728c0e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260520000001_arch_fix_5_float_to_decimal/migration.sql",
+    "gitBlob": "92dd80ac684175fe45c91245fed7387f32f35864",
+    "sha256": "3af6bfbed2cf592131abe741d02b8f33d9bdec90f56bf9a91b354be88fea9e1e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20260522140840_phase_9_7_split_payment/migration.sql",
+    "gitBlob": "65e6187f975d9dea84fce77130cbcdff5ec2f470",
+    "sha256": "177b99d569521c9cca3c7483b528eb3b49355d592200441fab51168e41cadf56"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006090000_sale_batch_allocations/migration.sql",
+    "gitBlob": "4419b8546b3676634f512861327dc3cd135bd9c0",
+    "sha256": "ab3f07660a2427ddff453f5e4565e1c1fdd7a7c6060aa42709c670ec9f1ac4ea"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006100000_atomic_batch_receipts/migration.sql",
+    "gitBlob": "4b7de729e72c255b16a6483684e335a227328c26",
+    "sha256": "c2f15be427ac1bfb0a325148703497013eca50913c5a90bfb0e6dc7ee98c47fb"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261006110000_checkout_commands/migration.sql",
+    "gitBlob": "7e6a14d8e9d15a8d0c87cce5b6821618416aaae0",
+    "sha256": "84609ab16f74d3a12ed4ea843b872c6891b6d6e97304b4e9431bb197e44637f1"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261009010000_taipei_order_sequence/migration.sql",
+    "gitBlob": "c6b8ae4db9041a54502a299ae4218f9ac8c0a2db",
+    "sha256": "df6e3de02052c08874c4adc307bca65d0383d86bd692653793948a99a1f3d553"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261009120000_product_batch_changes/migration.sql",
+    "gitBlob": "50bc81517a849b0172827db05831925825eb9de4",
+    "sha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261015160000_medicine_label_metadata/migration.sql",
+    "gitBlob": "83fd6432ca71a7e8e37ad003de8796bab0af6475",
+    "sha256": "b5d751f54c935de55461e4f45eab73a688a7e361c2d013d10e194de53c42d5e6"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261015170000_medicine_label_three_line_metadata/migration.sql",
+    "gitBlob": "b522e08515139a402f496cc7001febbdb3ed864f",
+    "sha256": "706fb801d756441bdb19bba29bf82adc3f91cf91cd6e807297c67b40fd959423"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261016090000_product_package_mapping/migration.sql",
+    "gitBlob": "8dd76439f27c290490378389a15785cc284cce4e",
+    "sha256": "bb867d580feb54f554502d2a02d5602f7d8ea873dd1629eb3d63b462c64850c6"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/20261018141500_private_receiving_drafts/migration.sql",
+    "gitBlob": "84e643e73335bb0f96b9cc625db7f43d1b143827",
+    "sha256": "62b8f47494273707eac8ce05f67d7b62ecb6cfc11f140ad18c1df94639dc9b35"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/migrations/migration_lock.toml",
+    "gitBlob": "044d57cdb0d5b5bff3475112359a4ee70439bf78",
+    "sha256": "99836963713b4f5b269ad49af0ed3d7b0b2e336115c2f92dc9ac683d139d0900"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+    "gitBlob": "c2f5c037c1cdd6c4f89e56de24e015ecc5ecd830",
+    "sha256": "4ee60fd190bdba17170d3516cf816548cdf64023696ac1ba5f0e011f7a5c09ae"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/prisma/seed.ts",
+    "gitBlob": "fb0861b034860e72fbbd9814238a09212c605737",
+    "sha256": "5d56cf8012d505137e314019835d17e5b37f5d8e17acf50dbd7061f7e0637f38"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/health-readiness/ci.test.mjs",
+    "gitBlob": "628259d795a6b73097b32ff2731b4dc1a8c8b72d",
+    "sha256": "c2b12ba0ffa49b9ae4894af946a3de5e880bd9db971812fd70e258de5c2747e7"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/health-readiness/verify.cjs",
+    "gitBlob": "7ecd710ab7db875b3485840af04e71217635fb2f",
+    "sha256": "5043b295fb58b6778536f7021e5e00e0da95d5762be51598cc8bb0f8ae8750a1"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/medicine-label-ci.requirements.txt",
+    "gitBlob": "5df32e05762481f2ddbee33019ded20f086886d6",
+    "sha256": "ca173955c44fafcdbc351b33e7c1dcf547ef078b8f5dfe6ea646eaf86532fb5e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/order-sequence-ci.test.mjs",
+    "gitBlob": "3c8b1f4a105a4cce08cc21652051199496507bf9",
+    "sha256": "2159c03535e51534079e3f6fab73eff66713c85773b7ce19a98fb72d9e9f98f5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/order-sequence-migration.mjs",
+    "gitBlob": "d0ddb3d75f176c969bef383cfe37c9f2de645c24",
+    "sha256": "bfc826e3070ac61cf9e13f3235e14cad4ce371a50596ec42084c2435969bd1c5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/receiving-browser-snapshot-deadline.test.mjs",
+    "gitBlob": "6f84aef4718bcf0956873bf42d9be167ed8a62cd",
+    "sha256": "20cc8afdf5f2078f23b4f814b3cb2fd46dce86fce2c70dfe8c87d2314f011bab"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/receiving-drafts-ci.test.mjs",
+    "gitBlob": "c6e2ac719cb7601729f29c5ce23665c37e0c68b2",
+    "sha256": "16e9a69e7da679dfe4c45716f6aa7a777123877ccc7a34971b65dd12f560d21b"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/accounting.provider-factory.test.ts",
+    "gitBlob": "f9dcbbdca1ecf91376c170c4b62d6e74a989e1a9",
+    "sha256": "fc46dfe1fefad392180ae93ae33821b7a15d99504cc9eccdf2ca0d842974916e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/accounting.service.test.ts",
+    "gitBlob": "48a9f110c0ec5056e99ba34fc8d33299d111eebf",
+    "sha256": "23d318ecde0470554d8dd0fb0b9ad6cd613f2fcaeb47fc1f308d1dfffff5d72c"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/batch-change-schema.integration.test.ts",
+    "gitBlob": "5d4dacf5e2ccc8a7b8d70227265e954b1767ec2e",
+    "sha256": "7f2e336bf2737f1b7701bef8ddf0e7eebab27dd984969a3b0d0f458daaaa4923"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/checkout-command.integration.test.ts",
+    "gitBlob": "8b3b865b5a0b8ba8470a0b1a7af2aa1629cd9518",
+    "sha256": "6fed80cf143bfa298f624d086fdd78583362f2b307c170c88ff577fc9ec6de8c"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/health.test.ts",
+    "gitBlob": "56200f5a4b03acad7817db9af9108663bcd49be3",
+    "sha256": "57de981bb040fe3e5bcab6a9c9851f9a5e6d5da6ee9ef2d8aac992f0cdf4480d"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/inventory-receipt.integration.test.ts",
+    "gitBlob": "33661daa225c38900c30e3b1dd741f16696be799",
+    "sha256": "4422a4f1b13504a7af246d742f185ade4d556c6a636e85fa1d7766bc28bf5471"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/line.service.test.ts",
+    "gitBlob": "3cd878db17f9d5d44bce7efaf28e9bf75cf590d1",
+    "sha256": "50537f0b7f0dc6b305ec9c772bb76bea6504fb9d48a5a858977e7b96baa45a8e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/order-sequence.integration.test.ts",
+    "gitBlob": "4e9a43602c3e115200c101bb290f89f10c547399",
+    "sha256": "30378b1d240275497c06c0f0951aeabb1e23acfa4034e171023812039e6cdb16"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/product-packages.integration.test.ts",
+    "gitBlob": "e131330133d0a15703df2fb2a604643c08e5232a",
+    "sha256": "e59d84de8192d4005574e14076d0814176a8fa78b932eeaed9107289ed93457b"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/receiving-drafts.integration.test.ts",
+    "gitBlob": "5c318e8fe3fed794740390c19ae8cdd35523176a",
+    "sha256": "22dce41ee3246c097c05b3b01c70bfbf89f7c2c1eaf39b87725c8efe881e9fa1"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/__tests__/stock-contention.integration.test.ts",
+    "gitBlob": "40aee4f15da2d8ec9ab39323c725e8c7e85e253f",
+    "sha256": "e1d2ea73d986ac6cf83a46cc733866469b6d8a8ad1f0074fef858d54e5fde006"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/app.ts",
+    "gitBlob": "19c7b50dada0cb5f337c5567d0926bb04ad01622",
+    "sha256": "2faf0bfbc5c55a7bf949716f128a69f07593e315f6490c3b8c7460a39f204587"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/config/env.ts",
+    "gitBlob": "f88563754519c3ada4ca366a7893cbd5be425c83",
+    "sha256": "e297ba59bd1a4a1a13829a8361f29dda0686dce0ed2072c835528dc42c899387"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/__tests__/readiness.test.ts",
+    "gitBlob": "e22f9a62612fa6c0926565425d96f234f9008c8a",
+    "sha256": "cdede32f9dc7ff4a0b3a84f65c20372265fca44460f863ae10888fa87a36a2ef"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/admin-route-policy.ts",
+    "gitBlob": "1988cde436bff1d9cb6ad32cb318d26a76b9d0da",
+    "sha256": "74dd4536afac7e6756af4d8b103dba6aa7e23bd0b11bd76721edbe5d0e51c364"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/batch-expiry.ts",
+    "gitBlob": "ca4a648f0ead4eb334a0ec476a56ae72af6cb97a",
+    "sha256": "1ff74bcaa9dd039f83d28cd0c94afa4ec1c6cdcb73d71be40cba92b0824c11d8"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/business-day.ts",
+    "gitBlob": "03f39c906d1dfb15dbf7a5a1b43ec6936495e2d2",
+    "sha256": "083c25a9219ccda0b68888d9becdd41badeba7fcdfd3a58c3459b586f7ce3576"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/errors.ts",
+    "gitBlob": "0df064580f552bbecebf509eefef7304de0e7bc3",
+    "sha256": "58ed2880bf7efe43330f25c5fd7f8697fd5cbd4dc673fe5cd4445fd9dd3054ef"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/inventory-posting.ts",
+    "gitBlob": "1e890535b862f66456d0f56bd3ec31a175230d82",
+    "sha256": "5c0f2cff905b737c2f446cc425ce7294d5c684d4d15653f68c513cf94595122e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/jwt.ts",
+    "gitBlob": "4100e0b234db2e741b1b24a5c315311d233b1a56",
+    "sha256": "6ac703cd1ca49faf4edfadedabe81564cfbc6d540599e4a051b717bf8a87b714"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/order-payment-totals.ts",
+    "gitBlob": "c69e60907251dfe90717bf2a60891f18592aaa4f",
+    "sha256": "05ee4674ee7b2cd2307cebbc74c8a2ff161435130d0b960306246868d29ea7ab"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/password.ts",
+    "gitBlob": "9ea5d908bb59ee0a367ebd6506994373e0128569",
+    "sha256": "eb20d8638432410945d15ceac823ccaec493fecbd7f9afd56fd52e29be1db3d4"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/plan-features.ts",
+    "gitBlob": "c267fe54378cba859c2a5111a9d735d7baffe08e",
+    "sha256": "1099c46d18cc0136263947785dbb19814b9812977ec3e5d779bdf9d36f62df32"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+    "gitBlob": "9f61e6a37b9a78840d7b7a033eb59746d05fe2f6",
+    "sha256": "1754f7004cc25f796350b9844c6050f1b5bf156c1a425c848ff5a8c6d9b23f1c"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/product-import-preview.ts",
+    "gitBlob": "e6645d200e1dc81aee65d33d32a7655307d6fb06",
+    "sha256": "dbf8d9ef6d8870d15e86f5bcfc1fe5f9c0a851fb00e6fd23ad8816842f7b12a5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/readiness.ts",
+    "gitBlob": "6aa55081e30d9af09ebc63ba36ca6ad15cdec002",
+    "sha256": "583998dbfaf464693fffa470c9bec65420da931d03c16fc3175ae07bd241ad78"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/route-policy.ts",
+    "gitBlob": "eab747c0b727c7b792ae51294f41ff3605af49c5",
+    "sha256": "e63cc4e1105565b98a92222d7e730acb12e7c8c73823142b52d4dc0e417bbfa2"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/sale-stock.ts",
+    "gitBlob": "a9ea1b364fc67b6ae114dc9e3a6ec0b7d8d3b46d",
+    "sha256": "c622f4e48f702c2219310447f67a97844a33f34286730c29ed92fca5b21bb9ae"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+    "gitBlob": "1f3d3d13ab49d1ecf9588f4637fe56f7239b0081",
+    "sha256": "8e81e51175487147faa60b86187b774cb6a5ab4cbd7f5d2d09b835107eaa2695"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+    "gitBlob": "80b74559bda0423212faa0888b54536b7a228f6c",
+    "sha256": "2d48d04f4e33270fdecc0d60572fa6e6def906d7426ac002346e2ad1379e3a29"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/lib/tenant.context.ts",
+    "gitBlob": "6fb6862af9dbb00a4306ab4645fbd50c97134be7",
+    "sha256": "33cbf5a1ddc8f5c49c2631b496582c0beacab2a4bec44477edfdb44e6475f348"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+    "gitBlob": "6eda759e123eb8f149b31d370b9e795ec6927b18",
+    "sha256": "7cb272b3fd68943fcda09abbca6352d9aa0cc5f2683f5a5101f29fe410e61072"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/middleware/error.middleware.ts",
+    "gitBlob": "fbbe542111f7108351d29a1e2900ee5b63aaf1c4",
+    "sha256": "41a17ca00b970497b45c892295180fdfb402313cc5fb7a36d0622bb94a86ec66"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/middleware/plan.middleware.ts",
+    "gitBlob": "30b2206770f5a22409fc78a5469a96073fbaaa39",
+    "sha256": "bda1291fdf75662d11f53067a652e00014eb1f9f579aa381ff9904300dc4bb82"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+    "gitBlob": "0ccca2b939167e8afd0532435d216c65668458e6",
+    "sha256": "5eb9c5bba95a2c430262823928ec930a1fe7c154f0d84e1073a355e3ef89a31e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+    "gitBlob": "e02ee76f314b3bb5fb78f63db2e6155e0dd3c04a",
+    "sha256": "bb5514c89cc22f8e62db6935e0f735eeb96d33be86a666f8e0c902ef33d8c5db"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+    "gitBlob": "c75a0bb00d7d0e4d064ebb2c35680ad7ba430faf",
+    "sha256": "e58b0915b54986cda0aa463bac4978fecf8922abc0e99c556b4628dbbe11c4fd"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+    "gitBlob": "6017ab737570fa3dcd75f0ef4c23380b614ffc62",
+    "sha256": "04fa3d478cae2bebdee5b3bc6d63d20cb196d0b312f3a7c1cac6e36401217b39"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.controller.ts",
+    "gitBlob": "05a4a57314855ffc18aaf0d967c1aa19f276a229",
+    "sha256": "a630746fa346286cab185cfa8878d8465402be265fd53f122c888f4e3c509201"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.routes.ts",
+    "gitBlob": "8ff3610b5fe8952af17626e70de82c5b13f5b4f9",
+    "sha256": "0a6ca987ee2cedde491d8476705dc54747c7e53eb505cefb8a10ecd6c30425bf"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/accounting.service.ts",
+    "gitBlob": "d9639341622bdc069e7658af6219b255113991d2",
+    "sha256": "58bd5f7b8a5bda8c6a202b2436c3a368f774bd06af7c046c9396c73d820dd7e4"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/provider.factory.ts",
+    "gitBlob": "f35c89f670e2da4651742d82d8d87716984ff9b1",
+    "sha256": "6c98df2fd1197296ddfe5d1d588c2b1e709fcc93636e85c6207822ea383084ba"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/mock.provider.ts",
+    "gitBlob": "d07567b68e5e6ac89707a0c563919af02ef13583",
+    "sha256": "b479fe642368c9389da3cb4112ad21b8ebf21f603cc72649f3a846616feac502"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/quickbooks.provider.ts",
+    "gitBlob": "e86796036a15138a6c4fe6640db72c5ed7803d1c",
+    "sha256": "e4b86fe030e8c6ffba444dcfcdcdac8c1349ec14a8271b185c10fa1003a98fc7"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/types.ts",
+    "gitBlob": "3b955d30bf6539e26f3b3b0222fbd9338ab454a5",
+    "sha256": "b95427188c6ac313721c657468d76895bce71dd4936c2ce018d70d9441b6be77"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/accounting/providers/xero.provider.ts",
+    "gitBlob": "33608c9c071da5b9e16afa2858cb8d79ebfddd7c",
+    "sha256": "039279c99298212640e355bda976d9b3c17863e39b0cdf5a0f6a975f98d3a1e9"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.controller.ts",
+    "gitBlob": "6808f7d357db8d9469e2d7c9aa88f2bb6557810d",
+    "sha256": "96a074587ee6a3e94165edb5ca8711211435374a65ab440812e5b36d5d7cdb64"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.routes.ts",
+    "gitBlob": "bcbe8796af1fc20350c00f2a163350c6586c2c75",
+    "sha256": "75faea531c475cca96622071a4149c620966aaa85d60661fa7474d0af9b419c5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.shared.ts",
+    "gitBlob": "506e8f1d1c11475a7bcf49f3d7c40c431e4aa21f",
+    "sha256": "c7c6acbac7815cd35f56bfae5406020b1d1cf1ab9d4039b4ee7c8becb78132f9"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/analytics/analytics.types.ts",
+    "gitBlob": "bbb8c67bddff896ba2ebf1e1a1aef645cae203c8",
+    "sha256": "c99f977c3e541c944e4028a2440d937ad3d96b252e7bd2f151bb6ba1cd133551"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/analytics/crm-analytics.service.ts",
+    "gitBlob": "824ad08f78abc610ce13e89b831ee79f2528eccd",
+    "sha256": "931a2d0a5d5e1c76b6a6c633847367ec37905b64b2cfd26ae760e29cb8197707"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/analytics/operations-analytics.service.ts",
+    "gitBlob": "97218be0f92a3693538ef87adbf0fdaff4528f56",
+    "sha256": "c8f098b2a60dbb82f4c19c1d74e6820cbfdccd8e32b91ee6ce233e6e8927b7ca"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/analytics/product-analytics.service.ts",
+    "gitBlob": "cfdd38b9aa939207e70f305304a69225607260b7",
+    "sha256": "f6c1f1c22648eab48f3805fc63113d751f2d168b86e15695f0138af38ae7f518"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.controller.ts",
+    "gitBlob": "3b318b2290c76dfe7210f3e85fa0ad4778e230b3",
+    "sha256": "aacd05dea13d59f732e9b0a27ca11f4b08157056660b08d04532f058cc9b2cea"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.routes.ts",
+    "gitBlob": "4253b228c14c685df78462883d9e7d145d32105f",
+    "sha256": "c0db72597e9aa13408cf5f19034d7bcad758aa116d626c726eefed2218cafbef"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.schema.ts",
+    "gitBlob": "e4b8cd85d416f149b7447cb11e2db673130f950d",
+    "sha256": "bd60f5a3944fb79505d9e41a47ddc7080fe0b4bf4ec3fc0a0b331a82515bfc43"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/audit-logs/audit-logs.service.ts",
+    "gitBlob": "ea4936860a2d50c3f7b5efb4d203c7bcb81a542b",
+    "sha256": "93417d433e6296998003b9efeb8eb08f599b1b55f1cd6322bef8ca80692e7b73"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/auth/auth.controller.ts",
+    "gitBlob": "704511030d8fe89174578b469750ae608943068b",
+    "sha256": "71bdaa9fb212466a404198e6eba777ac62423f6eb605b29036e0bb3c43eb9081"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/auth/auth.routes.ts",
+    "gitBlob": "f7b31216dc519e93edc7006088c757135cef2c7d",
+    "sha256": "e0033643550d66078012d2cb4cb236cacd7eb5fef470af23081e56563d6340ba"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/auth/auth.schema.ts",
+    "gitBlob": "d7f1901cbe4803fd002b70c975accc515f94e5f5",
+    "sha256": "fd5a6971eafc1ba8c5f838ca820972268d2ef9b759dc1f07371551274981ee36"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/auth/auth.service.ts",
+    "gitBlob": "180db977d793fff10cf47df20828e3c06f90cb78",
+    "sha256": "6cb21957a238ac67abb42a024e2a542510b57fb4b627a6ff806560d96902506e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/crm/crm.controller.ts",
+    "gitBlob": "43112264457c968ca6d99a0730be37ca0f2d1bde",
+    "sha256": "cbdd18d57c8ceb380be38007b0814f2793529c79508cb46a76fd7cc9a97afca5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/crm/crm.routes.ts",
+    "gitBlob": "255715df8acd05c79a116518230230405511e0a4",
+    "sha256": "26b0f5416eb5b3b7c79144280f6fce23da26a9a18e2eb5cff4e555f2a0c3da36"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/crm/crm.schema.ts",
+    "gitBlob": "7e7e32a3bba5938ad0b8055a68ead6875a00802b",
+    "sha256": "11fb3c5229a06e15df357401a3c8b3ba6d12c3da7a82b283aebe12d14b4eb6a8"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/crm/crm.service.ts",
+    "gitBlob": "2fb143305834093c4652afab4b37dcd490973eeb",
+    "sha256": "5cb8e9f70277549b7d433a88d11a5011f42460abed985604db55a42d1b96ec2c"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.controller.ts",
+    "gitBlob": "bc4291982d8199386a8951cff3f875c209cfe6f2",
+    "sha256": "3d1a02580c499cbcd05bd601bea7870c101e86f0aae12ec3d09b95d55088d408"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.routes.ts",
+    "gitBlob": "282a01d47114d5a32f3d254babab7771763b66c4",
+    "sha256": "4a7fe1cf71076d9cf963535112dd3fb739795a735f1d8b6a6783d80601fb6959"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.schema.ts",
+    "gitBlob": "8a5c0c003084449c7aeb69dca867bc6ed754ad17",
+    "sha256": "7741637665d9eb6b9208d431ac541b3d7a72485acb70ee92853872c4611527b2"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/daily-settlements/daily-settlements.service.ts",
+    "gitBlob": "ce2e651d606febf87d07e960cacfa9fccd872835",
+    "sha256": "47d00847fb5f65f9845c1702890f57d01567991ae13ca7e4cc24948cf1cc95b4"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.controller.ts",
+    "gitBlob": "a35ceaa45a7f53a1291817fde3c8a95098744511",
+    "sha256": "bcfc2b1dfddaa348cddc50a4ee99ad11b3c8b42855156c8d396982916029ef6b"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.routes.ts",
+    "gitBlob": "2367f44ed41e0de6b9d8d76f86c29f0084958ceb",
+    "sha256": "dacdce00f72a0ee8944f8f0c732b2cf2cc42ff834679c76ac759257ee2b3ffe2"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/dashboard/dashboard.service.ts",
+    "gitBlob": "44d38346b47fd5e75982d4e454e6563276420f21",
+    "sha256": "e56dce4a90c2c93a4fbffa7dff51141a68d1555b6fac43eb4b5e1e9b8966a471"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/excel/excel.controller.ts",
+    "gitBlob": "18adb5ca4fcf83e72c4ec22cf8818de35b14e57a",
+    "sha256": "40ac85f69ceeaa5963f9b4e57092bf415ae870e27eebb9af22d79ed2f99f0884"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/excel/excel.routes.ts",
+    "gitBlob": "0b4c97efed5129b2a5fc03e7310812e33cc994de",
+    "sha256": "e2d5a3de99df4a0ac7360b2e76c2ccaffcb1f6d5583f4be0079f0e14a1bcaadf"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/excel/excel.service.ts",
+    "gitBlob": "0aacfb505aa4348d700a7172af7df34cd6b03233",
+    "sha256": "4895706ab05b6542fdbe23d86db2856c132a15d22c6774c9a6b6bceff4d610cb"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+    "gitBlob": "f0ecf1f8f5edea93490757e731704729ff466cdc",
+    "sha256": "36d87997829af071bf6443cbada71e3ac74131c827f275d95595dc8dbb24da9a"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+    "gitBlob": "5020ff4306adb36d463615eea597f738b5ae99ed",
+    "sha256": "15bd05620739ccac0efbe73a5df19f610eca8146e6961f15ff19361e24ad1808"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+    "gitBlob": "b2da3bae5ab4d96c54e2f2987f63239ff030a2ec",
+    "sha256": "27fffb4537077a57bac6ddb1d7380147e8b7ee3c8a9a10dcfade0b4c6f0b1767"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.controller.ts",
+    "gitBlob": "53686c39b27e2302a4310e9fe106b8e08605cd0b",
+    "sha256": "2032fe944ebf3ba6c3e572ea085368933eb8147bfe65fe1f8a7f034c590d76ff"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/csv.service.ts",
+    "gitBlob": "ac6dc0d5f0ac0755a081a75ce798d40a85161886",
+    "sha256": "75fa32c8e1ad904b1049d563a07150781b306807eab911b137d4590705eec6a0"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.controller.ts",
+    "gitBlob": "9747d4b421d5a9a484fecdb286bfced13aa497a9",
+    "sha256": "95ec0b723bb26f3e3a9b007f4aa8349ffe5ed077183314b646904db19ed9ada5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.routes.ts",
+    "gitBlob": "2c630a44ab0a699a5b46484d1ef5d87696158a34",
+    "sha256": "db3e9ca98fa32c047bd28c93abc57ed59acf6a1657cb29e12563f4ed0481688b"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.schema.ts",
+    "gitBlob": "5e7115f1dfb6bb87a8f06dfadea14dfa537abc60",
+    "sha256": "699b5482a15adf0a825802453886e0cfb8485edf5b29c62430122fe5de48ed58"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/inventory.service.ts",
+    "gitBlob": "cbb444886f6dbbd540fab528af24d4f3bafd6adb",
+    "sha256": "adb8de0e09257d7fa7563f1cfd52d899f5e4b8e30a954867abdfaba9362e7cd6"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages-identifier-policy.ts",
+    "gitBlob": "32c89f5f954db79df6e5af9a117f498cd53abbcb",
+    "sha256": "e2fb1e973d15b64bc97ac06a90133507573c2893b6366c6be816841960a6fc4f"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.controller.ts",
+    "gitBlob": "dcefa1f68c666225b2836bd60667bd2d836a5462",
+    "sha256": "2d54ea4b6f9351e4ebc35afbf32ab93dd2a8a8423a4610df89e531d30cc75d4f"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.schema.ts",
+    "gitBlob": "a6c64f494a5efe26696feaea956840f9ff1b4c1e",
+    "sha256": "ca522f20477ca749d0fd5022e5ace2983e04104f058ab0ba6ed009d7ba33b6bf"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/product-packages.service.ts",
+    "gitBlob": "c8030f72fbc4ab9be549d97bad0f19fba92b38ea",
+    "sha256": "bdefc7ea500a4e22cf0e62cbea560c60c0d428dc0cf6084899442ea4173f49c0"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.controller.ts",
+    "gitBlob": "5694f6426b86e1bd9907ce693db40520a8b9dfd4",
+    "sha256": "fb24a2aac6ba1ec07810cf5924941be361d365f2bab2647376744fa7fee83619"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/inventory/stock-reconciliation.service.ts",
+    "gitBlob": "c406c54ccd9689d5c2a3719c1d9a6394883118f3",
+    "sha256": "00c448f30da10640a8ea50c8ee62d4ac08845271ac04c84df770ba5096b7c968"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/line/line.controller.ts",
+    "gitBlob": "6b854ae87fb3d4ce25e06c17bca62c357e6ebb31",
+    "sha256": "d4d833c6c74bd322e7261e0af4fa90653b83702a893b950ceaea80ae79b0c565"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/line/line.routes.ts",
+    "gitBlob": "ba3578ce46a78de5609f353341e980b4818c296a",
+    "sha256": "65e19f7c22a886b6bd1f78b868404329dbabf08b74512f4ccd634c0dd760c227"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/line/line.service.ts",
+    "gitBlob": "5b2228796d310a1313f3e885d7680233f9ab645e",
+    "sha256": "d5d3d13e04224f376269849233c894a6186d73434fb16333a1d53c810393eea6"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/orders/order.controller.ts",
+    "gitBlob": "9795cbd3a2615a6f72c325b9ba3d668484472ccb",
+    "sha256": "80712204da2c83c88d208d291ed6e8f9616185bd32a1eba800eb939e91f5dbe5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/orders/order.routes.ts",
+    "gitBlob": "f9e972eefc7234d4791642618bff0efb63a7a6b0",
+    "sha256": "9c1fd288f5feb1071cf5738a799cf65d22e93bfab7522dcf988ada58e719969f"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/orders/order.service.ts",
+    "gitBlob": "be49f6a4c33c7ed2d1b01f757974e53d0352b174",
+    "sha256": "60be5a90376478771b1dc143fb87cd1e422bf8961dc248f8c3d58da391c503d6"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/checkout-command.service.ts",
+    "gitBlob": "f29fe444a0d5136f137f239a2068500f9ea37898",
+    "sha256": "2f1ca419f7759fef3e3056af8c9d02913c971eee20e6020212606f618297ba35"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+    "gitBlob": "63814fd9fe8933ae050bd8a342066e669547ede6",
+    "sha256": "42cd25ebc981905638fb4753e49c13d4b5866a1e6939f1756b9f0a65af055c2e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/order-number.ts",
+    "gitBlob": "ca3d3d96e25730946aab381711409ba913529b14",
+    "sha256": "56093e6e4bd3de6484947447085f1d8c5cc92d3fff433e757c61ed0b8f691590"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/pos.controller.ts",
+    "gitBlob": "094c58bdf22994269dd19b900b437a69969be85e",
+    "sha256": "6def0a99955a49a12a30b4623e70c6233110252340fa438b103d8e46fbe752a6"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/pos.routes.ts",
+    "gitBlob": "4c311a6fc538fa13f38470a9234cae7380c74bef",
+    "sha256": "c95cf6f1cd6930c006837644b42339cb017bfcf1181251e938e412964d26eef5"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/pos.schema.ts",
+    "gitBlob": "9964d6b2f0569665df6d2becdf16e6f9f62d14e1",
+    "sha256": "e2a070504e90070524a5d6e249b6145ed33c444c8eed5b99cdb60bcdff296729"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/product-identifier.schema.ts",
+    "gitBlob": "1c96b67ba6ece7c2045f4163ff6eb3572c6a05c0",
+    "sha256": "f26003dbb505f03d822c21f5bcdb8dd82740fc04c33674363d411266f7c2be31"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.controller.ts",
+    "gitBlob": "d44a4823b62aa2cfcdbf504cc54cd1c4a5d0a922",
+    "sha256": "7ef52791fb17b6f5af2b7c88f2d74583c80235e34c4e8d75273418550cfb4811"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.schema.ts",
+    "gitBlob": "d9b7dfb4bc5d4ea9be4e6b939e88386ef53576fa",
+    "sha256": "65e18a6c1e983f322f64f7ffe7239f2f385fa25fe315f9b0a8ba360706783637"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/product-lookup.service.ts",
+    "gitBlob": "e1edf1356c3cf7445ca084a8e5db9b67566a6056",
+    "sha256": "c46a34c2c29ce99a6d4fef18ddfc6428d6cc55bb67dea817dad6c90263a35bbd"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/pos/receipt.service.ts",
+    "gitBlob": "59164e1f00fc5bbcda6d2bd6b279c919a13ac5d7",
+    "sha256": "11d92a801b1a8c694c1df2f0078d1ceae9918c2ff61ec90e30e6391cccdfa1ce"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/product-batches/batch-audit.service.ts",
+    "gitBlob": "8a7279c02bb39dcdb3b1b55c356e1576702c1ae9",
+    "sha256": "7fcd35144cbff199d6df3b8064acd41da7c131cf5f64fa68b2ab0f76a4d56970"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.controller.ts",
+    "gitBlob": "c18cd3aa0d531ce61cd74ebd378fdf85dcbce3f5",
+    "sha256": "de438f5b514d2a519703a0d5d1d081a1b71bcf2245a3a77a11310862d251ae30"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.routes.ts",
+    "gitBlob": "7890e6494d7002e6729e81e995c2bdaad7967cbb",
+    "sha256": "70f065d91e2ecbec0d5e93d1c7fd3d9de2cbaa3a03c3c36cbf9719f7ab3a878d"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.schema.ts",
+    "gitBlob": "0e414aa342e4f70682aea64835b90d0f9716ad6d",
+    "sha256": "ebbdcb33d3e8b257d5ed14f74f378df0abc94379597c67b05db326e437c89baf"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/product-batches/product-batches.service.ts",
+    "gitBlob": "28e9d78b21de94a4e6c8a0a0649e3120ea71c1ae",
+    "sha256": "53359897562f42dae2aef4b89bfdb56acbac1ecdd4a5bca5daad569ac1edc6e6"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.routes.ts",
+    "gitBlob": "c526c521c315b5781e28bd2d704da255d9c85443",
+    "sha256": "6582da38ec0c58981a6ed556d0c15ada85e1d568f6667470e166c08e846ed2a4"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.schema.ts",
+    "gitBlob": "48e2e9dbf364a8081f8f1cd857a12335dbe6e326",
+    "sha256": "451425392dacc35507a67e648581aee3d18a8dd16127aa09f4000f1bd3141dc8"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/receiving-drafts/receiving-drafts.service.ts",
+    "gitBlob": "727f0b580a865c48d448307c39692816c8627ef6",
+    "sha256": "45afbc96bea28c5c14e1760e4b5070e69bf9e9d00c6a9b293e88710e485e948e"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/reports/cashflow.service.ts",
+    "gitBlob": "6ce1ec911fad89c2a1dc90f68ca850a920f137fe",
+    "sha256": "c1db33ccdee83c1a6250dc6ea3de54428118c9d22ec9fe3a7808f955bb5220cb"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/reports/margin.service.ts",
+    "gitBlob": "334cd6e5a0efe37105242e1d1f8de5841fe31293",
+    "sha256": "e1516444b696ec703ea93e41c6a3b25754abfbd51b87b92f6131965339fcf3b8"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/reports/reports.controller.ts",
+    "gitBlob": "535c9be17ef30a013fc0c47b46ba6116482cc5c7",
+    "sha256": "a19cc17f16e9b7100e1023c01de4bcfffe5a4919b7825aab1db16bab90b7b1cc"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/reports/reports.routes.ts",
+    "gitBlob": "ec1c0070cd49499a8a757a1ca599cfe3002594d0",
+    "sha256": "113393f59310979b2cca12a03c12cabdd7598062a3dad5dc723be93caeb4d3ad"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/reports/sales-ranking.service.ts",
+    "gitBlob": "0508d93dd4f83817e309ab744a28922a1f078e37",
+    "sha256": "61893ab235ca4887ba87fef4c87b12ce57d480690c3ac9cffd6ebabdfc41b461"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+    "gitBlob": "bfa85c73873f9cc1573ea23445e345ee5356172e",
+    "sha256": "7d36310ccc047ddb52b528128840ac320caff90c22105c3934ec38c83136bda1"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+    "gitBlob": "4605ca73d390e3f5f0d81b709cf12d062c8fb7a2",
+    "sha256": "0ce4e6272f023c9e65a0f7f9cbdbcc6c84a08a376ac664adfb9eefc10f3954bd"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts",
+    "gitBlob": "410823965f69c86c7b013070fd3032c008feafa0",
+    "sha256": "3aae71578d2da228dc9a4dd6a95a0d0ec5f5a0e86bc4a05c27309f1fe9f5b2e7"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+    "gitBlob": "2496b3f50b570a61e554792d47c63ab425eed871",
+    "sha256": "5e631bea9303c9eec81ac3d55d8e55f26737090d70434af209ad7fb4883e7d26"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.controller.ts",
+    "gitBlob": "87e26415a1925b8e891f31effdaa670f5f276e4d",
+    "sha256": "fcfc997143233e634c4ded92694b8ffbae5ad1ca81df870b856cf1511de8869d"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.routes.ts",
+    "gitBlob": "44c4118fd9a52dc6085de1801bb727ff6250c2d1",
+    "sha256": "0d0c38eafbef44fc60a16164c2035c92249380030409bfeab47d0beb2076fc66"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.schema.ts",
+    "gitBlob": "a78564b2d054098e34fbf5338ecebc1121661eca",
+    "sha256": "e74645811db99ddde73769bbde75cf1938af21080fa58ccec0e34ce396782b74"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/shifts/shifts.service.ts",
+    "gitBlob": "61976780f22ac1365aedd6b639b6bce646b51c07",
+    "sha256": "08e7e707a05e75c41bb7b69f9e5b9adb9ddbcd027a3013eb271b96b5a33307fc"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.controller.ts",
+    "gitBlob": "a309274b5dd1a80f5366c8816b8e0fd7b33fd136",
+    "sha256": "b11238d1f56624d8e8c71619c25f9b2dee8f4ff0ee624ba7489879c89500f869"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.routes.ts",
+    "gitBlob": "d6088cb7c3d2567043d2e935db3f9fd16ee6ca60",
+    "sha256": "2f93fe63ddaed58688cad1aaf00084e9c4c973b87a7a4e4d7ca3f94a8393907f"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/tenants/tenants.service.ts",
+    "gitBlob": "b860dafd64e8775f0016f5d39780f697790f60c1",
+    "sha256": "169409a20424752522937dfa117e6f9e3fee2b92a94312596bb41469c3cab6b2"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+    "gitBlob": "77656682831e3f5ad762796006669e6e7cb19cab",
+    "sha256": "05959fff37f659f341f1eed79c6d761033f2db43bf51aa457b84f69865244186"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+    "gitBlob": "743d28e5ed92d6af5d7867aec6df22ae1e3012c4",
+    "sha256": "bb216520474dbadebf4c8d9c21037e4a28569820a4713d43b1bdecb52f1ff472"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/users/users.schema.ts",
+    "gitBlob": "c476ec61899d6ce599472e9b8eed5932b270d8a8",
+    "sha256": "9c3a5d3cf131e5af010d300338e0d083df69566a3e19c5fbb7f3b4da858ff268"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+    "gitBlob": "99a2fe96721a624b4eb21630a0abdafa549cfb94",
+    "sha256": "81a99ef0df876c3146d23b7c66ce4dd0720a91187b2b316e251e95a9fc07b48a"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/server.ts",
+    "gitBlob": "bd2b5d35905a152f62efcd3fdb9d0bd53e4a97e9",
+    "sha256": "68aa4c8cb222c384a5b6b30e9cb6d37e9470c931c50512d82b7b5511c9c12c1d"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/setupTests.ts",
+    "gitBlob": "6a8bec92e0afd9dd75c017d1d77f9fa8b7c3bdc8",
+    "sha256": "840abec94015c4fc243c17e4161d04306ab1be6b49e15daf9678290738eb6437"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/src/types/express.d.ts",
+    "gitBlob": "2ca9f70509bbd968c553494a95e93f759dda9ca0",
+    "sha256": "1069013ebe1e083f470713c44be9dbc1ecbd0c0b9820baece332b6bb4f0f91bb"
+  },
+  {
+    "path": "systems/enterprise-admin/docker-compose.yml",
+    "gitBlob": "a5365a902cd3963fa877ae63782327c092b8ee8a",
+    "sha256": "854d2feaf2365ba7daaa5a6e1bcd3e1c7d22e7776ecfdf2d44dcffc1bce8d299"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/adr/adr_023_local_ble_medicine_label_bridge.md",
+    "gitBlob": "206ebf16e04f6208cd237b1cc0143c096da0cf2b",
+    "sha256": "1fae959c8b93f543d62de47434779c46db2da6fb4fedc71b9e5001751f802042"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/api/api_spec.md",
+    "gitBlob": "540f71d491a6f978e088b4667b94ac5ab36c1f03",
+    "sha256": "e4a6be66e38906b2096bb9daf784f4dab7b8a19e0047329906d05e0f0fa3f631"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/evidence.json",
+    "gitBlob": "d1bd1ed5947b6349095cd3a0fe60776254047dba",
+    "sha256": "cd651a26eb69d4f17b3a974813bc0a1b44a0738c5299aa71b17708bb230d23c1"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+    "gitBlob": "953d682851d8f6f6c414c5147ea9117894b2262d",
+    "sha256": "571ce7103c56c5dc54ec83c99801cbe40f1755959133151fa295bb48116a5a8b"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements-sources.json",
+    "gitBlob": "7eb864e69b022e2bcc5b50eae1af80bee2123468",
+    "sha256": "3b60da6707133ec7d31fbf19030b6e36c09515b8baa9b7badb31043ef39d9db9"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/requirements.json",
+    "gitBlob": "1869bf2e82dde931351d7e9ec2ab6d8f950abd5a",
+    "sha256": "dacbec247773bedd30e6292098be68b775c32fbd423b99d6235698a7781e6576"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-effects.json",
+    "gitBlob": "be5b8871dc0dc30b7892da4fcbb241a70a8cbee4",
+    "sha256": "846838781ccba1a246f4e3bdc0cac9fe96778aae3381da21f6bb5b5d7e46edc7"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-inventory.json",
+    "gitBlob": "5af7a14671cbd64f81c15b694cd1678318cd010a",
+    "sha256": "5dc0b478c9dce0e563dd042a085522d15206f22fb9de4ea5a692e93869bee96d"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+    "gitBlob": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+    "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-snapshot.json",
+    "gitBlob": "dfd720bfc60b14f074a491d25cb51d12513d5a5b",
+    "sha256": "a05ab6fdef18744a36af349d69095bb455f11c588e6df15da9661043e25851b2"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/standards/README.md",
+    "gitBlob": "5df0a55b8993b1363548262466d856e2da2b4c36",
+    "sha256": "8ed3b18d626a9f48a6a951265f32237e21169b6d909ee95234e120df65bda2cc"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/standards/agent_context.md",
+    "gitBlob": "47095e63d77788df2cd709fb4633145cb9c38c1d",
+    "sha256": "d4d8a302456c70d6a5052bb6703c36f7e12fb6fe4dd48fc209328d19f82f2b83"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/standards/git_workflow.md",
+    "gitBlob": "6888163594528848f81b29a6dc8906549ada1214",
+    "sha256": "b83fd9f520afcee99e3fad9fd5da8be25c0e28557b5918c22905cbd4d4db3428"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+    "gitBlob": "4824f4f811a65476b747b9b5077618da77d7f9bd",
+    "sha256": "5a185748f6198afe0f5770fe3fa36f4a7ec4e5458afd1848cd449dd3acf1d41a"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/.gitignore",
+    "gitBlob": "d24895d1f61771875cd485a9ae90fc6a18065ee2",
+    "sha256": "2bc20818d9aa345c49672e079467337fb9e8bb3117b52213597b24d6baac3845"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/README.md",
+    "gitBlob": "bce9356bb40c3c42c99f2fad8bfa3fc6afa83646",
+    "sha256": "b6adcaac7c39b8b6fef1b9ea49a6fe9f7d3069366a30751e68785a7262d6bc06"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/pyproject.toml",
+    "gitBlob": "ed1bd528351d4a6c36e74b9b32ecb5849516a842",
+    "sha256": "044c1c2453a5dfa3b14dbd09e54689e4b0db2d9f7f2bd1bbed9db4d4a399a2f2"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/requirements-tested.txt",
+    "gitBlob": "d50a70a98d4533e1c041ee57189812d5d71045bf",
+    "sha256": "12e02351224074f87147b559cfe55c5b834cf90969c52b24e7cb11cd8286e47c"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/samples/experimental-english-30x50.tspl.bin",
+    "gitBlob": "79d5bb613dddd8dc55ed5d4fce076c0bbf5012fb",
+    "sha256": "5a7a2a7b8ea004b42ddd752f0790daed840e04c9cf804446d3ffcfa3e8d434c6"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/diagnose_windows.ps1",
+    "gitBlob": "cfa54a2d928d328a19dd0c2ceaa43c1b6a9fa393",
+    "sha256": "9cbb686f6de13f63829fa47b68e3757eb3d184e60994be59a90b2dce707415fd"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py",
+    "gitBlob": "1c4247be1bad717b161f8258c58527b7aec47f0b",
+    "sha256": "62e84b6ea6f3c8986cde5b97fc68fa84aaf01e6aa8ced7c0f28a5f1a2b560967"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/prepare_suite.py",
+    "gitBlob": "267c9689b39c4a4b6f37e1603202dc0cd60fde95",
+    "sha256": "bad9d36fee6caad72d61088d827d80654857da70b3152df09054251e53ac7252"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/scan_ble.py",
+    "gitBlob": "c6444fd4d4a148b6641208eaac9ed5dffe5850dd",
+    "sha256": "6ed288fd8cbaf4d6eae1b3d1d9c73163fa09a58dcb1a230e5d8717a6f08fccea"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/__init__.py",
+    "gitBlob": "010569e4adbab296c57b91cabb004d5a8cadb361",
+    "sha256": "3c213cd5e28be26d9ead74b51e1f9874766fe5c0330a3b39276d10b4e63051b4"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+    "gitBlob": "4e9c9c75010d13a9cc3f29bd89fc41ef590d277b",
+    "sha256": "e24eacc6750f5a4c96a83653977f40e4ddbfe6ef48398b549c0ae238b38bcb86"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/ble.py",
+    "gitBlob": "e48425377fbdcd80663d3aabd344a2a85258df54",
+    "sha256": "e8266fb76a6dc4ced4ac0c85c0665a8f9a43811f7ebcde9f0f745986ded433eb"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+    "gitBlob": "3b6e7e9351e80a2694043fab87cd003d59fbdde3",
+    "sha256": "7385d6399aa3ef9cd04b8732c43e91c62b50a496ba42056fc4b889f2466ce7f1"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/medicine_label.py",
+    "gitBlob": "f2be7722d8fc7cf7c9c9eb988a7735f7cd980586",
+    "sha256": "21c12f4b35e1cfcf6f6be06ecea37936ad3455ac0bb4800f9695716a74e4045a"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/raster.py",
+    "gitBlob": "8a1e87b93e7f389d7e83ff32b18a8f3ba7baa28e",
+    "sha256": "bc30557455c497f3b34a4c0a3db1e80c299c0b92df76ef86467514952bfc2201"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py",
+    "gitBlob": "b247190cec005c2f919226a9063a72bfeb4902b2",
+    "sha256": "634fd076ac4766dc67daa90499a846996be0eac447435c7978530eba2aa5078a"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/tspl.py",
+    "gitBlob": "e00af949fd54752dd982e34edf1f974d56384cb3",
+    "sha256": "ef149ceba203be2bea791eb07885ee9a569f84b6090178530e110ddd3c61e240"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_api.py",
+    "gitBlob": "804ce506728413978080723cfd8d08074a1f4ba7",
+    "sha256": "a637360f45a901049a97d1e52142ed09a25964db4bc3cf315e50e3fc85d75174"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py",
+    "gitBlob": "cfa6305628ffeda1a969510b5c0151b7a4ede49f",
+    "sha256": "85810c18ffe1cddeac8efac37a232875c147eeb515ebdcf4080add6237113260"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_medicine_label.py",
+    "gitBlob": "39ac18241117fe8d28698ab5650faa4718e63e1c",
+    "sha256": "7de0efcc1bbc6b5340853b44f30e14ff09524179c602f64d72247b7830850d93"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_raster.py",
+    "gitBlob": "293b7cd6796faf985d15b243fc7a9f7741daee07",
+    "sha256": "539a65e39460a6ffc629bd46d084cb89f4490f88013278ed8e6b016ae02164fe"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_safety.py",
+    "gitBlob": "07d7beee5a2e9c9a522df29e6bc1768f3c89dc7d",
+    "sha256": "c71db6fe6e3b4183d1f9e543e16aafad174e7ede668fc53049c0a100e4f13576"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_transport.py",
+    "gitBlob": "2ec971c39580681d3a3f2192d18d4fa7034ac6b5",
+    "sha256": "c26a9a30db48d2e013c2654efd461997badbf7ecf1e7e0b5db82c67eb0e0cc28"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_tspl.py",
+    "gitBlob": "647282e43d0f84e8cd1c73515c595535f97f459a",
+    "sha256": "3b1c9aaf6cdfa9e7d3a7c69e9e3d59cb56e7df087dec04f187c8e425f2990c61"
+  },
+  {
+    "path": "systems/enterprise-admin/package.json",
+    "gitBlob": "76610c465e5165b8cac3ff0e8ad241f52d994369",
+    "sha256": "c9e50d8cad8c88b7ec17bf949c3fe35c77e5a47801b647668df89a86d8a34159"
+  },
+  {
+    "path": "systems/enterprise-admin/packages/types/MODULE.md",
+    "gitBlob": "469eb571bc59f68b53f9422c7c6ce69430241332",
+    "sha256": "edfa6cf82afe6d42adc0250e5a1c26ddeb0adbaa7be3f730dd13d2f86a16283d"
+  },
+  {
+    "path": "systems/enterprise-admin/pos-ui/MODULE.md",
+    "gitBlob": "8c78b053a6ae0e4773c02e77530a7c356cd014e5",
+    "sha256": "a1e34476e1a5ed66dee23eddad9cb44ee133ffb9aed8468dcfaa99b8125926a0"
+  },
+  {
+    "path": "systems/enterprise-admin/pos-ui/src/__tests__/offlineQueue.test.ts",
+    "gitBlob": "b87c41bb26f48bd1191f94ce1cf4e35e7e995841",
+    "sha256": "e55c7ddf443c33cb6ed87574328eb6c81f805d130d571e9a6c14479613577351"
+  }
+]

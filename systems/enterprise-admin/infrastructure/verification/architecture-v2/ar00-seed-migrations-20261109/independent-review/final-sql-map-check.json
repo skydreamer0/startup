@@ -1,0 +1,196 @@
+{
+  "method": "Independent read-only pattern-assisted comparison of the 16 current literal SQL files, combined with manual reading. Not a general SQL parser or runtime proof.",
+  "result": "PASS",
+  "foreignKeyDeclarations": 64,
+  "migrations": [
+    {
+      "migration": "20260301164756_init",
+      "sha256": "6b0060dc422813b62c27abb2386cb4f5948ec064bb71053fcfbdcfd6c5b2babd",
+      "targetModels": [
+        "AuditLog",
+        "Customer",
+        "CustomerTag",
+        "Expense",
+        "Interaction",
+        "InventoryTransaction",
+        "Order",
+        "OrderItem",
+        "Permission",
+        "Product",
+        "ProductCategory",
+        "Role",
+        "RolePermission",
+        "Supplier",
+        "Tag",
+        "Tenant",
+        "User",
+        "UserRole"
+      ],
+      "foreignKeyDeclarations": 26,
+      "errors": []
+    },
+    {
+      "migration": "20260516000001_phase9_pos_schema",
+      "sha256": "c23777946c2449bfc65bb10ed5a0fcf3afb0ae23b445c6dc9cad9fccdd9bb882",
+      "targetModels": [
+        "Order",
+        "OrderItem",
+        "User"
+      ],
+      "foreignKeyDeclarations": 1,
+      "errors": []
+    },
+    {
+      "migration": "20260516140834_phase_8_sales_foundation",
+      "sha256": "10b818024a8eebae2b942ecb9394a90199f4e522393d48a20a21a5cb98e96bf2",
+      "targetModels": [
+        "Customer",
+        "DailySettlement",
+        "Order",
+        "Product",
+        "ProductBatch",
+        "ProductCategory",
+        "Role",
+        "Shift",
+        "Tag"
+      ],
+      "foreignKeyDeclarations": 8,
+      "errors": []
+    },
+    {
+      "migration": "20260519000001_phase_6_accounting_sync",
+      "sha256": "c346a40f40b63130ada9d9e46d74cc31fa2195f7a7c696a59de25a8b43ff512a",
+      "targetModels": [
+        "AccountingSyncLog"
+      ],
+      "foreignKeyDeclarations": 1,
+      "errors": []
+    },
+    {
+      "migration": "20260519000001_phase_6_line_integration",
+      "sha256": "c586f4d1d3374ead74e6e87ca7513b8e204c5f4d62588cb0018ad33113728c0e",
+      "targetModels": [
+        "Customer",
+        "MessageBroadcast"
+      ],
+      "foreignKeyDeclarations": 1,
+      "errors": []
+    },
+    {
+      "migration": "20260520000001_arch_fix_5_float_to_decimal",
+      "sha256": "3af6bfbed2cf592131abe741d02b8f33d9bdec90f56bf9a91b354be88fea9e1e",
+      "targetModels": [
+        "DailySettlement",
+        "Expense",
+        "Order",
+        "OrderItem",
+        "Product",
+        "ProductBatch",
+        "Shift"
+      ],
+      "foreignKeyDeclarations": 0,
+      "errors": []
+    },
+    {
+      "migration": "20260522140840_phase_9_7_split_payment",
+      "sha256": "177b99d569521c9cca3c7483b528eb3b49355d592200441fab51168e41cadf56",
+      "targetModels": [
+        "OrderPayment"
+      ],
+      "foreignKeyDeclarations": 2,
+      "errors": []
+    },
+    {
+      "migration": "20261006090000_sale_batch_allocations",
+      "sha256": "ab3f07660a2427ddff453f5e4565e1c1fdd7a7c6060aa42709c670ec9f1ac4ea",
+      "targetModels": [
+        "InventoryTransaction",
+        "Order",
+        "OrderItem",
+        "ProductBatch",
+        "SaleBatchAllocation"
+      ],
+      "foreignKeyDeclarations": 5,
+      "errors": []
+    },
+    {
+      "migration": "20261006100000_atomic_batch_receipts",
+      "sha256": "c2f15be427ac1bfb0a325148703497013eca50913c5a90bfb0e6dc7ee98c47fb",
+      "targetModels": [
+        "InventoryTransaction"
+      ],
+      "foreignKeyDeclarations": 1,
+      "errors": []
+    },
+    {
+      "migration": "20261006110000_checkout_commands",
+      "sha256": "84609ab16f74d3a12ed4ea843b872c6891b6d6e97304b4e9431bb197e44637f1",
+      "targetModels": [
+        "CheckoutCommand"
+      ],
+      "foreignKeyDeclarations": 2,
+      "errors": []
+    },
+    {
+      "migration": "20261009010000_taipei_order_sequence",
+      "sha256": "df6e3de02052c08874c4adc307bca65d0383d86bd692653793948a99a1f3d553",
+      "targetModels": [
+        "Order",
+        "OrderNumberCounter"
+      ],
+      "foreignKeyDeclarations": 1,
+      "errors": []
+    },
+    {
+      "migration": "20261009120000_product_batch_changes",
+      "sha256": "fb6021ceca722561b46f55645f09f019ff0bd914f028de2db8f18f7b4087a8e4",
+      "targetModels": [
+        "Product",
+        "ProductBatchChange",
+        "User"
+      ],
+      "foreignKeyDeclarations": 4,
+      "errors": []
+    },
+    {
+      "migration": "20261015160000_medicine_label_metadata",
+      "sha256": "b5d751f54c935de55461e4f45eab73a688a7e361c2d013d10e194de53c42d5e6",
+      "targetModels": [
+        "Product"
+      ],
+      "foreignKeyDeclarations": 0,
+      "errors": []
+    },
+    {
+      "migration": "20261015170000_medicine_label_three_line_metadata",
+      "sha256": "706fb801d756441bdb19bba29bf82adc3f91cf91cd6e807297c67b40fd959423",
+      "targetModels": [
+        "Product"
+      ],
+      "foreignKeyDeclarations": 0,
+      "errors": []
+    },
+    {
+      "migration": "20261016090000_product_package_mapping",
+      "sha256": "bb867d580feb54f554502d2a02d5602f7d8ea873dd1629eb3d63b462c64850c6",
+      "targetModels": [
+        "Product",
+        "ProductPackage",
+        "ProductPackageIdentifier",
+        "ProductPackageRevision"
+      ],
+      "foreignKeyDeclarations": 9,
+      "errors": []
+    },
+    {
+      "migration": "20261018141500_private_receiving_drafts",
+      "sha256": "62b8f47494273707eac8ce05f67d7b62ecb6cfc11f140ad18c1df94639dc9b35",
+      "targetModels": [
+        "ReceivingDraft",
+        "ReceivingDraftRevision"
+      ],
+      "foreignKeyDeclarations": 3,
+      "errors": []
+    }
+  ]
+}

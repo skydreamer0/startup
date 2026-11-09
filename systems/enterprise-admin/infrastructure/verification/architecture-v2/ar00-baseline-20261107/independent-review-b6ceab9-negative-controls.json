@@ -1,0 +1,278 @@
+{
+  "head": "b6ceab9ea87b027610f9cf7b4a5e043220107da1",
+  "tree": "e5cdf6911a67ae83700f3d77160866cb86b23d46",
+  "runtime": "v22.23.4",
+  "syntheticOnly": true,
+  "controls": {
+    "originalDeadlock": {
+      "ready": [
+        "AR-13"
+      ],
+      "AR09": {
+        "id": "AR-09",
+        "reasons": [
+          "INTEGRATION_LOCK_PREREQUISITE:AR-13,AR-14",
+          "LOCK:schema-migrations"
+        ]
+      },
+      "forcedActiveErrors": [
+        "AR-09 active would hold locks while waiting on integration prerequisites: AR-13,AR-14"
+      ]
+    },
+    "crossShaCompletion": [
+      "AR-00 missing exact reviewed PASS for AR-00-AC01",
+      "AR-00 missing exact reviewed PASS for AR-00-AC02",
+      "AR-00 missing exact reviewed PASS for AR-00-AC03",
+      "AR-00 missing exact reviewed PASS for AR-00-AC04",
+      "AR-00 missing exact reviewed PASS for AR-00-AC05",
+      "AR-00 missing exact reviewed PASS for AR-00-TOOLS",
+      "AR-00 missing exact reviewed PASS for AR-00-CONTEXT"
+    ],
+    "differentTreeCompletion": [
+      "AR-00 missing exact reviewed PASS for AR-00-AC01",
+      "AR-00 missing exact reviewed PASS for AR-00-AC02",
+      "AR-00 missing exact reviewed PASS for AR-00-AC03",
+      "AR-00 missing exact reviewed PASS for AR-00-AC04",
+      "AR-00 missing exact reviewed PASS for AR-00-AC05",
+      "AR-00 missing exact reviewed PASS for AR-00-TOOLS",
+      "AR-00 missing exact reviewed PASS for AR-00-CONTEXT"
+    ],
+    "replacedRequirementText": [
+      "source requirement mismatch R29-001"
+    ],
+    "replacedTextAndHash": [
+      "source requirement mismatch R29-001"
+    ],
+    "deleteIssue29AndCount": [
+      "source requirement set mismatch",
+      "source requirement mismatch R29-001",
+      "source requirement mismatch R29-002",
+      "source requirement mismatch R29-003",
+      "source requirement mismatch R29-004",
+      "source requirement mismatch R29-005",
+      "source requirement mismatch R29-006",
+      "source requirement mismatch R29-007",
+      "source requirement mismatch R29-008",
+      "source requirement mismatch R29-009",
+      "source requirement mismatch R29-010",
+      "source requirement mismatch R29-011",
+      "source requirement mismatch R29-012",
+      "source requirement mismatch R29-013",
+      "source requirement mismatch R29-014",
+      "source requirement mismatch R29-015"
+    ],
+    "modifiedSourceBody": [
+      "source body hash mismatch #29",
+      "source checklist count mismatch #29",
+      "source requirement set mismatch",
+      "source requirement mismatch R29-016"
+    ],
+    "alternateManifestSourceClaim": {
+      "exit": 1,
+      "stdout": "",
+      "stderr": "(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n--manifest cannot be combined with --check-source; source verification requires the repository baseline\n"
+    },
+    "bareGToggle": [
+      "G1 PASS requires frozen source, scope and reviewer",
+      "G1 missing exact scoped reviewed PASS for G1-AC01",
+      "G2 PASS requires frozen source, scope and reviewer",
+      "G2 missing exact scoped reviewed PASS for G2-AC01",
+      "AR-03 activation needs matching scoped gate subject"
+    ],
+    "validGateWitnessAccepted": true,
+    "gateMismatch_scope": [
+      "G1 missing exact scoped reviewed PASS for G1-AC01"
+    ],
+    "gateMismatch_sha": [
+      "G1 missing exact scoped reviewed PASS for G1-AC01"
+    ],
+    "gateMismatch_tree": [
+      "G1 missing exact scoped reviewed PASS for G1-AC01"
+    ],
+    "gateMismatch_selfReview": [
+      "G1 missing exact scoped reviewed PASS for G1-AC01"
+    ],
+    "gateMismatch_result": [
+      "G1 missing exact scoped reviewed PASS for G1-AC01"
+    ],
+    "taskActivationWrongScopeRejected": true,
+    "fullDagSyntheticProgression": {
+      "rounds": [
+        {
+          "ready": [
+            "AR-01"
+          ],
+          "completed": [
+            "AR-01"
+          ]
+        },
+        {
+          "ready": [
+            "AR-02"
+          ],
+          "completed": [
+            "AR-02"
+          ]
+        },
+        {
+          "ready": [
+            "AR-03"
+          ],
+          "completed": [
+            "AR-03"
+          ]
+        },
+        {
+          "ready": [
+            "AR-04"
+          ],
+          "completed": [
+            "AR-04"
+          ]
+        },
+        {
+          "ready": [
+            "AR-05"
+          ],
+          "completed": [
+            "AR-05"
+          ]
+        },
+        {
+          "ready": [
+            "AR-06"
+          ],
+          "completed": [
+            "AR-06"
+          ]
+        },
+        {
+          "ready": [
+            "AR-07"
+          ],
+          "completed": [
+            "AR-07"
+          ]
+        },
+        {
+          "ready": [
+            "AR-08",
+            "AR-20"
+          ],
+          "completed": [
+            "AR-08",
+            "AR-20"
+          ]
+        },
+        {
+          "ready": [
+            "AR-13"
+          ],
+          "completed": [
+            "AR-13"
+          ]
+        },
+        {
+          "ready": [
+            "AR-14"
+          ],
+          "completed": [
+            "AR-14"
+          ]
+        },
+        {
+          "ready": [
+            "AR-09"
+          ],
+          "completed": [
+            "AR-09"
+          ]
+        },
+        {
+          "ready": [
+            "AR-10"
+          ],
+          "completed": [
+            "AR-10"
+          ]
+        },
+        {
+          "ready": [
+            "AR-11"
+          ],
+          "completed": [
+            "AR-11"
+          ]
+        },
+        {
+          "ready": [
+            "AR-12"
+          ],
+          "completed": [
+            "AR-12"
+          ]
+        },
+        {
+          "ready": [
+            "AR-15"
+          ],
+          "completed": [
+            "AR-15"
+          ]
+        },
+        {
+          "ready": [
+            "AR-16"
+          ],
+          "completed": [
+            "AR-16"
+          ]
+        },
+        {
+          "ready": [
+            "AR-17",
+            "AR-19",
+            "AR-22"
+          ],
+          "completed": [
+            "AR-17",
+            "AR-19",
+            "AR-22"
+          ]
+        },
+        {
+          "ready": [
+            "AR-18"
+          ],
+          "completed": [
+            "AR-18"
+          ]
+        },
+        {
+          "ready": [
+            "AR-21"
+          ],
+          "completed": [
+            "AR-21"
+          ]
+        },
+        {
+          "ready": [
+            "AR-23"
+          ],
+          "completed": [
+            "AR-23"
+          ]
+        }
+      ],
+      "completed": 24,
+      "allActivationsRemainBlocked": true,
+      "policiesStillUnapproved": true,
+      "gatesNotRun": true
+    },
+    "remainingMachineCoverageLimit": {
+      "clearedCliAndLexicalIndexErrors": [],
+      "note": "These curated arrays remain outside the documented automatic endpoint/model/runtime fingerprint coverage; source bytes themselves are still fingerprinted."
+    }
+  }
+}

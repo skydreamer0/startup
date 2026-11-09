@@ -1,0 +1,33 @@
+test_added_auxiliary_entry (__main__.InventoryTests.test_added_auxiliary_entry) ... ok
+test_added_python_writer (__main__.InventoryTests.test_added_python_writer) ... ok
+test_baseline (__main__.InventoryTests.test_baseline) ... ok
+test_changed_project_entry (__main__.InventoryTests.test_changed_project_entry) ... ok
+test_changed_sample_bytes (__main__.InventoryTests.test_changed_sample_bytes) ... ok
+test_changed_test_body_even_with_refreshed_file_hashes (__main__.InventoryTests.test_changed_test_body_even_with_refreshed_file_hashes) ... ok
+test_changed_transport_guard_even_with_refreshed_file_hashes (__main__.InventoryTests.test_changed_transport_guard_even_with_refreshed_file_hashes) ... ok
+test_changed_worker_guard_even_with_refreshed_file_hashes (__main__.InventoryTests.test_changed_worker_guard_even_with_refreshed_file_hashes) ... ok
+test_deleted_transport (__main__.InventoryTests.test_deleted_transport) ... ok
+test_deleted_ui_reference (__main__.InventoryTests.test_deleted_ui_reference) ... ok
+test_effect_label_downgrade (__main__.InventoryTests.test_effect_label_downgrade) ... ok
+test_generated_preview_files_are_not_source (__main__.InventoryTests.test_generated_preview_files_are_not_source) ... ok
+test_modified_ui_reference (__main__.InventoryTests.test_modified_ui_reference) ... ok
+test_new_import_even_with_refreshed_file_hashes (__main__.InventoryTests.test_new_import_even_with_refreshed_file_hashes) ... ok
+test_no_inventory_side_effect (__main__.InventoryTests.test_no_inventory_side_effect) ... ok
+test_omit_effect (__main__.InventoryTests.test_omit_effect) ... ok
+test_omit_source_record (__main__.InventoryTests.test_omit_source_record) ... ok
+test_omit_test_reference (__main__.InventoryTests.test_omit_test_reference) ... ok
+test_private_directories_are_pruned_before_read_or_fixture_copy (__main__.InventoryTests.test_private_directories_are_pruned_before_read_or_fixture_copy) ... ok
+test_removed_gap (__main__.InventoryTests.test_removed_gap) ... ok
+test_symlink_rejected (__main__.InventoryTests.test_symlink_rejected) ... ok
+test_unearned_physical_pass (__main__.InventoryTests.test_unearned_physical_pass) ... ok
+test_unearned_runtime_pass (__main__.InventoryTests.test_unearned_runtime_pass) ... ok
+test_unknown_manifest_check (__main__.InventoryTests.test_unknown_manifest_check) ... ok
+test_wrong_gate (__main__.InventoryTests.test_wrong_gate) ... ok
+test_wrong_owner (__main__.InventoryTests.test_wrong_owner) ... ok
+test_wrong_source_symbol (__main__.InventoryTests.test_wrong_source_symbol) ... ok
+test_wrong_test_symbol (__main__.InventoryTests.test_wrong_test_symbol) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 2.482s
+
+OK

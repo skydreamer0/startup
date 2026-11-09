@@ -1,0 +1,429 @@
+{
+  "schemaVersion": 1,
+  "scope": "local BLE medicine-label bridge only; excludes POS WebUSB/receipt devices",
+  "coverage": "Reviewed effect-bearing entry points and helpers; not whole-program semantic proof",
+  "activation": "BLOCKED",
+  "physicalVerification": "NOT_RUN",
+  "effects": [
+    {
+      "id": "PRINT-01",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py:main",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "CLI dispatch: scan, GATT metadata, report files, preview files, explicit BLE send",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_safety.py:test_send_fails_before_any_raster_or_ble",
+        "systems/enterprise-admin/local-print-agent/tests/test_transport.py:test_cli_routes_only_fully_explicit_send"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No full CLI renderer or device run in this slice."
+    },
+    {
+      "id": "PRINT-02",
+      "source": "systems/enterprise-admin/local-print-agent/scripts/scan_ble.py:<module>",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Forwards arbitrary argv to CLI, including guarded print --send; not read-only by name",
+      "existingTests": [],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Wrapper dispatch is bounded by a new offline test; no separate existing wrapper test."
+    },
+    {
+      "id": "PRINT-03",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/ble.py:scan",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "BLE advertisement scan, no write",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_safety.py:test_scan_filters_unrelated_devices",
+        "systems/enterprise-admin/local-print-agent/tests/test_safety.py:test_scan_timeouts_bounded"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Mock scan does not prove hardware availability."
+    },
+    {
+      "id": "PRINT-04",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/ble.py:services",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "BLE connect, enumerate GATT, disconnect; metadata report is written by CLI",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_safety.py:test_services_never_connects_to_unrelated_name",
+        "systems/enterprise-admin/local-print-agent/tests/test_safety.py:test_services_disconnects_and_only_enumerates_metadata"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Metadata connection is still device I/O."
+    },
+    {
+      "id": "PRINT-05",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:main",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "init-token or loopback serve entry",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_token_file_and_origin_validation"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Existing test covers helpers, not entire CLI startup."
+    },
+    {
+      "id": "PRINT-06",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:init_token_file",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Exclusive token-file creation and parent directory creation",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_token_file_and_origin_validation"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No real token created by this acceptance slice."
+    },
+    {
+      "id": "PRINT-07",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:_load_token",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Token-file read and format validation",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_token_file_and_origin_validation"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No existing private token read."
+    },
+    {
+      "id": "PRINT-08",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:run_server",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Starts enabled worker and binds HTTP listener only to 127.0.0.1",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_token_host_origin_gate_every_endpoint"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Existing test uses make_handler, not run_server; actual listener startup remains NOT_RUN."
+    },
+    {
+      "id": "PRINT-09",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:make_handler",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Authenticated HTTP routes; preview, queue submission, receipt reads",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_token_host_origin_gate_every_endpoint",
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_default_off_dry_run_hash_and_no_enqueue",
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_exact_browser_preflight_has_no_data_access"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "HTTP/browser/origin end-to-end suite NOT_RUN in this slice."
+    },
+    {
+      "id": "PRINT-10",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:ApiState.__post_init__",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Validates configuration and creates report directory even when printing disabled",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_token_file_and_origin_validation"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No guarantee that disabled mode is filesystem-read-only."
+    },
+    {
+      "id": "PRINT-11",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:ApiState._save_receipt",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Exclusive durable reservation or temp-file replace",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_restart_reservation_never_requeues",
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_worker_persistence_failure_cannot_send"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Atomic replacement is not an fsync or power-loss durability guarantee."
+    },
+    {
+      "id": "PRINT-12",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:ApiState._read_receipt",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Reads receipt and marks orphaned queued/printing outcome unknown",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_restart_reservation_never_requeues"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No automatic replay after restart."
+    },
+    {
+      "id": "PRINT-13",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:ApiState.recent_receipts",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Reads receipt files and merges in-memory status",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_exact_hash_idempotency_and_conflict_before_queue"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Partial source citation; malformed receipt and paging coverage not claimed."
+    },
+    {
+      "id": "PRINT-14",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:ApiState.submit",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Reserve receipt before in-memory queue; idempotent key/fingerprint conflict rejection",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_exact_hash_idempotency_and_conflict_before_queue",
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_approved_symbol_job_queues_once_without_hardware_send"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Caller must enforce authorization, approved hash, printing_enabled and valid key; submit alone is not public authorization."
+    },
+    {
+      "id": "PRINT-15",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:ApiState.start_worker",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Optional daemon thread; no worker when printing disabled",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_mock_worker_submitted_unverified_and_no_retry"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No real thread started by new offline tests."
+    },
+    {
+      "id": "PRINT-16",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py:ApiState._work",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Persist pre-send state, invoke transport once, persist unverified/unknown/no-bytes status",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_mock_worker_submitted_unverified_and_no_retry",
+        "systems/enterprise-admin/local-print-agent/tests/test_api.py:test_worker_persistence_failure_cannot_send"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No automatic retry and no physical-print confirmation."
+    },
+    {
+      "id": "PRINT-17",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py:send_approved_job",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Validate explicit target/hash/copies/framing, reserve fresh JSON before BLE",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_transport.py:test_send_guard_rejects_bad_hash_copies_and_size_before_scan"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Source gates are not new user permission to print."
+    },
+    {
+      "id": "PRINT-18",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py:_session",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Exact device/profile selection, bounded chunk writes/notifications, disconnect, transmission report",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_transport.py:test_two_copy_single_session_with_mock_ble"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Acknowledged BLE bytes never imply physical print success."
+    },
+    {
+      "id": "PRINT-19",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/raster.py:_font",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Reads candidate font files; raises RuntimeError if no supported font exists",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_raster.py:test_mixed_label_is_monochrome_and_has_ink"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Physical readability, fonts and rendering dependencies NOT_RUN."
+    },
+    {
+      "id": "PRINT-20",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/raster.py:save_preview",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Creates parent and PNG preview file",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_raster.py:test_mixed_label_is_monochrome_and_has_ink"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Renderer suite NOT_RUN."
+    },
+    {
+      "id": "PRINT-21",
+      "source": "systems/enterprise-admin/local-print-agent/src/deli720w/tspl.py:save_candidate",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Creates preview PNG, TSPL binary and metadata JSON",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_tspl.py:test_candidate_files_and_cli_send_refusal"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Offline files do not establish printer compatibility."
+    },
+    {
+      "id": "PRINT-22",
+      "source": "systems/enterprise-admin/local-print-agent/scripts/prepare_suite.py:main",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Offline sample files and suite_manifest; generated argv are inert data",
+      "existingTests": [],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No existing dedicated prepare_suite test; not executed here."
+    },
+    {
+      "id": "PRINT-23",
+      "source": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py:preflight",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Reads private target-name file and pinned TSPL sample; validates constrained report path",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py:test_preflight_requires_exact_hash_and_private_target"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Private target file not read; experimental entry is separate from API transport."
+    },
+    {
+      "id": "PRINT-24",
+      "source": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py:perform",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Experimental one-job BLE writes and report, bounded notifications, disconnect, no retry",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py:test_exact_service_single_job_and_disconnect",
+        "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py:test_partial_send_is_unknown_and_never_retried",
+        "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py:test_duplicate_profile_fails_before_notify_or_write"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Existing experimental pytest suite NOT_RUN; no physical evidence."
+    },
+    {
+      "id": "PRINT-25",
+      "source": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py:main",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Explicit experimental flag, preflight, exclusive report reservation then async BLE",
+      "existingTests": [
+        "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py:test_preflight_requires_exact_hash_and_private_target"
+      ],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "Helper citation is not full main execution."
+    },
+    {
+      "id": "PRINT-26",
+      "source": "systems/enterprise-admin/local-print-agent/scripts/diagnose_windows.ps1:<file>",
+      "owner": "AR-18",
+      "requiredChecks": [
+        "AR-18-AC01",
+        "AR-18-AC03"
+      ],
+      "effect": "Windows device/driver/USB/OS queries and partially redacted JSON report",
+      "existingTests": [],
+      "evidenceKind": "source-reference-only",
+      "runtime": "NOT_RUN",
+      "gap": "No existing test; Windows/device diagnostics NOT_RUN."
+    }
+  ]
+}

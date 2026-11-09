@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-11-09T03:59:07.319616+00:00",
+  "repository": "skydreamer0/startup",
+  "issue": 180,
+  "pullRequest": 205,
+  "verificationSubject": {
+    "remoteBase": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+    "remoteBaseTree": "3d18d4211946e8dc02d4780a20dfba2efe512343",
+    "localBaseline": "c56946e01fcd7df291555ea5e7085fb354dd1094",
+    "localSourceCommit": "f0ba66ecb16739a006bcc9e40e994ea509cb85ec",
+    "sourceTree": "8492e69d90f3b808f7121d7205c49c143d940833",
+    "publishedSourceCommit": "a18e95b945d79dcd2624d9af09e3bc6bd66085a1",
+    "sourceTreeEquality": "Local and published source trees exactly equal. Commit metadata/CI identity is not interchangeable."
+  },
+  "scope": "Read-only local BLE medicine-label source/effect/test references and bounded source-derived offline controls; not full AC01 or AR-18 acceptance.",
+  "sourceFiles": [
+    {
+      "path": "scripts/architecture/verify-print-inventory.py",
+      "sha256": "7d6ea85f58a342a3d9091d0d6e792f0c76c73e18572dc9d98a1020df55024529",
+      "gitBlob": "cc6d46efed0eff1250fd72fdcaf1ef02d41166ce"
+    },
+    {
+      "path": "scripts/architecture/test_print_inventory.py",
+      "sha256": "e7cc1180858b6b67c82633a4ba58fa655461bdad7d2ce298a47be0daee2b6d5d",
+      "gitBlob": "641cc59fc121f248cf54a7a35cbd3da4060b8288"
+    },
+    {
+      "path": "scripts/architecture/test_print_worker_controls.py",
+      "sha256": "b854d0a160db222cc859005099f5599b0286e6db46808d575f57911a55353038",
+      "gitBlob": "34fc718cedb10483645c7cb5ff86373d22dd4b85"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-inventory.json",
+      "sha256": "5b5b590253b1fea684e028342dcc1cde38f7bc8e4e6fb0faecfbebae7a7c4957",
+      "gitBlob": "d0825616432af73d4ff4a10d7b39cb0c93fcec11"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json",
+      "sha256": "e40531f05c69403c0f83e50eb7c86b18d8999ad0a7f6be741b212338dffbf36b",
+      "gitBlob": "b08513d42f68cef6576c95db5e28005ddaeee117"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-verification.md",
+      "sha256": "95055bbb4a3abe496b4b3c17bccad061f613a6c59606415565367ac61ac5f2fc",
+      "gitBlob": "024caf62f4a090e058149579aae6bac3ca0617cc"
+    }
+  ],
+  "materialization": {
+    "baselineLeafCount": 1359,
+    "materializedBaselineFiles": 231,
+    "unmaterializedBaselineLeaves": 1128,
+    "completeTree": "3d18d4211946e8dc02d4780a20dfba2efe512343",
+    "method": "Each materialized baseline file matched remote Git blob. Git index contains complete remote leaf metadata; missing objects are not a full checkout.",
+    "records": "materialized-sources.json"
+  },
+  "coverage": {
+    "mappedFiles": 28,
+    "effectRows": 26,
+    "existingTestReferences": 33,
+    "uniqueExistingTestSymbols": 23,
+    "existingTestEvidenceKind": "source-reference-only",
+    "excludedRuntimeDirectories": "Explicitly listed in print-inventory.json; private/runtime content never contributes to acceptance."
+  },
+  "checks": [
+    {
+      "id": "PRINT-SOURCE",
+      "command": "python3 scripts/architecture/verify-print-inventory.py",
+      "status": "PASS",
+      "log": "print-source.log"
+    },
+    {
+      "id": "PRINT-INVENTORY",
+      "command": "python3 scripts/architecture/test_print_inventory.py",
+      "status": "PASS",
+      "tests": 28,
+      "failures": 0,
+      "skips": 0,
+      "log": "inventory-tests.log"
+    },
+    {
+      "id": "PRINT-CONTROLS",
+      "command": "python3 scripts/architecture/test_print_worker_controls.py",
+      "status": "PASS",
+      "tests": 24,
+      "failures": 0,
+      "skips": 0,
+      "log": "worker-controls.log"
+    },
+    {
+      "id": "PLAN-SEED-GATE-REGRESSION",
+      "command": "node --test scripts/architecture/plan.test.mjs scripts/architecture/seed-migrations.test.mjs systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "status": "PASS",
+      "tests": 162,
+      "failures": 0,
+      "skips": 0,
+      "log": "node-regression.log"
+    },
+    {
+      "id": "PLAN-SOURCE",
+      "command": "node scripts/architecture/verify-plan.mjs --check-source",
+      "status": "PASS",
+      "log": "plan-source.log"
+    },
+    {
+      "id": "SEED-SOURCE",
+      "command": "node scripts/architecture/verify-seed-migrations.mjs",
+      "status": "PASS",
+      "log": "seed-source.log"
+    },
+    {
+      "id": "CONTEXT",
+      "command": "bash scripts/validate-agent-context.sh",
+      "status": "PASS",
+      "log": "context.log"
+    },
+    {
+      "id": "SYNTAX",
+      "command": "python3 systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/reproduce.py (syntax step ast.parse for each of three named source files)",
+      "status": "PASS",
+      "log": "syntax.log"
+    },
+    {
+      "id": "WHITESPACE",
+      "command": "git diff --check 5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e a18e95b945d79dcd2624d9af09e3bc6bd66085a1",
+      "status": "PASS",
+      "equivalentLocalCommand": "git diff --check c56946e01fcd7df291555ea5e7085fb354dd1094 f0ba66ecb16739a006bcc9e40e994ea509cb85ec",
+      "log": "final-reproduction/source-whitespace.log"
+    },
+    {
+      "id": "INITIAL-WRAPPER-HARNESS",
+      "status": "FAIL",
+      "tests": 24,
+      "failures": 1,
+      "log": "initial-worker-failure.log",
+      "resolution": "Nested import sys superseded a stub; test now patches real sys.argv. Final 24 controls pass. See log-provenance.json."
+    },
+    {
+      "id": "INDEPENDENT-INITIAL",
+      "status": "FAIL",
+      "decision": "REQUEST_CHANGES",
+      "artifact": "independent-review.json",
+      "resolution": "Private traversal fixed; three source/test map entries and harness wording corrected."
+    },
+    {
+      "id": "INDEPENDENT-FINAL",
+      "status": "PASS",
+      "tests": 52,
+      "failures": 0,
+      "skips": 0,
+      "artifact": "independent-review.json",
+      "sha256": "ddd2dbee7ccaea3b327d0f5b753248d77e85fee63da138bb788dc2f14f515078",
+      "extraControls": "Private read/copy/traversal zero; four metadata mutations rejected; two guard mutations killed."
+    }
+  ],
+  "finalReproduction": {
+    "command": "python3 systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/reproduce.py",
+    "status": "PASS",
+    "results": "final-reproduction/results.json",
+    "note": "Captured run uses equivalent local source/baseline refs; public defaults use published source ancestry. All 52 new tests and 162 regressions rerun after source freeze."
+  },
+  "independentReview": {
+    "decision": "APPROVED_BOUNDED_SOURCE_AND_OFFLINE_SLICE_AFTER_FIXES",
+    "artifact": "independent-review.json",
+    "scope": "Reviewer reran the 52 Python checks and additional probes, not the separately authored Node/context checks.",
+    "reproducibility": {
+      "script": "independent-probes/replay_print_review.py",
+      "scriptSha256": "8b09593078a5e4c0563b7bdab0c35acb865a204e65c4f6f8e07ff3adf254d9ce",
+      "addendum": "independent-probes/addendum.json",
+      "addendumSha256": "37b995c1ccc82c8897cdeef70124436b359e00fc6bae61ba2b8fea6c9a7d20e5",
+      "supplementalReviewProbeResult": "independent-probes/probes-run/result.json",
+      "authorFullAuditReplay": {
+        "status": "PASS",
+        "tests": 52,
+        "result": "independent-probes/author-audit-replay.json",
+        "note": "Author additionally reran the exact published review probe script including --audit-suite; this is supplemental author evidence, not another independent review."
+      }
+    }
+  },
+  "notRun": [
+    {
+      "id": "ORIGINAL-PYTEST-IMPORT-RENDERER",
+      "status": "NOT_RUN",
+      "reason": "pytest, Bleak, qrcode and python-barcode not installed. No dependency installation attempted. Existing test bodies were inspected, not run."
+    },
+    {
+      "id": "HTTP-BROWSER-ORIGIN",
+      "status": "NOT_RUN",
+      "reason": "No listener/browser or full module import/startup; AST stand-ins do not establish HTTP authorization end to end."
+    },
+    {
+      "id": "REAL-WORKER-SCHEDULING",
+      "status": "NOT_RUN",
+      "reason": "Finite queue and captured daemon constructor, no real worker thread."
+    },
+    {
+      "id": "WINDOWS-BLE-PAPER-SCANNING",
+      "status": "NOT_RUN",
+      "reason": "No device access, real token/target file, printing or store acceptance."
+    },
+    {
+      "id": "NODE22-MANUAL-SUITES",
+      "status": "NOT_RUN",
+      "reason": "Architecture regressions run on Node24.22.1 only."
+    },
+    {
+      "id": "APP-DB-PRODUCTION",
+      "status": "NOT_RUN",
+      "reason": "No app, migration, database, production data or external service operation."
+    },
+    {
+      "id": "NEW-HEAD-HOSTED-CI",
+      "status": "NOT_RUN_AT_SEAL",
+      "reason": "Exact final artifact commit is published after this immutable receipt; follow PR checks separately."
+    }
+  ],
+  "unchangedAcceptance": {
+    "artifact": "unchanged-acceptance.json",
+    "issue180Unchecked": 5,
+    "overallAC01": "NOT_RUN",
+    "AR00": "active; overall NOT_RUN",
+    "AR01": "blocked",
+    "decisions": "UNAPPROVED",
+    "activationGates": "NOT_RUN",
+    "activation": "BLOCKED",
+    "draft": true,
+    "mergeOrDeploy": false
+  },
+  "limits": [
+    "Reviewed snapshot, not a general semantic analyzer; coordinated source/pin updates require review.",
+    "33 citations do not mean 33 tests were executed.",
+    "Selected unmodified AST definitions with stdlib stand-ins are not full module/import equivalence or a sandbox for arbitrary future Python.",
+    "Internal AF_UNIX event-loop socketpair is possible; no network connection/listener or device operation.",
+    "scan_ble wrapper permits guarded send argv despite legacy read-only docstring.",
+    "Printing-disabled state creates a report directory; submit relies on caller authorization.",
+    "Receipt replace is not proven power-loss durability; BLE acknowledgement is not physical print verification.",
+    "POS WebUSB/receipt devices and full HTTP writer coverage are outside this slice.",
+    "These tests are manually invoked and not newly wired into CI."
+  ]
+}

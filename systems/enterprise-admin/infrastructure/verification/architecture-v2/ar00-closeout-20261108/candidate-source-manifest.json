@@ -1,0 +1,49 @@
+{
+  "localSourceCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+  "completeTree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+  "remoteParent": "84d754b29332ed868f92fd3e954f90011a2d338e",
+  "files": [
+    {
+      "path": "scripts/architecture/plan.test.mjs",
+      "mode": "100644",
+      "gitBlobSha1": "d4ff8c4ecc8584f9774424b509c8178b9231fa95",
+      "sha256": "57f227da7c0ecf13cf33c93abac6ed1f0a293a26821735ed862dcccb2b9f286d",
+      "bytes": 22224
+    },
+    {
+      "path": "scripts/architecture/verify-plan.mjs",
+      "mode": "100644",
+      "gitBlobSha1": "c0710b7ca8c310dca6326275022d274b1a00566f",
+      "sha256": "0a2dce1320f459024b18c01aaf945cba64a27a0dba0b66fee8d8cc70f431e798",
+      "bytes": 25314
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/README.md",
+      "mode": "100644",
+      "gitBlobSha1": "6998c0f99eadc427c744d46bb0111326fa7b9527",
+      "sha256": "21b722c68abe5cc385bad9406e5b86a672369832e4f90ca6936731663147141b",
+      "bytes": 8479
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "mode": "100644",
+      "gitBlobSha1": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+      "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21",
+      "bytes": 155014
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.md",
+      "mode": "100644",
+      "gitBlobSha1": "fbf44e44b07582bdcf72a871904384c8bbd790d2",
+      "sha256": "89112d14ba317096b2d1d79cf8bfbd24d0a82081a05b566fdeed3c81ebec2ce7",
+      "bytes": 10125
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "mode": "100644",
+      "gitBlobSha1": "4824f4f811a65476b747b9b5077618da77d7f9bd",
+      "sha256": "5a185748f6198afe0f5770fe3fa36f4a7ec4e5458afd1848cd449dd3acf1d41a",
+      "bytes": 20444
+    }
+  ]
+}

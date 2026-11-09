@@ -1,0 +1,63 @@
+{
+  "recordedAt": "2026-11-09T04:20:44.211496+00:00",
+  "decision": "PASS_READ_ONLY_PRE_FINAL_ARTIFACT_INTEGRATION_CHECK",
+  "blockers": [],
+  "localCombinedSource": "debacdb8354b460f1df597fdc543499c08bd2b7d",
+  "remoteEquivalentSource": "d28abc8bcaccaddf9010632c7bfdc504c40a041f",
+  "combinedTree": "0596d76724b79e6cbe72e394031153245913f535",
+  "base": "95f3b34e5d32bc9dbe18699f5b32b44ade247b62",
+  "baseTree": "7046dd1741aeae1a82ba29f921cd84df06e3d79b",
+  "acceptedR1Freeze": "7fc1ae6a50108988676fa03a38d54207f12eea7c",
+  "verification": {
+    "githubTreesIndependentlyRead": true,
+    "truncated": false,
+    "baseLeafPathsModesBlobIdsPreserved": 1399,
+    "baseLeafChangesOrRemovals": 0,
+    "sourceAddedHttpFiles": 34,
+    "combinedSourceLeaves": 1433,
+    "httpImplementationDataByteMatches": 6,
+    "materializedBaseFilesRemoteBlobMatches": 271,
+    "publicationByteMatches": 37,
+    "originalR1SealPreserved": true,
+    "integratorLogsHashAndReportedCountChecks": 15,
+    "readmeAndResultsScopeWording": "NO_FALSE_HTTP_PG_FULL_AC01_OR_INDEPENDENT_COMBINED_290_CLAIM"
+  },
+  "reviewedDocs": {
+    "readme": {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/README.md",
+      "sha256": "dc283ae3f13b0b6b29384c897b581f8fcd95252a71fa4981a361f7d2bf04ea47"
+    },
+    "integrationResults": {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/integration/results.json",
+      "sha256": "783ded6005851ba700c2026dc86b48dda62b2b138122109507b37801dc086da2"
+    }
+  },
+  "executionAttribution": {
+    "reviewerReran76": false,
+    "reason": "All six reviewed implementation/data files are unchanged; prior independent76/76 applies to the same bytes.",
+    "combined290": "INTEGRATOR_EXECUTION_RECEIPTS_HASH_AND_COUNT_CHECKED_NOT_RERUN_BY_REVIEWER",
+    "realHttp": "NOT_RUN",
+    "PostgreSQL": "NOT_RUN",
+    "fullAC01": "NOT_RUN"
+  },
+  "limits": [
+    "Pre-final-artifact state only; final artifact commit/seal and exact-head CI are not reviewed here.",
+    "Untracked .http-work/ and scripts/architecture/__pycache__/ are scratch, not approved publication inputs.",
+    "Latest-head lease, allowed final tree and branch readback remain integrator responsibilities.",
+    "No author files, branch refs, production data or runtime behavior changed."
+  ],
+  "evidence": [
+    {
+      "path": "remote-tree-comparison.json",
+      "sha256": "512790fa2cbcd11c7438572896417210a0c62683d1b7164825c4cb79ec42e7cb"
+    },
+    {
+      "path": "remote-materialized-blobs.json",
+      "sha256": "aad5ff2df8826f3592237006c81906de7821cf248af4115c2299b76649d31ab3"
+    },
+    {
+      "path": "byte-and-receipt-checks.json",
+      "sha256": "98b95787a1e5ece7e1477804e3196dcb88c3d6c5a155a17b44e1991777433129"
+    }
+  ]
+}
