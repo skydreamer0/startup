@@ -1,0 +1,410 @@
+{
+  "observedAt": "2026-11-09",
+  "pr": {
+    "number": 205,
+    "head": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+    "base": "67e4c43b52eab02f29c3050c2225ae1b91f558e6",
+    "draft": true,
+    "merged": false
+  },
+  "issue": {
+    "number": 180,
+    "state": "open",
+    "unchecked": 5,
+    "bodySha256": "5749cf1b47176561241539785aecfd9e793137b7ee8657238e60d4f64cb49d10"
+  },
+  "remoteSourceCommit": "a18e95b945d79dcd2624d9af09e3bc6bd66085a1",
+  "canonicalFiles": [
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+      "gitBlob": "953d682851d8f6f6c414c5147ea9117894b2262d",
+      "sha256": "571ce7103c56c5dc54ec83c99801cbe40f1755959133151fa295bb48116a5a8b"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/evidence.json",
+      "gitBlob": "d1bd1ed5947b6349095cd3a0fe60776254047dba",
+      "sha256": "cd651a26eb69d4f17b3a974813bc0a1b44a0738c5299aa71b17708bb230d23c1"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "gitBlob": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+      "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
+    }
+  ],
+  "canonicalState": {
+    "AR-00": {
+      "id": "AR-00",
+      "issue": 180,
+      "url": "https://github.com/skydreamer0/startup/issues/180",
+      "title": "[AR-00][P0] 架構升級執行基線、業務規則驗證表與 Agent 任務圖",
+      "dependsOn": [],
+      "integrationDependsOn": [],
+      "substeps": [
+        "contract/schema (only if needed)",
+        "implementation",
+        "consumer cutover",
+        "integration and independent review"
+      ],
+      "sourcePaths": [
+        "systems/enterprise-admin/infrastructure/plans/architecture-v2",
+        "systems/enterprise-admin/ROADMAP.md",
+        "systems/enterprise-admin/CONTEXT.md",
+        "scripts/architecture"
+      ],
+      "newPaths": [],
+      "writePaths": [
+        "systems/enterprise-admin/infrastructure/plans/architecture-v2",
+        "systems/enterprise-admin/ROADMAP.md",
+        "systems/enterprise-admin/CONTEXT.md",
+        "scripts/architecture"
+      ],
+      "exclusiveLocks": [
+        "plans-context"
+      ],
+      "requiredChecks": [
+        {
+          "id": "AR-00-AC01",
+          "description": "現有所有啟用 writer 與既有需求皆有 owner、去向和測試，沒有需求遺失。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC02",
+          "description": "manifest 無循環/不存在相依，overlap 檔案鎖可驗證；相依完成才可派工。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC03",
+          "description": "基線 PASS/FAIL/SKIP/NOT_RUN 分列，未執行不算通過。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC04",
+          "description": "政策未決不阻擋不相關 ready task，也不能使功能偷偷啟用。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-AC05",
+          "description": "機器可讀 evidence 與 GitHub checkbox 分開；軟體完成不等於 G0–G7/實店完成。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-00-TOOLS",
+          "description": "Plan graph, locks, policy, evidence rejection tests and baseline source hash verification",
+          "kind": "node",
+          "command": "node --test scripts/architecture/plan.test.mjs && node scripts/architecture/verify-plan.mjs"
+        },
+        {
+          "id": "AR-00-CONTEXT",
+          "description": "Repository context and whitespace",
+          "kind": "static",
+          "command": "./scripts/validate-agent-context.sh && git diff --check"
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": [],
+      "status": "active",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": "baseline-owner",
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    "AR-01": {
+      "id": "AR-01",
+      "issue": 181,
+      "url": "https://github.com/skydreamer0/startup/issues/181",
+      "title": "[AR-01][P0] 領域模組重整、依賴圖與 CI 邊界防線",
+      "dependsOn": [
+        "AR-00"
+      ],
+      "integrationDependsOn": [],
+      "substeps": [
+        "contract/schema (only if needed)",
+        "implementation",
+        "consumer cutover",
+        "integration and independent review"
+      ],
+      "sourcePaths": [
+        "systems/enterprise-admin/backend/src/app.ts",
+        "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+        "systems/enterprise-admin/backend/package.json",
+        "systems/enterprise-admin/backend/Dockerfile",
+        "systems/enterprise-admin/package.json",
+        "systems/enterprise-admin/packages/types",
+        "scripts/validate-agent-context.sh",
+        ".github/workflows"
+      ],
+      "newPaths": [
+        "systems/enterprise-admin/backend/src/composition",
+        "systems/enterprise-admin/backend/src/application",
+        "systems/enterprise-admin/backend/src/kernel",
+        "systems/enterprise-admin/backend/src/platform",
+        "scripts/architecture/check-boundaries.mjs"
+      ],
+      "writePaths": [
+        "systems/enterprise-admin/backend/src/app.ts",
+        "systems/enterprise-admin/backend/src/modules/pos/checkout.service.ts",
+        "systems/enterprise-admin/backend/src/composition",
+        "systems/enterprise-admin/backend/src/application",
+        "systems/enterprise-admin/backend/src/kernel",
+        "systems/enterprise-admin/backend/src/platform",
+        "systems/enterprise-admin/backend/package.json",
+        "systems/enterprise-admin/backend/Dockerfile",
+        "systems/enterprise-admin/package.json",
+        "systems/enterprise-admin/packages/types",
+        "scripts/architecture/check-boundaries.mjs",
+        "scripts/validate-agent-context.sh",
+        ".github/workflows"
+      ],
+      "exclusiveLocks": [
+        "package-locks",
+        "composition",
+        "backend-domain",
+        "platform-kernel",
+        "deploy",
+        "plans-context"
+      ],
+      "requiredChecks": [
+        {
+          "id": "AR-01-AC01",
+          "description": "刻意增加循環、deep import、domain Prisma import 的 mutation fixture 均使 CI 失敗。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-01-AC02",
+          "description": "一個真正使用者流程完成新邊界改造，訂單/庫存/金額/unknown recovery 回歸不變。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-01-AC03",
+          "description": "backend、兩 SPA、共同型別在 clean install 與最終 Docker image build/test 通過。",
+          "kind": "planned-acceptance",
+          "command": null
+        },
+        {
+          "id": "AR-01-AC04",
+          "description": "舊 facade 移除條件及所有 callers 完整列出；沒有另一份庫存/財務 authority。",
+          "kind": "planned-acceptance",
+          "command": null
+        }
+      ],
+      "decisionGates": [],
+      "activationGates": [],
+      "status": "planned",
+      "verification": "NOT_RUN",
+      "activation": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "completionEvidence": [],
+      "verificationSubject": null,
+      "activationSubject": null,
+      "activationScope": null
+    },
+    "decisions": [
+      {
+        "id": "D01",
+        "name": "金額精度、捨入、折扣、找零",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D02",
+        "name": "退款期間、歸屬與分攤",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D03",
+        "name": "成本來源及估價",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D04",
+        "name": "單位、拆零與換算",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D05",
+        "name": "退回放行與差異處理角色",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D06",
+        "name": "Rx 存取、保存、藥師角色",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D07",
+        "name": "正式主機、裝置及操作員",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D08",
+        "name": "備份故障域、RPO/RTO、保存及維護者",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      },
+      {
+        "id": "D09",
+        "name": "負載、延遲與資源門檻",
+        "status": "UNAPPROVED",
+        "approvalSource": null,
+        "testProfile": "TEST_ONLY",
+        "scope": "activation-only"
+      }
+    ],
+    "activationGates": [
+      {
+        "id": "G0",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G0-AC01",
+            "description": "| **G0：既有操作可用** | 任何包含相關 Admin／POS 路徑的試用 | 批號合法角色讀到 fixture、非法角色仍 403；403 不畫成 empty；新增表單真分頁資料不 crash／可取消；exact scan；確認量更新。1440×900／1024×768／1180×820 普通點擊無遮擋；保留 mobile=true 取消失敗的回歸，固定模式通過不代替其他模式 |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      },
+      {
+        "id": "G1",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G1-AC01",
+            "description": "| **G1：共同 posting／command 安全** | 任何正式數量寫入前 | 真 PG 測最後一件、重複商品列、同 key 同 payload 回原結果／不同 payload conflict、lost response／重啟、途中 rollback、唯一單號、scope。涵蓋 POS↔一般訂單、POS↔調整／匯入、收貨↔出庫等**本次啟用的混合 writer**；啟用 reservation 時加 reservation↔checkout。未啟用入口驗證 API/job 拒絕，不要求先實作所有 writer。逐筆驗 order/payment-record/allocation/movement/balance/command 原子一致；checkout 的 Decimal／最小貨幣單位、折扣／捨入、split payment／找零／部分退款皆驗 API–DB 金額一致，不能延到財務報表才驗 |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      },
+      {
+        "id": "G2",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G2-AC01",
+            "description": "| **G2：遷移與開帳** | 以此系統作真實庫存權威前 | 舊差異與 opening physical stock 經確認；baseline＋後續 movements 可重建 projection；未知資料明示。dry-run、migration fail-fast、版本／rollback 相容與全部 writer cutover 清單；未轉接 writer API/job 已拒絕 |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      },
+      {
+        "id": "G3",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G3-AC01",
+            "description": "| **G3：入庫 OCR／收貨** | 草稿試用先驗草稿部分；合成 receipt posting 加 G1＋最小單位／bin；真資料成為庫存權威再加 G2 | 有碼、無碼、破損／讀不到碼、unknown code 皆到同一 draft；條碼不自動證明 lot/expiry；衝突阻止過帳。critical fields＋evidence revision 改動使 approval 失效；posting 同一 transaction 內再比對 business/evidence revision 與有效 approval，並行修改不符時整筆拒絕。late OCR 不蓋人改。商品／單位不明不可正式數量過帳；lot／expiry 不明只可草稿或依已確認政策入隔離，不能直接釋出。ready 原圖、部分到貨／拒收／隔離、合法第二批與重送防重可區分，posted line→batch→全部 bins→source photo 可查 |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      },
+      {
+        "id": "G4",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G4-AC01",
+            "description": "| **G4：零售／手動出庫／退回／移位** | 每個 subtype 啟用前 | 實際 lot/bin allocation 持久化、eligible FEFO、退款未收貨不補庫、回收先隔離；移位總量守恆。B2B dispatch／ack 不重複扣，退供應商來源／方向獨立；partial／reservation／handover 按當次啟用範圍驗，未啟用者不能偷走 generic order |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      },
+      {
+        "id": "G5",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G5-AC01",
+            "description": "| **G5：QR／主機列印** | 開啟此設備流程前 | QR 為批次級、同批多盒共碼不算箱數；掃描只讀批次與全部 bins，unknown／跨店拒絕；標籤上印出的 bin 文字是可能過時的位置提示。print retry／uncertain／同 ID 重印不過帳，主機 allowlist／ACL、真 Deli 型號＋標籤尺寸／協定＋host transport 實測；如貼標才釋出另驗該人工作業 |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      },
+      {
+        "id": "G6",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G6-AC01",
+            "description": "| **G6：報表／處方的功能 gate** | 對應功能啟用前 | 近效期／滯銷具資料時間、缺資料標記、lot/bin/action 狀態，移位不算銷售；money／成本／折扣／退款對帳通過後財務報表才作依據。Rx 輔助需 ACL、原圖／候選／藥師核對與未解欄位；完整處方交付另驗 revision-bound approval、partial 與實際批次，無自動臨床替代／健保申報承諾 |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      },
+      {
+        "id": "G7",
+        "status": "NOT_RUN",
+        "source": "https://github.com/skydreamer0/startup/issues/37",
+        "requiredChecks": [
+          {
+            "id": "G7-AC01",
+            "description": "| **G7：部署、恢復與代表性負載** | 每次實店啟用／擴大範圍前 | 最終專用主機 Compose、單 URL、DB/schema/assets readiness、重開機／LAN、DB＋原圖 manifest 還原、ACL/dedupe/pending jobs 對帳。數千 SKU 代表性資料、末端搜尋／分頁及 2–3 條已啟用流程重疊，前景 p50/p95／DB waits／CPU/RAM／event loop／payload 與背景 OCR 開關比較，按事先同意門檻判定 |"
+          }
+        ],
+        "completionEvidence": [],
+        "verificationSubject": null,
+        "scope": null,
+        "reviewer": null
+      }
+    ]
+  }
+}
