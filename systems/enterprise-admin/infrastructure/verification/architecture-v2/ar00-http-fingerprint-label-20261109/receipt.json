@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-11-09T04:47:21.073670+00:00",
+  "repository": "skydreamer0/startup",
+  "issue": 180,
+  "pullRequest": 205,
+  "purpose": "Preserve fingerprint validation while representing source paths and SHA256 values as explicit records; no credential or safety-policy change.",
+  "subject": {
+    "baseRemoteCommit": "a8db89cb75ad2062f979c97194ba09acdcf977f9",
+    "baseTree": "e7c363ab792d47917b909cc799c55b2586cdb7b3",
+    "reviewedLocalSourceCommit": "d281e3039899fdcbad59d9c30f972a953b7a30d6",
+    "publishedEquivalentSourceCommit": "f1274af6fe5ce02d59182885ca44f595327d7a36",
+    "sourceTree": "5dab462c41563b49f8f1c06e0e85c752ea4bd505",
+    "binding": "Both source trees match. Full 1493-leaf remote base metadata independently matched local baseline before publication. Same tree does not transfer CI identity."
+  },
+  "changedFiles": [
+    {
+      "path": "scripts/architecture/http-writers-mutation.test.mjs",
+      "gitBlob": "51d09f42876e25bab82ce3fd56e47d578fddaa14",
+      "sha256": "d7ff57cf091705c3cf559fd09c33a98c6464b7fccc6d7165f5908a31a863bcec"
+    },
+    {
+      "path": "scripts/architecture/http-writers-spec.mjs",
+      "gitBlob": "af8aa75b30e757b6528976757e6ef1a5c82bbb4f",
+      "sha256": "82f78425346fee3823b9aa5883564b04b03997529a0e39885fa529f15c8c4424"
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.mjs",
+      "gitBlob": "ae51324e1603ca86840e4edb8cb3b00fe2788c71",
+      "sha256": "5512aaef4451cd3c6e4ddf114ab3ea9c845d09d40850a59e7d1dee60162da046"
+    },
+    {
+      "path": "scripts/architecture/http-writers-verify.test.mjs",
+      "gitBlob": "419c9f44ca37aab370e189bca3e7b30cdd0381bb",
+      "sha256": "00414ebf525670a9d41e5861e80e33cad9d28924e9a23189f9fcbc7d388a51b5"
+    }
+  ],
+  "verification": {
+    "independentReview": "independent-review/review.json",
+    "independentReviewSha256": "23605c90209a51205d0435895f648b3ac4e2b95dcba15e44bdf38573fc266f6c",
+    "decision": "APPROVED_BOUNDED_FINGERPRINT_REPRESENTATION_FIX",
+    "freshTests": 291,
+    "httpTests": 77,
+    "existingNodeTests": 162,
+    "printTests": 52,
+    "failures": 0,
+    "skips": 0,
+    "fourSourceVerifiers": "PASS",
+    "context": "PASS",
+    "syntax": "PASS",
+    "whitespace": "PASS",
+    "pinCount": 27,
+    "valuesAndOrderEquivalent": true,
+    "actualCommittedSourceBytesMatch": true,
+    "detachedRecordsAndMutationWitness": "PASS"
+  },
+  "previousSecurityFinding": {
+    "artifact": "prior-scanner-finding-no-value.json",
+    "exactOldHead": "a8db89cb75ad2062f979c97194ba09acdcf977f9",
+    "status": "FAIL",
+    "classification": "Generic Password",
+    "independentClassification": "The flagged entry is a SHA256 fingerprint of a versioned source file, not an account credential. Equality was tested without emitting the scalar.",
+    "flaggedScalar": "NOT_RECORDED"
+  },
+  "newHeadSecurityAndCI": {
+    "status": "NOT_RUN_AT_SEAL",
+    "reason": "Natural exact-head checks begin after the final artifact commit is published. The external scanner may include historical commits; no clearance is inferred from format changes."
+  },
+  "preserved": {
+    "old1493LeafEntries": "1489 unchanged; exactly four verifier/spec/test files modified. Additional files are this separate receipt directory.",
+    "priorHttpAndPrintReceipts": "Unchanged, including their original hash seals.",
+    "applicationDatabaseMapContractWorkflowSecurityConfig": "Unchanged",
+    "history": "Fast-forward only; no rewrite or removal.",
+    "canonicalManifestEvidence": "Unchanged",
+    "draft": true,
+    "fullAC01": "NOT_RUN",
+    "realHTTPPGDevice": "NOT_RUN",
+    "activation": "BLOCKED"
+  },
+  "prohibitedActionsNotTaken": [
+    "No secret value printed in this receipt.",
+    "No security-check dismissal, suppression, exception, ignore, rerun or configuration change.",
+    "No application, DB, production data, device, user computer, merge or deployment action."
+  ],
+  "reproduce": {
+    "fullCommands": "independent-review/review.json",
+    "pinEquivalence": "python3 systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-fingerprint-label-20261109/independent-review/compare-committed-pins.py --repository . --base a8db89cb75ad2062f979c97194ba09acdcf977f9 --source f1274af6fe5ce02d59182885ca44f595327d7a36",
+    "behavior": "node systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-fingerprint-label-20261109/independent-review/probe-fingerprint-records.mjs ."
+  }
+}

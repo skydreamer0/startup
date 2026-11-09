@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "recordCount": 27,
+  "valuesAndOrderEqual": true,
+  "otherSpecFieldsEqual": true,
+  "allCommittedSourceBytesMatch": true,
+  "changedFiles": [
+    "scripts/architecture/http-writers-mutation.test.mjs",
+    "scripts/architecture/http-writers-spec.mjs",
+    "scripts/architecture/http-writers-verify.mjs",
+    "scripts/architecture/http-writers-verify.test.mjs"
+  ],
+  "flaggedEntryIsSourceFingerprint": true,
+  "sourceFingerprints": "NOT_RECORDED"
+}

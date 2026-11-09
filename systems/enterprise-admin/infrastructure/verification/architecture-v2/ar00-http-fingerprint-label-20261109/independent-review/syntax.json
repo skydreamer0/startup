@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/architecture/http-writers-mutation.test.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/architecture/http-writers-spec.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/architecture/http-writers-verify.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/architecture/http-writers-verify.test.mjs"
+    ],
+    "exitCode": 0
+  }
+]

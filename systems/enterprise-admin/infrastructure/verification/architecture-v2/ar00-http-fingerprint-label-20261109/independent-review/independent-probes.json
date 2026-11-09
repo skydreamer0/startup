@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "recordCount": 27,
+  "uniquePaths": 27,
+  "detachedArray": true,
+  "allDetachedRecords": true,
+  "mutatingReturnedRecordsLeavesPinsUnchanged": true,
+  "baselinePass": true,
+  "actualByteDriftRejected": true,
+  "removedByteGuardAllowsDrift": true,
+  "rejectionWitnessKillsMutant": true,
+  "finalBaselinePass": true,
+  "sourceFingerprints": "NOT_RECORDED",
+  "applicationExecution": "NOT_RUN",
+  "externalScannerOutcome": "NOT_VERIFIED"
+}
