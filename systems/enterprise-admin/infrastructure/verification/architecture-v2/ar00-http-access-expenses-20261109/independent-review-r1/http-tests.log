@@ -1,0 +1,466 @@
+TAP version 13
+# Subtest: USERS-CREATE: source mapping contract
+ok 1 - USERS-CREATE: source mapping contract
+  ---
+  duration_ms: 3.937305
+  type: 'test'
+  ...
+# Subtest: USERS-UPDATE: source mapping contract
+ok 2 - USERS-UPDATE: source mapping contract
+  ---
+  duration_ms: 2.18559
+  type: 'test'
+  ...
+# Subtest: USERS-DELETE: source mapping contract
+ok 3 - USERS-DELETE: source mapping contract
+  ---
+  duration_ms: 0.768441
+  type: 'test'
+  ...
+# Subtest: ROLES-CREATE: source mapping contract
+ok 4 - ROLES-CREATE: source mapping contract
+  ---
+  duration_ms: 0.629861
+  type: 'test'
+  ...
+# Subtest: ROLES-REPLACE: source mapping contract
+ok 5 - ROLES-REPLACE: source mapping contract
+  ---
+  duration_ms: 0.731876
+  type: 'test'
+  ...
+# Subtest: EXPENSES-CREATE: source mapping contract
+ok 6 - EXPENSES-CREATE: source mapping contract
+  ---
+  duration_ms: 0.524312
+  type: 'test'
+  ...
+# Subtest: EXPENSES-UPDATE: source mapping contract
+ok 7 - EXPENSES-UPDATE: source mapping contract
+  ---
+  duration_ms: 0.870905
+  type: 'test'
+  ...
+# Subtest: EXPENSES-DELETE: source mapping contract
+ok 8 - EXPENSES-DELETE: source mapping contract
+  ---
+  duration_ms: 0.856764
+  type: 'test'
+  ...
+# Subtest: removing identity guard makes its isolated rejection test fail
+ok 9 - removing identity guard makes its isolated rejection test fail
+  ---
+  duration_ms: 214.100847
+  type: 'test'
+  ...
+# Subtest: removing pins guard makes its isolated rejection test fail
+ok 10 - removing pins guard makes its isolated rejection test fail
+  ---
+  duration_ms: 198.447443
+  type: 'test'
+  ...
+# Subtest: removing shared guard makes its isolated rejection test fail
+ok 11 - removing shared guard makes its isolated rejection test fail
+  ---
+  duration_ms: 199.744071
+  type: 'test'
+  ...
+# Subtest: removing membership guard makes its isolated rejection test fail
+ok 12 - removing membership guard makes its isolated rejection test fail
+  ---
+  duration_ms: 179.173022
+  type: 'test'
+  ...
+# Subtest: removing facts guard makes its isolated rejection test fail
+ok 13 - removing facts guard makes its isolated rejection test fail
+  ---
+  duration_ms: 173.261052
+  type: 'test'
+  ...
+# Subtest: removing chain guard makes its isolated rejection test fail
+ok 14 - removing chain guard makes its isolated rejection test fail
+  ---
+  duration_ms: 183.738235
+  type: 'test'
+  ...
+# Subtest: removing dataflow guard makes its isolated rejection test fail
+ok 15 - removing dataflow guard makes its isolated rejection test fail
+  ---
+  duration_ms: 179.177638
+  type: 'test'
+  ...
+# Subtest: removing tests guard makes its isolated rejection test fail
+ok 16 - removing tests guard makes its isolated rejection test fail
+  ---
+  duration_ms: 170.927639
+  type: 'test'
+  ...
+# Subtest: actual-byte fingerprint clause has an independent witness
+ok 17 - actual-byte fingerprint clause has an independent witness
+  ---
+  duration_ms: 40.678996
+  type: 'test'
+  ...
+# Subtest: pinned eight-endpoint map passes only source-mapping scope
+ok 18 - pinned eight-endpoint map passes only source-mapping scope
+  ---
+  duration_ms: 21.912491
+  type: 'test'
+  ...
+# Subtest: reject false full AC01 PASS
+ok 19 - reject false full AC01 PASS
+  ---
+  duration_ms: 15.275127
+  type: 'test'
+  ...
+# Subtest: reject invented runtime execution
+ok 20 - reject invented runtime execution
+  ---
+  duration_ms: 13.222358
+  type: 'test'
+  ...
+# Subtest: reject promoted business requirements claim
+ok 21 - reject promoted business requirements claim
+  ---
+  duration_ms: 14.849805
+  type: 'test'
+  ...
+# Subtest: reject complete runtime target claim
+ok 22 - reject complete runtime target claim
+  ---
+  duration_ms: 14.559828
+  type: 'test'
+  ...
+# Subtest: reject 15 plus 1 sites promoted to exhaustive effects
+ok 23 - reject 15 plus 1 sites promoted to exhaustive effects
+  ---
+  duration_ms: 13.286625
+  type: 'test'
+  ...
+# Subtest: reject changed source head
+ok 24 - reject changed source head
+  ---
+  duration_ms: 9.869505
+  type: 'test'
+  ...
+# Subtest: reject missing endpoint
+ok 25 - reject missing endpoint
+  ---
+  duration_ms: 12.761322
+  type: 'test'
+  ...
+# Subtest: reject duplicate endpoint
+ok 26 - reject duplicate endpoint
+  ---
+  duration_ms: 11.850016
+  type: 'test'
+  ...
+# Subtest: reject unknown endpoint
+ok 27 - reject unknown endpoint
+  ---
+  duration_ms: 12.960752
+  type: 'test'
+  ...
+# Subtest: reject empty endpoint list
+ok 28 - reject empty endpoint list
+  ---
+  duration_ms: 13.250729
+  type: 'test'
+  ...
+# Subtest: reject unknown fields pretending approval
+ok 29 - reject unknown fields pretending approval
+  ---
+  duration_ms: 9.265843
+  type: 'test'
+  ...
+# Subtest: reject unknown endpoint claim
+ok 30 - reject unknown endpoint claim
+  ---
+  duration_ms: 12.426465
+  type: 'test'
+  ...
+# Subtest: reject deleting all source pins
+ok 31 - reject deleting all source pins
+  ---
+  duration_ms: 7.947541
+  type: 'test'
+  ...
+# Subtest: reject changed pin metadata
+ok 32 - reject changed pin metadata
+  ---
+  duration_ms: 8.009445
+  type: 'test'
+  ...
+# Subtest: reject missing shared middleware effects
+ok 33 - reject missing shared middleware effects
+  ---
+  duration_ms: 12.391453
+  type: 'test'
+  ...
+# Subtest: reject middleware source substitution
+ok 34 - reject middleware source substitution
+  ---
+  duration_ms: 8.660068
+  type: 'test'
+  ...
+# Subtest: reject falsely declaring DB writers READ
+ok 35 - reject falsely declaring DB writers READ
+  ---
+  duration_ms: 14.419606
+  type: 'test'
+  ...
+# Subtest: reject arbitrary owner
+ok 36 - reject arbitrary owner
+  ---
+  duration_ms: 10.092225
+  type: 'test'
+  ...
+# Subtest: reject unrelated but valid AR destination
+ok 37 - reject unrelated but valid AR destination
+  ---
+  duration_ms: 12.078911
+  type: 'test'
+  ...
+# Subtest: reject wrong HTTP method
+ok 38 - reject wrong HTTP method
+  ---
+  duration_ms: 12.484543
+  type: 'test'
+  ...
+# Subtest: reject wrong handler identity
+ok 39 - reject wrong handler identity
+  ---
+  duration_ms: 12.320466
+  type: 'test'
+  ...
+# Subtest: reject invented auth guarantee
+ok 40 - reject invented auth guarantee
+  ---
+  duration_ms: 12.835162
+  type: 'test'
+  ...
+# Subtest: reject all writes removed
+ok 41 - reject all writes removed
+  ---
+  duration_ms: 12.313135
+  type: 'test'
+  ...
+# Subtest: reject one direct write omitted
+ok 42 - reject one direct write omitted
+  ---
+  duration_ms: 9.659317
+  type: 'test'
+  ...
+# Subtest: reject nested permission write omitted
+ok 43 - reject nested permission write omitted
+  ---
+  duration_ms: 8.61539
+  type: 'test'
+  ...
+# Subtest: reject false transaction membership
+ok 44 - reject false transaction membership
+  ---
+  duration_ms: 13.436381
+  type: 'test'
+  ...
+# Subtest: reject optional write described as unconditional
+ok 45 - reject optional write described as unconditional
+  ---
+  duration_ms: 12.003177
+  type: 'test'
+  ...
+# Subtest: reject wrong write operation
+ok 46 - reject wrong write operation
+  ---
+  duration_ms: 12.386295
+  type: 'test'
+  ...
+# Subtest: reject reordered multiwrite sequence
+ok 47 - reject reordered multiwrite sequence
+  ---
+  duration_ms: 11.396821
+  type: 'test'
+  ...
+# Subtest: reject false atomicity boundary
+ok 48 - reject false atomicity boundary
+  ---
+  duration_ms: 12.446817
+  type: 'test'
+  ...
+# Subtest: reject source path substitution
+ok 49 - reject source path substitution
+  ---
+  duration_ms: 12.13138
+  type: 'test'
+  ...
+# Subtest: reject wrong source line
+ok 50 - reject wrong source line
+  ---
+  duration_ms: 11.565075
+  type: 'test'
+  ...
+# Subtest: reject changed source slice hash
+ok 51 - reject changed source slice hash
+  ---
+  duration_ms: 9.193573
+  type: 'test'
+  ...
+# Subtest: reject no static test mapping
+ok 52 - reject no static test mapping
+  ---
+  duration_ms: 9.351742
+  type: 'test'
+  ...
+# Subtest: reject nonexistent test path
+ok 53 - reject nonexistent test path
+  ---
+  duration_ms: 8.017889
+  type: 'test'
+  ...
+# Subtest: reject unrelated named test
+ok 54 - reject unrelated named test
+  ---
+  duration_ms: 11.323765
+  type: 'test'
+  ...
+# Subtest: reject fake test result from citation
+ok 55 - reject fake test result from citation
+  ---
+  duration_ms: 7.591494
+  type: 'test'
+  ...
+# Subtest: reject fake runtime PASS
+ok 56 - reject fake runtime PASS
+  ---
+  duration_ms: 8.374057
+  type: 'test'
+  ...
+# Subtest: reject static citation promoted to HTTP evidence
+ok 57 - reject static citation promoted to HTTP evidence
+  ---
+  duration_ms: 8.743123
+  type: 'test'
+  ...
+# Subtest: reject runtime gaps silently removed
+ok 58 - reject runtime gaps silently removed
+  ---
+  duration_ms: 7.481758
+  type: 'test'
+  ...
+# Subtest: reject missing request-controlled update gap
+ok 59 - reject missing request-controlled update gap
+  ---
+  duration_ms: 9.006822
+  type: 'test'
+  ...
+# Subtest: reject nested targets falsely closed
+ok 60 - reject nested targets falsely closed
+  ---
+  duration_ms: 8.673888
+  type: 'test'
+  ...
+# Subtest: reject unknown nested targets erased
+ok 61 - reject unknown nested targets erased
+  ---
+  duration_ms: 10.705011
+  type: 'test'
+  ...
+# Subtest: reject request scalar fields called bounded
+ok 62 - reject request scalar fields called bounded
+  ---
+  duration_ms: 10.715492
+  type: 'test'
+  ...
+# Subtest: reject mocked forwarding promoted to Prisma acceptance
+ok 63 - reject mocked forwarding promoted to Prisma acceptance
+  ---
+  duration_ms: 10.268907
+  type: 'test'
+  ...
+# Subtest: reject mocked forwarding promoted to persisted behavior
+ok 64 - reject mocked forwarding promoted to persisted behavior
+  ---
+  duration_ms: 11.715812
+  type: 'test'
+  ...
+# Subtest: reject request payload classes erased
+ok 65 - reject request payload classes erased
+  ---
+  duration_ms: 11.48885
+  type: 'test'
+  ...
+# Subtest: reject create spread gap erased
+ok 66 - reject create spread gap erased
+  ---
+  duration_ms: 12.182757
+  type: 'test'
+  ...
+# Subtest: reject tenant spread mistaken for nested sanitization
+ok 67 - reject tenant spread mistaken for nested sanitization
+  ---
+  duration_ms: 11.675732
+  type: 'test'
+  ...
+# Subtest: reject nested payload regression requirement removed
+ok 68 - reject nested payload regression requirement removed
+  ---
+  duration_ms: 12.436371
+  type: 'test'
+  ...
+# Subtest: reject tenant reassignment regression requirement removed
+ok 69 - reject tenant reassignment regression requirement removed
+  ---
+  duration_ms: 11.190559
+  type: 'test'
+  ...
+# Subtest: reject scalar operation regression requirement removed
+ok 70 - reject scalar operation regression requirement removed
+  ---
+  duration_ms: 8.56867
+  type: 'test'
+  ...
+# Subtest: changed unparsed password dependency bytes are rejected
+ok 71 - changed unparsed password dependency bytes are rejected
+  ---
+  duration_ms: 10.092421
+  type: 'test'
+  ...
+# Subtest: changed source and repinned JSON still require reviewed SPEC update
+ok 72 - changed source and repinned JSON still require reviewed SPEC update
+  ---
+  duration_ms: 9.260966
+  type: 'test'
+  ...
+# Subtest: missing source is FAIL not an unhandled exception or PASS
+ok 73 - missing source is FAIL not an unhandled exception or PASS
+  ---
+  duration_ms: 9.878367
+  type: 'test'
+  ...
+# Subtest: deleted test declaration is rejected even if file remains
+ok 74 - deleted test declaration is rejected even if file remains
+  ---
+  duration_ms: 1.512404
+  type: 'test'
+  ...
+# Subtest: changed assertion bytes are detected without claiming behavior proof
+ok 75 - changed assertion bytes are detected without claiming behavior proof
+  ---
+  duration_ms: 10.586727
+  type: 'test'
+  ...
+# Subtest: all malformed input shapes fail closed
+ok 76 - all malformed input shapes fail closed
+  ---
+  duration_ms: 40.368973
+  type: 'test'
+  ...
+1..76
+# tests 76
+# suites 0
+# pass 76
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1661.081908

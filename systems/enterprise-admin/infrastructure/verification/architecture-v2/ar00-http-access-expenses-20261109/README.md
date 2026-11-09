@@ -2,6 +2,16 @@
 
 Refs [#180](https://github.com/skydreamer0/startup/issues/180) and Draft [#205](https://github.com/skydreamer0/startup/pull/205). This is an additive, finite source-mapping slice for users, roles and expenses. It does not complete AC01 or implement/fix their runtime behavior.
 
+## Reviewed integration after the print slice
+
+R1's **mapping correction is independently accepted**, with no additional blocker for the bounded explicit-source-site slice. The underlying request-controlled-data risk remains an OPEN_GAP. [R1 review](independent-review-r1/REVIEW.md) and [immutable reviewer receipt](independent-review-r1/reviewer-receipt.json) identify the reviewed source/freeze. The [initial finding](independent-review-initial/REVIEW.md), original three mocked forwarding probes and a separately identified [portable replay](independent-review-initial/PORTABLE-REPLAY.md) are preserved, not rewritten as runtime evidence.
+
+- Integration base: print head `95f3b34e5d32bc9dbe18699f5b32b44ade247b62`, tree `7046dd1741aeae1a82ba29f921cd84df06e3d79b`. All 1,399 original leaf paths/modes/blob IDs are preserved.
+- Tested local combined source: `debacdb8354b460f1df597fdc543499c08bd2b7d`; remote equivalent: `d28abc8bcaccaddf9010632c7bfdc504c40a041f`; shared complete tree `0596d76724b79e6cbe72e394031153245913f535`. Equal trees do not transfer hosted CI identity.
+- Fresh combined run: **290/290 bounded checks**: 76 HTTP explicit-source-site controls, 162 existing plan/seed/gate controls and 52 print source/offline controls; four source verifiers, context, syntax and whitespace pass. These are not full application or real HTTP/PG tests. See [integration/results.json](integration/results.json).
+- The full base index was compared to the complete, nontruncated remote tree. All 271 materialized base files matched their remote Git blobs; the initial HTTP packet added 34 byte-exact reviewed files. Unmaterialized remote objects stay represented by their original index IDs. This is not a full application checkout.
+- This receipt records source verification. The final artifact head and exact-head hosted CI are reported separately after branch readback. No full AC01, activation, merge or deployment approval is implied.
+
 ## Subject and scope
 
 - Reviewed application source: `5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e`, complete remote tree `3d18d4211946e8dc02d4780a20dfba2efe512343`.
@@ -70,11 +80,11 @@ node --test systems/enterprise-admin/infrastructure/verification/architecture-v2
 bash scripts/validate-agent-context.sh
 ```
 
-Author execution environment: Node 24.22.1. Node22 is a supported intended command surface but **not executed in this slice**. These manual checks are not newly wired into hosted CI. Current R1-corrected results and exact local source identity are in `author-r1/receipt.json` and its logs; `author/receipt.json` preserves the superseded first-freeze run without relabeling it. Independent re-review is pending until a reviewer supplies a separate receipt for the corrected source.
+Author execution environment: Node 24.22.1. Node22 is a supported intended command surface but **not executed in this slice**. These manual checks are not newly wired into hosted CI. R1-corrected author results and exact local source identity are in `author-r1/receipt.json`; `author/receipt.json` preserves the superseded first-freeze run without relabeling it. The immutable author receipts retain their historical review-pending state; [independent-review-r1/reviewer-receipt.json](independent-review-r1/reviewer-receipt.json) supplies the later acceptance for that fixed source. The original freeze seal is preserved as `author-r1/reviewed-freeze-SHA256SUMS`; it describes the old reviewed freeze, not this expanded artifact directory.
 
 ## Remaining work
 
 - Every endpoint has `runtimeTests.status: NOT_RUN`, no runtime test citations and explicit required cases. Empty original module test mappings are not proof that no relevant test exists elsewhere; discovery and named behavior-test mapping remain required.
 - Actual auth/RBAC/schema, tenant/role ownership, error/rollback/partial-state, amount/period, concurrency and real HTTP/PG behavior are unverified. Use owned synthetic fixtures and separate mock, HTTP and PostgreSQL evidence. Do not use ambient DB URLs or real provider calls.
 - The other mounted HTTP routes and transitive/operational effects, print transport/worker and other AC01 requirements remain separate work. This eight-endpoint slice is not all-writer completion.
-- Preserve Draft and all existing release restrictions. Freeze, obtain non-author review, coordinate the additive file list with the print integrator, then recheck the latest remote head before any separately authorized publication. No file from another worker should be overwritten.
+- Preserve Draft and all existing release restrictions. Non-author source review and print-writer handoff are complete; final publication must retain the latest-head lease and complete remote tree comparison. No file from another worker may be overwritten.

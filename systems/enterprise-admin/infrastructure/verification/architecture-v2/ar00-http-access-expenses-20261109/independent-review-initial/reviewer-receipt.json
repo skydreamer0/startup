@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-11-09T04:02:47.281655+00:00",
+  "authorFreeze": "2b53acfa2bf5c74354f36c91a334a59430a33034",
+  "authorTree": "104f263a0fbedcd5b5f49b5d165dcd842c0af424",
+  "remoteSourceHead": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+  "remoteSourceTree": "3d18d4211946e8dc02d4780a20dfba2efe512343",
+  "disposition": "REQUEST_MAPPING_BOUNDARY_CORRECTION_R1",
+  "authorFilesChanged": false,
+  "node": "v24.22.1",
+  "passes": {
+    "httpSourceChecks": 61,
+    "originalPlan": 78,
+    "originalGate": 17,
+    "reviewerMockedArgumentForwarding": 3,
+    "remoteBlobMatches": 164,
+    "packetFileMatches": 21,
+    "packetSha256Entries": 20
+  },
+  "limits": {
+    "realHttp": "NOT_RUN",
+    "realPostgreSQL": "NOT_RUN",
+    "appBuild": "NOT_RUN",
+    "fullAC01": "NOT_RUN",
+    "sourceOnlyScopeAccepted": "PENDING_R1_CORRECTION"
+  },
+  "packetSha256": "bd23aac2937008b9acc3e6e3925dec64da5992574096d55ae0370d54fc7bcb9a",
+  "artifacts": [
+    {
+      "path": "http-tests.log",
+      "sha256": "2b3d49d5b94382fa572ba4aecacdd4e9fbbc61b12fe50648ca6aa0aae283bc8d"
+    },
+    {
+      "path": "http-verifier.log",
+      "sha256": "f662ff788be0b3a4e18f971988c91425d851b1cda981f92f21741700515e60cb"
+    },
+    {
+      "path": "source-verifier.log",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "path": "plan-tests.log",
+      "sha256": "bb148c858322ec80dbaab37f858d6261094ad343e990a059d65bcd9040d6122b"
+    },
+    {
+      "path": "gate-tests.log",
+      "sha256": "716e8527e3300426760cf350c97d4052a5bea5b7681d8c4004e72dc55926a04d"
+    },
+    {
+      "path": "context.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "context-rerun.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "path": "packet-checksums.log",
+      "sha256": "64a651c00b1d31a8865aff1d3700c24ead5d9541d43684c76b039dcd2a9f24de"
+    },
+    {
+      "path": "expense-dataflow-probe.cjs",
+      "sha256": "f1be7781c7adc38d03aaf1ccaba3c10320b44c5ade356f7d45fe347a3f6291df"
+    },
+    {
+      "path": "expense-dataflow-probe.log",
+      "sha256": "6b5c3ea0db598e7c09e04970f095bea95f7d0582f1191f8cfc23d4c41cdcca14"
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "2e4f511250dea40da3a54b7c37d375d7525df71335d4ba28bc32e5828c504713"
+    },
+    {
+      "path": "REVIEW.md",
+      "sha256": "9c12a12c0f60427961849b8e0be0202152647a40b792f4bdbfca08c966e0b797"
+    }
+  ],
+  "contextPrerequisite": "First archive-only run failed because required files were not Git-tracked; adding unchanged files to a reviewer-only index enabled PASS. Initial stderr is in tool output, not context.log."
+}

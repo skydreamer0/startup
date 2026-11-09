@@ -1,0 +1,83 @@
+{
+  "meaning": "Preserved original files, not relabeled as newly executed evidence.",
+  "files": [
+    {
+      "path": "http-tests.log",
+      "sha256": "2b3d49d5b94382fa572ba4aecacdd4e9fbbc61b12fe50648ca6aa0aae283bc8d",
+      "bytes": 9303,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "http-verifier.log",
+      "sha256": "f662ff788be0b3a4e18f971988c91425d851b1cda981f92f21741700515e60cb",
+      "bytes": 122,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "source-verifier.log",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd",
+      "bytes": 79,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "plan-tests.log",
+      "sha256": "bb148c858322ec80dbaab37f858d6261094ad343e990a059d65bcd9040d6122b",
+      "bytes": 13298,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "gate-tests.log",
+      "sha256": "716e8527e3300426760cf350c97d4052a5bea5b7681d8c4004e72dc55926a04d",
+      "bytes": 3916,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "context.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "context-rerun.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695",
+      "bytes": 33,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "packet-checksums.log",
+      "sha256": "64a651c00b1d31a8865aff1d3700c24ead5d9541d43684c76b039dcd2a9f24de",
+      "bytes": 2299,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "expense-dataflow-probe.cjs",
+      "sha256": "f1be7781c7adc38d03aaf1ccaba3c10320b44c5ade356f7d45fe347a3f6291df",
+      "bytes": 2750,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "expense-dataflow-probe.log",
+      "sha256": "6b5c3ea0db598e7c09e04970f095bea95f7d0582f1191f8cfc23d4c41cdcca14",
+      "bytes": 828,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "2e4f511250dea40da3a54b7c37d375d7525df71335d4ba28bc32e5828c504713",
+      "bytes": 52522,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "REVIEW.md",
+      "sha256": "9c12a12c0f60427961849b8e0be0202152647a40b792f4bdbfca08c966e0b797",
+      "bytes": 6957,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "reviewer-receipt.json",
+      "sha256": "52b403bc321f7138dd3fbeb34b1fbb934122e098301974499816d1a88593b287",
+      "bytes": 2729,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    }
+  ]
+}
