@@ -1,0 +1,16 @@
+{
+  "url": "https://github.com/skydreamer0/startup/issues/180",
+  "issue": 180,
+  "state": "open",
+  "updatedAt": "2026-11-07T01:33:02Z",
+  "checked": 0,
+  "unchecked": 5,
+  "acceptanceLines": [
+    "- [ ] 現有所有啟用 writer 與既有需求皆有 owner、去向和測試，沒有需求遺失。",
+    "- [ ] manifest 無循環/不存在相依，overlap 檔案鎖可驗證；相依完成才可派工。",
+    "- [ ] 基線 PASS/FAIL/SKIP/NOT_RUN 分列，未執行不算通過。",
+    "- [ ] 政策未決不阻擋不相關 ready task，也不能使功能偷偷啟用。",
+    "- [ ] 機器可讀 evidence 與 GitHub checkbox 分開；軟體完成不等於 G0–G7/實店完成。"
+  ],
+  "recordedAt": "2026-11-09T00:34:02.784Z"
+}

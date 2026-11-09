@@ -1,0 +1,106 @@
+{
+  "subject": {
+    "repository": "skydreamer0/startup",
+    "pullRequest": 205,
+    "head": "b66e1f96447bbc5034110843b4349aef7ca44c4b",
+    "tree": "eb5d6286792df789fae0870c884980b792a3673d"
+  },
+  "toolSha256": "965c649a5c683183c6f46d1fe9186e86ba173db6f827a42e04c790e2e6384d5d",
+  "effectsSha256": "846838781ccba1a246f4e3bdc0cac9fe96778aae3381da21f6bb5b5d7e46edc7",
+  "results": [
+    {
+      "name": "untouched",
+      "semanticPinRefreshed": false,
+      "result": "PASS",
+      "scope": "read-only seed/startup-migration source coverage",
+      "counts": {
+        "seedCalls": 25,
+        "nestedWrites": 1,
+        "migrations": 16,
+        "entryChains": 3
+      },
+      "acceptance": "NOT_RUN",
+      "runtime": "NOT_RUN",
+      "errors": []
+    },
+    {
+      "name": "readiness source bytes drift with no pin edits",
+      "semanticPinRefreshed": false,
+      "result": "PASS",
+      "scope": "read-only seed/startup-migration source coverage",
+      "counts": {
+        "seedCalls": 25,
+        "nestedWrites": 1,
+        "migrations": 16,
+        "entryChains": 3
+      },
+      "acceptance": "NOT_RUN",
+      "runtime": "NOT_RUN",
+      "errors": []
+    },
+    {
+      "name": "server source removed with no pin edits",
+      "semanticPinRefreshed": false,
+      "result": "PASS",
+      "scope": "read-only seed/startup-migration source coverage",
+      "counts": {
+        "seedCalls": 25,
+        "nestedWrites": 1,
+        "migrations": 16,
+        "entryChains": 3
+      },
+      "acceptance": "NOT_RUN",
+      "runtime": "NOT_RUN",
+      "errors": []
+    },
+    {
+      "name": "scope runtime incorrectly promoted",
+      "semanticPinRefreshed": true,
+      "result": "FAIL",
+      "scope": "read-only seed/startup-migration source coverage",
+      "counts": {
+        "seedCalls": 25,
+        "nestedWrites": 1,
+        "migrations": 16,
+        "entryChains": 3
+      },
+      "acceptance": "NOT_RUN",
+      "runtime": "NOT_RUN",
+      "errors": [
+        "invalid aggregate source-only NOT_RUN metadata"
+      ]
+    },
+    {
+      "name": "migrationLock runtime incorrectly promoted",
+      "semanticPinRefreshed": true,
+      "result": "FAIL",
+      "scope": "read-only seed/startup-migration source coverage",
+      "counts": {
+        "seedCalls": 25,
+        "nestedWrites": 1,
+        "migrations": 16,
+        "entryChains": 3
+      },
+      "acceptance": "NOT_RUN",
+      "runtime": "NOT_RUN",
+      "errors": [
+        "invalid aggregate source-only NOT_RUN metadata"
+      ]
+    },
+    {
+      "name": "test assertion catalogue emptied",
+      "semanticPinRefreshed": true,
+      "result": "PASS",
+      "scope": "read-only seed/startup-migration source coverage",
+      "counts": {
+        "seedCalls": 25,
+        "nestedWrites": 1,
+        "migrations": 16,
+        "entryChains": 3
+      },
+      "acceptance": "NOT_RUN",
+      "runtime": "NOT_RUN",
+      "errors": []
+    }
+  ]
+}
