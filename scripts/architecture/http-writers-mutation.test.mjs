@@ -54,7 +54,7 @@ for (const [guard, change] of cases) {
 test('actual-byte fingerprint clause has an independent witness', async () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'http-writer-byte-mutation-'));
   try {
-    const clause = 'Object.entries(SPEC.pins).every(([file, hash]) => sha256(read(file)) === hash)';
+    const clause = 'SPEC.pins.every(({ path: file, sha256: hash }) => sha256(read(file)) === hash)';
     assert.equal(source.split(clause).length, 2);
     fs.writeFileSync(path.join(temporary, 'http-writers-verify.mjs'), source.replace(clause, 'true'));
     fs.writeFileSync(path.join(temporary, 'http-writers-spec.mjs'), read('scripts/architecture/http-writers-spec.mjs'));

@@ -2,35 +2,116 @@
 export const SPEC = {
   "sourceHead": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
   "sourceTree": "3d18d4211946e8dc02d4780a20dfba2efe512343",
-  "pins": {
-    "systems/enterprise-admin/backend/prisma/schema.prisma": "4ee60fd190bdba17170d3516cf816548cdf64023696ac1ba5f0e011f7a5c09ae",
-    "systems/enterprise-admin/backend/src/app.ts": "2faf0bfbc5c55a7bf949716f128a69f07593e315f6490c3b8c7460a39f204587",
-    "systems/enterprise-admin/backend/src/lib/errors.ts": "58ed2880bf7efe43330f25c5fd7f8697fd5cbd4dc673fe5cd4445fd9dd3054ef",
-    "systems/enterprise-admin/backend/src/lib/jwt.ts": "6ac703cd1ca49faf4edfadedabe81564cfbc6d540599e4a051b717bf8a87b714",
-    "systems/enterprise-admin/backend/src/lib/password.ts": "eb20d8638432410945d15ceac823ccaec493fecbd7f9afd56fd52e29be1db3d4",
-    "systems/enterprise-admin/backend/src/lib/prisma.ts": "1754f7004cc25f796350b9844c6050f1b5bf156c1a425c848ff5a8c6d9b23f1c",
-    "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts": "8e81e51175487147faa60b86187b774cb6a5ab4cbd7f5d2d09b835107eaa2695",
-    "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts": "2d48d04f4e33270fdecc0d60572fa6e6def906d7426ac002346e2ad1379e3a29",
-    "systems/enterprise-admin/backend/src/lib/tenant.context.ts": "33cbf5a1ddc8f5c49c2631b496582c0beacab2a4bec44477edfdb44e6475f348",
-    "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts": "7cb272b3fd68943fcda09abbca6352d9aa0cc5f2683f5a5101f29fe410e61072",
-    "systems/enterprise-admin/backend/src/middleware/error.middleware.ts": "41a17ca00b970497b45c892295180fdfb402313cc5fb7a36d0622bb94a86ec66",
-    "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts": "5eb9c5bba95a2c430262823928ec930a1fe7c154f0d84e1073a355e3ef89a31e",
-    "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts": "bb5514c89cc22f8e62db6935e0f735eeb96d33be86a666f8e0c902ef33d8c5db",
-    "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts": "e58b0915b54986cda0aa463bac4978fecf8922abc0e99c556b4628dbbe11c4fd",
-    "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts": "04fa3d478cae2bebdee5b3bc6d63d20cb196d0b312f3a7c1cac6e36401217b39",
-    "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts": "36d87997829af071bf6443cbada71e3ac74131c827f275d95595dc8dbb24da9a",
-    "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts": "15bd05620739ccac0efbe73a5df19f610eca8146e6961f15ff19361e24ad1808",
-    "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts": "27fffb4537077a57bac6ddb1d7380147e8b7ee3c8a9a10dcfade0b4c6f0b1767",
-    "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts": "7d36310ccc047ddb52b528128840ac320caff90c22105c3934ec38c83136bda1",
-    "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts": "0ce4e6272f023c9e65a0f7f9cbdbcc6c84a08a376ac664adfb9eefc10f3954bd",
-    "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts": "3aae71578d2da228dc9a4dd6a95a0d0ec5f5a0e86bc4a05c27309f1fe9f5b2e7",
-    "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts": "5e631bea9303c9eec81ac3d55d8e55f26737090d70434af209ad7fb4883e7d26",
-    "systems/enterprise-admin/backend/src/modules/users/users.controller.ts": "05959fff37f659f341f1eed79c6d761033f2db43bf51aa457b84f69865244186",
-    "systems/enterprise-admin/backend/src/modules/users/users.routes.ts": "bb216520474dbadebf4c8d9c21037e4a28569820a4713d43b1bdecb52f1ff472",
-    "systems/enterprise-admin/backend/src/modules/users/users.schema.ts": "9c3a5d3cf131e5af010d300338e0d083df69566a3e19c5fbb7f3b4da858ff268",
-    "systems/enterprise-admin/backend/src/modules/users/users.service.ts": "81a99ef0df876c3146d23b7c66ce4dd0720a91187b2b316e251e95a9fc07b48a",
-    "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
-  },
+  "pins": [
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "sha256": "4ee60fd190bdba17170d3516cf816548cdf64023696ac1ba5f0e011f7a5c09ae"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/app.ts",
+      "sha256": "2faf0bfbc5c55a7bf949716f128a69f07593e315f6490c3b8c7460a39f204587"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/errors.ts",
+      "sha256": "58ed2880bf7efe43330f25c5fd7f8697fd5cbd4dc673fe5cd4445fd9dd3054ef"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/jwt.ts",
+      "sha256": "6ac703cd1ca49faf4edfadedabe81564cfbc6d540599e4a051b717bf8a87b714"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/password.ts",
+      "sha256": "eb20d8638432410945d15ceac823ccaec493fecbd7f9afd56fd52e29be1db3d4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+      "sha256": "1754f7004cc25f796350b9844c6050f1b5bf156c1a425c848ff5a8c6d9b23f1c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+      "sha256": "8e81e51175487147faa60b86187b774cb6a5ab4cbd7f5d2d09b835107eaa2695"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+      "sha256": "2d48d04f4e33270fdecc0d60572fa6e6def906d7426ac002346e2ad1379e3a29"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant.context.ts",
+      "sha256": "33cbf5a1ddc8f5c49c2631b496582c0beacab2a4bec44477edfdb44e6475f348"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+      "sha256": "7cb272b3fd68943fcda09abbca6352d9aa0cc5f2683f5a5101f29fe410e61072"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/error.middleware.ts",
+      "sha256": "41a17ca00b970497b45c892295180fdfb402313cc5fb7a36d0622bb94a86ec66"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+      "sha256": "5eb9c5bba95a2c430262823928ec930a1fe7c154f0d84e1073a355e3ef89a31e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+      "sha256": "bb5514c89cc22f8e62db6935e0f735eeb96d33be86a666f8e0c902ef33d8c5db"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+      "sha256": "e58b0915b54986cda0aa463bac4978fecf8922abc0e99c556b4628dbbe11c4fd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+      "sha256": "04fa3d478cae2bebdee5b3bc6d63d20cb196d0b312f3a7c1cac6e36401217b39"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+      "sha256": "36d87997829af071bf6443cbada71e3ac74131c827f275d95595dc8dbb24da9a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "sha256": "15bd05620739ccac0efbe73a5df19f610eca8146e6961f15ff19361e24ad1808"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "sha256": "27fffb4537077a57bac6ddb1d7380147e8b7ee3c8a9a10dcfade0b4c6f0b1767"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+      "sha256": "7d36310ccc047ddb52b528128840ac320caff90c22105c3934ec38c83136bda1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "sha256": "0ce4e6272f023c9e65a0f7f9cbdbcc6c84a08a376ac664adfb9eefc10f3954bd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts",
+      "sha256": "3aae71578d2da228dc9a4dd6a95a0d0ec5f5a0e86bc4a05c27309f1fe9f5b2e7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "sha256": "5e631bea9303c9eec81ac3d55d8e55f26737090d70434af209ad7fb4883e7d26"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "sha256": "05959fff37f659f341f1eed79c6d761033f2db43bf51aa457b84f69865244186"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "sha256": "bb216520474dbadebf4c8d9c21037e4a28569820a4713d43b1bdecb52f1ff472"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.schema.ts",
+      "sha256": "9c3a5d3cf131e5af010d300338e0d083df69566a3e19c5fbb7f3b4da858ff268"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "sha256": "81a99ef0df876c3146d23b7c66ce4dd0720a91187b2b316e251e95a9fc07b48a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
+    }
+  ],
   "shared": [
     {
       "id": "RATE_LIMIT",

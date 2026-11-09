@@ -117,7 +117,7 @@ export function expectedMap(read = reader()) {
     schemaVersion: 1,
     subject: { sourceHead: SPEC.sourceHead, sourceTree: SPEC.sourceTree },
     scope: { modules: ['users', 'roles', 'expenses'], endpoints: 8, explicitDirectWriteSites: 15, explicitNestedWriteSites: 1, writeCountMeaning: 'SYNTACTIC_CALL_SITES_NOT_EXHAUSTIVE_RUNTIME_EFFECTS', runtimeWriteTargets: 'NOT_CLOSED', fullHttpAc01: 'NOT_RUN', evidenceLevel: 'PINNED_EXPLICIT_SOURCE_SITES_ONLY', liveActivation: 'NOT_VERIFIED', appExecution: 'NOT_RUN', database: 'NOT_RUN', allBusinessRequirementsMapped: false },
-    sources: Object.entries(SPEC.pins).map(([file, hash]) => ({ path: file, sha256: hash })),
+    sources: SPEC.pins.map(({ path, sha256 }) => ({ path, sha256 })),
     shared: SPEC.shared,
     endpoints: SPEC.endpoints.map(spec => ({
       ...routeFacts(spec, read),
@@ -136,7 +136,7 @@ export function verifyHttpWriters(map, { read = reader() } = {}) {
     const expected = expectedMap(read);
     // Named gates also have isolated guard-removal witnesses in the mutation suite.
     /* guard:identity */ check(isDeepStrictEqual(Object.keys(map).sort(), Object.keys(expected).sort()) && map.schemaVersion === expected.schemaVersion && isDeepStrictEqual(map.subject, expected.subject) && isDeepStrictEqual(map.scope, expected.scope), 'identity/scope mismatch');
-    /* guard:pins */ check(isDeepStrictEqual(map.sources, expected.sources) && Object.entries(SPEC.pins).every(([file, hash]) => sha256(read(file)) === hash), 'source pin mismatch');
+    /* guard:pins */ check(isDeepStrictEqual(map.sources, expected.sources) && SPEC.pins.every(({ path: file, sha256: hash }) => sha256(read(file)) === hash), 'source pin mismatch');
     /* guard:shared */ check(isDeepStrictEqual(map.shared, expected.shared), 'shared effect mapping mismatch');
     if (!Array.isArray(map.endpoints)) throw new Error('endpoints must be array');
     /* guard:membership */ check(isDeepStrictEqual(sorted(map.endpoints.map(r => r.id)), sorted(expected.endpoints.map(r => r.id))), 'endpoint membership mismatch');

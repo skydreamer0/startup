@@ -1,9 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { reader, MAP, CONTRACT_TEST, verifyHttpWriters, sha256 } from './http-writers-verify.mjs';
+import { SPEC } from './http-writers-spec.mjs';
 
 const read = reader();
 const original = JSON.parse(read(MAP));
+test('source fingerprints use explicit path and sha256 records', () => {
+  assert.ok(Array.isArray(SPEC.pins));
+  assert.equal(SPEC.pins.length, 27);
+  for (const pin of SPEC.pins) {
+    assert.deepEqual(Object.keys(pin), ['path','sha256']);
+    assert.equal(typeof pin.path, 'string');
+    assert.match(pin.sha256, /^[0-9a-f]{64}$/);
+  }
+});
 function rejects(name, change, pattern) {
   test(name, () => {
     const map = structuredClone(original);
