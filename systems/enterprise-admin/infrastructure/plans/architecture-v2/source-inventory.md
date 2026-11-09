@@ -9,6 +9,25 @@ and source hashes. `verify-plan --check-source` checks the 122 endpoint set,
 It also compares backend package scripts, the separate Prisma seed hook and
 explicit final-stage Docker startup argv against their source declarations.
 
+## Bounded seed/startup supplement
+
+The 2026-11-09 [seed/migration effects map](seed-migration-effects.json) and
+[mechanical inventory](seed-migration-inventory.json) add explicit command →
+source → model/effect → domain/AR check → test/gap mappings at source head
+`b66e1f96447bbc5034110843b4349aef7ca44c4b`. All 25 seed call sites, one nested
+OrderItem create and 16 packaged migrations are represented. The existing
+137-fingerprint inventory above remains a preserved baseline, not a claim that
+it already included these SQL files.
+
+Use `node scripts/architecture/verify-seed-migrations.mjs` and
+`node --test scripts/architecture/seed-migrations.test.mjs` from the repository
+root. This checks the reviewed source subset, not every writer or arbitrary
+TypeScript/SQL semantics. Source associations with 14 test/harness files do not
+mean those tests ran. See the [scope and limitations](README.md#seed-and-startup-migration-supplement-2026-11-09)
+and [bounded receipt](../../verification/architecture-v2/ar00-seed-migrations-20261109/README.md).
+Full AC01, application/DB/device acceptance and operational activation remain
+NOT_RUN/BLOCKED; no existing requirement or acceptance checkbox is removed.
+
 ## Mounted route groups and effects
 
 All paths have `/api/v1/admin` prefix. Mounted means code is reachable under its

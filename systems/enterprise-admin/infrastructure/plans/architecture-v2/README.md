@@ -17,6 +17,8 @@ read-only scheduling tool, not a second roadmap or operational activation.
 ## Use from the repository root
 
     node scripts/architecture/verify-plan.mjs --check-source
+    node scripts/architecture/verify-seed-migrations.mjs
+    node --test scripts/architecture/seed-migrations.test.mjs
     node --test scripts/architecture/plan.test.mjs
     node --test systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs
     node scripts/architecture/plan.mjs
@@ -52,6 +54,48 @@ Python `curated` 入口仍需人工核對是否完整；此檢查不遍歷命令
 [本次收尾收據](../../verification/architecture-v2/ar00-closeout-20261108/README.md)
 分開記錄候選來源恢復、重新執行測試與獨立審查，不沿用遺失的歷史 log。本切片不把 AR-00 AC01 或任何其他
 完整驗收改成 PASS；AR-00、D01–D09、G0–G7 與營運啟用狀態維持原值。
+
+## Seed and startup migration supplement (2026-11-09)
+
+The [mechanical inventory](seed-migration-inventory.json) and
+[curated effects map](seed-migration-effects.json) extend the frozen inventory
+without rewriting it. They bind the two seed declarations and Docker startup
+chain to 25 literal Prisma call sites (22 writes, two reads and disconnect),
+the nested OrderItem create, all 16 packaged SQL migrations, schema and migration
+lock. The map records model/domain owners, AR check destinations, SQL backfill,
+trigger and foreign-key/cascade effects, and 14 inspected test/harness sources.
+Domain ownership is not a new worker assignment or a completed AR check.
+
+`verify-seed-migrations.mjs` reads repository files using Node built-ins only.
+It enumerates the migration directory and checks source fingerprints, seed call
+slices/token body, literal entry chains, source citations and mapping metadata.
+It never imports the seed/application, evaluates commands, loads `.env`, installs
+packages or contacts a database. Tests mutate isolated temporary source copies.
+Run the two commands above separately; this supplement is not automatically
+included in `verify-plan.mjs` or newly wired into hosted CI.
+
+The seed lexer supports this reviewed literal syntax, not general TypeScript.
+Unsupported client aliases, computed/optional access, additional clients, raw or
+transaction calls and complex template expressions require review. SQL effects
+are curated, not parsed into a semantic proof. Updating SQL, seed token/call or
+semantic-map pins requires review of the changed behavior; coordinated pin edits
+cannot prove equivalence. Exact bytes and supported syntax are intentionally
+conservative, so harmless formatting can require a reviewed refresh.
+
+Current seed behavior directly resets product/batch quantities and releases
+batches, then creates orders/items and OUT movements outside the common posting
+transaction. Some reads/selectors are not tenant-scoped. These are recorded
+source behavior and acceptance gaps, not endorsed rules or executed incidents.
+Docker still runs `prisma migrate deploy` before the server; the health-image
+harness overrides its entrypoint and does not prove migration-free restart or
+migration/runtime role separation. Existing test assertions are inspected
+associations, never new native PASS evidence.
+
+[The bounded receipt](../../verification/architecture-v2/ar00-seed-migrations-20261109/README.md)
+separates tooling checks from seed, migration, application, PostgreSQL, HTTP,
+hardware and store checks, which remain NOT_RUN. Full AR-00 AC01 is still not
+established. Canonical manifest/evidence, original issue checkboxes, decisions,
+activation gates and AR-01's dependency are unchanged.
 
 ## Records and meaning
 
