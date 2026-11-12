@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "module": "ESNext", "moduleResolution": "bundler", "noEmit": true, "declaration": false, "declarationMap": false },
+  "include": ["src/__tests__/pharmacy-extra.native.test.ts", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}
