@@ -191,6 +191,13 @@ source, an empty owned DB and a successful standalone probe/cleanup; default
 source-pinned evidence and the still-unrun browser/physical gates. This manual
 runner does not change existing CI jobs or acceptance gates.
 
+Additional actor/tenant HTTP isolation and native shift-close/settlement-confirm
+contention are covered by the separate opt-in `scripts/pharmacy-extra-native.py`
+candidate and `pharmacy-extra.native.test.ts`. It retains the original runner
+ownership/cleanup guards and requires exact-head evidence and independent review;
+see `../infrastructure/verification/pharmacy-extra-native/README.md`. No-opt-in
+skips and source checks are not native PASS. Browser/device gates stay separate.
+
 The joined FEFO checkout/batch-detail acceptance has an exact-head Docker runner:
 `scripts/inventory-fefo-trace-native.mjs`, also invoked by the dedicated
 `inventory-fefo-trace.yml` workflow. It archives clean committed source, creates
