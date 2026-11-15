@@ -92,7 +92,7 @@ async function startAdmin(f) {
   const realApp = requireBackend('./dist/app.js').default;
   instrumentExpressHandlers(realApp);
   app.use((req, res, next) => trackReceivingRequest(req, res, next, httpWork, row => requestRows.push(row),
-    request => f.user.find(user => user.email === request.body?.email)?.id ?? null));
+    request => (request.body?.email === f.peerEmail ? f.peerId : f.user.find(user => user.email === request.body?.email)?.id) ?? null));
   app.use((req, res, next) => req.path.startsWith('/api/') ? realApp(req, res, next) : next());
   app.use(express.static(path.join(system, 'admin-ui/dist')));
   app.get('/{*rest}', (_req, res) => res.sendFile(path.join(system, 'admin-ui/dist/index.html')));
@@ -133,17 +133,28 @@ try {
     await db.rolePermission.create({ data: { roleId: fixture.ids.allowedRole, permissionId: permission.id } });
     if (action === 'read') await db.rolePermission.create({ data: { roleId: fixture.ids.deniedRole, permissionId: permission.id } });
   }
+  // The peer is a separate active user with exactly the primary actor's effective role.
+  const peerId = crypto.randomUUID(), peerEmail = `${peerId}@auth.example.test`;
+  const peerPassword = crypto.randomBytes(32).toString('base64url');
+  assert.equal(await db.user.count({ where: { OR: [{ id: peerId }, { email: peerEmail }] } }), 0);
+  await db.$transaction(async tx => {
+    await tx.user.create({ data: { id: peerId, tenantId: fixture.ids.tenant, email: peerEmail,
+      fullName: '合成收貨同租戶使用者', status: 'active', passwordHash: await hashPassword(peerPassword) } });
+    await tx.userRole.create({ data: { userId: peerId, roleId: fixture.ids.allowedRole } });
+  });
+  fixture.peerId = peerId;
+  fixture.peerEmail = peerEmail;
   const product = await db.product.create({ data: { tenantId: fixture.ids.tenant, sku: `RECEIVING-${nonce.slice(0, 8)}`, name: '合成真 API 收貨商品',
     costPrice: 1, retailPrice: 2, stockQuantity: 0, safetyStock: 0 } });
   fixture.productId = product.id;
   const primary = authCredential(fixture, 'allowed'), secondary = authCredential(fixture, 'denied');
   fs.writeFileSync(credentialFile, JSON.stringify({ email: primary.email, password: primary.password,
-    secondEmail: secondary.email, secondPassword: secondary.password, productId: product.id }), { flag: 'wx', mode: 0o600 });
+    secondEmail: secondary.email, secondPassword: secondary.password, peerEmail, peerPassword, productId: product.id }), { flag: 'wx', mode: 0o600 });
   const afterFixture = await rowsByTable();
   beforeFixtureSnapshot = afterFixture;
   write('business-before.json', redactBusinessSnapshot(afterFixture));
   await startAdmin(fixture);
-  write('browser-source.json', { ...identity, fixture: { nonce, syntheticOnly: true, actors: 2, products: 1, actualLogin: true,
+  write('browser-source.json', { ...identity, fixture: { nonce, syntheticOnly: true, actors: 3, products: 1, actualLogin: true,
     accessTokensFromRealLoginOnly: true, draftOnly: true, stockQuantity: 0 }, baselineTables: Object.keys(before).length,
     adminBuild: 'same exact-head Admin UI build', noFixtureJwt: true, noSyntheticHttp: true,
     verifiedScope: receivingBrowserScope.verified, notVerified: receivingBrowserScope.notVerified });

@@ -97,7 +97,7 @@ test('runner fails closed without actual hosted provenance and exact owned datab
   assert.throws(() => assertReceivingBrowserEnvironment(env, 'v20.0.0'));
 });
 
-test('actual Playwright report and per-case ledgers require exactly seven passed viewport cases', () => {
+test('actual Playwright report and per-case ledgers require exactly eight passed viewport cases', () => {
   const ids = expectedReceivingCases.map((_, index) => `${String(index + 1).padStart(8, '0')}-1111-4111-8111-111111111111`);
   const ledgers = expectedReceivingCases.map(({ viewport, title }, index) => {
     const url = `http://127.0.0.1:4287/api/v1/admin/receiving-drafts/${ids[index]}`;
@@ -105,8 +105,19 @@ test('actual Playwright report and per-case ledgers require exactly seven passed
       : title === expectedReceivingCases[1].title ? [{ method: 'PUT', url }, { method: 'GET', url, status: 200 }]
         : title === expectedReceivingCases[2].title ? [{ method: 'PUT', url, status: 200, expectedRevision: 0 }, { method: 'PUT', url, status: 200, expectedRevision: 1 }, { method: 'PUT', url, status: 409, expectedRevision: 1 }, { method: 'PUT', url, status: 200, expectedRevision: 2 }]
           : [];
+    const peerUrl = 'http://127.0.0.1:4287/api/v1/admin/receiving-drafts/99999999-1111-4111-8111-111111111111';
+    const ownerIsolation = index === 6 ? { ownerUrl: url, peerUrl, ownerId: 'a', peerId: 'b', tenantId: 't' } : null;
+    if (ownerIsolation) {
+      const loginUrl = 'http://127.0.0.1:4287/api/v1/admin/auth/login';
+      for (const [actor, actorId, ownUrl] of [['owner', 'a', url], ['peer', 'b', peerUrl]]) {
+        requests.push({ actor, actorId, method: 'POST', url: loginUrl, status: 200 });
+        requests.push({ actor, actorId, method: 'PUT', url: ownUrl, status: 200, expectedRevision: 0 });
+        for (const suffix of ['', '/history', '/history/1']) requests.push({ actor, actorId, method: 'GET', url: url + suffix, status: actor === 'owner' ? 200 : 404 });
+      }
+      requests.push({ actor: 'peer', actorId: 'b', method: 'PUT', url, status: 404, expectedRevision: 1 });
+    }
     if (title === expectedReceivingCases[2].title) for (const revision of [1, 2, 3]) requests.push({ method: 'GET', url: `${url}/history/${revision}`, status: 200 });
-    return { viewport, title, retry: 0, requests, saveCalls: requests.filter(row => row.method === 'PUT').length,
+    return { viewport, title, retry: 0, requests, ownerIsolation, saveCalls: requests.filter(row => row.method === 'PUT').length,
       navigationGuards: title === expectedReceivingCases[1].title ? ['pending', 'unknown'].map(phase => ({
         phase, action: 'back', fromUrl: `http://127.0.0.1:4287/receiving?draft=new-${ids[index]}`,
         blockedUrl: `http://127.0.0.1:4287/receiving?draft=new-${ids[index]}`,
@@ -124,16 +135,19 @@ test('actual Playwright report and per-case ledgers require exactly seven passed
   const appResponses = ledgers.flatMap(ledger => ledger.requests.map(row => ({ ...row,
     endpoint: new URL(row.url).pathname.replace('/api/v1/admin', ''), dispatchComplete: true,
     applicationComplete: true, pendingHandlers: 0, handlerFailures: [] })));
-  const report = { stats: { expected: 7, unexpected: 0, skipped: 0, flaky: 0 }, suites: [
-    ...[1440, 390].map(viewport => ({ title: `receiving real API ${viewport}`, specs: expectedReceivingCases.filter(row => row.viewport === viewport && row.title !== expectedReceivingCases[6].title).map(row => ({
+  const report = { stats: { expected: 8, unexpected: 0, skipped: 0, flaky: 0 }, suites: [
+    ...[1440, 390].map(viewport => ({ title: `receiving real API ${viewport}`, specs: expectedReceivingCases.filter(row => row.viewport === viewport && !expectedReceivingCases.slice(6).some(extra => extra.title === row.title)).map(row => ({
       title: row.title, tests: [{ expectedStatus: 'passed', results: [{ status: 'passed', retry: 0, duration: 25, errors: [] }] }],
     })) })),
-    { title: 'receiving.spec.ts', specs: [{ title: expectedReceivingCases[6].title,
-      tests: [{ expectedStatus: 'passed', results: [{ status: 'passed', retry: 0, duration: 30, errors: [] }] }] }] },
+    { title: 'receiving.spec.ts', specs: expectedReceivingCases.slice(6).map(({ title }) => ({ title,
+      tests: [{ expectedStatus: 'passed', results: [{ status: 'passed', retry: 0, duration: 30, errors: [] }] }] })) },
   ] };
-  assert.equal(assertPlaywrightReceivingReport(report, ledgers, appResponses).length, 7);
+  assert.equal(assertPlaywrightReceivingReport(report, ledgers, appResponses).length, 8);
   // Old display-only CAS / no navigation receipts must never satisfy the new scope.
   for (const mutate of [
+    rows => { rows[6].ownerIsolation.peerId = rows[6].ownerIsolation.ownerId; },
+    rows => { rows[6].requests.find(row => row.actor === 'peer' && row.method === 'PUT' && row.expectedRevision === 1).status = 200; },
+    rows => { rows[6].requests = rows[6].requests.filter(row => !(row.actor === 'peer' && row.url.endsWith('/history/1'))); },
     rows => { rows[1].navigationGuards = []; },
     rows => { rows[1].navigationGuards[0].discardDisabled = false; },
     rows => { rows[1].navigationGuards[1].blockedUrl = 'http://127.0.0.1:4287/receiving'; },
