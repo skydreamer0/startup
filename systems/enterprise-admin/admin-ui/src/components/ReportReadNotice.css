@@ -25,6 +25,8 @@
   background: var(--report-notice-action-surface);
   color: var(--report-notice-text);
   border: 1px solid currentColor;
+  /* Keep keyboard focus geometry immediate; the base .btn transitions all properties. */
+  transition-property: background-color, color, border-color;
   max-inline-size: 100%;
   white-space: normal;
   overflow-wrap: anywhere;
