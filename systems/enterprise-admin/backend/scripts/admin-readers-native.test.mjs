@@ -648,3 +648,116 @@ for(const paths of [['/reports/cashflow','/reports/cashflow/trend'],['/reports/m
     await c.request(`Bearer ${c.tokens.readerA}`,{endpoint:paths[1]});
     assert.equal(c.transport.continued,1);assert.equal(c.transport.fulfilled.length,1);assert.deepEqual(c.control.paths,[paths[1]]);
 });
+
+const recoverySubject = { id: 'cashflow', label: '現金流報表', heading: 'Cash Flow Statement（估算）', text: '300,055', paths: ['/reports/cashflow', '/reports/cashflow/trend'] };
+function recoveryOptions(overrides = {}) {
+    return { subject: recoverySubject, contextId: 2, afterRequestId: 100, stage: 'cashflow authorized recovery trend click',
+        error: Object.assign(new Error('TOKEN_SECRET'), { name: 'TimeoutError' }), responses: [], write: () => {}, ...overrides };
+}
+test('recovery diagnostic runs its real DOM probe and exports only bounded structural state', async () => {
+    const button = { textContent: '重試趨勢', getBoundingClientRect: () => ({ x: 110, y: 900, width: 100, height: 44 }),
+        getAttribute: name => name === 'aria-disabled' || name === 'aria-busy' ? 'true' : 'TOKEN_SECRET',
+        matches: () => false, contains: () => false };
+    const root = { textContent: '300,055 TOKEN_SECRET', querySelectorAll: () => [{ textContent: recoverySubject.heading }] };
+    const document = { activeElement: button, querySelector: () => root, elementFromPoint: () => null,
+        querySelectorAll: selector => selector === '.report-read-notice__retry' ? [button, button, button] : selector === '.admin-reader-page' ? [root] : [] };
+    const writes = [];
+    const page = { evaluate: async (callback, args) => new Function('document', 'getComputedStyle', 'innerWidth', 'innerHeight', 'scrollX', 'scrollY', 'args',
+        `return (${callback.toString()})(args);`)(document, () => ({ visibility: 'visible', display: 'inline-flex' }), 390, 844, 0, 50, args) };
+    const responses = Array.from({ length: 12 }, (_, i) => ({ contextId: 2, requestId: 101 + i,
+        path: '/api/v1/admin/reports/cashflow?token=TOKEN_SECRET', actor: i === 11 ? 'TOKEN_SECRET' : 'readerA',
+        status: 200, body: { secret: 'TOKEN_SECRET' }, sha256: 'TOKEN_SECRET' }));
+    responses.push({ contextId: 99, requestId: 999, path: 'TOKEN_SECRET' }, { contextId: 2, requestId: 100, path: 'TOKEN_SECRET' });
+    const result = await readerNative.captureReaderRecoveryFailure(recoveryOptions({ page, responses, write: (name, value) => writes.push({ name, value }) }));
+    assert.equal(writes.length, 1);
+    assert.equal(writes[0].name, 'admin-readers-cashflow-authorized-recovery-failure.json');
+    assert.equal(result.snapshot.status, 'captured');
+    assert.deepEqual(result.snapshot.dom.mainRetry, { count: 0, samples: [] });
+    assert.equal(result.snapshot.dom.trendRetry.count, 3);
+    assert.equal(result.snapshot.dom.trendRetry.samples.length, 2);
+    assert.equal(result.snapshot.dom.trendRetry.samples[0].ariaDisabled, true);
+    assert.equal(result.snapshot.dom.trendRetry.samples[0].ariaBusy, true);
+    assert.equal(result.snapshot.dom.trendRetry.samples[0].centerHit, false);
+    assert.equal(result.snapshot.dom.expectedDataPresent, true);
+    assert.equal(result.snapshot.dom.headingPresent, true);
+    assert.equal(result.responses.length, 8);
+    assert.equal(result.responses[0].requestId, 105);
+    assert.equal(result.responses.at(-1).actor, null);
+    assert.equal(result.responses[0].endpoint, 0);
+    assert.ok(!JSON.stringify(result).includes('TOKEN_SECRET'));
+});
+test('recovery diagnostic tolerates a closed page and diagnostic write collision', async () => {
+    const result = await readerNative.captureReaderRecoveryFailure(recoveryOptions({
+        page: { evaluate: () => { throw Error('PAGE_SECRET'); } }, write: () => { throw Error('WRITE_SECRET'); },
+    }));
+    assert.deepEqual(result.snapshot, { status: 'unavailable' });
+    assert.deepEqual(result.failure, { kind: 'TimeoutError', code: null });
+    assert.ok(!JSON.stringify(result).includes('SECRET'));
+});
+test('recovery diagnostic has a real bounded hung-page wait and ignores late completion', { timeout: 3000 }, async () => {
+    let release; const writes = [];
+    const started = performance.now();
+    const result = await readerNative.captureReaderRecoveryFailure(recoveryOptions({
+        page: { evaluate: () => new Promise(resolve => { release = resolve; }) },
+        write: (name, value) => writes.push(JSON.stringify(value)),
+    }));
+    assert.equal(result.snapshot.status, 'timed-out');
+    assert.ok(performance.now() - started >= 700 && performance.now() - started < 2000);
+    release({ unexpected: 'LATE_SECRET' });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(writes.length, 1);
+    assert.equal(result.snapshot.status, 'timed-out');
+    assert.ok(!writes[0].includes('LATE_SECRET'));
+});
+const recoverySteps = ['main click', 'main response', 'main data visible', 'main notice removed',
+    'trend visible', 'denied chart hidden', 'trend click', 'trend response', 'trend notice removed'];
+function actualRecoveryTransition(failAt) {
+    const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+    const start = source.indexOf('                    stage = `${subject.id} authorized recovery shared lifecycle`;');
+    const end = source.indexOf('                    recoveryDiagnostic = null;', start) + '                    recoveryDiagnostic = null;'.length;
+    assert.ok(start > 0 && end > start);
+    const primary = Object.assign(new Error('ORIGINAL_SECRET'), { name: 'TimeoutError' });
+    const calls = [];
+    const step = async name => { calls.push(name); if (name === failAt) throw primary; };
+    const main = { click: async (...args) => { assert.deepEqual(args, []); await step('main click'); } };
+    const trend = { click: async (...args) => { assert.deepEqual(args, []); await step('trend click'); } };
+    const page = { evaluate: async () => {}, getByRole: () => trend, locator: () => 'chart' };
+    const expect = target => ({
+        toBeVisible: async options => { assert.deepEqual(options, { timeout: 25000 }); await step('trend visible'); },
+        toHaveCount: async count => { assert.equal(count, 0); await step(target === main ? 'main notice removed' : target === trend ? 'trend notice removed' : 'denied chart hidden'); },
+    });
+    const run = new Function('subject', 'control', 'page', 'tokens', 'retry', 'outcome', 'loaded', 'expect',
+        `return (async () => { let stage = '', recoveryDiagnostic = null; const nextRequestId = 100, contextId = 2, readerResponseTimeoutMs = 25000;
+        try { ${source.slice(start, end)}; return { stage, recoveryDiagnostic }; } catch (error) { return { stage, recoveryDiagnostic, error }; } })();`);
+    return { primary, calls, run: () => run(recoverySubject, { mode: 'fail500' }, page, { readerA: 'SYNTHETIC_ONLY' }, () => main,
+        async (_subject, status, actor, after, endpoint) => { assert.equal(status, 200); assert.equal(actor, 'readerA'); assert.equal(after, 100); await step(endpoint ? 'trend response' : 'main response'); },
+        async () => step('main data visible'), expect) };
+}
+for (const step of recoverySteps) test(`actual recovery transition identifies failed ${step} without changing the action`, async () => {
+    const probe = actualRecoveryTransition(step), result = await probe.run();
+    assert.equal(result.stage, `cashflow authorized recovery ${step}`);
+    assert.equal(result.error, probe.primary);
+    assert.deepEqual(result.recoveryDiagnostic, { subject: recoverySubject, contextId: 2, afterRequestId: 100 });
+    assert.deepEqual(probe.calls, recoverySteps.slice(0, recoverySteps.indexOf(step) + 1));
+});
+test('actual recovery transition keeps every existing assertion and clears diagnostics only after success', async () => {
+    const probe = actualRecoveryTransition(null), result = await probe.run();
+    assert.deepEqual(probe.calls, recoverySteps);
+    assert.equal(result.recoveryDiagnostic, null);
+    assert.equal(result.error, undefined);
+});
+test('actual shared catch preserves recovery failure even when both diagnostics fail', async () => {
+    const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+    const start = source.indexOf('                if (recoveryDiagnostic) await captureReaderRecoveryFailure');
+    const end = source.indexOf('\n            }', start);
+    assert.ok(start > 0 && end > start);
+    const primary = Object.assign(new Error('ORIGINAL_SECRET'), { name: 'TimeoutError' });
+    let screenshotAttempted = false;
+    const page = { evaluate: async () => { throw Error('PAGE_SECRET'); }, viewportSize: () => ({ width: 390, height: 844 }) };
+    const run = new Function('page', 'recoveryDiagnostic', 'stage', 'error', 'responses', 'write', 'capture', 'captureReaderRecoveryFailure', 'preserveReaderFailure',
+        `return (async () => { ${source.slice(start, end)} })();`);
+    await assert.rejects(run(page, { subject: recoverySubject, contextId: 2, afterRequestId: 100 }, 'cashflow authorized recovery trend click', primary, [],
+        () => { throw Error('WRITE_SECRET'); }, async () => { screenshotAttempted = true; throw Error('SCREENSHOT_SECRET'); },
+        readerNative.captureReaderRecoveryFailure, readerNative.preserveReaderFailure), error => error === primary);
+    assert.equal(screenshotAttempted, true);
+});
