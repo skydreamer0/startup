@@ -49,12 +49,34 @@ describe('actual QueryClient report authorization recovery', () => {
             const retry = await screen.findByRole('button', { name: `重試${subject.label}` });
             expect(document.body.textContent).not.toContain('1,543');
             status = 500; fireEvent.click(retry);
-            await waitFor(() => expect(retry).toBeEnabled());
             await waitFor(() => expect(client.getQueryCache().getAll().find(query => query.queryKey[1] === subject.slug)?.state.error).toMatchObject({ response: { status: 500 } }));
             expect(document.body.textContent).not.toContain('1,543');
-            fireEvent.click(screen.getByRole('button', { name: 'Toggle report' })); fireEvent.click(screen.getByRole('button', { name: 'Toggle report' }));
-            await screen.findByRole('button', { name: `重試${subject.label}` }); expect(document.body.textContent).not.toContain('1,543');
-            status = 200; fireEvent.click(screen.getByRole('button', { name: `重試${subject.label}` }));
+            // A remount revalidates automatically; hold that read while retry is busy.
+            const originalGet = get.getMockImplementation()!;
+            const isMainReport = (url: string) => url.startsWith(`/reports/${subject.slug}?`);
+            let releaseRead!: () => void;
+            const heldRead = new Promise<void>((resolve) => { releaseRead = resolve; });
+            get.mockImplementation(async (url: string, options: unknown) => {
+                if (isMainReport(url)) await heldRead;
+                return originalGet(url, options);
+            });
+            fireEvent.click(screen.getByRole('button', { name: 'Toggle report' }));
+            fireEvent.click(screen.getByRole('button', { name: 'Toggle report' }));
+            const remountedRetry = await screen.findByRole('button', { name: `重試${subject.label}` });
+            await waitFor(() => expect(remountedRetry).toHaveAttribute('aria-disabled', 'true'));
+            const activeCalls = get.mock.calls.filter(([url]) => isMainReport(url)).length;
+            fireEvent.click(remountedRetry);
+            expect(get.mock.calls.filter(([url]) => isMainReport(url))).toHaveLength(activeCalls);
+            expect(document.body.textContent).not.toContain('1,543');
+
+            releaseRead();
+            await waitFor(() => {
+                expect(client.isFetching({ queryKey: ['reports', subject.slug] })).toBe(0);
+                expect(remountedRetry).toHaveAttribute('aria-disabled', 'false');
+            });
+            expect(document.body.textContent).not.toContain('1,543');
+            get.mockImplementation(originalGet);
+            status = 200; fireEvent.click(remountedRetry);
             await waitFor(() => expect(document.body.textContent).toContain('1,543'));
         });
         it(`${subject.slug}: ordinary 500 retains authorized data with a stale notice`, async () => {

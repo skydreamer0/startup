@@ -40,10 +40,12 @@ export default function CashFlowPage() {
         </section>
     );
 
-    const reportNotice = <ReportReadNotice label="現金流報表" isError={isError} error={error}
-        hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
+    const reportHasError = isError || data === null;
+    const trendHasError = trendIsError || trend === null;
+    const reportNotice = <ReportReadNotice label="現金流報表" isError={reportHasError} error={error}
+        hasData={data != null} isFetching={isFetching} onRetry={() => { void refetch({ cancelRefetch: false }); }} />;
 
-    if (isError && (data === undefined || isReportAccessDenied(error))) {
+    if (reportHasError && (data == null || isReportAccessDenied(error))) {
         return <div {...readerFocus} className="admin-page report-page admin-reader-page cashflow-report-page">
             {estimateNotice}
             {reportNotice}
@@ -119,10 +121,10 @@ export default function CashFlowPage() {
                 {/* 6-Month Liquidity Trend */}
                 <section className="card" style={{ padding: '24px' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>Cash Position & Net Cash Flow Trend（估算）</h3>
-                    <ReportReadNotice label="趨勢" isError={trendIsError} error={trendError}
-                        hasData={trend !== undefined} isFetching={trendIsFetching} onRetry={() => { void refetchTrend(); }} />
+                    <ReportReadNotice label="趨勢" isError={trendHasError} error={trendError}
+                        hasData={trend != null} isFetching={trendIsFetching} onRetry={() => { void refetchTrend({ cancelRefetch: false }); }} />
                     {trendIsLoading && !trend && <p role="status">趨勢載入中…</p>}
-                    {!trendIsError && trend?.length === 0 && <p>此期間沒有趨勢資料。</p>}
+                    {!trendHasError && trend?.length === 0 && <p>此期間沒有趨勢資料。</p>}
                     {trend && !isReportAccessDenied(trendError) && <div style={{ width: '100%', height: '350px' }}>
                         <ResponsiveContainer>
                             <BarChart data={trend || []} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>

@@ -140,7 +140,7 @@ export default function SupplierListPage() {
             </header>
 
             <ReportReadNotice label="供應商清單" isError={failed} error={error}
-                hasData={visibleData !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />
+                hasData={visibleData !== undefined} isFetching={isFetching} onRetry={() => { void refetch({ cancelRefetch: false }); }} />
 
             <div className="table-container reader-table-scroll" role="region" aria-label="供應商清單表" tabIndex={0}>
                 {loading ? (

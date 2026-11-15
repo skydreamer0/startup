@@ -37,10 +37,12 @@ export default function MarginAnalysisPage() {
         </section>
     );
 
-    const reportNotice = <ReportReadNotice label="毛利報表" isError={isError} error={error}
-        hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
+    const reportHasError = isError || data === null;
+    const trendHasError = trendIsError || trend === null;
+    const reportNotice = <ReportReadNotice label="毛利報表" isError={reportHasError} error={error}
+        hasData={data != null} isFetching={isFetching} onRetry={() => { void refetch({ cancelRefetch: false }); }} />;
 
-    if (isError && (data === undefined || isReportAccessDenied(error))) {
+    if (reportHasError && (data == null || isReportAccessDenied(error))) {
         return <div {...readerFocus} className="admin-page report-page admin-reader-page margin-report-page">
             {estimateNotice}
             {reportNotice}
@@ -115,10 +117,10 @@ export default function MarginAnalysisPage() {
                 {/* Trend Chart */}
                 <section className="card" style={{ padding: '24px' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>6-Month Margin Trend（目前成本估算）</h3>
-                    <ReportReadNotice label="趨勢" isError={trendIsError} error={trendError}
-                        hasData={trend !== undefined} isFetching={trendIsFetching} onRetry={() => { void refetchTrend(); }} />
+                    <ReportReadNotice label="趨勢" isError={trendHasError} error={trendError}
+                        hasData={trend != null} isFetching={trendIsFetching} onRetry={() => { void refetchTrend({ cancelRefetch: false }); }} />
                     {trendIsLoading && !trend && <p role="status">趨勢載入中…</p>}
-                    {!trendIsError && trend?.length === 0 && <p>此期間沒有趨勢資料。</p>}
+                    {!trendHasError && trend?.length === 0 && <p>此期間沒有趨勢資料。</p>}
                     {trend && !isReportAccessDenied(trendError) && <div style={{ width: '100%', height: '300px' }}>
                         <ResponsiveContainer>
                             <LineChart data={trend || []}>
