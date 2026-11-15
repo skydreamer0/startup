@@ -208,6 +208,37 @@ input { font-family: inherit; }
   font-weight: 500;
 }
 
+.pos-topbar button.pos-topbar-action--manual-scan:focus-visible {
+  outline-color: var(--text-primary);
+}
+
+.pos-topbar-action--manual-scan:disabled {
+  cursor: not-allowed;
+  background: var(--bg-cart);
+}
+
+.pos-barcode-feedback {
+  border-color: var(--border);
+  color: var(--text-primary);
+  background: var(--bg-card);
+  overflow-wrap: anywhere;
+}
+
+.pos-barcode-feedback--danger {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.pos-barcode-feedback--warning {
+  border-color: var(--warning);
+  background: var(--warning-bg);
+}
+
+.pos-barcode-feedback--info {
+  border-color: var(--info);
+  background: var(--info-bg);
+}
+
 .pos-topbar-action--wide {
   padding: 6px 16px;
   font-size: 13px;
