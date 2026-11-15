@@ -43,8 +43,8 @@ function assertRowsSameOutsideAllowedFields(beforeRows, afterRows, allowedIds, a
 
 export function compareReceivingBrowserSnapshots(before, after, fixture, responses, ledgers = []) {
   assert.deepEqual(Object.keys(after).sort(), Object.keys(before).sort());
-  const actorIds = new Set([fixture.ids.allowed, fixture.ids.denied]);
-  const authUserIds = new Set([fixture.ids.allowed, fixture.ids.denied]);
+  const actorIds = new Set([fixture.ids.allowed, fixture.ids.denied, ...(fixture.peerId ? [fixture.peerId] : [])]);
+  const authUserIds = new Set([fixture.ids.allowed, fixture.ids.denied, ...(fixture.peerId ? [fixture.peerId] : [])]);
   assertRowsSameOutsideAllowedFields(before.users, after.users, authUserIds,
     new Set(['last_login_at', 'failed_login_attempts', 'updated_at']), 'users');
   for (const id of authUserIds) {
@@ -86,11 +86,21 @@ export function compareReceivingBrowserSnapshots(before, after, fixture, respons
 
   const drafts = after.receiving_drafts.filter(row => row.tenant_id === fixture.ids.tenant);
   const revisions = after.receiving_draft_revisions.filter(row => row.tenant_id === fixture.ids.tenant);
-  assert.equal(drafts.length, 6, 'Exactly six saved heads (three journeys at two viewports) are expected');
-  assert.ok(drafts.every(row => row.owner_id === fixture.ids.allowed), 'No other synthetic identity may own receiving drafts');
-  assert.equal(revisions.length, 10, 'Exactly ten immutable revisions are expected, including two CAS retained saves');
-  assert.ok(revisions.every(row => row.owner_id === fixture.ids.allowed), 'Every revision must belong to the allowed actor');
-  assert.ok(revisions.every(row => drafts.some(draft => draft.id === row.draft_id)), 'Every revision must belong to a saved fixture head');
+  assert.equal(drafts.length, fixture.peerId ? 8 : 6, 'Expected exact saved heads for the browser matrix');
+  assert.equal(revisions.length, fixture.peerId ? 12 : 10, fixture.peerId ? 'Expected twelve immutable revisions' : 'Expected ten immutable revisions');
+  const peerTitle = '同租戶驗收 B 私人草稿';
+  assert.ok(drafts.every(row => row.owner_id === (fixture.peerId && row.title === peerTitle ? fixture.peerId : fixture.ids.allowed)));
+  assert.ok(revisions.every(row => drafts.some(draft => draft.id === row.draft_id && draft.owner_id === row.owner_id)), 'Every revision must match its head owner');
+  if (fixture.peerId) {
+    const receipt = ledgers.find(row => row.title === expectedReceivingCases[6].title)?.ownerIsolation;
+    assert.equal(receipt?.tenantId, fixture.ids.tenant);
+    for (const [title, id, url] of [['同租戶驗收 A 私人草稿', fixture.ids.allowed, receipt.ownerUrl], [peerTitle, fixture.peerId, receipt.peerUrl]]) {
+      const head = drafts.find(row => row.title === title);
+      assert.equal(head?.owner_id, id);
+      assert.equal(head?.revision, 1);
+      assert.equal(url, `http://127.0.0.1:4287/api/v1/admin/receiving-drafts/${head.id}`);
+    }
+  }
   const titleRows = new Map(drafts.map(row => [row.title, row]));
   for (const width of [1440, 390]) {
     const tenLine = titleRows.get(`真 API 十行草稿 ${width}`);

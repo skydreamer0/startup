@@ -190,3 +190,71 @@ test('unsaved close cancellation retains content; malformed URL and identity are
   await expect(page.getByText('尚無已保存草稿。', { exact: true })).toBeVisible();
   await expect(page.getByText('切換身份前未保存內容', { exact: true })).toHaveCount(0);
 });
+
+test('same-tenant peer cannot access or overwrite another owner’s saved draft', async ({ page, browser, harness }) => {
+  const ownerTitle = '同租戶驗收 A 私人草稿';
+  const peerTitle = '同租戶驗收 B 私人草稿';
+  const save = async (actor: Page, title: string) => {
+    await fresh(actor);
+    await actor.getByLabel('草稿名稱').fill(title);
+    const saved = actor.waitForResponse(r => r.request().method() === 'PUT' && r.url().includes('/receiving-drafts/'));
+    await actor.getByRole('button', { name: '保存草稿', exact: true }).click();
+    const result = await saved;
+    expect(result.status()).toBe(200);
+    const { data } = await result.json();
+    await expect(actor.getByText('草稿已保存，尚未入庫。', { exact: true })).toBeVisible();
+    expect(data.revision).toBe(1);
+    return { url: result.url(), data, body: result.request().postDataJSON() };
+  };
+  await login(page);
+  const owner = await save(page, ownerTitle);
+  const otherContext = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1440, height: 900 } });
+  await harness.watchPeer(otherContext);
+  const peer = await otherContext.newPage();
+  await login(peer, 'peer');
+  const b = await save(peer, peerTitle);
+  expect(b.data.ownerId).not.toBe(owner.data.ownerId);
+  expect(b.data.tenantId).toBe(owner.data.tenantId);
+  await peer.getByRole('button', { name: '關閉本頁草稿', exact: true }).click();
+  await expect(peer.getByRole('button', { name: `${peerTitle} · v1`, exact: true })).toBeVisible();
+  await expect(peer.getByRole('button', { name: `${ownerTitle} · v1`, exact: true })).toHaveCount(0);
+  const deepLink = new URL('/receiving', owner.url);
+  deepLink.searchParams.set('draft', owner.data.id);
+  const denied = peer.waitForResponse(r => r.request().method() === 'GET' && r.url() === owner.url);
+  await peer.goto(deepLink.href);
+  const deniedRead = await denied;
+  expect(deniedRead.status()).toBe(404);
+  expect(await deniedRead.text()).not.toContain(ownerTitle);
+  await expect(peer.getByText('草稿讀取失敗，請重試或回到清單；沒有建立替代草稿。', { exact: true })).toBeVisible();
+  await expect(peer.getByLabel('草稿名稱')).toHaveCount(0);
+  const probe = (actor: Page, url: string, body?: unknown) => actor.evaluate(async ({ url, body }) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token || new URL(url).origin !== location.origin) throw new Error('Probe requires an authenticated same-origin browser');
+    const response = await fetch(url, { method: body ? 'PUT' : 'GET',
+      headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+      body: body ? JSON.stringify(body) : undefined });
+    return { status: response.status, body: await response.json() };
+  }, { url, body });
+  for (const suffix of ['/history', '/history/1']) {
+    const result = await probe(peer, owner.url + suffix);
+    expect(result.status).toBe(404);
+    expect(JSON.stringify(result.body)).not.toContain(ownerTitle);
+    expect(result.body.data).toBeUndefined();
+  }
+  const overwrite = await probe(peer, owner.url, { ...owner.body, expectedRevision: 1,
+    payload: { ...owner.body.payload, title: '不應生效的覆寫' } });
+  expect([403, 404]).toContain(overwrite.status);
+  expect(overwrite.body.data).toBeUndefined();
+  expect(JSON.stringify(overwrite.body)).not.toContain(ownerTitle);
+  for (const suffix of ['', '/history/1']) {
+    const unchanged = await probe(page, owner.url + suffix);
+    expect(unchanged.status).toBe(200);
+    expect(unchanged.body.data.revision).toBe(1);
+    expect(unchanged.body.data.payload).toEqual(owner.data.payload);
+  }
+  const history = await probe(page, owner.url + '/history');
+  expect(history.status).toBe(200);
+  expect(history.body.data.map((version: { revision: number }) => version.revision)).toEqual([1]);
+  harness.ownerIsolation = { ownerUrl: owner.url, peerUrl: b.url, ownerId: owner.data.ownerId,
+    peerId: b.data.ownerId, tenantId: owner.data.tenantId };
+});

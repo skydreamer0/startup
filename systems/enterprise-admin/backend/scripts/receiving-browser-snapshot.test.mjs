@@ -72,8 +72,8 @@ for (const [name, change, error] of [
   ['rewritten winner history at the same total', ({ after }) => { after.receiving_draft_revisions[5].payload.title = 'rewritten'; }, /CAS raw history/],
   ['head payload differs from immutable v3', ({ after }) => { after.receiving_drafts[4].payload.lines = []; }, /head payload must equal/],
   ['unexpected historical content mutation', ({ after }) => { after.receiving_draft_revisions[4].payload.lines = []; }, /Only the title changes/],
-  ['different actor owns a revision', ({ after }) => { after.receiving_draft_revisions[4].owner_id = 'denied'; }, /allowed actor/],
-  ['orphan revision at the same total', ({ after }) => { after.receiving_draft_revisions[4].draft_id = 'unknown'; }, /saved fixture head/],
+  ['different actor owns a revision', ({ after }) => { after.receiving_draft_revisions[4].owner_id = 'denied'; }, /match its head owner/],
+  ['orphan revision at the same total', ({ after }) => { after.receiving_draft_revisions[4].draft_id = 'unknown'; }, /match its head owner/],
   ['wrong history distribution at the same total', ({ after }) => { after.receiving_draft_revisions[4].draft_id = 'draft0'; after.receiving_draft_revisions[4].revision = 2; }, /exact immutable history/],
   ['missing browser evidence', ({ ledgers }) => { ledgers.pop(); }, /two CAS browser receipts/],
   ['duplicate browser viewport', ({ ledgers }) => { ledgers[1].viewport = 1440; }, /CAS browser viewports/],
@@ -86,3 +86,26 @@ for (const [name, change, error] of [
     assert.throws(() => compareReceivingBrowserSnapshots(data.before, data.after, fixture, data.responses, data.ledgers), error);
   });
 }
+
+test('same-tenant peer evidence requires two independently owned v1 heads and no incorrect ownership', () => {
+  const { before, after, responses, ledgers } = snapshots();
+  const peerFixture = { ...fixture, peerId: 'peer' };
+  const peer = { id: 'peer', last_login_at: null, failed_login_attempts: 0, updated_at: '2026-01-01' };
+  before.users.push(peer);
+  after.users.push({ ...peer, last_login_at: '2026-02-01', updated_at: '2026-02-01' });
+  const baseUrl = 'http://127.0.0.1:4287/api/v1/admin/receiving-drafts/';
+  for (const [id, actor, title] of [['owner-case', 'allowed', '同租戶驗收 A 私人草稿'], ['peer-case', 'peer', '同租戶驗收 B 私人草稿']]) {
+    const row = { tenant_id: 'tenant', owner_id: actor, revision: 1, payload: payload(title) };
+    after.receiving_drafts.push({ ...row, id, title });
+    after.receiving_draft_revisions.push({ ...row, draft_id: id });
+    responses.push({ method: 'PUT', status: 200, url: baseUrl + id });
+  }
+  ledgers.push({ title: 'same-tenant peer cannot access or overwrite another owner’s saved draft',
+    ownerIsolation: { tenantId: 'tenant', ownerUrl: baseUrl + 'owner-case', peerUrl: baseUrl + 'peer-case' } });
+  assert.equal(compareReceivingBrowserSnapshots(before, after, peerFixture, responses, ledgers).draftHeads.length, 8);
+  const wrongOwner = structuredClone(after);
+  wrongOwner.receiving_drafts.at(-1).owner_id = 'allowed';
+  assert.throws(() => compareReceivingBrowserSnapshots(before, wrongOwner, peerFixture, responses, ledgers));
+  ledgers.at(-1).ownerIsolation.peerUrl = baseUrl + 'owner-case';
+  assert.throws(() => compareReceivingBrowserSnapshots(before, after, peerFixture, responses, ledgers));
+});

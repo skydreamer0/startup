@@ -6,7 +6,7 @@ posting, permission, schema, lockfile or CI job.
 
 ## Current lifecycle increment
 
-The original seven cases and 1440/390 matrix remain. Two existing cases now
+The seven prior cases remain, with one additional 1440px same-tenant different-owner case. It requires fresh independent exact-head evidence. Two existing cases now
 require more evidence:
 
 - CAS: one initial save and a concurrent 200/409 pair, then the losing page's
