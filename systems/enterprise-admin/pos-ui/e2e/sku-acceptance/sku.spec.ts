@@ -260,6 +260,8 @@ test(names[7], async ({ page, guard }) => {
   await page.getByTestId('product-card-SAFE').click();
   api.hold('WAIT'); await scan(page, 'WAIT');
   await expect(page.getByText('正在查詢 SKU WAIT…', { exact: true })).toBeVisible();
+  // The loading UI may render before Playwright intercepts the exact lookup.
+  await expect.poll(() => api.count('WAIT')).toBe(1);
   await api.release('WAIT', []);
   await expect(page.getByText('找不到 SKU WAIT，請檢查代碼或使用人工搜尋', { exact: true })).toBeVisible();
   for (const [code, result, message] of [
