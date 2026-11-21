@@ -7,6 +7,7 @@ name = "deli720w-bluetooth"
 version = "0.1.0"
 description = "Safe Windows BLE diagnostics and offline label previews for DELI DL-720W NEW"
 requires-python = ">=3.11"
+license = {text = "ISC"}
 dependencies = ["bleak>=0.22", "Pillow>=13,<14", "qrcode>=8", "python-barcode>=0.16"]
 
 [project.scripts]
