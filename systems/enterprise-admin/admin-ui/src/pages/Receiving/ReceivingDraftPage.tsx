@@ -211,14 +211,18 @@ function ReceivingSession({ ownerId, editable }: { ownerId: string; editable: bo
       {discarding && <section role="dialog" aria-label="確認放棄未保存內容"><p>只放棄本頁未保存內容，已保存版本保留。</p><button type="button" onClick={() => { allowNavigation.current = true; setParams({}); }}>確認放棄未保存內容</button><button type="button" onClick={() => setDiscarding(false)}>繼續編輯</button></section>}
       {serverRevision > 0 && scope && <ReceiptDraftHistory key={view.draft.id} id={view.draft.id} ownerId={ownerId} tenantId={scope.tenantId} revision={serverRevision} onDenied={deny} />}
       <label>草稿名稱<input value={title} maxLength={120} disabled={!editable || pending || uncertain} onChange={event => setTitle(event.target.value)} /></label>
-      <p>伺服器版本 {serverRevision} · {dirty ? '有未保存變更' : '已保存'}</p>
+      <section className="receipt-draft-save-panel" aria-label="草稿保存">
+        <p>伺服器版本 {serverRevision} · {uncertain ? (pending ? '查回保存結果中' : '保存結果待確認') : pending ? '保存中' : dirty ? '有未保存變更' : '已保存'}</p>
+        <div className="receipt-draft-save-actions">
+          <button type="button" disabled={!editable || pending || uncertain || !dirty || !title.trim()} onClick={() => void save()}>保存草稿</button>
+          {uncertain && <button type="button" disabled={pending} onClick={() => void recover()}>查回保存結果</button>}
+        </div>
+      </section>
       <p>商品第 {productPage} 頁（每頁最多 50 筆）。請明確選取，查無資料不自動建立商品。</p>
       <button type="button" disabled={productPage <= 1 || pending} onClick={() => setProductPage(p => p - 1)}>商品上一頁</button>
       <button type="button" disabled={productPage * 50 >= productTotal || pending} onClick={() => setProductPage(p => p + 1)}>商品下一頁</button>
       <ReceiptDraftEditor draft={view.draft} products={products} productsState={productState} disabled={!editable || pending || uncertain}
         dispatch={dispatch} onProductsRetry={() => setRetry(n => n + 1)} />
-      <button type="button" disabled={!editable || pending || uncertain || !dirty || !title.trim()} onClick={() => void save()}>保存草稿</button>
-      {uncertain && <button type="button" disabled={pending} onClick={() => void recover()}>查回保存結果</button>}
       {remote && <section aria-label="伺服器版本比較">
         <h2>伺服器版本 {remote.revision}：{remote.payload.title}</h2>
         <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{JSON.stringify(remote.payload, null, 2)}</pre>

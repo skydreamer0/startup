@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, Link } from 'react-router-dom';
 import { AuthContext, type AuthContextType } from '../../hooks/authContext';
 import Page from './ReceivingDraftPage';
@@ -25,11 +25,41 @@ it('creates a new private draft and saves once with CAS zero', async () => {
  await screen.findByLabelText('草稿名稱'); fireEvent.click(screen.getByText('保存草稿')); await waitFor(()=>expect(api.put).toHaveBeenCalledTimes(1));
  expect(api.put.mock.calls[0][1].expectedRevision).toBe(0); expect(api.post).not.toHaveBeenCalled();
 });
+it('keeps exactly one save action beside draft state, before the line editor', async () => {
+  mount(auth(), '/receiving?draft=' + id);
+  const title = await screen.findByDisplayValue('測試草稿');
+  const panel = screen.getByRole('region', { name: '草稿保存' });
+  const editor = screen.getByRole('region', { name: '收貨草稿明細' });
+  const save = within(panel).getByRole('button', { name: '保存草稿' }) as HTMLButtonElement;
+  expect(screen.getAllByRole('button', { name: '保存草稿' })).toHaveLength(1);
+  expect(panel.compareDocumentPosition(editor) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(within(panel).getByText('伺服器版本 1 · 已保存')).toBeDefined();
+  expect(save.disabled).toBe(true);
+  fireEvent.change(title, { target: { value: '本頁修改' } });
+  expect(within(panel).getByText('伺服器版本 1 · 有未保存變更')).toBeDefined();
+  expect(save.disabled).toBe(false);
+  expect(api.put).not.toHaveBeenCalled();
+});
 it('recovers a lost save response with GET without a second PUT', async () => {
  api.put.mockRejectedValue(new Error('lost response')); mount(auth(), '/receiving?draft='+id); const input=await screen.findByDisplayValue('測試草稿'); fireEvent.change(input,{target:{value:'修改後'}}); fireEvent.click(screen.getByText('保存草稿'));
- await screen.findByText('查回保存結果'); expect((screen.getByText('保存草稿') as HTMLButtonElement).disabled).toBe(true);
- api.get.mockResolvedValue(wrap({...saved,revision:2,payload:{...payload,title:'修改後'}})); fireEvent.click(screen.getByText('查回保存結果'));
- await screen.findByText('查回內容與本次草稿完全一致，已確認保存，沒有再次送出。'); expect(api.put).toHaveBeenCalledTimes(1); expect(api.post).not.toHaveBeenCalled();
+ const panel = screen.getByRole('region', { name: '草稿保存' });
+ await within(panel).findByRole('button', { name: '查回保存結果' });
+ expect(within(panel).getByText('伺服器版本 1 · 保存結果待確認')).toBeDefined();
+ expect((within(panel).getByRole('button', { name: '保存草稿' }) as HTMLButtonElement).disabled).toBe(true);
+ let finishReadback!: () => void;
+ api.get.mockImplementationOnce(() => new Promise(resolve => {
+   finishReadback = () => resolve(wrap({...saved,revision:2,payload:{...payload,title:'修改後'}}));
+ }));
+ const recovery = within(panel).getByRole('button', { name: '查回保存結果' }) as HTMLButtonElement;
+ fireEvent.click(recovery);
+ expect(within(panel).getByText('伺服器版本 1 · 查回保存結果中')).toBeDefined();
+ expect(recovery.disabled).toBe(true);
+ expect((within(panel).getByRole('button', { name: '保存草稿' }) as HTMLButtonElement).disabled).toBe(true);
+ finishReadback();
+ await screen.findByText('查回內容與本次草稿完全一致，已確認保存，沒有再次送出。');
+ expect(within(panel).getByText('伺服器版本 2 · 已保存')).toBeDefined();
+ expect(within(panel).queryByRole('button', { name: '查回保存結果' })).toBeNull();
+ expect(api.put).toHaveBeenCalledTimes(1); expect(api.post).not.toHaveBeenCalled();
 });
 it('hides the private draft after save authorization denial', async () => {
  api.put.mockRejectedValue({response:{status:403}}); mount(auth(), '/receiving?draft='+id); fireEvent.change(await screen.findByDisplayValue('測試草稿'),{target:{value:'私人資料'}}); fireEvent.click(screen.getByText('保存草稿'));
@@ -51,6 +81,25 @@ it('requires explicit discard for unsaved content and preserves saved server rec
 it.each(['new-','new-not-a-uuid','bad'])('handles invalid draft link %s without crashing or creating a draft',async value=>{mount(auth(),'/receiving?draft='+value);await screen.findByText('草稿連結格式無效，請回到清單重新選取。');expect(screen.queryByText('保存草稿')).toBeNull();expect(api.put).not.toHaveBeenCalled();fireEvent.click(screen.getByText('回到草稿清單'));await waitFor(()=>expect(screen.queryByText('草稿連結格式無效，請回到清單重新選取。')).toBeNull());});
 it('blocks sidebar Link navigation and preserves changes after cancel',async()=>{mount(auth(),'/receiving?draft='+id);fireEvent.change(await screen.findByDisplayValue('測試草稿'),{target:{value:'保留我'}});fireEvent.click(screen.getByText('離開連結'));await screen.findByRole('dialog',{name:'離開草稿確認'});expect(screen.queryByText('其他頁')).toBeNull();fireEvent.click(screen.getByText('留在草稿'));expect(screen.getByDisplayValue('保留我')).toBeDefined();fireEvent.click(screen.getByText('離開連結'));fireEvent.click(screen.getByText('放棄未保存變更並離開'));await screen.findByText('其他頁');});
 it('blocks history Back and search-parameter replacement until explicit discard',async()=>{const {router}=mount(auth(),'/receiving?draft='+id);fireEvent.change(await screen.findByDisplayValue('測試草稿'),{target:{value:'不可消失'}});await router.navigate(-1);await screen.findByRole('dialog',{name:'離開草稿確認'});expect(screen.getByDisplayValue('不可消失')).toBeDefined();fireEvent.click(screen.getByText('留在草稿'));await router.navigate('/receiving?draft=new-22222222-2222-4222-8222-222222222222');await screen.findByRole('dialog',{name:'離開草稿確認'});expect(screen.getByDisplayValue('不可消失')).toBeDefined();fireEvent.click(screen.getByText('留在草稿'));});
+it('shows saving beside the disabled single action until the write settles', async () => {
+  let finishSave!: () => void;
+  api.put.mockImplementation(() => new Promise(resolve => {
+    finishSave = () => resolve(wrap({...saved, revision: 2, payload: {...payload, title: '保存中測試'}}));
+  }));
+  mount(auth(), '/receiving?draft=' + id);
+  fireEvent.change(await screen.findByDisplayValue('測試草稿'), {target: {value: '保存中測試'}});
+  const panel = screen.getByRole('region', {name: '草稿保存'});
+  const submit = within(panel).getByRole('button', {name: '保存草稿'}) as HTMLButtonElement;
+  fireEvent.click(submit);
+  expect(within(panel).getByText('伺服器版本 1 · 保存中')).toBeDefined();
+  expect(submit.disabled).toBe(true);
+  expect(within(panel).queryByRole('button', {name: '查回保存結果'})).toBeNull();
+  fireEvent.click(submit);
+  expect(api.put).toHaveBeenCalledTimes(1);
+  finishSave();
+  await within(panel).findByText('伺服器版本 2 · 已保存');
+  expect(api.post).not.toHaveBeenCalled();
+});
 it('does not allow abandoning a pending or uncertain write via SPA navigation',async()=>{let reject!:(e:unknown)=>void;api.put.mockImplementation(()=>new Promise((_resolve,fail)=>{reject=fail;}));mount(auth(),'/receiving?draft='+id);fireEvent.change(await screen.findByDisplayValue('測試草稿'),{target:{value:'寫入中'}});fireEvent.click(screen.getByText('保存草稿'));fireEvent.click(screen.getByText('離開連結'));await screen.findByRole('dialog',{name:'離開草稿確認'});expect((screen.getByText('放棄未保存變更並離開') as HTMLButtonElement).disabled).toBe(true);reject(new Error('lost'));await screen.findByText('查回保存結果');expect((screen.getByText('放棄未保存變更並離開') as HTMLButtonElement).disabled).toBe(true);fireEvent.click(screen.getByText('留在草稿'));expect(screen.getByDisplayValue('寫入中')).toBeDefined();expect(api.put).toHaveBeenCalledTimes(1);});
 it('refreshes confirmed saved summaries so create-save-close-reopen works without browser reload',async()=>{
  let stored:typeof saved|undefined;
