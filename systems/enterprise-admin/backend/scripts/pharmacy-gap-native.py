@@ -1,5 +1,5 @@
 from pathlib import Path
-import os, sys, json, subprocess, secrets, uuid, time, hashlib, datetime
+import os, sys, json, subprocess, secrets, signal, uuid, time, hashlib, datetime
 
 # Assertions below enforce ownership; never allow optimized Python to strip them.
 if not __debug__:
@@ -61,6 +61,19 @@ def run(args, timeout=30):
 def docker(*args):
     assert local_docker_verified, 'Local Docker endpoint must be verified first'
     return run(['docker', '--host', 'unix:///var/run/docker.sock', *args])
+
+def create_owned(*args):
+    # Let Docker finish creating the resource before reconciliation looks for it.
+    previous = signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGTERM})
+    try:
+        return docker(*args)
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous)
+
+def terminate(signum, frame):
+    signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGTERM})
+    raise InterruptedError('Received SIGTERM')
+
 def inspect(cid): return json.loads(docker('inspect', cid))[0]
 def save(file, value): (output/file).write_text(json.dumps(value, indent=2), encoding='utf-8')
 def sql(query, target=None):
@@ -94,6 +107,7 @@ def stage(label,args,timeout=60):
     return p.returncode
 
 try:
+    signal.signal(signal.SIGTERM, terminate)
     # Refuse ambient remote contexts rather than silently overriding them.
     assert not any(os.environ.get(k) for k in ['DOCKER_CONTEXT','DOCKER_TLS_VERIFY','DOCKER_CERT_PATH']), 'Refuse Docker context/TLS overrides'
     assert os.environ.get('DOCKER_HOST','') in ['', 'unix:///var/run/docker.sock'], 'Refuse nonlocal Docker endpoint'
@@ -104,17 +118,18 @@ try:
     assert not docker('ps','-q','--filter','label=pharmacy-gap'), 'Another acceptance task is running'
     pgimage=json.loads(docker('image','inspect','postgres:15-alpine@sha256:f7d23353e1b15400d22ebe31189f4d314b87a4c129cc400c8c2d8d4ca127bf81'))[0]
     nodeimage=json.loads(docker('image','inspect','node:22.23.4-bookworm@sha256:63538dfe497cc29dfafdda25ada09b46db68a3f4cc205abf1f5d6bf0913f3384'))[0]
-    network_id=docker('network','create','--internal','--label','pharmacy-gap='+nonce,name+'-net')
+    network_id=create_owned('network','create','--internal','--label','pharmacy-gap='+nonce,name+'-net')
     n=json.loads(docker('network','inspect',network_id))[0]
     assert n['Internal'] and n['Driver']=='bridge'
-    db_id=docker('run','-d','--pull=never','--name',name+'-db','--label','pharmacy-gap='+nonce,'--network',network_id,
+    db_id=create_owned('run','-d','--pull=never','--name',name+'-db','--label','pharmacy-gap='+nonce,'--network',network_id,
         '-e','POSTGRES_USER=gap_test','-e','POSTGRES_PASSWORD='+password,'-e','POSTGRES_DB='+database,pgimage['Id'])
     db=inspect(db_id)
     assert not db['HostConfig'].get('Binds') and not db['HostConfig'].get('PortBindings') and not db['HostConfig']['Privileged']
     volumes=[m['Name'] for m in db['Mounts'] if m['Type']=='volume']
     assert len(volumes)==1 and all(m['Type']=='volume' for m in db['Mounts'])
     for i in range(30):
-        p=subprocess.run(['docker','--host','unix:///var/run/docker.sock','exec',db_id,'pg_isready','-U','gap_test','-d',database],capture_output=True,timeout=5)
+        # The image's temporary initialization server accepts Unix sockets only.
+        p=subprocess.run(['docker','--host','unix:///var/run/docker.sock','exec',db_id,'pg_isready','-h','127.0.0.1','-U','gap_test','-d',database],capture_output=True,timeout=5)
         if p.returncode==0: break
         time.sleep(0.5)
     else: raise RuntimeError('Fresh PostgreSQL readiness timeout')
@@ -137,7 +152,7 @@ try:
         '--mount','type=bind,src='+str(npm_prefix)+',dst=/task-npm,readonly']
     for key,value in env.items(): args+=['-e',key+'='+value]
     args += [nodeimage['Id'],'node','-e','setInterval(()=>{},10000)']
-    client_id=docker(*args)
+    client_id=create_owned(*args)
     c=inspect(client_id); n=json.loads(docker('network','inspect',network_id))[0]
     assert n['Internal'] and set(n['Containers'])=={db_id,client_id}
     assert list(c['NetworkSettings']['Networks'])==[name+'-net']
@@ -178,6 +193,8 @@ try:
 except BaseException as e:
     error=(type(e).__name__+': '+str(e)).replace(password,'[synthetic credential omitted]')
 finally:
+    # Finish ownership checks, teardown and the receipt even on repeated SIGTERM.
+    signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGTERM})
     # A create call may time out after creating its resource. Reconcile only
     # this invocation's unique names AND labels before attempting cleanup.
     if local_docker_verified:
@@ -219,6 +236,8 @@ finally:
             n=json.loads(docker('network','inspect',network_id))[0];assert n['Id']==network_id and n['Name']==name+'-net' and n['Labels']['pharmacy-gap']==nonce
             docker('network','rm',network_id);cleanup['networkAbsent']=not docker('network','ls','-q','--filter','id='+network_id)
         except Exception as e:cleanup['networkError']=str(e)
+    if error is None and signal.SIGTERM in signal.sigpending():
+        error = 'Received SIGTERM during cleanup'
     receipt={'mode':mode,'sourceHead':HEAD,'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'error':error,'testExitCode':test_exit,'stages':events,'cleanup':cleanup,
         'completed':completed,
         'passed':completed and error is None and not cleanup.get('resourceReconciliationUncertain') and all(cleanup.get(k) is True for k in ['clientAbsent','databaseAbsent','dbContainerAbsent','volumesAbsent','networkAbsent'])}
