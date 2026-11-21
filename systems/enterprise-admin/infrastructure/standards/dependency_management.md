@@ -54,9 +54,14 @@ required by the existing TypeScript-checked contract tests.
 
 Prisma stays on 6.19.3: both the client and migration CLI are runtime dependencies.
 The backend container invokes its installed CLI and never downloads a new CLI
-when starting. Overrides are limited to Prisma config's deepmerge-ts 8.0.2
-(prototype-pollution fix) and ExcelJS's uuid 11.1.1 (CommonJS v4 API retained).
+when starting. Backend overrides are limited to Prisma config's deepmerge-ts 8.0.2
+(prototype-pollution fix) and Effect 3.22.1 (patched release), ExcelJS's uuid
+11.1.1 (CommonJS v4 API retained), and minimatch 11.0.1 under the ESLint,
+typescript-eslint and readdir-glob dependency paths that resolved vulnerable versions.
 Prisma generation/migrations and DB-backed CSV/Excel regressions must pass.
+
+The frontend workspace overrides only minimatch 11.0.1 and follow-redirects 1.16.2
+in `pnpm-workspace.yaml`; the dependency regression suite checks their compatibility.
 
 Admin used the shadcn CLI package only for its stylesheet. The original locked
 4.8.0 `dist/tailwind.css` is retained byte-for-byte at
