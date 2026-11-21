@@ -41,6 +41,6 @@ export function useGuardedRead<T>({ queryKey, queryFn, retry }: {
         readerId: user?.id ?? null,
         data: deniedError ? undefined : query.data,
         error: deniedError ?? query.error,
-        isError: Boolean(deniedError) || query.isError,
+        isError: Boolean(deniedError) || query.isError || (query.isPending && query.errorUpdateCount > 0),
     };
 }
