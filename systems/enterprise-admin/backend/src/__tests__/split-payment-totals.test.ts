@@ -135,3 +135,25 @@ it('empty daily and shift cohorts retain numeric zero totals and counts', async 
   expect(await DailySettlementService.calculate('shift-1')).toMatchObject({ totalOrders: 0, totalSales: 0 });
   expect(await ShiftService.getReport('shift-1')).toMatchObject({ orderCount: 0, grossSales: 0, netTotal: 0 });
 });
+
+it('characterizes the same refunded split order disagreement without approving either financial policy', async () => {
+  // This is a known-gap fixture, not a refund oracle. The persisted order retains
+  // paid status; no refund event/date/method exists to resolve the two readers.
+  const order = {
+    status: 'refunded', paymentStatus: 'paid', totalAmount: new Prisma.Decimal(100),
+    discountAmount: 0, paymentMethod: 'CASH',
+    payments: [{ method: 'CASH', amount: 60 }, { method: 'CARD', amount: 40 }],
+  };
+  vi.mocked(prisma.shift.findFirst).mockResolvedValue({
+    id: 'shift-1', staff: { fullName: 'Staff' }, openingCash: 200, orders: [order],
+  } as never);
+  vi.mocked(prisma.order.findMany).mockResolvedValue([order] as never);
+
+  expect(await DailySettlementService.calculate('shift-1')).toMatchObject({
+    totalOrders: 1, totalSales: 100, cashAmount: 100, cardAmount: 0,
+  });
+  expect(await ShiftService.getReport('shift-1')).toMatchObject({
+    orderCount: 0, refundCount: 1, grossSales: 0, refundTotal: 100,
+    netTotal: -100, paymentBreakdown: {}, cashBalance: 100,
+  });
+});
