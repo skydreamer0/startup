@@ -43,6 +43,12 @@ describe('report error rendering with synthetic query snapshots, not browser acc
             expect(html).toContain('role="note"');
             expect(html).not.toMatch(/stat-value|No sales data for this period|No manual expenses registered/);
         });
+        it(`${name}: null snapshot is unavailable, not a zero or empty report`, () => {
+            query.read.mockReturnValueOnce(result(null)).mockReturnValue(result([]));
+            const html = renderToStaticMarkup(<Component />);
+            expect(html).toContain('資料尚不可用');
+            expect(html).not.toMatch(/stat-value|No sales data for this period|No manual expenses registered/);
+        });
         it(`${name}: failed refresh retains data with stale warning`, () => {
             query.read.mockReturnValueOnce(result(data, new Error('offline'))).mockReturnValue(result([]));
             const html = renderToStaticMarkup(<Component />);
@@ -72,11 +78,21 @@ describe('report error rendering with synthetic query snapshots, not browser acc
             expect(renderToStaticMarkup(<Component />)).toContain('此期間沒有趨勢資料');
         });
     }
+    it('renders a healthy real zero without an unavailable notice', () => {
+        query.read.mockReturnValueOnce(result({
+            summary: { totalRevenue: 0, totalCogs: 0, totalMargin: 0, totalMarginPct: 0 },
+            products: [],
+        })).mockReturnValue(result([]));
+        const html = renderToStaticMarkup(<MarginAnalysisPage />);
+        expect(html).toContain('$0');
+        expect(html).not.toContain('資料尚不可用');
+        expect(html).not.toContain('role="alert"');
+    });
     it('retry callback is a button and disabled while read is pending', () => {
         const onRetry = vi.fn();
         const notice = ReportReadNotice({ label: '報表', isError: true, error: new Error('offline'),
             hasData: false, isFetching: true, onRetry });
-        expect(renderToStaticMarkup(notice)).toContain('disabled');
+        expect(renderToStaticMarkup(notice)).toContain('aria-disabled="true"');
         expect(renderToStaticMarkup(notice)).toContain('type="button"');
         expect(onRetry).not.toHaveBeenCalled();
     });

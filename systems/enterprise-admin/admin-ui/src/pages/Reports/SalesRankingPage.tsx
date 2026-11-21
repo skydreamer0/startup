@@ -36,10 +36,11 @@ export default function SalesRankingPage() {
         </section>
     );
 
-    const reportNotice = <ReportReadNotice label="銷售排行" isError={isError} error={error}
-        hasData={data !== undefined} isFetching={isFetching} onRetry={() => { void refetch(); }} />;
+    const reportHasError = isError || data === null;
+    const reportNotice = <ReportReadNotice label="銷售排行" isError={reportHasError} error={error}
+        hasData={data != null} isFetching={isFetching} onRetry={() => { void refetch({ cancelRefetch: false }); }} />;
 
-    if (isError && (data === undefined || isReportAccessDenied(error))) {
+    if (reportHasError && (data == null || isReportAccessDenied(error))) {
         return <div {...readerFocus} className="admin-page report-page admin-reader-page sales-ranking-page">
             {estimateNotice}
             {reportNotice}

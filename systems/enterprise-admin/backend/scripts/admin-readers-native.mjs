@@ -23,6 +23,55 @@ async function boundedReaderWait(promise) {
     try { return await Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Reader held response wait expired')), 10000); })]); }
     finally { clearTimeout(timer); }
 }
+// Failure-only, read-only snapshot: no page text, HTML, URL, credentials or
+// response bodies leave the browser. A hung/closed page cannot leave cleanup waiting indefinitely.
+export async function captureReaderRecoveryFailure({ page, subject, contextId, afterRequestId, stage, error, responses, write }) {
+    let timer;
+    const receipt = { stage, contextId, afterRequestId, failure: safeReaderFailure(error), snapshot: null, responses: [] };
+    try {
+        const snapshot = Promise.resolve().then(() => page.evaluate(({ label, heading, text }) => {
+            const root = document.querySelector('.admin-reader-page');
+            const number = value => Number.isFinite(value) ? value : null;
+            const buttons = name => {
+                const matches = [...document.querySelectorAll('.report-read-notice__retry')]
+                    .filter(el => el.textContent?.trim() === name);
+                return { count: matches.length, samples: matches.slice(0, 2).map(el => {
+                    const box = el.getBoundingClientRect(), style = getComputedStyle(el);
+                    const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+                    return { x: number(box.x), y: number(box.y), width: number(box.width), height: number(box.height),
+                        visible: box.width > 0 && box.height > 0 && style.visibility === 'visible' && style.display !== 'none',
+                        ariaDisabled: el.getAttribute('aria-disabled') === 'true', ariaBusy: el.getAttribute('aria-busy') === 'true',
+                        disabled: el.matches(':disabled'), focused: document.activeElement === el,
+                        centerHit: !!hit && (hit === el || el.contains(hit)) };
+                }) };
+            };
+            return { viewport: { width: number(innerWidth), height: number(innerHeight) },
+                scroll: { x: number(scrollX), y: number(scrollY) }, readerRoots: document.querySelectorAll('.admin-reader-page').length,
+                headingPresent: !!root && [...root.querySelectorAll('h1')].some(el => el.textContent === heading),
+                expectedDataPresent: !!root && root.textContent.includes(text),
+                chartCount: document.querySelectorAll('.recharts-wrapper').length,
+                mainRetry: buttons(`重試${label}`), trendRetry: buttons('重試趨勢') };
+        }, { label: subject.label, heading: subject.heading, text: subject.text }))
+            .then(dom => ({ status: 'captured', dom }), () => ({ status: 'unavailable' }));
+        receipt.snapshot = await Promise.race([snapshot, new Promise(resolve => {
+            timer = setTimeout(() => resolve({ status: 'timed-out' }), 750);
+        })]);
+        receipt.responses = responses.filter(row => row.contextId === contextId && row.requestId > afterRequestId)
+            .slice(-8).map(row => ({
+                requestId: Number.isSafeInteger(row.requestId) ? row.requestId : null,
+                endpoint: subject.paths.findIndex(endpoint => {
+                    try { return new URL(row.path, 'http://127.0.0.1').pathname === '/api/v1/admin' + endpoint; }
+                    catch { return false; }
+                }),
+                actor: ['readerA', 'readerB', 'readerEmpty', 'denied', 'inactive', 'unauthenticated', 'unrecognized'].includes(row.actor) ? row.actor : null,
+                status: Number.isInteger(row.status) && row.status >= 100 && row.status <= 599 ? row.status : null,
+                cancelledBody: row.cancelledBody === true,
+            }));
+        write(`admin-readers-${subject.id}-authorized-recovery-failure.json`, receipt);
+    } catch { /* Diagnostics must never replace the original recovery failure. */ }
+    finally { clearTimeout(timer); }
+    return receipt;
+}
 export const readerViewports = [{ width: 1366, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }];
 export const readerStates = ['success', 'stale', 'stale-recovered', 'denied', 'failed-retry', 'recovered'];
 const stateIdentity = state => ({ actor: ['denied', 'failed-retry'].includes(state) ? 'denied' : 'readerA', status: state === 'denied' ? 403 : ['stale', 'failed-retry'].includes(state) ? 500 : 200 });
@@ -55,7 +104,7 @@ export async function navigateReader({ page, subject, adminOrigin, expect, perio
     // A completed click/URL change can precede React replacing the previous page.
     await expect(page).toHaveURL(adminOrigin + subject.route);
     const root = page.locator('.admin-reader-page').filter({
-        has: unavailable ? page.getByRole('alert', { name: `${subject.label}讀取狀態`, exact: true })
+        has: unavailable ? page.getByRole('region', { name: `${subject.label}讀取狀態`, exact: true })
             : page.getByRole('heading', { level: 1, name: subject.heading, exact: true }),
     });
     await expect(root).toBeVisible({ timeout: readerResponseTimeoutMs });
@@ -512,6 +561,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
             const viewport = readerViewports[0];
             const { context, page, control, contextId } = await contextFor(viewport);
             const sharedCases = readerViewports.map(view => ({ width: view.width, contextId, readers: [] }));
+            let recoveryDiagnostic = null;
             async function navigate(subject) { return navigateReader({ page, subject, adminOrigin, expect }); }
             const outcome = (subject, status, actor, afterRequestId, endpoint = subject.paths[0]) => waitForReaderOutcome({ expect, responses, contextId, endpoint, actor, status, afterRequestId });
             async function loaded(subject) { await expect(page.getByText(subject.text, { exact: subject.id !== 'cashflow' }).first()).toBeVisible({ timeout: readerResponseTimeoutMs }); await expect(page.locator('body')).not.toContainText('FOREIGN_READER_'); if(['cashflow','margin','sales'].includes(subject.id))await expect(page.getByRole('note')).toContainText(subject.id==='cashflow'?'非實際現金流':'非歷史實際毛利'); }
@@ -590,6 +640,8 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     await expect(page.getByText(subject.text, { exact: subject.id !== 'cashflow' })).toHaveCount(0);
                     const hidden = async () => { await expect(page.getByText('存取被拒絕', { exact: false }).first()).toBeVisible({ timeout: readerResponseTimeoutMs }); await expect(page.getByText(subject.text, { exact: subject.id !== 'cashflow' })).toHaveCount(0); };
                     await visualState('denied', retry, hidden, deniedResponse);
+                    // Keep automatic 403 retries out of the explicit 500 retry's response window.
+                    await expect(retry()).toBeEnabled({ timeout: readerResponseTimeoutMs });
                     control.mode = 'fail500';
                     const failedBefore = nextRequestId;
                     await retry().click();
@@ -601,20 +653,31 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     control.mode = 'normal';
                     await page.evaluate(value => localStorage.setItem('accessToken', value), tokens.readerA);
                     const recoveryBefore = nextRequestId;
+                    recoveryDiagnostic = { subject, contextId, afterRequestId: recoveryBefore };
+                    stage = `${subject.id} authorized recovery main click`;
                     await retry().click();
+                    stage = `${subject.id} authorized recovery main response`;
                     const recoveryResponse = await outcome(subject, 200, 'readerA', recoveryBefore);
+                    stage = `${subject.id} authorized recovery main data visible`;
                     await loaded(subject);
+                    stage = `${subject.id} authorized recovery main notice removed`;
                     await expect(retry()).toHaveCount(0);
                     // A report's main retry must not silently recover its denied trend query.
                     if (subject.id === 'cashflow' || subject.id === 'margin') {
                         const trend = page.getByRole('button', { name: '重試趨勢', exact: true });
+                        stage = `${subject.id} authorized recovery trend visible`;
                         await expect(trend).toBeVisible({ timeout: readerResponseTimeoutMs });
+                        stage = `${subject.id} authorized recovery denied chart hidden`;
                         await expect(page.locator('.recharts-wrapper')).toHaveCount(0);
                         const trendBefore = nextRequestId;
+                        stage = `${subject.id} authorized recovery trend click`;
                         await trend.click();
+                        stage = `${subject.id} authorized recovery trend response`;
                         await outcome(subject, 200, 'readerA', trendBefore, subject.paths[1]);
+                        stage = `${subject.id} authorized recovery trend notice removed`;
                         await expect(trend).toHaveCount(0);
                     }
+                    recoveryDiagnostic = null;
                     if (subject.id === 'analytics') {
                         await page.getByRole('button', { name: '🏢 Supplier Ranking', exact: true }).click();
                         const ranking = page.getByRole('button', { name: '重試供應商排行', exact: true });
@@ -651,6 +714,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                 cases.push(...sharedCases);
             }
             catch (error) {
+                if (recoveryDiagnostic) await captureReaderRecoveryFailure({ page, ...recoveryDiagnostic, stage, error, responses, write });
                 await preserveReaderFailure(page, capture, 'admin-readers-failed', error);
             }
             finally {

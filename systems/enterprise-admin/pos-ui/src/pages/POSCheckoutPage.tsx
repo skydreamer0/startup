@@ -402,7 +402,7 @@ export default function POSCheckoutPage() {
           placeholder="🔍 搜尋商品名稱或 SKU... (F2)"
           className="pos-search-input"
         />
-        <button ref={manualScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
+        <button ref={manualScanButton} type="button" aria-haspopup="dialog" className="pos-topbar-action pos-topbar-action--manual-scan" disabled={scannerBlocked && !showManualScan} onClick={event => { event.currentTarget.focus(); setShowManualScan(true); }}>手動貼碼</button>
         <button ref={imageScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showImageScan} onClick={event => { event.currentTarget.focus(); setShowImageScan(true); }}>圖片掃碼</button>
         <button ref={cameraScanButton} type="button" className="pos-topbar-action" disabled={scannerBlocked && !showCameraScan} onClick={event => { event.currentTarget.focus(); setCameraScope(cameraBoundary); }}>相機掃碼</button>
         <button type="button" className="pos-topbar-action" disabled={scannerBlocked} onClick={event => { event.currentTarget.focus(); setPackageLookup({ returnFocus: event.currentTarget }); }}>包裝查找</button>

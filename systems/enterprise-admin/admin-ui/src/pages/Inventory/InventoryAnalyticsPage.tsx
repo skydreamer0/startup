@@ -120,7 +120,7 @@ export default function InventoryAnalyticsPage() {
             {activeTab === 'products' && (
                 <div className="space-y-24">
                     <ReportReadNotice label="商品分析" isError={abcQuery.isError} error={abcQuery.error}
-                        hasData={abcData !== undefined} isFetching={abcQuery.isFetching} onRetry={() => { void abcQuery.refetch(); }} />
+                        hasData={abcData !== undefined} isFetching={abcQuery.isFetching} onRetry={() => { void abcQuery.refetch({ cancelRefetch: false }); }} />
                     {abcQuery.isLoading ? (
                         <div className="stat-grid stagger-fade">
                             {[...Array(4)].map((_, i) => (
@@ -219,7 +219,7 @@ export default function InventoryAnalyticsPage() {
             {activeTab === 'suppliers' && (
                 <div className="space-y-24">
                     <ReportReadNotice label="供應商排行" isError={supplierQuery.isError} error={supplierQuery.error}
-                        hasData={supplierData !== undefined} isFetching={supplierQuery.isFetching} onRetry={() => { void supplierQuery.refetch(); }} />
+                        hasData={supplierData !== undefined} isFetching={supplierQuery.isFetching} onRetry={() => { void supplierQuery.refetch({ cancelRefetch: false }); }} />
                     {supplierQuery.isLoading ? (
                         <div className="card section-card">
                             <div className="skeleton skeleton-title" />
