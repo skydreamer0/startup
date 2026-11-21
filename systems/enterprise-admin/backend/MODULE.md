@@ -88,6 +88,17 @@ inconsistency is NOT an approved policy or fixed by this slice. See
 `../infrastructure/verification/split-payment-totals/README.md` for the bounded
 contract, isolated native API/DB runner and remaining financial gates.
 
+### Close shifts and confirm daily settlements
+
+`shifts.service.ts` and `daily-settlements.service.ts` preserve the first completed
+transition with tenant-scoped conditional updates. A request that initially reads
+closed/confirmed still returns 400; one losing the write-time condition returns
+409 without overwriting closing cash, notes or confirmation time. Other database
+errors propagate without automatic retry. See the API contract's shift/settlement
+transition section and `src/__tests__/settlement-transition.test.ts` (mocked
+persistence, not native PostgreSQL concurrency acceptance). This does not change
+refund arithmetic, date attribution, settlement amounts or accounting policy.
+
 ### Change process health or startup
 
 1. `/health` is process-only liveness; `/ready` checks database connectivity and all packaged Prisma migration history. See `../infrastructure/verification/health-readiness/README.md` for the contract and deployment usage.
