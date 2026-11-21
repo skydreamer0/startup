@@ -103,11 +103,25 @@ test('actual Playwright report and per-case ledgers require exactly seven passed
     const url = `http://127.0.0.1:4287/api/v1/admin/receiving-drafts/${ids[index]}`;
     const requests = title === expectedReceivingCases[0].title ? [{ method: 'PUT', url, status: 200 }]
       : title === expectedReceivingCases[1].title ? [{ method: 'PUT', url }, { method: 'GET', url, status: 200 }]
-        : title === expectedReceivingCases[2].title ? [{ method: 'PUT', url, status: 200 }, { method: 'PUT', url, status: 200 }, { method: 'PUT', url, status: 409 }]
+        : title === expectedReceivingCases[2].title ? [{ method: 'PUT', url, status: 200, expectedRevision: 0 }, { method: 'PUT', url, status: 200, expectedRevision: 1 }, { method: 'PUT', url, status: 409, expectedRevision: 1 }, { method: 'PUT', url, status: 200, expectedRevision: 2 }]
           : [];
-    return { viewport, title, retry: 0, requests, saveCalls: requests.filter(row => row.method === 'PUT').length };
+    if (title === expectedReceivingCases[2].title) for (const revision of [1, 2, 3]) requests.push({ method: 'GET', url: `${url}/history/${revision}`, status: 200 });
+    return { viewport, title, retry: 0, requests, saveCalls: requests.filter(row => row.method === 'PUT').length,
+      navigationGuards: title === expectedReceivingCases[1].title ? ['pending', 'unknown'].map(phase => ({
+        phase, action: 'back', fromUrl: `http://127.0.0.1:4287/receiving?draft=new-${ids[index]}`,
+        blockedUrl: `http://127.0.0.1:4287/receiving?draft=new-${ids[index]}`,
+        retainedUrl: `http://127.0.0.1:4287/receiving?draft=new-${ids[index]}`,
+        dialogVisible: true, discardDisabled: true, retainedTitle: 'Synthetic lost response', expectedTitle: 'Synthetic lost response',
+        saveCalls: 1,
+      })) : [],
+      casResolution: title === expectedReceivingCases[2].title ? { draftUrl: url, expectedRevision: 2, savedRevision: 3,
+        originalTitle: 'Synthetic original', winnerTitle: 'Synthetic winner', retainedTitle: 'Synthetic loser',
+        reopenedTitle: 'Synthetic loser', reopenedRevision: 3,
+        history: [{ revision: 1, title: 'Synthetic original' }, { revision: 2, title: 'Synthetic winner' }, { revision: 3, title: 'Synthetic loser' }],
+      } : null,
+    };
   });
-  const appResponses = ledgers.flatMap(ledger => ledger.requests.filter(row => row.method === 'PUT').map(row => ({ ...row,
+  const appResponses = ledgers.flatMap(ledger => ledger.requests.map(row => ({ ...row,
     endpoint: new URL(row.url).pathname.replace('/api/v1/admin', ''), dispatchComplete: true,
     applicationComplete: true, pendingHandlers: 0, handlerFailures: [] })));
   const report = { stats: { expected: 7, unexpected: 0, skipped: 0, flaky: 0 }, suites: [
@@ -118,6 +132,27 @@ test('actual Playwright report and per-case ledgers require exactly seven passed
       tests: [{ expectedStatus: 'passed', results: [{ status: 'passed', retry: 0, duration: 30, errors: [] }] }] }] },
   ] };
   assert.equal(assertPlaywrightReceivingReport(report, ledgers, appResponses).length, 7);
+  // Old display-only CAS / no navigation receipts must never satisfy the new scope.
+  for (const mutate of [
+    rows => { rows[1].navigationGuards = []; },
+    rows => { rows[1].navigationGuards[0].discardDisabled = false; },
+    rows => { rows[1].navigationGuards[1].blockedUrl = 'http://127.0.0.1:4287/receiving'; },
+    rows => { rows[1].navigationGuards[1].retainedTitle = 'lost content'; },
+    rows => { rows[1].navigationGuards[1].saveCalls = 2; },
+    rows => { rows[2].casResolution = null; },
+    rows => { rows[2].casResolution.savedRevision = 2; },
+    rows => { rows[2].casResolution.reopenedTitle = 'wrong content'; },
+    rows => { rows[2].casResolution.history[1].title = 'overwritten history'; },
+    rows => { rows[2].requests[3].expectedRevision = 1; },
+    rows => { rows[2].requests.splice(3, 1); },
+    rows => { rows[2].requests.pop(); },
+    rows => { rows[1].navigationGuards[0].fromUrl = rows[1].navigationGuards[0].blockedUrl = rows[1].navigationGuards[0].retainedUrl = 'http://127.0.0.1:4287/receiving?draft=new-99999999-1111-4111-8111-111111111111'; },
+  ]) {
+    const changed = structuredClone(ledgers); mutate(changed);
+    assert.throws(() => assertPlaywrightReceivingReport(report, changed, appResponses), 'incomplete lifecycle evidence must fail closed');
+  }
+  const noHistoryApi = appResponses.filter(row => !row.url.includes('/history/'));
+  assert.throws(() => assertPlaywrightReceivingReport(report, ledgers, noHistoryApi), /Each displayed revision must reach the real API/);
   const missingHandlerState = structuredClone(appResponses); delete missingHandlerState[0].applicationComplete;
   assert.throws(() => assertPlaywrightReceivingReport(report, ledgers, missingHandlerState), /handler Promise must settle/);
   const unfinishedDispatch = structuredClone(appResponses); unfinishedDispatch[0].dispatchComplete = false;
