@@ -56,19 +56,3 @@ export default function DashboardSkeleton() {
     );
 }
 
-/** Reusable inline skeleton for tables, etc. */
-export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
-    return (
-        <tbody>
-            {[...Array(rows)].map((_, r) => (
-                <tr key={r}>
-                    {[...Array(cols)].map((_, c) => (
-                        <td key={c}>
-                            <div className="skeleton skeleton-text" style={{ width: `${50 + Math.random() * 30}%` }} />
-                        </td>
-                    ))}
-                </tr>
-            ))}
-        </tbody>
-    );
-}
