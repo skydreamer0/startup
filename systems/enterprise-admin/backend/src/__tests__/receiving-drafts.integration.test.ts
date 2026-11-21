@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import express from 'express';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -68,20 +68,59 @@ describe.skipIf(!databaseUrl)('private receiving drafts with native PostgreSQL a
     expect((await db.receivingDraftRevision.findMany({ where: { draftId: id }, orderBy: { revision: 'asc' } })).map(x => x.revision)).toEqual([1, 2]);
   });
   it('isolates list read history and update across tenants and same-tenant actors', async () => {
-    const id = randomUUID(); await save(id);
-    const missing = (await request(app).get(`/receiving-drafts/${randomUUID()}`).set(http())).body;
+    const { default: realApp } = await import('../app');
+    const { hashPassword } = await import('../lib/password');
+    const password = randomUUID();
+    const passwordHash = await hashPassword(password);
+    const reader = await db.user.create({ data: { tenantId: tenants[0], email: `${randomUUID()}@receiving.example.test`, fullName: '合成唯讀人員', passwordHash } });
+    const grants = await Promise.all(['read', 'create'].map(action => db.permission.create({ data: { action, resource: 'products' } })));
+    const headers: { Authorization: string }[] = [];
+    for (const actor of [...actors, reader]) {
+      await db.user.update({ where: { id: actor.id }, data: { passwordHash } });
+      const role = await db.role.create({ data: { tenantId: actor.tenantId, name: `receiving-${actor.id}` } });
+      await db.rolePermission.createMany({ data: grants.filter(g => actor !== reader || g.action === 'read').map(g => ({ roleId: role.id, permissionId: g.id })) });
+      await db.userRole.create({ data: { userId: actor.id, roleId: role.id } });
+      const login = await request(realApp).post('/api/v1/admin/auth/login').set('x-tenant-id', actor.tenantId).send({ email: actor.email, password });
+      expect(login.status).toBe(200);
+      headers.push({ Authorization: `Bearer ${login.body.data.accessToken}` });
+    }
+    // Compare every raw business table, including immutable revisions, without writing sensitive fields to test output.
+    const snapshot = async () => {
+      const tables = await db.$queryRaw<{ tablename: string }[]>`SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename <> '_prisma_migrations' ORDER BY tablename`;
+      const digests: Record<string, string> = {};
+      for (const { tablename } of tables) {
+        if (!/^[a-z_]+$/.test(tablename)) throw new Error('Unexpected table name');
+        const rows = await db.$queryRawUnsafe<{ row: string }[]>(`SELECT row_to_json(t)::text AS row FROM public."${tablename}" t ORDER BY row_to_json(t)::text`);
+        digests[tablename] = createHash('sha256').update(JSON.stringify(rows)).digest('hex');
+      }
+      return digests;
+    };
+    const drafts = '/api/v1/admin/receiving-drafts';
+    const id = randomUUID(), original = payload();
+    const url = `${drafts}/${id}`;
+    expect((await request(realApp).put(url).set(headers[0]).send({ expectedRevision: 0, payload: original })).status).toBe(200);
+    const before = await snapshot();
+    const missing = await request(realApp).get(`${drafts}/${randomUUID()}`).set(headers[0]);
+    expect(missing.status).toBe(404);
     for (const actor of [1, 2]) {
       for (const suffix of ['', '/history', '/history/1']) {
-        const response = await request(app).get(`/receiving-drafts/${id}${suffix}`).set(http(actor));
-        expect(response.status).toBe(404); expect(response.body).toEqual(missing);
+        const response = await request(realApp).get(url + suffix).set(headers[actor]);
+        expect(response.status).toBe(404); expect(response.body).toEqual(missing.body);
       }
-      const update = await request(app).put(`/receiving-drafts/${id}`).set(http(actor)).send({ expectedRevision: 1, payload: payload() });
-      expect(update.status).toBe(404); expect(update.body).toEqual(missing);
-      const list = await request(app).get('/receiving-drafts').set(http(actor));
+      const update = await request(realApp).put(url).set(headers[actor]).send({ expectedRevision: 1, payload: payload('禁止覆寫') });
+      expect(update.status).toBe(404); expect(update.body).toEqual(missing.body);
+      const list = await request(realApp).get(drafts).query({ ownerId: actors[0].id, tenantId: tenants[0] }).set(headers[actor]);
       expect(list.status).toBe(200); expect(list.body.data.data).toEqual([]);
     }
-    expect((await within(0, () => service.get(id, actors[0].id))).revision).toBe(1);
-  });
+    for (const [draftId, expectedRevision] of [[randomUUID(), 0], [id, 1]] as const) {
+      const denied = await request(realApp).put(`${drafts}/${draftId}`).set(headers[3]).send({ expectedRevision, payload: original });
+      expect(denied.status).toBe(403);
+    }
+    const own = await request(realApp).get(url + '/history/1').set(headers[0]);
+    expect(own.status).toBe(200);
+    expect(own.body.data).toMatchObject({ revision: 1, payload: original });
+    expect(await snapshot()).toEqual(before);
+  }, 30000);
   it('enforces real authentication active-user and existing read/create permissions', async () => {
     const id = randomUUID(), body = { expectedRevision: 0, payload: payload() };
     // Tenant resolution precedes route auth in the real stack. Exercise both gates without bypassing either.
