@@ -171,6 +171,15 @@ See `../infrastructure/verification/pos-confirmed-stock/README.md`.
 
 ## Commands
 
+Two additional opt-in real-login/API/owned-PG journeys cover receiving CAS
+continuation and initial receipts through FEFO sale, money-only refund and
+general-order debit. `scripts/pharmacy-gap-native.py` requires exact archived
+source, an empty owned DB and a successful standalone probe/cleanup; default
+`npm test` skips its two cases without using ambient DB configuration. See
+`../infrastructure/verification/pharmacy-gap-native/README.md` for reproduction,
+source-pinned evidence and the still-unrun browser/physical gates. This manual
+runner does not change existing CI jobs or acceptance gates.
+
 The joined FEFO checkout/batch-detail acceptance has an exact-head Docker runner:
 `scripts/inventory-fefo-trace-native.mjs`, also invoked by the dedicated
 `inventory-fefo-trace.yml` workflow. It archives clean committed source, creates

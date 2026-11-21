@@ -1,4 +1,4 @@
-# Synthetic argon2 0.44.0 → 0.45.1 compatibility
+# Synthetic argon2 0.44.0 → locked backend version compatibility
 
 Original target: startup PR #62, head `87484a907b07d71731653e8f31fce49f052bc112`.
 The integration branch combines master `772289d6c35aa3b09e1ea85c25a1c07d08be782b`
@@ -38,7 +38,7 @@ No DATABASE_URL, real credentials, network, daemon socket or host data is mounte
 `--require-alpine` rejects a host or non-Node-22 run. Do not install or expose a
 new daemon merely to run this check without approval.
 
-The verifier requires installed argon2 0.45.1, loads the actual compiled
+The verifier requires installed argon2 to match the backend lock, loads the actual compiled
 `dist/lib/password.js`, verifies all three old hashes, rejects wrong passwords,
 then executes the actual compiled AuthService login method with synthetic Prisma
 and JWT boundaries. It checks successful login, wrong-password 401 with failed
@@ -48,7 +48,8 @@ or real token-signature validation.
 
 ## Dedicated Actions verification
 
-`.github/workflows/argon2-compat.yml` checks the exact PR head on this QA branch
+`.github/workflows/argon2-compat.yml` checks the exact PR head on this QA branch,
+the Argon2 integration branch and same-repository backend Dependabot branches
 using the existing final Node 22 Alpine Dockerfile. Baseline/mutation containers
 have no network, a read-only root and fixture mount, and only a temporary `/tmp`
 write area. Their migration/server command is replaced by `node`; no database,
@@ -80,7 +81,7 @@ this is a database-connected check, not a `--network none` claim. It retains a
 read-only root and QA mount, `/tmp` tmpfs, dropped capabilities and no-new-privileges.
 The workflow does not create a new persistent environment or change permissions.
 
-The script fails before application writes unless Node 22/Alpine, argon2 0.45.1,
+The script fails before application writes unless Node 22/Alpine, the locked argon2 version,
 the explicit synthetic opt-in, fixed connection, actual database name/user and
 PostgreSQL 15 identity match. It also requires an empty public schema. Only then
 does it explicitly run the repository migrations against that disposable DB.
@@ -96,7 +97,7 @@ Fourteen named scenarios require:
   and no login audit/token response; successful HTTP login resets that count,
   retains the old hash, records the login and issues verifiable access/refresh JWTs
 - Real refresh exchange and protected `/auth/me` acceptance for each legacy user;
-  a newly generated 0.45.1 hash also supports HTTP login
+  a newly generated hash from the locked version also supports HTTP login
 - Rejection of forged signatures, expired access and access/refresh token mixups;
   authenticated POS context and rejection of an account lacking `manage:pos`
 - HTTP checkout reduces both product and released batch from 5 to 3 and persists

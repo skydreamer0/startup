@@ -22,6 +22,7 @@ for (const [name, modified] of mutations) {
     fs.mkdirSync(path.join(temp, 'dist/modules/auth'), { recursive: true });
     fs.mkdirSync(path.join(temp, 'dist/lib'), { recursive: true });
     fs.writeFileSync(path.join(temp, 'package.json'), '{"private":true}');
+    fs.copyFileSync(path.join(root, 'package-lock.json'), path.join(temp, 'package-lock.json'));
     fs.symlinkSync(path.join(root, 'node_modules'), path.join(temp, 'node_modules'), 'dir');
     fs.copyFileSync(path.join(root, 'dist/lib/password.js'), path.join(temp, 'dist/lib/password.js'));
     fs.writeFileSync(path.join(temp, 'dist/modules/auth/auth.service.js'), modified);

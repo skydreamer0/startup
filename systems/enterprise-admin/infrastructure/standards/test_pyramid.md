@@ -77,7 +77,8 @@ Additional workflows:
   newly introduced high/critical vulnerable dependencies. Keep the existing audits
   and security checks; their results are separate from the ten-job pipeline.
 - `.github/workflows/argon2-compat.yml` is intentionally restricted to the named
-  Argon2 compatibility branches. A skip on another branch is not fresh Argon2
+  Argon2 compatibility branches and same-repository backend Dependabot branches.
+  A skip on another branch is not fresh Argon2
   compatibility evidence and is not a general backend regression pass.
 - Service-managed checks such as CodeQL can exist outside repository workflow YAML;
   inspect the PR checks rather than inferring their absence from this file list.
