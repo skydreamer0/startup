@@ -1,6 +1,6 @@
 # PharmaSaaS｜單店藥局營運工作台
 
-把商品、批號效期庫存、門市 POS、會員與營運報表放進同一套資料流程。先讓一家藥局每天用得穩，再談擴充。
+把商品、批號效期庫存、門市 POS、會員與營運報表放進同一套資料流程。先讓一家藥局每天用得穩，再談擴充。保留獨立的管理後台和門市 POS，由同一後端管理權限、資料與正式過帳。
 
 **目前為開發與驗收階段，尚未完成實店端到端驗收。** 下列是已合入主線的功能與工程切片，不代表可直接投入正式營運。完整交付與上線門檻見 [單店藥局整備 #37](https://github.com/skydreamer0/startup/issues/37)。
 
@@ -145,8 +145,13 @@ pnpm --filter pos-ui run test:e2e checkout-flow.spec.ts checkout-recovery.spec.t
 
 ## 文件入口
 
+- [需求與交付順序](docs/product/PHARMACY-REQUIREMENTS.md)：角色、業務不變條件與里程碑；[介面設計](DESIGN.md) 說明頁面分工與驗收入口；[Skills 選用](.agents/skills/README.md) 說明不同任務的工具。
 - [Roadmap](systems/enterprise-admin/ROADMAP.md)：工程狀態與歷史證據；舊階段完成不代表新需求或實店驗收完成
 - [整備總追蹤 #37](https://github.com/skydreamer0/startup/issues/37)：目前待交付範圍與驗收門檻
 - [架構決策 ADR](systems/enterprise-admin/infrastructure/adr/)：持久化、庫存、結帳與其他設計邊界
 - [Production Runbook](systems/enterprise-admin/infrastructure/standards/production_runbook.md)：正式遷移、部署與維護準備
 - [AGENTS.md](AGENTS.md) · [Git 工作流程](systems/enterprise-admin/infrastructure/standards/git_workflow.md)：開發與審查規則
+
+## 授權
+
+自有程式碼採 [ISC](LICENSE)。品牌、第三方程式與素材及營運資料不因本授權而一併開放；範圍、原聲明與發行檢查見 [第三方與授權範圍](THIRD_PARTY_NOTICES.md)。

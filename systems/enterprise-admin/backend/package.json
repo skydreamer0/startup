@@ -51,7 +51,6 @@
     "@types/multer": "^2.1.0",
     "@types/node": "^25.3.0",
     "@types/supertest": "^6.0.3",
-    "@types/uuid": "^10.0.0",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.10",
@@ -70,7 +69,7 @@
     "@rollup/rollup-darwin-arm64": "^4.64.9"
   },
   "overrides": {
-    "@prisma/config": { "deepmerge-ts": "^8.0.2" },
+    "@prisma/config": { "deepmerge-ts": "^8.0.2", "effect": "3.22.1" },
     "exceljs": { "uuid": "^11.1.1" },
     "@eslint/config-array": { "minimatch": "11.0.1" },
     "@eslint/eslintrc": { "minimatch": "11.0.1" },
