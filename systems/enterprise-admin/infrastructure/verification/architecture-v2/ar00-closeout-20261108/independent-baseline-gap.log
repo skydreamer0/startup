@@ -1,0 +1,3 @@
+{"probe":"remove all CLI declarations","expected":"rejection","actualErrors":[],"result":"GAP_ACCEPTED"}
+{"probe":"remove db:reset","expected":"rejection","actualErrors":[],"result":"GAP_ACCEPTED"}
+{"probe":"substitute reset command","expected":"rejection","actualErrors":[],"result":"GAP_ACCEPTED"}

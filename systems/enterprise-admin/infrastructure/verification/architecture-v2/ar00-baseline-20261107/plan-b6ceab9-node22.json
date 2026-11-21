@@ -1,0 +1,532 @@
+{
+  "mode": "read-only",
+  "warning": "Readiness is not authorization, acceptance, automatic dispatch, merge or deployment.",
+  "active": [
+    "AR-00"
+  ],
+  "ready": [],
+  "blocked": [
+    {
+      "id": "AR-01",
+      "reasons": [
+        "DEPENDENCY:AR-00",
+        "LOCK:plans-context"
+      ]
+    },
+    {
+      "id": "AR-02",
+      "reasons": [
+        "DEPENDENCY:AR-01",
+        "LOCK:plans-context"
+      ]
+    },
+    {
+      "id": "AR-03",
+      "reasons": [
+        "DEPENDENCY:AR-02"
+      ]
+    },
+    {
+      "id": "AR-04",
+      "reasons": [
+        "DEPENDENCY:AR-03"
+      ]
+    },
+    {
+      "id": "AR-05",
+      "reasons": [
+        "DEPENDENCY:AR-02"
+      ]
+    },
+    {
+      "id": "AR-06",
+      "reasons": [
+        "DEPENDENCY:AR-02,AR-04,AR-05"
+      ]
+    },
+    {
+      "id": "AR-07",
+      "reasons": [
+        "DEPENDENCY:AR-03,AR-05,AR-06"
+      ]
+    },
+    {
+      "id": "AR-08",
+      "reasons": [
+        "DEPENDENCY:AR-05,AR-06,AR-07"
+      ]
+    },
+    {
+      "id": "AR-13",
+      "reasons": [
+        "DEPENDENCY:AR-06"
+      ]
+    },
+    {
+      "id": "AR-14",
+      "reasons": [
+        "DEPENDENCY:AR-04,AR-13",
+        "LOCK:plans-context"
+      ]
+    },
+    {
+      "id": "AR-09",
+      "reasons": [
+        "DEPENDENCY:AR-06,AR-07",
+        "INTEGRATION_LOCK_PREREQUISITE:AR-01,AR-02,AR-03,AR-04,AR-05,AR-06,AR-13,AR-14"
+      ]
+    },
+    {
+      "id": "AR-10",
+      "reasons": [
+        "DEPENDENCY:AR-07,AR-08"
+      ]
+    },
+    {
+      "id": "AR-11",
+      "reasons": [
+        "DEPENDENCY:AR-07,AR-08",
+        "INTEGRATION_LOCK_PREREQUISITE:AR-01,AR-02,AR-03,AR-04,AR-05,AR-06,AR-13,AR-14"
+      ]
+    },
+    {
+      "id": "AR-12",
+      "reasons": [
+        "DEPENDENCY:AR-08",
+        "INTEGRATION_LOCK_PREREQUISITE:AR-01,AR-02,AR-03,AR-04,AR-05,AR-06,AR-07,AR-08,AR-10"
+      ]
+    },
+    {
+      "id": "AR-15",
+      "reasons": [
+        "DEPENDENCY:AR-09,AR-13,AR-14"
+      ]
+    },
+    {
+      "id": "AR-16",
+      "reasons": [
+        "DEPENDENCY:AR-01,AR-02,AR-04,AR-13"
+      ]
+    },
+    {
+      "id": "AR-17",
+      "reasons": [
+        "DEPENDENCY:AR-08,AR-13,AR-16"
+      ]
+    },
+    {
+      "id": "AR-18",
+      "reasons": [
+        "DEPENDENCY:AR-13,AR-16",
+        "INTEGRATION_LOCK_PREREQUISITE:AR-01,AR-02,AR-03,AR-04,AR-05,AR-06,AR-07"
+      ]
+    },
+    {
+      "id": "AR-19",
+      "reasons": [
+        "DEPENDENCY:AR-02,AR-06",
+        "INTEGRATION_LOCK_PREREQUISITE:AR-02,AR-03,AR-06,AR-09,AR-10,AR-12,AR-14,AR-16"
+      ]
+    },
+    {
+      "id": "AR-20",
+      "reasons": [
+        "DEPENDENCY:AR-01,AR-04",
+        "LOCK:plans-context"
+      ]
+    },
+    {
+      "id": "AR-21",
+      "reasons": [
+        "DEPENDENCY:AR-14,AR-20",
+        "INTEGRATION_LOCK_PREREQUISITE:AR-00,AR-01,AR-02,AR-03,AR-04,AR-05,AR-06,AR-07,AR-08,AR-13,AR-16,AR-17,AR-18",
+        "LOCK:plans-context"
+      ]
+    },
+    {
+      "id": "AR-22",
+      "reasons": [
+        "DEPENDENCY:AR-01,AR-06",
+        "INTEGRATION_LOCK_PREREQUISITE:AR-00,AR-01,AR-02,AR-03,AR-04,AR-05,AR-06,AR-07,AR-08,AR-13,AR-14,AR-16,AR-20",
+        "LOCK:plans-context"
+      ]
+    },
+    {
+      "id": "AR-23",
+      "reasons": [
+        "DEPENDENCY:AR-00,AR-01,AR-02,AR-03,AR-04,AR-05,AR-06,AR-07,AR-08,AR-09,AR-10,AR-11,AR-12,AR-13,AR-14,AR-15,AR-16,AR-17,AR-18,AR-19,AR-20,AR-21,AR-22",
+        "LOCK:plans-context"
+      ]
+    }
+  ],
+  "activation": [
+    {
+      "id": "AR-00",
+      "status": "BLOCKED",
+      "decisionBlocked": [],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [],
+      "implementation": "active",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-01",
+      "status": "BLOCKED",
+      "decisionBlocked": [],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-02",
+      "status": "BLOCKED",
+      "decisionBlocked": [],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-03",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D04"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1",
+        "G2"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-04",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D06"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G0",
+        "G1"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-05",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D01",
+        "D02",
+        "D03",
+        "D04"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-06",
+      "status": "BLOCKED",
+      "decisionBlocked": [],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-07",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D03",
+        "D04",
+        "D05"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1",
+        "G2",
+        "G4"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-08",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D01",
+        "D02",
+        "D03"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1",
+        "G4",
+        "G6"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-13",
+      "status": "BLOCKED",
+      "decisionBlocked": [],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1",
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-14",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D06"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G3",
+        "G6",
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-09",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D03",
+        "D04"
+      ],
+      "integrationBlocked": [
+        "AR-14"
+      ],
+      "acceptanceBlocked": [
+        "G1",
+        "G3"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-10",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D03",
+        "D04",
+        "D05"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1",
+        "G2",
+        "G4"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-11",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D04",
+        "D05",
+        "D06"
+      ],
+      "integrationBlocked": [
+        "AR-13",
+        "AR-14"
+      ],
+      "acceptanceBlocked": [
+        "G1",
+        "G4",
+        "G6"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-12",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D01",
+        "D02",
+        "D03"
+      ],
+      "integrationBlocked": [
+        "AR-10",
+        "AR-13"
+      ],
+      "acceptanceBlocked": [
+        "G6"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-15",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D06",
+        "D07",
+        "D09"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G3",
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-16",
+      "status": "BLOCKED",
+      "decisionBlocked": [],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G0",
+        "G1"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-17",
+      "status": "BLOCKED",
+      "decisionBlocked": [],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G1",
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-18",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D07"
+      ],
+      "integrationBlocked": [
+        "AR-07"
+      ],
+      "acceptanceBlocked": [
+        "G5"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-19",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D06",
+        "D07"
+      ],
+      "integrationBlocked": [
+        "AR-08",
+        "AR-09",
+        "AR-12",
+        "AR-16"
+      ],
+      "acceptanceBlocked": [
+        "G0"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-20",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D07"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-21",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D07",
+        "D08"
+      ],
+      "integrationBlocked": [
+        "AR-17",
+        "AR-18"
+      ],
+      "acceptanceBlocked": [
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-22",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D07",
+        "D09"
+      ],
+      "integrationBlocked": [
+        "AR-07",
+        "AR-08",
+        "AR-13",
+        "AR-15",
+        "AR-19",
+        "AR-20"
+      ],
+      "acceptanceBlocked": [
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "AR-23",
+      "status": "BLOCKED",
+      "decisionBlocked": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D07",
+        "D08",
+        "D09"
+      ],
+      "integrationBlocked": [],
+      "acceptanceBlocked": [
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6",
+        "G7"
+      ],
+      "implementation": "planned",
+      "verification": "NOT_RUN"
+    }
+  ]
+}

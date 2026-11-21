@@ -1,0 +1,107 @@
+{
+  "toolSha256": "9ac23f12486921edc7fcba685eae3c9bcbf894f1549dfd6656ec3547c74d6de9",
+  "result": "PASS",
+  "scope": "20 independent syntax rejection probes only; not general TypeScript parsing or source execution",
+  "probes": [
+    {
+      "name": "unterminated comment",
+      "result": "REJECTED",
+      "error": "unterminated seed comment"
+    },
+    {
+      "name": "unterminated string",
+      "result": "REJECTED",
+      "error": "unterminated seed string"
+    },
+    {
+      "name": "multiline quoted string",
+      "result": "REJECTED",
+      "error": "unsupported multiline seed string"
+    },
+    {
+      "name": "regex literal",
+      "result": "REJECTED",
+      "error": "unsupported seed token (regex, escaped or non-ASCII identifier)"
+    },
+    {
+      "name": "division expression",
+      "result": "REJECTED",
+      "error": "unsupported seed token (regex, escaped or non-ASCII identifier)"
+    },
+    {
+      "name": "escaped identifier",
+      "result": "REJECTED",
+      "error": "unsupported seed token (regex, escaped or non-ASCII identifier)"
+    },
+    {
+      "name": "nonascii identifier",
+      "result": "REJECTED",
+      "error": "unsupported seed token (regex, escaped or non-ASCII identifier)"
+    },
+    {
+      "name": "raw tagged template",
+      "result": "REJECTED",
+      "error": "unsupported seed prisma binding use"
+    },
+    {
+      "name": "model tagged template",
+      "result": "REJECTED",
+      "error": "unsupported seed prisma binding use"
+    },
+    {
+      "name": "computed method",
+      "result": "REJECTED",
+      "error": "unsupported seed prisma binding use"
+    },
+    {
+      "name": "optional operation",
+      "result": "REJECTED",
+      "error": "unsupported seed prisma binding use"
+    },
+    {
+      "name": "destructure client",
+      "result": "REJECTED",
+      "error": "unsupported seed prisma binding use"
+    },
+    {
+      "name": "client return alias",
+      "result": "REJECTED",
+      "error": "unsupported seed prisma binding use"
+    },
+    {
+      "name": "unknown operation",
+      "result": "REJECTED",
+      "error": "unsupported seed operation: deleteMany"
+    },
+    {
+      "name": "disconnect args",
+      "result": "REJECTED",
+      "error": "unsupported disconnect arguments"
+    },
+    {
+      "name": "unbalanced call",
+      "result": "REJECTED",
+      "error": "unbalanced seed call"
+    },
+    {
+      "name": "unterminated call",
+      "result": "REJECTED",
+      "error": "unterminated seed call"
+    },
+    {
+      "name": "complex template",
+      "result": "REJECTED",
+      "error": "unsupported seed template interpolation"
+    },
+    {
+      "name": "template client property",
+      "result": "REJECTED",
+      "error": "unsupported seed template interpolation"
+    },
+    {
+      "name": "extra client",
+      "result": "REJECTED",
+      "error": "unsupported seed PrismaClient import or extra client"
+    }
+  ]
+}

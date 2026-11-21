@@ -1,0 +1,982 @@
+TAP version 13
+# Subtest: checked baseline is valid and inventory source matches
+ok 1 - checked baseline is valid and inventory source matches
+  ---
+  duration_ms: 24.726901
+  type: 'test'
+  ...
+# Subtest: current baseline stays active; no dependency is dispatched early
+ok 2 - current baseline stays active; no dependency is dispatched early
+  ---
+  duration_ms: 3.672935
+  type: 'test'
+  ...
+# Subtest: readiness does not mutate manifest
+ok 3 - readiness does not mutate manifest
+  ---
+  duration_ms: 3.998964
+  type: 'test'
+  ...
+# Subtest: engineering readiness does not wait for an unrelated policy
+ok 4 - engineering readiness does not wait for an unrelated policy
+  ---
+  duration_ms: 1.302362
+  type: 'test'
+  ...
+# Subtest: integration dependency is separate from contract start
+ok 5 - integration dependency is separate from contract start
+  ---
+  duration_ms: 0.886558
+  type: 'test'
+  ...
+# Subtest: scheduler caps suggestions at three and respects active slots
+ok 6 - scheduler caps suggestions at three and respects active slots
+  ---
+  duration_ms: 0.828872
+  type: 'test'
+  ...
+# Subtest: scheduler reserves locks for suggested work as well as active work
+ok 7 - scheduler reserves locks for suggested work as well as active work
+  ---
+  duration_ms: 0.746759
+  type: 'test'
+  ...
+# Subtest: unknown dependency rejected
+ok 8 - unknown dependency rejected
+  ---
+  duration_ms: 3.237082
+  type: 'test'
+  ...
+# Subtest: self dependency rejected
+ok 9 - self dependency rejected
+  ---
+  duration_ms: 2.854949
+  type: 'test'
+  ...
+# Subtest: cycles include integration edges
+ok 10 - cycles include integration edges
+  ---
+  duration_ms: 2.943101
+  type: 'test'
+  ...
+# Subtest: duplicate IDs rejected
+ok 11 - duplicate IDs rejected
+  ---
+  duration_ms: 2.817283
+  type: 'test'
+  ...
+# Subtest: missing declared overlap lock rejected
+ok 12 - missing declared overlap lock rejected
+  ---
+  duration_ms: 3.368889
+  type: 'test'
+  ...
+# Subtest: unregistered shared write collision rejected
+ok 13 - unregistered shared write collision rejected
+  ---
+  duration_ms: 2.410773
+  type: 'test'
+  ...
+# Subtest: prefix collision is segment based
+ok 14 - prefix collision is segment based
+  ---
+  duration_ms: 0.076374
+  type: 'test'
+  ...
+# Subtest: path traversal rejected
+ok 15 - path traversal rejected
+  ---
+  duration_ms: 3.431653
+  type: 'test'
+  ...
+# Subtest: absolute path rejected
+ok 16 - absolute path rejected
+  ---
+  duration_ms: 2.671264
+  type: 'test'
+  ...
+# Subtest: wildcard scope must be expanded explicitly
+ok 17 - wildcard scope must be expanded explicitly
+  ---
+  duration_ms: 2.287739
+  type: 'test'
+  ...
+# Subtest: shared core lock owner cannot vary
+ok 18 - shared core lock owner cannot vary
+  ---
+  duration_ms: 2.737523
+  type: 'test'
+  ...
+# Subtest: four active workers rejected
+ok 19 - four active workers rejected
+  ---
+  duration_ms: 2.593477
+  type: 'test'
+  ...
+# Subtest: active overlapping writer rejected
+ok 20 - active overlapping writer rejected
+  ---
+  duration_ms: 2.817853
+  type: 'test'
+  ...
+# Subtest: active before prerequisite completion rejected
+ok 21 - active before prerequisite completion rejected
+  ---
+  duration_ms: 2.769962
+  type: 'test'
+  ...
+# Subtest: complete task without evidence rejected
+ok 22 - complete task without evidence rejected
+  ---
+  duration_ms: 3.243812
+  type: 'test'
+  ...
+# Subtest: author self-review is not independent acceptance
+ok 23 - author self-review is not independent acceptance
+  ---
+  duration_ms: 2.884794
+  type: 'test'
+  ...
+# Subtest: review of another SHA does not complete a check
+ok 24 - review of another SHA does not complete a check
+  ---
+  duration_ms: 2.885895
+  type: 'test'
+  ...
+# Subtest: focused pass does not set task PASS
+ok 25 - focused pass does not set task PASS
+  ---
+  duration_ms: 3.143322
+  type: 'test'
+  ...
+# Subtest: unapproved decision cannot activate a task
+ok 26 - unapproved decision cannot activate a task
+  ---
+  duration_ms: 2.326637
+  type: 'test'
+  ...
+# Subtest: policy approval requires a source
+ok 27 - policy approval requires a source
+  ---
+  duration_ms: 2.531945
+  type: 'test'
+  ...
+# Subtest: missing decision and gate rejected
+ok 28 - missing decision and gate rejected
+  ---
+  duration_ms: 2.269692
+  type: 'test'
+  ...
+# Subtest: unknown policy gate rejected
+ok 29 - unknown policy gate rejected
+  ---
+  duration_ms: 3.360457
+  type: 'test'
+  ...
+# Subtest: evidence accepts its complete executed fixture
+ok 30 - evidence accepts its complete executed fixture
+  ---
+  duration_ms: 0.124767
+  type: 'test'
+  ...
+# Subtest: PASS requires exit zero
+ok 31 - PASS requires exit zero
+  ---
+  duration_ms: 0.095814
+  type: 'test'
+  ...
+# Subtest: PASS cannot hide dirty source
+ok 32 - PASS cannot hide dirty source
+  ---
+  duration_ms: 0.110846
+  type: 'test'
+  ...
+# Subtest: executed evidence requires artifact hash
+ok 33 - executed evidence requires artifact hash
+  ---
+  duration_ms: 0.09351
+  type: 'test'
+  ...
+# Subtest: short SHA is rejected
+ok 34 - short SHA is rejected
+  ---
+  duration_ms: 0.123214
+  type: 'test'
+  ...
+# Subtest: NOT_RUN has no pretend exit code
+ok 35 - NOT_RUN has no pretend exit code
+  ---
+  duration_ms: 0.201732
+  type: 'test'
+  ...
+# Subtest: SKIP cannot complete required acceptance
+ok 36 - SKIP cannot complete required acceptance
+  ---
+  duration_ms: 3.093847
+  type: 'test'
+  ...
+# Subtest: missing source requirement owner is rejected
+ok 37 - missing source requirement owner is rejected
+  ---
+  duration_ms: 7.870917
+  type: 'test'
+  ...
+# Subtest: lost requirement row is rejected
+ok 38 - lost requirement row is rejected
+  ---
+  duration_ms: 5.547925
+  type: 'test'
+  ...
+# Subtest: unowned model is rejected
+ok 39 - unowned model is rejected
+  ---
+  duration_ms: 5.770458
+  type: 'test'
+  ...
+# Subtest: source fingerprint drift is rejected
+ok 40 - source fingerprint drift is rejected
+  ---
+  duration_ms: 11.746075
+  type: 'test'
+  ...
+# Subtest: CLI refuses unknown and missing options
+ok 41 - CLI refuses unknown and missing options
+  ---
+  duration_ms: 143.552926
+  type: 'test'
+  ...
+# Subtest: CLI plan and verification are deterministic read-only
+ok 42 - CLI plan and verification are deterministic read-only
+  ---
+  duration_ms: 153.240616
+  type: 'test'
+  ...
+# Subtest: omitted mounted endpoint is rejected
+ok 43 - omitted mounted endpoint is rejected
+  ---
+  duration_ms: 11.456847
+  type: 'test'
+  ...
+# Subtest: omitted schema model is rejected
+ok 44 - omitted schema model is rejected
+  ---
+  duration_ms: 13.600064
+  type: 'test'
+  ...
+# Subtest: omitted runtime source fingerprint is rejected
+ok 45 - omitted runtime source fingerprint is rejected
+  ---
+  duration_ms: 12.823851
+  type: 'test'
+  ...
+# Subtest: malformed evidence ledger rejected
+ok 46 - malformed evidence ledger rejected
+  ---
+  duration_ms: 2.621489
+  type: 'test'
+  ...
+# Subtest: PASS cannot hide failed or skipped subcases
+ok 47 - PASS cannot hide failed or skipped subcases
+  ---
+  duration_ms: 0.219108
+  type: 'test'
+  ...
+# Subtest: integration lock prerequisites cannot deadlock AR09 and AR13/14
+ok 48 - integration lock prerequisites cannot deadlock AR09 and AR13/14
+  ---
+  duration_ms: 6.694233
+  type: 'test'
+  ...
+# Subtest: evidence from seven different heads cannot assemble one completed task
+ok 49 - evidence from seven different heads cannot assemble one completed task
+  ---
+  duration_ms: 3.083641
+  type: 'test'
+  ...
+# Subtest: one different tree cannot join otherwise matching subject evidence
+ok 50 - one different tree cannot join otherwise matching subject evidence
+  ---
+  duration_ms: 3.838343
+  type: 'test'
+  ...
+# Subtest: rewritten requirement text with original hash is rejected
+ok 51 - rewritten requirement text with original hash is rejected
+  ---
+  duration_ms: 12.652119
+  type: 'test'
+  ...
+# Subtest: rewritten requirement text with recomputed hash is rejected
+ok 52 - rewritten requirement text with recomputed hash is rejected
+  ---
+  duration_ms: 13.853464
+  type: 'test'
+  ...
+# Subtest: deleting all \#29 requirements and matching count is rejected
+ok 53 - deleting all \#29 requirements and matching count is rejected
+  ---
+  duration_ms: 12.829379
+  type: 'test'
+  ...
+# Subtest: alternative manifest cannot claim sourceChecked without source verification
+ok 54 - alternative manifest cannot claim sourceChecked without source verification
+  ---
+  duration_ms: 77.245612
+  type: 'test'
+  ...
+# Subtest: G gate cannot become PASS from a status toggle
+ok 55 - G gate cannot become PASS from a status toggle
+  ---
+  duration_ms: 2.910102
+  type: 'test'
+  ...
+# Subtest: G gate evidence is scoped and bound to one source
+ok 56 - G gate evidence is scoped and bound to one source
+  ---
+  duration_ms: 5.300315
+  type: 'test'
+  ...
+# Subtest: source-checked inventory cannot omit all non-HTTP entries
+ok 57 - source-checked inventory cannot omit all non-HTTP entries
+  ---
+  duration_ms: 10.816442
+  type: 'test'
+  ...
+# Subtest: source-checked inventory cannot omit a backend package command
+ok 58 - source-checked inventory cannot omit a backend package command
+  ---
+  duration_ms: 12.491738
+  type: 'test'
+  ...
+# Subtest: source-checked inventory cannot substitute an administrative command
+ok 59 - source-checked inventory cannot substitute an administrative command
+  ---
+  duration_ms: 10.169076
+  type: 'test'
+  ...
+# Subtest: CLI ownership and AR destinations are required even without source checking
+ok 60 - CLI ownership and AR destinations are required even without source checking
+  ---
+  duration_ms: 20.521979
+  type: 'test'
+  ...
+# Subtest: duplicate CLI entries cannot conceal a missing entry
+ok 61 - duplicate CLI entries cannot conceal a missing entry
+  ---
+  duration_ms: 9.271836
+  type: 'test'
+  ...
+# Subtest: non-HTTP entry fingerprints cannot be removed from the frozen inventory
+ok 62 - non-HTTP entry fingerprints cannot be removed from the frozen inventory
+  ---
+  duration_ms: 30.866208
+  type: 'test'
+  ...
+# Subtest: Prisma seed hook is distinct from the npm seed script and cannot be omitted
+ok 63 - Prisma seed hook is distinct from the npm seed script and cannot be omitted
+  ---
+  duration_ms: 9.402703
+  type: 'test'
+  ...
+# Subtest: Docker startup argv cannot be omitted or replaced by a descriptive approximation
+ok 64 - Docker startup argv cannot be omitted or replaced by a descriptive approximation
+  ---
+  duration_ms: 18.683123
+  type: 'test'
+  ...
+# Subtest: frozen source has 13 scripts, one separate Prisma hook and literal Docker argv
+ok 65 - frozen source has 13 scripts, one separate Prisma hook and literal Docker argv
+  ---
+  duration_ms: 1.486728
+  type: 'test'
+  ...
+# Subtest: new, removed and changed source scripts require an inventory update
+ok 66 - new, removed and changed source scripts require an inventory update
+  ---
+  duration_ms: 3.144042
+  type: 'test'
+  ...
+# Subtest: new inventory declarations without source cannot pass
+ok 67 - new inventory declarations without source cannot pass
+  ---
+  duration_ms: 9.287199
+  type: 'test'
+  ...
+# Subtest: Prisma hook source changes cannot borrow npm seed coverage
+ok 68 - Prisma hook source changes cannot borrow npm seed coverage
+  ---
+  duration_ms: 3.185124
+  type: 'test'
+  ...
+# Subtest: command strings are inert data, including shell metacharacters
+ok 69 - command strings are inert data, including shell metacharacters
+  ---
+  duration_ms: 0.39342
+  type: 'test'
+  ...
+# Subtest: malformed package script and seed declarations fail closed
+ok 70 - malformed package script and seed declarations fail closed
+  ---
+  duration_ms: 0.844176
+  type: 'test'
+  ...
+# Subtest: final-stage Docker startup preserves argv and supports an explicit ENTRYPOINT
+ok 71 - final-stage Docker startup preserves argv and supports an explicit ENTRYPOINT
+  ---
+  duration_ms: 0.218728
+  type: 'test'
+  ...
+# Subtest: added Docker ENTRYPOINT and changed CMD argv fail inventory comparison
+ok 72 - added Docker ENTRYPOINT and changed CMD argv fail inventory comparison
+  ---
+  duration_ms: 2.260508
+  type: 'test'
+  ...
+# Subtest: Docker JSON whitespace does not change argv identity
+ok 73 - Docker JSON whitespace does not change argv identity
+  ---
+  duration_ms: 0.247221
+  type: 'test'
+  ...
+# Subtest: unsupported or ambiguous Docker startup syntax fails closed
+ok 74 - unsupported or ambiguous Docker startup syntax fails closed
+  ---
+  duration_ms: 1.859307
+  type: 'test'
+  ...
+# Subtest: CLI metadata rejects malformed arrays, paths, kinds and ownership
+ok 75 - CLI metadata rejects malformed arrays, paths, kinds and ownership
+  ---
+  duration_ms: 56.770018
+  type: 'test'
+  ...
+# Subtest: configured declarations cannot be relabelled curated or moved to another path
+ok 76 - configured declarations cannot be relabelled curated or moved to another path
+  ---
+  duration_ms: 22.513795
+  type: 'test'
+  ...
+# Subtest: CLI source fingerprints must be valid and unique
+ok 77 - CLI source fingerprints must be valid and unique
+  ---
+  duration_ms: 11.16862
+  type: 'test'
+  ...
+# Subtest: curated Python entries retain metadata and source-fingerprint checks
+ok 78 - curated Python entries retain metadata and source-fingerprint checks
+  ---
+  duration_ms: 15.29916
+  type: 'test'
+  ...
+# Subtest: untouched reviewed source passes only static coverage, not acceptance
+ok 79 - untouched reviewed source passes only static coverage, not acceptance
+  ---
+  duration_ms: 27.031285
+  type: 'test'
+  ...
+# Subtest: JSON indentation and object-key ordering do not change the semantic review pin
+ok 80 - JSON indentation and object-key ordering do not change the semantic review pin
+  ---
+  duration_ms: 23.280313
+  type: 'test'
+  ...
+# Subtest: literal scanner ignores call-looking comments and quoted text
+ok 81 - literal scanner ignores call-looking comments and quoted text
+  ---
+  duration_ms: 8.859238
+  type: 'test'
+  ...
+# Subtest: missing mechanical seed call is rejected
+ok 82 - missing mechanical seed call is rejected
+  ---
+  duration_ms: 16.417141
+  type: 'test'
+  ...
+# Subtest: duplicate mechanical seed call is rejected
+ok 83 - duplicate mechanical seed call is rejected
+  ---
+  duration_ms: 16.678458
+  type: 'test'
+  ...
+# Subtest: extra mechanical seed call is rejected
+ok 84 - extra mechanical seed call is rejected
+  ---
+  duration_ms: 15.502656
+  type: 'test'
+  ...
+# Subtest: missing semantic seed call is rejected
+ok 85 - missing semantic seed call is rejected
+  ---
+  duration_ms: 14.773473
+  type: 'test'
+  ...
+# Subtest: duplicate semantic seed call is rejected
+ok 86 - duplicate semantic seed call is rejected
+  ---
+  duration_ms: 14.387595
+  type: 'test'
+  ...
+# Subtest: removed source read remains rejected after outer fingerprint refresh
+ok 87 - removed source read remains rejected after outer fingerprint refresh
+  ---
+  duration_ms: 12.345814
+  type: 'test'
+  ...
+# Subtest: new source call remains rejected after outer fingerprint refresh
+ok 88 - new source call remains rejected after outer fingerprint refresh
+  ---
+  duration_ms: 16.164763
+  type: 'test'
+  ...
+# Subtest: changed direct target remains rejected after outer fingerprint refresh
+ok 89 - changed direct target remains rejected after outer fingerprint refresh
+  ---
+  duration_ms: 16.847121
+  type: 'test'
+  ...
+# Subtest: changed call body remains rejected after outer fingerprint refresh
+ok 90 - changed call body remains rejected after outer fingerprint refresh
+  ---
+  duration_ms: 12.987376
+  type: 'test'
+  ...
+# Subtest: changed values outside call slices remain rejected after outer fingerprint refresh
+ok 91 - changed values outside call slices remain rejected after outer fingerprint refresh
+  ---
+  duration_ms: 11.477653
+  type: 'test'
+  ...
+# Subtest: nested OrderItem body drift remains rejected after outer fingerprint refresh
+ok 92 - nested OrderItem body drift remains rejected after outer fingerprint refresh
+  ---
+  duration_ms: 12.541908
+  type: 'test'
+  ...
+# Subtest: missing nested write record is rejected
+ok 93 - missing nested write record is rejected
+  ---
+  duration_ms: 14.212973
+  type: 'test'
+  ...
+# Subtest: semantic seed target change is rejected even when effects pin is refreshed
+ok 94 - semantic seed target change is rejected even when effects pin is refreshed
+  ---
+  duration_ms: 15.662384
+  type: 'test'
+  ...
+# Subtest: unsupported computed delegate fails closed
+ok 95 - unsupported computed delegate fails closed
+  ---
+  duration_ms: 6.029508
+  type: 'test'
+  ...
+# Subtest: unsupported optional delegate fails closed
+ok 96 - unsupported optional delegate fails closed
+  ---
+  duration_ms: 6.194695
+  type: 'test'
+  ...
+# Subtest: unsupported client alias fails closed
+ok 97 - unsupported client alias fails closed
+  ---
+  duration_ms: 6.610217
+  type: 'test'
+  ...
+# Subtest: unsupported transaction API fails closed
+ok 98 - unsupported transaction API fails closed
+  ---
+  duration_ms: 8.30018
+  type: 'test'
+  ...
+# Subtest: extra client fails closed
+ok 99 - extra client fails closed
+  ---
+  duration_ms: 8.988082
+  type: 'test'
+  ...
+# Subtest: hidden template call fails closed
+ok 100 - hidden template call fails closed
+  ---
+  duration_ms: 7.380542
+  type: 'test'
+  ...
+# Subtest: removed migration inventory entry is rejected
+ok 101 - removed migration inventory entry is rejected
+  ---
+  duration_ms: 17.00613
+  type: 'test'
+  ...
+# Subtest: duplicate migration inventory entry is rejected
+ok 102 - duplicate migration inventory entry is rejected
+  ---
+  duration_ms: 14.893678
+  type: 'test'
+  ...
+# Subtest: removed migration file is rejected
+ok 103 - removed migration file is rejected
+  ---
+  duration_ms: 13.350109
+  type: 'test'
+  ...
+# Subtest: new migration file is rejected even if an outer fingerprint is supplied
+ok 104 - new migration file is rejected even if an outer fingerprint is supplied
+  ---
+  duration_ms: 15.133168
+  type: 'test'
+  ...
+# Subtest: extra unexpected migration directory file fails closed
+ok 105 - extra unexpected migration directory file fails closed
+  ---
+  duration_ms: 5.597409
+  type: 'test'
+  ...
+# Subtest: changed SQL bytes remain rejected after outer fingerprint refresh
+ok 106 - changed SQL bytes remain rejected after outer fingerprint refresh
+  ---
+  duration_ms: 15.597688
+  type: 'test'
+  ...
+# Subtest: missing curated migration is rejected
+ok 107 - missing curated migration is rejected
+  ---
+  duration_ms: 19.984683
+  type: 'test'
+  ...
+# Subtest: changed curated SQL targets require semantic re-review
+ok 108 - changed curated SQL targets require semantic re-review
+  ---
+  duration_ms: 15.130549
+  type: 'test'
+  ...
+# Subtest: invalid SQL targets are rejected even after semantic pin refresh
+ok 109 - invalid SQL targets are rejected even after semantic pin refresh
+  ---
+  duration_ms: 19.299317
+  type: 'test'
+  ...
+# Subtest: changed schema fingerprint is rejected
+ok 110 - changed schema fingerprint is rejected
+  ---
+  duration_ms: 16.427562
+  type: 'test'
+  ...
+# Subtest: changed migration lock fingerprint is rejected
+ok 111 - changed migration lock fingerprint is rejected
+  ---
+  duration_ms: 13.738411
+  type: 'test'
+  ...
+# Subtest: missing source fingerprint is rejected
+ok 112 - missing source fingerprint is rejected
+  ---
+  duration_ms: 14.202067
+  type: 'test'
+  ...
+# Subtest: duplicate source fingerprint is rejected
+ok 113 - duplicate source fingerprint is rejected
+  ---
+  duration_ms: 14.937849
+  type: 'test'
+  ...
+# Subtest: changed scripts seed entry rejected after outer refresh
+ok 114 - changed scripts seed entry rejected after outer refresh
+  ---
+  duration_ms: 8.679545
+  type: 'test'
+  ...
+# Subtest: changed prisma seed entry rejected after outer refresh
+ok 115 - changed prisma seed entry rejected after outer refresh
+  ---
+  duration_ms: 9.204305
+  type: 'test'
+  ...
+# Subtest: startup migration removal rejected after outer refresh
+ok 116 - startup migration removal rejected after outer refresh
+  ---
+  duration_ms: 9.193379
+  type: 'test'
+  ...
+# Subtest: startup command reordering rejected after outer refresh
+ok 117 - startup command reordering rejected after outer refresh
+  ---
+  duration_ms: 10.298947
+  type: 'test'
+  ...
+# Subtest: missing entry chain inventory is rejected
+ok 118 - missing entry chain inventory is rejected
+  ---
+  duration_ms: 11.490912
+  type: 'test'
+  ...
+# Subtest: invalid owner metadata rejected despite refreshed semantic pin
+ok 119 - invalid owner metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 14.502893
+  type: 'test'
+  ...
+# Subtest: invalid valid but wrong model owner metadata rejected despite refreshed semantic pin
+ok 120 - invalid valid but wrong model owner metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 20.339796
+  type: 'test'
+  ...
+# Subtest: invalid destination metadata rejected despite refreshed semantic pin
+ok 121 - invalid destination metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 18.012918
+  type: 'test'
+  ...
+# Subtest: invalid check ID metadata rejected despite refreshed semantic pin
+ok 122 - invalid check ID metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 18.676042
+  type: 'test'
+  ...
+# Subtest: invalid unrelated check metadata rejected despite refreshed semantic pin
+ok 123 - invalid unrelated check metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 11.818835
+  type: 'test'
+  ...
+# Subtest: invalid test reference metadata rejected despite refreshed semantic pin
+ok 124 - invalid test reference metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 12.321417
+  type: 'test'
+  ...
+# Subtest: invalid coverage gap metadata rejected despite refreshed semantic pin
+ok 125 - invalid coverage gap metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 14.096369
+  type: 'test'
+  ...
+# Subtest: invalid test path escape metadata rejected despite refreshed semantic pin
+ok 126 - invalid test path escape metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 13.465692
+  type: 'test'
+  ...
+# Subtest: invalid non-test path metadata rejected despite refreshed semantic pin
+ok 127 - invalid non-test path metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 12.715348
+  type: 'test'
+  ...
+# Subtest: invalid test PASS claim metadata rejected despite refreshed semantic pin
+ok 128 - invalid test PASS claim metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 15.614885
+  type: 'test'
+  ...
+# Subtest: invalid runtime PASS claim metadata rejected despite refreshed semantic pin
+ok 129 - invalid runtime PASS claim metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 12.876429
+  type: 'test'
+  ...
+# Subtest: invalid missing runtime declaration metadata rejected despite refreshed semantic pin
+ok 130 - invalid missing runtime declaration metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 14.80442
+  type: 'test'
+  ...
+# Subtest: invalid record runtime PASS claim metadata rejected despite refreshed semantic pin
+ok 131 - invalid record runtime PASS claim metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 13.038532
+  type: 'test'
+  ...
+# Subtest: invalid nested empty effect metadata rejected despite refreshed semantic pin
+ok 132 - invalid nested empty effect metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 12.252515
+  type: 'test'
+  ...
+# Subtest: invalid scope runtime PASS claim metadata rejected despite refreshed semantic pin
+ok 133 - invalid scope runtime PASS claim metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 14.977618
+  type: 'test'
+  ...
+# Subtest: invalid migration lock PASS claim metadata rejected despite refreshed semantic pin
+ok 134 - invalid migration lock PASS claim metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 12.287596
+  type: 'test'
+  ...
+# Subtest: invalid seed summary count metadata rejected despite refreshed semantic pin
+ok 135 - invalid seed summary count metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 24.93289
+  type: 'test'
+  ...
+# Subtest: invalid migration summary count metadata rejected despite refreshed semantic pin
+ok 136 - invalid migration summary count metadata rejected despite refreshed semantic pin
+  ---
+  duration_ms: 12.93659
+  type: 'test'
+  ...
+# Subtest: missing referenced test source is rejected
+ok 137 - missing referenced test source is rejected
+  ---
+  duration_ms: 7.093532
+  type: 'test'
+  ...
+# Subtest: edited referenced test bytes are rejected
+ok 138 - edited referenced test bytes are rejected
+  ---
+  duration_ms: 11.625825
+  type: 'test'
+  ...
+# Subtest: reference source drift rejected despite refreshed effects pin
+ok 139 - reference source drift rejected despite refreshed effects pin
+  ---
+  duration_ms: 12.224152
+  type: 'test'
+  ...
+# Subtest: missing server reference source is rejected
+ok 140 - missing server reference source is rejected
+  ---
+  duration_ms: 8.384897
+  type: 'test'
+  ...
+# Subtest: missing reference citation rejected despite refreshed effects pin
+ok 141 - missing reference citation rejected despite refreshed effects pin
+  ---
+  duration_ms: 16.46568
+  type: 'test'
+  ...
+# Subtest: duplicate reference citation rejected despite refreshed effects pin
+ok 142 - duplicate reference citation rejected despite refreshed effects pin
+  ---
+  duration_ms: 14.901445
+  type: 'test'
+  ...
+# Subtest: migration lock citation hash rejected despite refreshed effects pin
+ok 143 - migration lock citation hash rejected despite refreshed effects pin
+  ---
+  duration_ms: 16.654802
+  type: 'test'
+  ...
+# Subtest: AC01 promotion cannot be claimed by this tool
+ok 144 - AC01 promotion cannot be claimed by this tool
+  ---
+  duration_ms: 17.125178
+  type: 'test'
+  ...
+# Subtest: runtime promotion cannot be claimed by this tool
+ok 145 - runtime promotion cannot be claimed by this tool
+  ---
+  duration_ms: 14.292953
+  type: 'test'
+  ...
+# Subtest: all four executable/baseline inputs match the frozen integration Git blobs
+ok 146 - all four executable/baseline inputs match the frozen integration Git blobs
+  ---
+  duration_ms: 2.538204
+  type: 'test'
+  ...
+# Subtest: live baseline does not confuse focused evidence with AR-00 completion
+ok 147 - live baseline does not confuse focused evidence with AR-00 completion
+  ---
+  duration_ms: 11.536502
+  type: 'test'
+  ...
+# Subtest: every one of 24 tasks rejects each non-PASS outcome as completion
+ok 148 - every one of 24 tasks rejects each non-PASS outcome as completion
+  ---
+  duration_ms: 49.405931
+  type: 'test'
+  ...
+# Subtest: every declared required check is individually necessary for completion
+ok 149 - every declared required check is individually necessary for completion
+  ---
+  duration_ms: 22.14442
+  type: 'test'
+  ...
+# Subtest: every task rejects wrong task, source SHA, tree, review SHA and self-review
+ok 150 - every task rejects wrong task, source SHA, tree, review SHA and self-review
+  ---
+  duration_ms: 57.367174
+  type: 'test'
+  ...
+# Subtest: all 512 policy combinations leave isolated engineering ready and activation blocked
+ok 151 - all 512 policy combinations leave isolated engineering ready and activation blocked
+  ---
+  duration_ms: 273.843965
+  type: 'test'
+  ...
+# Subtest: each unapproved decision rejects READY even after synthetic software completion
+ok 152 - each unapproved decision rejects READY even after synthetic software completion
+  ---
+  duration_ms: 6.632512
+  type: 'test'
+  ...
+# Subtest: all eight activation gates require scoped independent source-bound evidence
+ok 153 - all eight activation gates require scoped independent source-bound evidence
+  ---
+  duration_ms: 138.614463
+  type: 'test'
+  ...
+# Subtest: task and gate self-review controls change only executor, preserving reviewer identity
+ok 154 - task and gate self-review controls change only executor, preserving reviewer identity
+  ---
+  duration_ms: 6.829136
+  type: 'test'
+  ...
+# Subtest: self-review controls kill gate-only, task-only and combined verifier mutants
+ok 155 - self-review controls kill gate-only, task-only and combined verifier mutants
+  ---
+  duration_ms: 26.910003
+  type: 'test'
+  ...
+# Subtest: completion and READY controls isolate unfinished integration and non-PASS G gates
+ok 156 - completion and READY controls isolate unfinished integration and non-PASS G gates
+  ---
+  duration_ms: 12.99053
+  type: 'test'
+  ...
+# Subtest: completion and READY controls kill integration-only, G-PASS-only and combined mutants
+ok 157 - completion and READY controls kill integration-only, G-PASS-only and combined mutants
+  ---
+  duration_ms: 24.127052
+  type: 'test'
+  ...
+# Subtest: all direct dependency edges prevent an early active successor
+ok 158 - all direct dependency edges prevent an early active successor
+  ---
+  duration_ms: 90.468522
+  type: 'test'
+  ...
+# Subtest: zero to three active workers reserve slots and a fourth active worker is rejected
+ok 159 - zero to three active workers reserve slots and a fourth active worker is rejected
+  ---
+  duration_ms: 4.259854
+  type: 'test'
+  ...
+# Subtest: all 276 task pairs obey the declared exclusive-lock boundary
+ok 160 - all 276 task pairs obey the declared exclusive-lock boundary
+  ---
+  duration_ms: 636.434216
+  type: 'test'
+  ...
+# Subtest: the complete actual 24-task DAG can advance without deadlock using synthetic proofs only
+ok 161 - the complete actual 24-task DAG can advance without deadlock using synthetic proofs only
+  ---
+  duration_ms: 88.972644
+  type: 'test'
+  ...
+# Subtest: CLI plan is deterministic and leaves all four exact source inputs unchanged
+ok 162 - CLI plan is deterministic and leaves all four exact source inputs unchanged
+  ---
+  duration_ms: 112.340589
+  type: 'test'
+  ...
+1..162
+# tests 162
+# suites 0
+# pass 162
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1670.270912

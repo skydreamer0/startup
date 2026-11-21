@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourcePins": {
+    "scripts/architecture/verify-print-inventory.py": "7d6ea85f58a342a3d9091d0d6e792f0c76c73e18572dc9d98a1020df55024529",
+    "scripts/architecture/test_print_inventory.py": "e7cc1180858b6b67c82633a4ba58fa655461bdad7d2ce298a47be0daee2b6d5d",
+    "scripts/architecture/test_print_worker_controls.py": "b854d0a160db222cc859005099f5599b0286e6db46808d575f57911a55353038",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-inventory.json": "5b5b590253b1fea684e028342dcc1cde38f7bc8e4e6fb0faecfbebae7a7c4957",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json": "e40531f05c69403c0f83e50eb7c86b18d8999ad0a7f6be741b212338dffbf36b",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-verification.md": "95055bbb4a3abe496b4b3c17bccad061f613a6c59606415565367ac61ac5f2fc"
+  },
+  "suiteRequested": true,
+  "supplementalProbes": {
+    "initialPrivateReplay": {
+      "verifierSha256": "acbf77c3eaa0739dabf4014bfd4e1ee362490503ac15cd8c6cb2737f0f22ddab",
+      "privateReadsBeforeFailure": [
+        "systems/enterprise-admin/local-print-agent/captures/private/transport.json",
+        "systems/enterprise-admin/local-print-agent/private/api-token.txt"
+      ],
+      "error": "print inventory differs from current file set, content, Python facts or project entry points",
+      "note": "New reproduction of the historical problem with exact reconstructed initial verifier bytes. The sealed initial observation is unchanged."
+    },
+    "fixedPrivateProbe": {
+      "status": "PASS",
+      "privateReads": [],
+      "privateCopies": [],
+      "privateSubtreesVisited": []
+    },
+    "metadataMutations": {
+      "activation_enabled": "REJECTED",
+      "evidence_kind_runtime": "REJECTED",
+      "scope_expansion": "REJECTED",
+      "remove_worker_row": "REJECTED"
+    },
+    "guardMutations": [
+      {
+        "source": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+        "test": "test_disabled_start_does_not_create_thread",
+        "status": "KILLED",
+        "failures": 1,
+        "errors": 0
+      },
+      {
+        "source": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py",
+        "test": "test_guard_failures_precede_scan",
+        "status": "KILLED",
+        "failures": 2,
+        "errors": 0
+      }
+    ]
+  },
+  "auditedSuite": {
+    "status": "PASS",
+    "testsRun": 52,
+    "output": "....................................................\n----------------------------------------------------------------------\nRan 52 tests in 2.583s\n\nOK\n"
+  },
+  "audit": {
+    "externalEventsAttempted": [],
+    "socketFamiliesTypesObserved": [
+      [
+        1,
+        1
+      ]
+    ],
+    "realThreadStart": "FORBIDDEN",
+    "scope": "Known pinned-source capabilities only; not an arbitrary-code security sandbox."
+  },
+  "status": "PASS"
+}

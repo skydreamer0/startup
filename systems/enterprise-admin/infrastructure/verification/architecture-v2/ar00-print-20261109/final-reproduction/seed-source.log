@@ -1,0 +1,13 @@
+{
+  "result": "PASS",
+  "scope": "read-only seed/startup-migration source coverage",
+  "counts": {
+    "seedCalls": 25,
+    "nestedWrites": 1,
+    "migrations": 16,
+    "entryChains": 3
+  },
+  "acceptance": "NOT_RUN",
+  "runtime": "NOT_RUN",
+  "errors": []
+}

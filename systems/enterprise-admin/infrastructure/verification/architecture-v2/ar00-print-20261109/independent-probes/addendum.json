@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "type": "reproducibility-only-addendum",
+  "sealedReview": {
+    "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-review.json",
+    "sha256": "ddd2dbee7ccaea3b327d0f5b753248d77e85fee63da138bb788dc2f14f515078",
+    "modified": false
+  },
+  "artifacts": [
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/replay_print_review.py",
+      "sha256": "8b09593078a5e4c0563b7bdab0c35acb865a204e65c4f6f8e07ff3adf254d9ce"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/README.md",
+      "sha256": "5ae892b3a641642d587b1fc9fcc2117f86b1730efbfd2a0cb557b039bd1ee65b"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-print-20261109/independent-probes/probes-run/result.json",
+      "sha256": "f646aacc7b1c93c82eca6c7e4813a23f08397b26c97f424edc602feca2904176"
+    }
+  ],
+  "execution": {
+    "supplementalProbes": "PASS: exact historical verifier reconstruction; initial private read-before-fail; fixed zero private read/copy/traversal; four metadata rejections; two guard mutations killed.",
+    "unchanged52TestAudit": "NOT_REPEATED_FOR_THIS_ADDENDUM; optional --audit-suite command reproduces the previously executed audit.",
+    "sourceEdits": false,
+    "externalEventsAttempted": [],
+    "socketFamiliesTypesObserved": [
+      [
+        1,
+        1
+      ]
+    ]
+  }
+}

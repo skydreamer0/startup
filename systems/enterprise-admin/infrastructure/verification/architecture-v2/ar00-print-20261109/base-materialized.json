@@ -1,0 +1,224 @@
+[
+  {
+    "path": "AGENTS.md",
+    "sha": "810bbfc9e4343ec9a43e107e3863105031f365f2",
+    "mode": "100644",
+    "sha256": "5e4915b12c1a7c744cb1b24c8dc06bcf2bb8df89dc29262ec4f714dbc2bd90f3"
+  },
+  {
+    "path": "CONTEXT-MAP.md",
+    "sha": "7057286e27f60fe56f6a5b698248191cb5a6257e",
+    "mode": "100644",
+    "sha256": "0f4964b2e849d4c04f8cfa7e05dcc0262cf3b5b20984ce95d54461212a99f2f7"
+  },
+  {
+    "path": "docs/agents/navigation.md",
+    "sha": "9e404a3eae48fd90c359ad1f28de4623c400cdbd",
+    "mode": "100644",
+    "sha256": "87331f893ddb5c2359898b6962f1091aa7fadf846e802e8acbf7d9890a476e5d"
+  },
+  {
+    "path": "systems/enterprise-admin/CONTEXT.md",
+    "sha": "84549529bbda1de703d8f864ccef496966c2d5e3",
+    "mode": "100644",
+    "sha256": "cf637c433d2a4afd57b6af7da7029c9e6178551b1bcd6bab354807fdbee3b5ae"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/MODULE.md",
+    "sha": "dda0f83aa1c6cc886f1c93da633a11a2c34928db",
+    "mode": "100644",
+    "sha256": "0d0229e04f450eeea18df33d4d097e30ddca7e49d0f039001898bc5f247f6507"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/src/__tests__/MedicineLabelDialog.test.tsx",
+    "sha": "d66c2e93afd78308edbafeb71a5ea984696326d6",
+    "mode": "100644",
+    "sha256": "b408124091bc78b33669d7f34e04c1fffe156e5f6c4e5d32c255a6db8ac0764e"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/src/components/MedicineLabelDialog.tsx",
+    "sha": "94ac550bba2103c682a28ca29ba4deaa2270aebc",
+    "mode": "100644",
+    "sha256": "d83a6589ac6dcf91c1b5dc8fa8bae5d09a09f4243824b6a61d6eaf97a9d889b6"
+  },
+  {
+    "path": "systems/enterprise-admin/admin-ui/src/services/localLabelPrinter.ts",
+    "sha": "e1a84381550d4e5b62e6f33e68452b2ae309a925",
+    "mode": "100644",
+    "sha256": "93b0bb99fd93f0a39f6a00b031cfabf3803dd13ff4da76eacf935f76fded1692"
+  },
+  {
+    "path": "systems/enterprise-admin/backend/scripts/medicine-label-ci.requirements.txt",
+    "sha": "5df32e05762481f2ddbee33019ded20f086886d6",
+    "mode": "100644",
+    "sha256": "ca173955c44fafcdbc351b33e7c1dcf547ef078b8f5dfe6ea646eaf86532fb5e"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/adr/adr_023_local_ble_medicine_label_bridge.md",
+    "sha": "206ebf16e04f6208cd237b1cc0143c096da0cf2b",
+    "mode": "100644",
+    "sha256": "1fae959c8b93f543d62de47434779c46db2da6fb4fedc71b9e5001751f802042"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json",
+    "sha": "953d682851d8f6f6c414c5147ea9117894b2262d",
+    "mode": "100644",
+    "sha256": "571ce7103c56c5dc54ec83c99801cbe40f1755959133151fa295bb48116a5a8b"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+    "sha": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+    "mode": "100644",
+    "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
+  },
+  {
+    "path": "systems/enterprise-admin/infrastructure/standards/git_workflow.md",
+    "sha": "6888163594528848f81b29a6dc8906549ada1214",
+    "mode": "100644",
+    "sha256": "b83fd9f520afcee99e3fad9fd5da8be25c0e28557b5918c22905cbd4d4db3428"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/.gitignore",
+    "sha": "d24895d1f61771875cd485a9ae90fc6a18065ee2",
+    "mode": "100644",
+    "sha256": "2bc20818d9aa345c49672e079467337fb9e8bb3117b52213597b24d6baac3845"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/README.md",
+    "sha": "bce9356bb40c3c42c99f2fad8bfa3fc6afa83646",
+    "mode": "100644",
+    "sha256": "b6adcaac7c39b8b6fef1b9ea49a6fe9f7d3069366a30751e68785a7262d6bc06"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/pyproject.toml",
+    "sha": "ed1bd528351d4a6c36e74b9b32ecb5849516a842",
+    "mode": "100644",
+    "sha256": "044c1c2453a5dfa3b14dbd09e54689e4b0db2d9f7f2bd1bbed9db4d4a399a2f2"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/requirements-tested.txt",
+    "sha": "d50a70a98d4533e1c041ee57189812d5d71045bf",
+    "mode": "100644",
+    "sha256": "12e02351224074f87147b559cfe55c5b834cf90969c52b24e7cb11cd8286e47c"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/diagnose_windows.ps1",
+    "sha": "cfa54a2d928d328a19dd0c2ceaa43c1b6a9fa393",
+    "mode": "100644",
+    "sha256": "9cbb686f6de13f63829fa47b68e3757eb3d184e60994be59a90b2dce707415fd"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py",
+    "sha": "1c4247be1bad717b161f8258c58527b7aec47f0b",
+    "mode": "100644",
+    "sha256": "62e84b6ea6f3c8986cde5b97fc68fa84aaf01e6aa8ced7c0f28a5f1a2b560967"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/prepare_suite.py",
+    "sha": "267c9689b39c4a4b6f37e1603202dc0cd60fde95",
+    "mode": "100644",
+    "sha256": "bad9d36fee6caad72d61088d827d80654857da70b3152df09054251e53ac7252"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/scripts/scan_ble.py",
+    "sha": "c6444fd4d4a148b6641208eaac9ed5dffe5850dd",
+    "mode": "100644",
+    "sha256": "6ed288fd8cbaf4d6eae1b3d1d9c73163fa09a58dcb1a230e5d8717a6f08fccea"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/__init__.py",
+    "sha": "010569e4adbab296c57b91cabb004d5a8cadb361",
+    "mode": "100644",
+    "sha256": "3c213cd5e28be26d9ead74b51e1f9874766fe5c0330a3b39276d10b4e63051b4"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+    "sha": "4e9c9c75010d13a9cc3f29bd89fc41ef590d277b",
+    "mode": "100644",
+    "sha256": "e24eacc6750f5a4c96a83653977f40e4ddbfe6ef48398b549c0ae238b38bcb86"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/ble.py",
+    "sha": "e48425377fbdcd80663d3aabd344a2a85258df54",
+    "mode": "100644",
+    "sha256": "e8266fb76a6dc4ced4ac0c85c0665a8f9a43811f7ebcde9f0f745986ded433eb"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+    "sha": "3b6e7e9351e80a2694043fab87cd003d59fbdde3",
+    "mode": "100644",
+    "sha256": "7385d6399aa3ef9cd04b8732c43e91c62b50a496ba42056fc4b889f2466ce7f1"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/medicine_label.py",
+    "sha": "f2be7722d8fc7cf7c9c9eb988a7735f7cd980586",
+    "mode": "100644",
+    "sha256": "21c12f4b35e1cfcf6f6be06ecea37936ad3455ac0bb4800f9695716a74e4045a"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/raster.py",
+    "sha": "8a1e87b93e7f389d7e83ff32b18a8f3ba7baa28e",
+    "mode": "100644",
+    "sha256": "bc30557455c497f3b34a4c0a3db1e80c299c0b92df76ef86467514952bfc2201"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py",
+    "sha": "b247190cec005c2f919226a9063a72bfeb4902b2",
+    "mode": "100644",
+    "sha256": "634fd076ac4766dc67daa90499a846996be0eac447435c7978530eba2aa5078a"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/src/deli720w/tspl.py",
+    "sha": "e00af949fd54752dd982e34edf1f974d56384cb3",
+    "mode": "100644",
+    "sha256": "ef149ceba203be2bea791eb07885ee9a569f84b6090178530e110ddd3c61e240"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_api.py",
+    "sha": "804ce506728413978080723cfd8d08074a1f4ba7",
+    "mode": "100644",
+    "sha256": "a637360f45a901049a97d1e52142ed09a25964db4bc3cf315e50e3fc85d75174"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py",
+    "sha": "cfa6305628ffeda1a969510b5c0151b7a4ede49f",
+    "mode": "100644",
+    "sha256": "85810c18ffe1cddeac8efac37a232875c147eeb515ebdcf4080add6237113260"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_medicine_label.py",
+    "sha": "39ac18241117fe8d28698ab5650faa4718e63e1c",
+    "mode": "100644",
+    "sha256": "7de0efcc1bbc6b5340853b44f30e14ff09524179c602f64d72247b7830850d93"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_raster.py",
+    "sha": "293b7cd6796faf985d15b243fc7a9f7741daee07",
+    "mode": "100644",
+    "sha256": "539a65e39460a6ffc629bd46d084cb89f4490f88013278ed8e6b016ae02164fe"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_safety.py",
+    "sha": "07d7beee5a2e9c9a522df29e6bc1768f3c89dc7d",
+    "mode": "100644",
+    "sha256": "c71db6fe6e3b4183d1f9e543e16aafad174e7ede668fc53049c0a100e4f13576"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_transport.py",
+    "sha": "2ec971c39580681d3a3f2192d18d4fa7034ac6b5",
+    "mode": "100644",
+    "sha256": "c26a9a30db48d2e013c2654efd461997badbf7ecf1e7e0b5db82c67eb0e0cc28"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/tests/test_tspl.py",
+    "sha": "647282e43d0f84e8cd1c73515c595535f97f459a",
+    "mode": "100644",
+    "sha256": "3b1c9aaf6cdfa9e7d3a7c69e9e3d59cb56e7df087dec04f187c8e425f2990c61"
+  },
+  {
+    "path": "systems/enterprise-admin/local-print-agent/samples/experimental-english-30x50.tspl.bin",
+    "sha": "79d5bb613dddd8dc55ed5d4fce076c0bbf5012fb",
+    "mode": "100644",
+    "sha256": "5a7a2a7b8ea004b42ddd752f0790daed840e04c9cf804446d3ffcfa3e8d434c6"
+  }
+]

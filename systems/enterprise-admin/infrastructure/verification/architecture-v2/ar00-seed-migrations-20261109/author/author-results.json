@@ -1,0 +1,115 @@
+{
+  "subject": {
+    "localSourceCommit": "a2849bf98ad7eb26f8f037726a6cc95efa3a2300",
+    "tree": "0c4b98cc2fd559a5a7a2fca353e4cf9f8e76c8e2",
+    "remoteBase": "b66e1f96447bbc5034110843b4349aef7ca44c4b",
+    "baseTree": "eb5d6286792df789fae0870c884980b792a3673d",
+    "changedFiles": [
+      {
+        "path": "scripts/architecture/seed-migrations.test.mjs",
+        "sha256": "8b8349ba4580b5037c2d520887dbc4c34b7cece1edcb7a0b7de6f2ca0ced6e2f",
+        "gitBlob": "c032f1d2efcd4fbbdb261a9ac90896797ec05f17"
+      },
+      {
+        "path": "scripts/architecture/verify-seed-migrations.mjs",
+        "sha256": "9ac23f12486921edc7fcba685eae3c9bcbf894f1549dfd6656ec3547c74d6de9",
+        "gitBlob": "10f289bba79d5280e36bd5661e408debd8d0156d"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/README.md",
+        "sha256": "8a9a5ca081063db538ff66e029f7e819bca2fbfd4b646f27f3a77a7e97ff37d6",
+        "gitBlob": "597822a40d82d97a6763fb11a736c85a5a48a037"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-effects.json",
+        "sha256": "846838781ccba1a246f4e3bdc0cac9fe96778aae3381da21f6bb5b5d7e46edc7",
+        "gitBlob": "be5b8871dc0dc30b7892da4fcbb241a70a8cbee4"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/seed-migration-inventory.json",
+        "sha256": "5dc0b478c9dce0e563dd042a085522d15206f22fb9de4ea5a692e93869bee96d",
+        "gitBlob": "5af7a14671cbd64f81c15b694cd1678318cd010a"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.md",
+        "sha256": "03aa8144eb4139120c9e631f9f9d75cbc81e3969ced6d407e2e400fe277b512f",
+        "gitBlob": "bdeb446e8d59acb1ff6d6fe83a19c4fee69debb6"
+      }
+    ]
+  },
+  "node": "v24.22.1",
+  "checks": [
+    {
+      "id": "supplement-source",
+      "command": "node scripts/architecture/verify-seed-migrations.mjs",
+      "startedAt": "2026-11-09T00:29:42.759288+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "supplement-source.log"
+    },
+    {
+      "id": "supplement-tests",
+      "command": "node --test scripts/architecture/seed-migrations.test.mjs",
+      "startedAt": "2026-11-09T00:29:42.922360+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "supplement-tests.log"
+    },
+    {
+      "id": "plan-tests",
+      "command": "node --test scripts/architecture/plan.test.mjs",
+      "startedAt": "2026-11-09T00:29:44.213562+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "plan-tests.log"
+    },
+    {
+      "id": "gate-tests",
+      "command": "node --test systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "startedAt": "2026-11-09T00:29:45.647003+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "gate-tests.log"
+    },
+    {
+      "id": "baseline-source",
+      "command": "node scripts/architecture/verify-plan.mjs --check-source",
+      "startedAt": "2026-11-09T00:29:48.090122+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "baseline-source.log"
+    },
+    {
+      "id": "context",
+      "command": "./scripts/validate-agent-context.sh",
+      "startedAt": "2026-11-09T00:29:48.342342+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "context.log"
+    },
+    {
+      "id": "syntax-verifier",
+      "command": "node --check scripts/architecture/verify-seed-migrations.mjs",
+      "startedAt": "2026-11-09T00:29:48.479111+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "syntax-verifier.log"
+    },
+    {
+      "id": "syntax-tests",
+      "command": "node --check scripts/architecture/seed-migrations.test.mjs",
+      "startedAt": "2026-11-09T00:29:48.560538+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "syntax-tests.log"
+    },
+    {
+      "id": "whitespace",
+      "command": "git diff --check 50b3d641eb94f491e2af9376f25379ae27ff8cae a2849bf98ad7eb26f8f037726a6cc95efa3a2300",
+      "startedAt": "2026-11-09T00:29:48.800563+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "whitespace.log"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "recordedAt": "2026-11-09T04:15:43.341247+00:00",
+  "artifactMeaning": "NEW_PATH_ADAPTER_NOT_ORIGINAL_ARTIFACT",
+  "originalProbe": {
+    "file": "expense-dataflow-probe.cjs",
+    "sha256": "f1be7781c7adc38d03aaf1ccaba3c10320b44c5ade356f7d45fe347a3f6291df"
+  },
+  "portableReplay": {
+    "file": "expense-dataflow-replay.portable.cjs",
+    "sha256": "c86ce6788a782c599eebce50f7681e13d0a3ab474e90811b0cfea194d75fc413"
+  },
+  "unchangedTestBody": {
+    "startsAt": "const moduleRoot = 'systems/enterprise-admin/backend/src/modules/expenses/';",
+    "byteIdentical": true,
+    "sha256": "252a0dae878c57625dfd66342236a8b7743e65d30d9f82ba811b63f19f73793c"
+  },
+  "adaptationOnly": [
+    "repository root selected with --root",
+    "TypeScript selected by --typescript or normal backend/root package resolution",
+    "CLI validation and invocation help"
+  ],
+  "sourceApplicationHead": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+  "sourceFreeze": "7fc1ae6a50108988676fa03a38d54207f12eea7c",
+  "sourceFiles": [
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+      "sha256": "36d87997829af071bf6443cbada71e3ac74131c827f275d95595dc8dbb24da9a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "sha256": "27fffb4537077a57bac6ddb1d7380147e8b7ee3c8a9a10dcfade0b4c6f0b1767"
+    }
+  ],
+  "runtime": {
+    "node": "v24.22.1",
+    "typescript": "5.9.3"
+  },
+  "runs": [
+    {
+      "kind": "EXPLICIT_INSTALLED_COMPILER_PATH",
+      "log": "portable-replay.log",
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "kind": "NORMAL_BACKEND_PACKAGE_RESOLUTION_REVIEWER_FIXTURE",
+      "log": "portable-default-resolution.log",
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "pathControls": {
+    "file": "portable-path-controls.json",
+    "rejectedBeforeTests": 3
+  },
+  "originalReceiptsUnchanged": {
+    "initial": "52b403bc321f7138dd3fbeb34b1fbb934122e098301974499816d1a88593b287",
+    "r1": "96084391828836ec04caa3d631d6fe523898c0417c5da88ae27cf28917ca9adb"
+  },
+  "notRun": [
+    "real Prisma",
+    "HTTP",
+    "PostgreSQL",
+    "create path",
+    "Node22",
+    "complete application",
+    "full AC01"
+  ],
+  "artifacts": [
+    {
+      "path": "portable-adapter.diff",
+      "sha256": "18e6a07d39e903c67f346102f9359e2fb9a268486e07fdb4fd97ba26fbd964ee"
+    },
+    {
+      "path": "portable-replay.log",
+      "sha256": "51d9b48ec65cfa353b905f1494cd2e4a3030bfcfc77ead3f32a743a1bf03de14"
+    },
+    {
+      "path": "portable-default-resolution.log",
+      "sha256": "e821b7a0b4f6c9da15fdc6332c707713e3a06e3dfedfe13709c56029ef41ac65"
+    },
+    {
+      "path": "portable-path-controls.json",
+      "sha256": "93d7f00b71e8fcd183021b911185cb078e60760552f463e323c0017d4c074031"
+    },
+    {
+      "path": "PORTABLE-REPLAY.md",
+      "sha256": "97e084666a5cbfd54365b51bdab820f6ae052d8b8213d08619652fec498a904e"
+    }
+  ]
+}

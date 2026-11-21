@@ -1,0 +1,1749 @@
+{
+  "schemaVersion": 1,
+  "scope": "systems/enterprise-admin/local-print-agent",
+  "excludedRuntimeDirectories": [
+    ".git",
+    ".pytest_cache",
+    ".venv",
+    "__pycache__",
+    "private",
+    "reports",
+    "venv",
+    "work",
+    "*.egg-info"
+  ],
+  "excludedRuntimeFiles": [
+    "*.pyc",
+    "*.pyo",
+    "samples/*.png",
+    "samples/*.json"
+  ],
+  "entryPoints": {
+    "deli720w": "deli720w.cli:main"
+  },
+  "dependencies": [
+    "bleak>=0.22",
+    "Pillow>=13,<14",
+    "qrcode>=8",
+    "python-barcode>=0.16"
+  ],
+  "files": [
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/__tests__/MedicineLabelDialog.test.tsx",
+      "sha256": "b408124091bc78b33669d7f34e04c1fffe156e5f6c4e5d32c255a6db8ac0764e",
+      "gitBlob": "d66c2e93afd78308edbafeb71a5ea984696326d6",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/components/MedicineLabelDialog.tsx",
+      "sha256": "d83a6589ac6dcf91c1b5dc8fa8bae5d09a09f4243824b6a61d6eaf97a9d889b6",
+      "gitBlob": "94ac550bba2103c682a28ca29ba4deaa2270aebc",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/admin-ui/src/services/localLabelPrinter.ts",
+      "sha256": "93b0bb99fd93f0a39f6a00b031cfabf3803dd13ff4da76eacf935f76fded1692",
+      "gitBlob": "e1a84381550d4e5b62e6f33e68452b2ae309a925",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/adr/adr_023_local_ble_medicine_label_bridge.md",
+      "sha256": "1fae959c8b93f543d62de47434779c46db2da6fb4fedc71b9e5001751f802042",
+      "gitBlob": "206ebf16e04f6208cd237b1cc0143c096da0cf2b",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/.gitignore",
+      "sha256": "2bc20818d9aa345c49672e079467337fb9e8bb3117b52213597b24d6baac3845",
+      "gitBlob": "d24895d1f61771875cd485a9ae90fc6a18065ee2",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/README.md",
+      "sha256": "b6adcaac7c39b8b6fef1b9ea49a6fe9f7d3069366a30751e68785a7262d6bc06",
+      "gitBlob": "bce9356bb40c3c42c99f2fad8bfa3fc6afa83646",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/pyproject.toml",
+      "sha256": "044c1c2453a5dfa3b14dbd09e54689e4b0db2d9f7f2bd1bbed9db4d4a399a2f2",
+      "gitBlob": "ed1bd528351d4a6c36e74b9b32ecb5849516a842",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/requirements-tested.txt",
+      "sha256": "12e02351224074f87147b559cfe55c5b834cf90969c52b24e7cb11cd8286e47c",
+      "gitBlob": "d50a70a98d4533e1c041ee57189812d5d71045bf",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/samples/experimental-english-30x50.tspl.bin",
+      "sha256": "5a7a2a7b8ea004b42ddd752f0790daed840e04c9cf804446d3ffcfa3e8d434c6",
+      "gitBlob": "79d5bb613dddd8dc55ed5d4fce076c0bbf5012fb",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/diagnose_windows.ps1",
+      "sha256": "9cbb686f6de13f63829fa47b68e3757eb3d184e60994be59a90b2dce707415fd",
+      "gitBlob": "cfa54a2d928d328a19dd0c2ceaa43c1b6a9fa393",
+      "facts": {}
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/experimental_ble_job.py",
+      "sha256": "62e84b6ea6f3c8986cde5b97fc68fa84aaf01e6aa8ced7c0f28a5f1a2b560967",
+      "gitBlob": "1c4247be1bad717b161f8258c58527b7aec47f0b",
+      "facts": {
+        "moduleAstSha256": "bd31909ad1952ec8eef49e9abb7ac57ab21791ca3fd11aa74ff5d87ea3a2d9d5",
+        "symbols": {
+          "preflight": {
+            "line": 38,
+            "endLine": 58,
+            "astSha256": "92d07c6a917b7415949af5cf90e72df97bbfc859377aa28cbc2956d661672818"
+          },
+          "perform": {
+            "line": 61,
+            "endLine": 150,
+            "astSha256": "d0745f6f6009cae3628600fb7ad3651b36337fdae27a4e1bafa7886713f66c06"
+          },
+          "perform.on_notify": {
+            "line": 87,
+            "endLine": 94,
+            "astSha256": "aa34a6e3b87174132c711619255088e885bd286a551bcee0156cea14d70c2488"
+          },
+          "main": {
+            "line": 153,
+            "endLine": 171,
+            "astSha256": "5c5216f15e842733afc02651905053b21b4c354fe57b0e669d9705fb9609665f"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='argparse')])",
+          "Import(names=[alias(name='asyncio')])",
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='re')])",
+          "Import(names=[alias(name='sys')])",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='bleak', names=[alias(name='BleakClient'), alias(name='BleakScanner')], level=0)",
+          "ImportFrom(module='datetime', names=[alias(name='datetime'), alias(name='timezone')], level=0)",
+          "ImportFrom(module='hashlib', names=[alias(name='sha256')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)"
+        ],
+        "calls": [
+          "BleakClient",
+          "BleakScanner.discover",
+          "JOB_PATH.read_bytes",
+          "Path",
+          "Path(__file__).resolve",
+          "SystemExit",
+          "TARGET_NAME_FILE.read_text",
+          "TARGET_NAME_FILE.read_text(encoding='utf-8').strip",
+          "ValueError",
+          "WORK_ROOT.resolve",
+          "approval_hash.casefold",
+          "argparse.ArgumentParser",
+          "args.report_json.open",
+          "args.report_json.parent.mkdir",
+          "args.report_json.resolve",
+          "asyncio.run",
+          "asyncio.sleep",
+          "asyncio.wait_for",
+          "bytes",
+          "char.uuid.casefold",
+          "client.connect",
+          "client.disconnect",
+          "client.start_notify",
+          "client.write_gatt_char",
+          "datetime.now",
+          "datetime.now(timezone.utc).isoformat",
+          "device.address.casefold",
+          "job.endswith",
+          "job.startswith",
+          "json.dumps",
+          "len",
+          "main",
+          "observations.values",
+          "parser.add_argument",
+          "parser.parse_args",
+          "payload.hex",
+          "perform",
+          "preflight",
+          "print",
+          "range",
+          "re.fullmatch",
+          "report['notify_hex'].append",
+          "report_json.parent.mkdir",
+          "report_json.resolve",
+          "report_json.write_text",
+          "report_path.exists",
+          "report_path.is_relative_to",
+          "report_path.suffix.casefold",
+          "reserved.write",
+          "service.uuid.casefold",
+          "sha256",
+          "sha256(job).hexdigest",
+          "target_address.casefold",
+          "target_address.strip",
+          "type"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/prepare_suite.py",
+      "sha256": "bad9d36fee6caad72d61088d827d80654857da70b3152df09054251e53ac7252",
+      "gitBlob": "267c9689b39c4a4b6f37e1603202dc0cd60fde95",
+      "facts": {
+        "moduleAstSha256": "9dcea9486365f9349cbc9be13ffd7bd5baa4f9d279f936550a835e8fde31e81e",
+        "symbols": {
+          "main": {
+            "line": 16,
+            "endLine": 86,
+            "astSha256": "1008c381f8f6ff30fa39391f2daa3aae9250b97234f95e9b448bb1b944cb493f"
+          },
+          "main.action": {
+            "line": 52,
+            "endLine": 65,
+            "astSha256": "9446e05ad423e8ca36d78566f4e571d1671f930395f8ac1705e24a300fcffb24"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='json')])",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='datetime', names=[alias(name='datetime'), alias(name='timezone')], level=0)",
+          "ImportFrom(module='deli720w.raster', names=[alias(name='Label')], level=0)",
+          "ImportFrom(module='deli720w.tspl', names=[alias(name='save_candidate')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)"
+        ],
+        "calls": [
+          "Label",
+          "OUT.mkdir",
+          "Path",
+          "Path(__file__).resolve",
+          "action",
+          "candidate.metadata.read_text",
+          "datetime.now",
+          "datetime.now(timezone.utc).isoformat",
+          "generated.items",
+          "json.dumps",
+          "json.loads",
+          "labels.items",
+          "list",
+          "main",
+          "path.write_text",
+          "print",
+          "save_candidate",
+          "str"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/scripts/scan_ble.py",
+      "sha256": "6ed288fd8cbaf4d6eae1b3d1d9c73163fa09a58dcb1a230e5d8717a6f08fccea",
+      "gitBlob": "c6444fd4d4a148b6641208eaac9ed5dffe5850dd",
+      "facts": {
+        "moduleAstSha256": "db124887554b8a4b66fca9b74959036da84833219f64320fac25aeaefbded07e",
+        "symbols": {},
+        "imports": [
+          "Import(names=[alias(name='sys')])",
+          "ImportFrom(module='deli720w.cli', names=[alias(name='main')], level=0)"
+        ],
+        "calls": [
+          "SystemExit",
+          "main"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/__init__.py",
+      "sha256": "3c213cd5e28be26d9ead74b51e1f9874766fe5c0330a3b39276d10b4e63051b4",
+      "gitBlob": "010569e4adbab296c57b91cabb004d5a8cadb361",
+      "facts": {
+        "moduleAstSha256": "642d4a0db999508f939bd78d2ca1b8c16d024bdd5887ba6a063a10ad3c3b164e",
+        "symbols": {},
+        "imports": [],
+        "calls": [],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/api.py",
+      "sha256": "e24eacc6750f5a4c96a83653977f40e4ddbfe6ef48398b549c0ae238b38bcb86",
+      "gitBlob": "4e9c9c75010d13a9cc3f29bd89fc41ef590d277b",
+      "facts": {
+        "moduleAstSha256": "a33bcdd7a2e6b60952c64e0dd1604c87c8782bd0d41eeb9154d5f6b150d6dbf4",
+        "symbols": {
+          "_json_bytes": {
+            "line": 41,
+            "endLine": 42,
+            "astSha256": "6c2c9588456f0439d16ba9bd76db735711502e9a27aa9c6723229750ab071b0e"
+          },
+          "_load_token": {
+            "line": 45,
+            "endLine": 49,
+            "astSha256": "445ac5512042c55fcdfe49cb6d226cf4129648602ef4c3ce9ecccb537ea34d30"
+          },
+          "init_token_file": {
+            "line": 52,
+            "endLine": 55,
+            "astSha256": "57d4b9502172386b4f7dc350d458267b76510187398e51df8b71f941b06941d9"
+          },
+          "_parse_print_request": {
+            "line": 58,
+            "endLine": 100,
+            "astSha256": "44cd78e79d09f78e8aac4994a8cb8466299fa9431f8dfa2bb0c1965f88df48db"
+          },
+          "ApiState": {
+            "line": 104,
+            "endLine": 241,
+            "astSha256": "bc79a2b3c8cb3c2c348f72df34b2afec887524843ee2bd45b22f10ebca148cad"
+          },
+          "ApiState.__post_init__": {
+            "line": 117,
+            "endLine": 132,
+            "astSha256": "8a0fd362d34f8c2c36ea3b36a9753a61ffc9e9de93679b5591c6061b6a8a9883"
+          },
+          "ApiState._receipt_path": {
+            "line": 134,
+            "endLine": 135,
+            "astSha256": "3ebdbc70cf95c28c478785ac04e1809eefda9e8d85b8019762abd58e1d83cf35"
+          },
+          "ApiState._save_receipt": {
+            "line": 137,
+            "endLine": 145,
+            "astSha256": "90a88485cab4c18bcc9d62586dd972da89f398b6aa8fa29898fa11695a8de9bb"
+          },
+          "ApiState._read_receipt": {
+            "line": 147,
+            "endLine": 154,
+            "astSha256": "a629dfdc1c8cab46b0815e0c4e683d4ea4f90f8c82ce9b353f8ed9f14ff4a166"
+          },
+          "ApiState.recent_receipts": {
+            "line": 156,
+            "endLine": 169,
+            "astSha256": "9061790c3c8df63be52b5b077b285e5c88a1fb83a82020d3d8815841f21e3daa"
+          },
+          "ApiState.submit": {
+            "line": 171,
+            "endLine": 192,
+            "astSha256": "644c7419dc2045fb92b43e10d7668a1f7c2fe635abcded8aaa4497d3dc7cfa42"
+          },
+          "ApiState._work": {
+            "line": 194,
+            "endLine": 236,
+            "astSha256": "be55bb0991ec4697ece62ce4b63cfeabaf11e94dc5b1dee2514ec0ae8e0d9cfe"
+          },
+          "ApiState.start_worker": {
+            "line": 238,
+            "endLine": 241,
+            "astSha256": "3427c7adb8533d4babb6fa7e47257f758a084031c8195329867136d6fd40e2bd"
+          },
+          "make_handler": {
+            "line": 244,
+            "endLine": 396,
+            "astSha256": "2256de4c614bd7ca637cee5dd25434c4b2df80d871b628717fe465c8cd09af3d"
+          },
+          "make_handler.Handler": {
+            "line": 245,
+            "endLine": 394,
+            "astSha256": "08ad53e1916c7ace4f20f0efa1b983a6fa38d4ac9658d7768669449927ede4c9"
+          },
+          "make_handler.Handler.setup": {
+            "line": 248,
+            "endLine": 250,
+            "astSha256": "957f6ebf841ab3d4b432877f138f09fb2713645f2626a342c00305db4164821e"
+          },
+          "make_handler.Handler._cors_origin": {
+            "line": 252,
+            "endLine": 255,
+            "astSha256": "dc1816e8da1edf6e5df15d645108975969dcd7b03c8ea2c56c4949963a14f0d5"
+          },
+          "make_handler.Handler._respond": {
+            "line": 257,
+            "endLine": 269,
+            "astSha256": "f2b5284b9cdcdcbedb59aa5b552fd22dbf1db63c863cfc728ca6edd8c38ea7ac"
+          },
+          "make_handler.Handler._authorized": {
+            "line": 271,
+            "endLine": 288,
+            "astSha256": "25b06f44ed8e72adf74c37f24869c4a9089cb4271cebb1904127dddf93047e2c"
+          },
+          "make_handler.Handler.do_GET": {
+            "line": 290,
+            "endLine": 319,
+            "astSha256": "0db8fcbcb7a79c321794e957e68dbdd66885aa84adc89ff5426cef5353db9b83"
+          },
+          "make_handler.Handler.do_POST": {
+            "line": 321,
+            "endLine": 365,
+            "astSha256": "6e61ac9806341c5251de0b8c6b27381d9099916f6bcb9eb8ded91d25ef030a76"
+          },
+          "make_handler.Handler.do_OPTIONS": {
+            "line": 367,
+            "endLine": 390,
+            "astSha256": "d07505f245d3a8316e0e22a267e9cf14ea76f25714385316fa8c28e894c3fa0b"
+          },
+          "make_handler.Handler.log_message": {
+            "line": 392,
+            "endLine": 394,
+            "astSha256": "6df145058df3d7802ddada8892609ee003c6d047fbeaf6578f8858ea406243ef"
+          },
+          "run_server": {
+            "line": 399,
+            "endLine": 405,
+            "astSha256": "3457f304018ed34efd15faeeefd4d11cf5b0cb239d66dda9cda6bcc6a0dcd58c"
+          },
+          "main": {
+            "line": 408,
+            "endLine": 436,
+            "astSha256": "e20224d6a00f3197c250d8b0d82ef4fda22326590ed4b7b3ebdcc7fcd0220db5"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='argparse')])",
+          "Import(names=[alias(name='base64')])",
+          "Import(names=[alias(name='hmac')])",
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='queue')])",
+          "Import(names=[alias(name='re')])",
+          "Import(names=[alias(name='secrets')])",
+          "Import(names=[alias(name='threading')])",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='dataclasses', names=[alias(name='dataclass'), alias(name='field')], level=0)",
+          "ImportFrom(module='hashlib', names=[alias(name='sha256')], level=0)",
+          "ImportFrom(module='http.server', names=[alias(name='BaseHTTPRequestHandler'), alias(name='ThreadingHTTPServer')], level=0)",
+          "ImportFrom(module='io', names=[alias(name='BytesIO')], level=0)",
+          "ImportFrom(module='medicine_label', names=[alias(name='MedicineIdentity'), alias(name='render_medicine_label')], level=1)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)",
+          "ImportFrom(module='raster', names=[alias(name='Label'), alias(name='render')], level=1)",
+          "ImportFrom(module='transport', names=[alias(name='MAX_JOB_BYTES'), alias(name='send_approved_job')], level=1)",
+          "ImportFrom(module='tspl', names=[alias(name='serialize')], level=1)",
+          "ImportFrom(module='urllib.parse', names=[alias(name='parse_qs'), alias(name='urlsplit')], level=0)",
+          "ImportFrom(module='uuid', names=[alias(name='uuid4')], level=0)"
+        ],
+        "calls": [
+          "('Bearer ' + state.token).encode",
+          "(json.dumps(value, ensure_ascii=False, separators=(',', ':')) + '\\n').encode",
+          "ApiState",
+          "BytesIO",
+          "IDEMPOTENCY.fullmatch",
+          "Label",
+          "MedicineIdentity.from_payload",
+          "OverflowError",
+          "SystemExit",
+          "TARGET_NAME.fullmatch",
+          "ThreadingHTTPServer",
+          "ValueError",
+          "_json_bytes",
+          "_load_token",
+          "_parse_print_request",
+          "any",
+          "approved.casefold",
+          "argparse.ArgumentParser",
+          "args.token_file.resolve",
+          "base64.b64encode",
+          "base64.b64encode(preview.getvalue()).decode",
+          "bool",
+          "existing.copy",
+          "f'{digest}:{copies}'.encode",
+          "field",
+          "file.write",
+          "float",
+          "frozenset",
+          "hmac.compare_digest",
+          "init.add_argument",
+          "init_token_file",
+          "int",
+          "isinstance",
+          "item.copy",
+          "json.dumps",
+          "json.loads",
+          "key.encode",
+          "len",
+          "list",
+          "main",
+          "make_handler",
+          "next",
+          "older.append",
+          "parse_qs",
+          "parser.add_subparsers",
+          "parser.parse_args",
+          "part.strip",
+          "part.strip().casefold",
+          "path.exists",
+          "path.open",
+          "path.parent.mkdir",
+          "path.read_text",
+          "path.read_text(encoding='ascii').strip",
+          "path.stat",
+          "payload.get",
+          "preview.getvalue",
+          "preview_image.save",
+          "print",
+          "query.get",
+          "queue.Queue",
+          "raw.get",
+          "re.compile",
+          "re.fullmatch",
+          "receipt.copy",
+          "render",
+          "render_medicine_label",
+          "report_path.exists",
+          "report_path.read_text",
+          "result.get",
+          "run_server",
+          "secrets.token_urlsafe",
+          "self._authorized",
+          "self._cors_origin",
+          "self._read_receipt",
+          "self._receipt_path",
+          "self._respond",
+          "self._save_receipt",
+          "self.connection.settimeout",
+          "self.end_headers",
+          "self.headers.get",
+          "self.headers.get('Access-Control-Request-Headers', '').split",
+          "self.headers.get('Content-Type', '').split",
+          "self.headers.get('Content-Type', '').split(';', 1)[0].strip",
+          "self.headers.get('Content-Type', '').split(';', 1)[0].strip().lower",
+          "self.jobs.full",
+          "self.jobs.get",
+          "self.jobs.put_nowait",
+          "self.jobs.task_done",
+          "self.receipts.get",
+          "self.receipts.values",
+          "self.report_dir.glob",
+          "self.report_dir.mkdir",
+          "self.rfile.read",
+          "self.send_header",
+          "self.send_response",
+          "self.wfile.write",
+          "self.worker.start",
+          "send_approved_job",
+          "serialize",
+          "serve.add_argument",
+          "server.serve_forever",
+          "server.server_close",
+          "set",
+          "sha256",
+          "sha256(f'{digest}:{copies}'.encode('ascii')).hexdigest",
+          "sha256(job).hexdigest",
+          "sha256(key.encode('ascii')).hexdigest",
+          "sorted",
+          "state.jobs.qsize",
+          "state.recent_receipts",
+          "state.start_worker",
+          "state.submit",
+          "state.worker.is_alive",
+          "str",
+          "sub.add_parser",
+          "super",
+          "super().setup",
+          "supplied.encode",
+          "temporary.replace",
+          "temporary.write_bytes",
+          "threading.Thread",
+          "tuple",
+          "type",
+          "urlsplit",
+          "uuid4"
+        ],
+        "relativeModules": [
+          "medicine_label",
+          "raster",
+          "transport",
+          "tspl"
+        ]
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/ble.py",
+      "sha256": "e8266fb76a6dc4ced4ac0c85c0665a8f9a43811f7ebcde9f0f745986ded433eb",
+      "gitBlob": "e48425377fbdcd80663d3aabd344a2a85258df54",
+      "facts": {
+        "moduleAstSha256": "108aed4ae9e83da42172a1fa7ab26aee94e54255bb016d9037baf71c123e8cad",
+        "symbols": {
+          "is_deli_name": {
+            "line": 11,
+            "endLine": 13,
+            "astSha256": "8f32086bf8a17b96e02afa5a107510fb6e0e79fec9a8b622f93bb641694737ca"
+          },
+          "SeenDevice": {
+            "line": 17,
+            "endLine": 21,
+            "astSha256": "bd31afd4bbef0e899d23706c78f1abd39f2c1fbffcd3451f6b8e385da426845a"
+          },
+          "scan": {
+            "line": 24,
+            "endLine": 33,
+            "astSha256": "671f5ec6be3c290ecf9e975e2a8c8530a13deda266eb07f76c5bf00863f44598"
+          },
+          "services": {
+            "line": 36,
+            "endLine": 68,
+            "astSha256": "651123a47d2481e70f48bb83c4add63ae85a92ad3f0a7876c787d65b08354847"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='asyncio')])",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='bleak', names=[alias(name='BleakClient'), alias(name='BleakScanner')], level=0)",
+          "ImportFrom(module='dataclasses', names=[alias(name='dataclass')], level=0)"
+        ],
+        "calls": [
+          "(name or '').strip",
+          "(name or '').strip().casefold",
+          "BleakClient",
+          "BleakScanner.discover",
+          "SeenDevice",
+          "ValueError",
+          "asyncio.wait_for",
+          "client.connect",
+          "client.disconnect",
+          "dataclass",
+          "device.address.casefold",
+          "found.append",
+          "is_deli_name",
+          "item.name.casefold",
+          "lowered.startswith",
+          "observations.values",
+          "result['services'].append",
+          "sorted",
+          "target_address.casefold",
+          "target_address.strip",
+          "tuple"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/cli.py",
+      "sha256": "7385d6399aa3ef9cd04b8732c43e91c62b50a496ba42056fc4b889f2466ce7f1",
+      "gitBlob": "3b6e7e9351e80a2694043fab87cd003d59fbdde3",
+      "facts": {
+        "moduleAstSha256": "4e1a826596730a40f5fcd8cc23139f920a2d64b72b9389831d078da850bf3a14",
+        "symbols": {
+          "_redact_name": {
+            "line": 27,
+            "endLine": 28,
+            "astSha256": "b46be9241cd95c7bb596adf7aece118f9a08800c2df6888bb34261082a4925f9"
+          },
+          "build_parser": {
+            "line": 31,
+            "endLine": 63,
+            "astSha256": "c734e0bc50992117fcf637717b51308789aee568fa2c7b06ce76c2030390bb84"
+          },
+          "main": {
+            "line": 66,
+            "endLine": 139,
+            "astSha256": "0683397177a7b121ef9459a6e64af10887311d6e2d23991100ba5c1c8759355a"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='argparse')])",
+          "Import(names=[alias(name='asyncio')])",
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='platform')])",
+          "Import(names=[alias(name='re')])",
+          "Import(names=[alias(name='sys')])",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='ble', names=[alias(name='scan'), alias(name='services')], level=1)",
+          "ImportFrom(module='bleak.exc', names=[alias(name='BleakError')], level=0)",
+          "ImportFrom(module='datetime', names=[alias(name='datetime'), alias(name='timezone')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)",
+          "ImportFrom(module='raster', names=[alias(name='Label'), alias(name='save_preview')], level=1)",
+          "ImportFrom(module='transport', names=[alias(name='send_approved_job')], level=1)",
+          "ImportFrom(module='tspl', names=[alias(name='save_candidate')], level=1)",
+          "ImportFrom(module='tspl', names=[alias(name='serialize')], level=1)",
+          "ImportFrom(names=[alias(name='__version__')], level=1)"
+        ],
+        "calls": [
+          "','.join",
+          "Label",
+          "SystemExit",
+          "ValueError",
+          "_redact_name",
+          "argparse.ArgumentParser",
+          "args.output.resolve",
+          "args.report_json.parent.mkdir",
+          "args.report_json.resolve",
+          "args.report_json.write_text",
+          "asyncio.run",
+          "build_parser",
+          "build_parser().parse_args",
+          "candidate.binary.resolve",
+          "candidate.metadata.resolve",
+          "candidate.png.resolve",
+          "datetime.now",
+          "datetime.now(timezone.utc).isoformat",
+          "enum.add_argument",
+          "json.dumps",
+          "list",
+          "listing.add_argument",
+          "main",
+          "mode.add_argument",
+          "parser.add_subparsers",
+          "platform.platform",
+          "platform.python_version",
+          "print",
+          "printing.add_argument",
+          "printing.add_mutually_exclusive_group",
+          "re.sub",
+          "save_candidate",
+          "save_preview",
+          "scan",
+          "send_approved_job",
+          "serialize",
+          "services",
+          "sub.add_parser",
+          "tuple"
+        ],
+        "relativeModules": [
+          "",
+          "ble",
+          "raster",
+          "transport",
+          "tspl"
+        ]
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/medicine_label.py",
+      "sha256": "21c12f4b35e1cfcf6f6be06ecea37936ad3455ac0bb4800f9695716a74e4045a",
+      "gitBlob": "f2be7722d8fc7cf7c9c9eb988a7735f7cd980586",
+      "facts": {
+        "moduleAstSha256": "f295d4a4fba48e901ffdb2318707d8d03089814ff61d4edd4a0260bfb096749f",
+        "symbols": {
+          "MedicineIdentity": {
+            "line": 24,
+            "endLine": 55,
+            "astSha256": "99e9911b8ebfc7fa31df4039bdccddd7a1f8777faeb0ee850d0620a147ee7004"
+          },
+          "MedicineIdentity.from_payload": {
+            "line": 34,
+            "endLine": 51,
+            "astSha256": "89ced6c396f9f2305f37fdf42c321d1cde686f0db93b8877342c74f4fd2cd842"
+          },
+          "MedicineIdentity.qr_payload": {
+            "line": 54,
+            "endLine": 55,
+            "astSha256": "7f605cda48b3a4ebb9f60fc7fb0b8114a66674028ced9c7800a18690ffe4191c"
+          },
+          "_draw_fit": {
+            "line": 58,
+            "endLine": 68,
+            "astSha256": "fb0fba2ffad58ae57ff22e1965cb94a4cd973481c900168540b37b4366796f82"
+          },
+          "_draw_fit_right": {
+            "line": 71,
+            "endLine": 82,
+            "astSha256": "d2700d2c874e2160a33f8a930f2dcb2425812d7661778aa61b388a81113463bb"
+          },
+          "render_medicine_label": {
+            "line": 85,
+            "endLine": 111,
+            "astSha256": "cf67079a794ad1f297aa2e75880426b931804fdaf64fa63e65ac8990d4f94650"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='qrcode')])",
+          "Import(names=[alias(name='re')])",
+          "ImportFrom(module='PIL', names=[alias(name='Image'), alias(name='ImageDraw')], level=0)",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='dataclasses', names=[alias(name='dataclass')], level=0)",
+          "ImportFrom(module='raster', names=[alias(name='_font')], level=1)"
+        ],
+        "calls": [
+          "Image.new",
+          "ImageDraw.Draw",
+          "SKU.fullmatch",
+          "ValueError",
+          "_draw_fit",
+          "_draw_fit_right",
+          "_font",
+          "any",
+          "canvas.paste",
+          "canvas.transpose",
+          "cls",
+          "code.resize",
+          "dataclass",
+          "draw.line",
+          "draw.text",
+          "draw.textbbox",
+          "isinstance",
+          "len",
+          "min",
+          "ord",
+          "qr.add_data",
+          "qr.make",
+          "qr.make_image",
+          "qr.make_image(fill_color='black', back_color='white').convert",
+          "qrcode.QRCode",
+          "range",
+          "re.compile",
+          "set",
+          "value.splitlines",
+          "value.strip"
+        ],
+        "relativeModules": [
+          "raster"
+        ]
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/raster.py",
+      "sha256": "bc30557455c497f3b34a4c0a3db1e80c299c0b92df76ef86467514952bfc2201",
+      "gitBlob": "8a1e87b93e7f389d7e83ff32b18a8f3ba7baa28e",
+      "facts": {
+        "moduleAstSha256": "ae88133a095000c7c177d816ee8db6a5e13cd34be7b682b1bec5a9d605b94b7f",
+        "symbols": {
+          "Label": {
+            "line": 19,
+            "endLine": 50,
+            "astSha256": "dc39fa60be5db03253f81bac61909d7678b5bbcb3d19d80f841306b63bac2080"
+          },
+          "Label.validate": {
+            "line": 27,
+            "endLine": 50,
+            "astSha256": "1dc8d87d11b5ee64ff39ca65e1e8c1d8f046b96ed35e54a0c6a02c48238e47a4"
+          },
+          "_font": {
+            "line": 53,
+            "endLine": 62,
+            "astSha256": "bed1b9ea2fd47ac00bce91c8fa04afb2a43e5466ca3f10f1a0410825ca43b144"
+          },
+          "render": {
+            "line": 65,
+            "endLine": 144,
+            "astSha256": "35a3aced11de853ef0dba9da0295f42bbc83e01015eda4cb632b260477a70c1f"
+          },
+          "save_preview": {
+            "line": 147,
+            "endLine": 151,
+            "astSha256": "08676bd492a34938394db5af8b6bc3b43d9f4426381fa40eabeaf18918c068e8"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='barcode')])",
+          "Import(names=[alias(name='math')])",
+          "Import(names=[alias(name='qrcode')])",
+          "ImportFrom(module='PIL', names=[alias(name='Image'), alias(name='ImageDraw'), alias(name='ImageFont')], level=0)",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='dataclasses', names=[alias(name='dataclass')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)"
+        ],
+        "calls": [
+          "Image.new",
+          "ImageDraw.Draw",
+          "ImageFont.truetype",
+          "Path",
+          "RuntimeError",
+          "ValueError",
+          "_font",
+          "any",
+          "barcode.Code128",
+          "barcode.Code128(label.code128).build",
+          "bool",
+          "canvas.paste",
+          "dataclass",
+          "draw.rectangle",
+          "draw.text",
+          "draw.textbbox",
+          "enumerate",
+          "image.save",
+          "label.validate",
+          "len",
+          "line.strip",
+          "math.isfinite",
+          "max",
+          "min",
+          "ord",
+          "path.exists",
+          "path.parent.mkdir",
+          "qr.add_data",
+          "qr.make",
+          "qr.make_image",
+          "qr.make_image(fill_color='black', back_color='white').convert",
+          "qr_image.resize",
+          "qrcode.QRCode",
+          "render",
+          "round",
+          "self.qr.encode",
+          "str"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/transport.py",
+      "sha256": "634fd076ac4766dc67daa90499a846996be0eac447435c7978530eba2aa5078a",
+      "gitBlob": "b247190cec005c2f919226a9063a72bfeb4902b2",
+      "facts": {
+        "moduleAstSha256": "6b60adf86e7fd791b026c1a93323e39b03899f59c0d21279a76ffff77d9cf2fc",
+        "symbols": {
+          "_validate_report_path": {
+            "line": 29,
+            "endLine": 35,
+            "astSha256": "bf82131412817a4d29bf12975e557fa5348bf5f72c06b4adadf767863909da3b"
+          },
+          "_session": {
+            "line": 38,
+            "endLine": 128,
+            "astSha256": "cf9e29b90a2573ee0bd98b8b653274de8f77708efe4262f3acac71314f1776ef"
+          },
+          "_session.on_notify": {
+            "line": 65,
+            "endLine": 72,
+            "astSha256": "aa34a6e3b87174132c711619255088e885bd286a551bcee0156cea14d70c2488"
+          },
+          "_session.send_one": {
+            "line": 74,
+            "endLine": 84,
+            "astSha256": "0caefaa88d8aeab8be9052b4fc8e5923ae7132738dcaae74409ecf4f1fc9bb19"
+          },
+          "send_approved_job": {
+            "line": 131,
+            "endLine": 157,
+            "astSha256": "4c24e72303decca514d944a5c433b1e7efcb51f91ce8c9693c55381fb8e82230"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='asyncio')])",
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='re')])",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='bleak', names=[alias(name='BleakClient'), alias(name='BleakScanner')], level=0)",
+          "ImportFrom(module='datetime', names=[alias(name='datetime'), alias(name='timezone')], level=0)",
+          "ImportFrom(module='hashlib', names=[alias(name='sha256')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)"
+        ],
+        "calls": [
+          "BleakClient",
+          "BleakScanner.discover",
+          "ValueError",
+          "_session",
+          "_validate_report_path",
+          "address.casefold",
+          "address.strip",
+          "approved_hash.casefold",
+          "asyncio.run",
+          "asyncio.sleep",
+          "asyncio.wait_for",
+          "bytes",
+          "char.uuid.casefold",
+          "client.connect",
+          "client.disconnect",
+          "client.start_notify",
+          "client.write_gatt_char",
+          "datetime.now",
+          "datetime.now(timezone.utc).isoformat",
+          "device.address.casefold",
+          "job.endswith",
+          "job.startswith",
+          "json.dumps",
+          "len",
+          "observations.values",
+          "path.open",
+          "path.parent.mkdir",
+          "payload.hex",
+          "range",
+          "re.fullmatch",
+          "report['notify_hex'].append",
+          "report_path.resolve",
+          "report_path.write_text",
+          "reserved.write",
+          "resolved.exists",
+          "resolved.suffix.casefold",
+          "send_one",
+          "service.uuid.casefold",
+          "sha256",
+          "sha256(job).hexdigest",
+          "type"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/src/deli720w/tspl.py",
+      "sha256": "ef149ceba203be2bea791eb07885ee9a569f84b6090178530e110ddd3c61e240",
+      "gitBlob": "e00af949fd54752dd982e34edf1f974d56384cb3",
+      "facts": {
+        "moduleAstSha256": "3e6ec9d3b13cc163dea43f0ce6149f7f45105d3d050b7f119cdd3dbd681f7840",
+        "symbols": {
+          "Candidate": {
+            "line": 29,
+            "endLine": 35,
+            "astSha256": "b6d4f74c48079a42a548e76c64639134beed0802676e310637314ea8338e639c"
+          },
+          "pack_bitmap": {
+            "line": 38,
+            "endLine": 53,
+            "astSha256": "f3e980e4f369da3a2a80884c0f3b9c28f4601f8f55f9e49f8bf9fa943d10f36c"
+          },
+          "serialize": {
+            "line": 56,
+            "endLine": 103,
+            "astSha256": "6a68438055ee627c345b1901eed5ccc43c1c8a7fcefb9de56d33de106d0c4126"
+          },
+          "save_candidate": {
+            "line": 106,
+            "endLine": 117,
+            "astSha256": "13bef44b132f268ff7f11c2d8a73c9981ba06cc1a1720fc9f6c414589b878748"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='json')])",
+          "ImportFrom(module='PIL', names=[alias(name='Image')], level=0)",
+          "ImportFrom(module='PIL', names=[alias(name='ImageChops')], level=0)",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='dataclasses', names=[alias(name='dataclass')], level=0)",
+          "ImportFrom(module='hashlib', names=[alias(name='sha256')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)",
+          "ImportFrom(module='raster', names=[alias(name='Label'), alias(name='render')], level=1)"
+        ],
+        "calls": [
+          "Candidate",
+          "ImageChops.invert",
+          "ImageChops.invert(image.convert('L')).getbbox",
+          "ValueError",
+          "binary_path.write_bytes",
+          "bytearray",
+          "bytes",
+          "dataclass",
+          "f'SIZE {width} mm,{height} mm\\r\\nCLS\\r\\nBITMAP 0,0,{row_bytes},{bitmap_image.height},0,'.encode",
+          "format",
+          "format(label.height_mm, '.3f').rstrip",
+          "format(label.height_mm, '.3f').rstrip('0').rstrip",
+          "format(label.width_mm, '.3f').rstrip",
+          "format(label.width_mm, '.3f').rstrip('0').rstrip",
+          "image.convert",
+          "image.crop",
+          "image.load",
+          "image.save",
+          "json.dumps",
+          "label.validate",
+          "len",
+          "metadata_path.write_text",
+          "pack_bitmap",
+          "png_path.parent.mkdir",
+          "png_path.suffix.casefold",
+          "png_path.with_suffix",
+          "range",
+          "render",
+          "serialize",
+          "sha256",
+          "sha256(job).hexdigest"
+        ],
+        "relativeModules": [
+          "raster"
+        ]
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_api.py",
+      "sha256": "a637360f45a901049a97d1e52142ed09a25964db4bc3cf315e50e3fc85d75174",
+      "gitBlob": "804ce506728413978080723cfd8d08074a1f4ba7",
+      "facts": {
+        "moduleAstSha256": "976326075c425202f514ca55ffc863085e12b0e53c99a97a857c417f726eabad",
+        "symbols": {
+          "local_server": {
+            "line": 26,
+            "endLine": 39,
+            "astSha256": "3225a3305c151522da3f58c71d9c7691fc25c2ac9fe7dc5ee90628f4648cb32d"
+          },
+          "request": {
+            "line": 42,
+            "endLine": 63,
+            "astSha256": "43f1fd2eba61d93ae8d4691caa773d1afc852fb3147936edc43eb9dbf389e47c"
+          },
+          "test_token_host_origin_gate_every_endpoint": {
+            "line": 66,
+            "endLine": 75,
+            "astSha256": "7f80bcac4566e08a1659eeb80cf85f9ec2ba5594fc754ee2ef5a5ba667c5a37b"
+          },
+          "test_default_off_dry_run_hash_and_no_enqueue": {
+            "line": 78,
+            "endLine": 88,
+            "astSha256": "58ad9707c9d43968fe6522c08b5feb5caa128e6560ee979794c07f22366572dc"
+          },
+          "test_medicine_preview_is_landscape_and_same_approved_job": {
+            "line": 91,
+            "endLine": 107,
+            "astSha256": "ebcf88cbc551d2aa3855ace5fb084f031224ab3d9ceda47b6738a0e7a2301cae"
+          },
+          "test_exact_hash_idempotency_and_conflict_before_queue": {
+            "line": 110,
+            "endLine": 122,
+            "astSha256": "98cf3952ff0b95e4d4fd244791d24e0647f6e126a4678e2dbb1192829ac10aea"
+          },
+          "test_approved_symbol_job_queues_once_without_hardware_send": {
+            "line": 125,
+            "endLine": 133,
+            "astSha256": "556501264c04949f91d8632685eb1e9e0ff4cb5d6f23c55b871e5cce02730256"
+          },
+          "test_body_format_and_size_limits": {
+            "line": 136,
+            "endLine": 142,
+            "astSha256": "6e72e1ad910f8d051706ed7de120084ab83158dc6de9b00613c50fa3d0d14795"
+          },
+          "test_mock_worker_submitted_unverified_and_no_retry": {
+            "line": 145,
+            "endLine": 166,
+            "astSha256": "84b54d905779394afaf7832db2f336fb98913fe6bda6e31b917144f3e0d174f5"
+          },
+          "test_mock_worker_submitted_unverified_and_no_retry.fake_send": {
+            "line": 148,
+            "endLine": 150,
+            "astSha256": "a97e12516fc9e2c7c2bd9f773c12bb820a7bf734997c7b9484b82deb10b77c9b"
+          },
+          "test_restart_reservation_never_requeues": {
+            "line": 169,
+            "endLine": 182,
+            "astSha256": "d46c5e5db949a09dd125e443eafc495236e59ac32c6bcc41ea5680e24d4681fd"
+          },
+          "test_worker_persistence_failure_cannot_send": {
+            "line": 185,
+            "endLine": 197,
+            "astSha256": "b98a57ed9fc545f71f1e84e82af831ada4d08881d4bc8389536d7e9cb21438c5"
+          },
+          "test_token_file_and_origin_validation": {
+            "line": 200,
+            "endLine": 216,
+            "astSha256": "7f6f509b3ffae2477bbf89219767a0f356fe27eae1fd54fa790dfa991ab6094d"
+          },
+          "test_exact_browser_preflight_has_no_data_access": {
+            "line": 219,
+            "endLine": 249,
+            "astSha256": "fb24ac05ec81e928c2f08305730aa9d3bece5477f5fccb9b7fb9f7d019247b61"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='base64')])",
+          "Import(names=[alias(name='http.client')])",
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='pytest')])",
+          "Import(names=[alias(name='threading')])",
+          "ImportFrom(module='__future__', names=[alias(name='annotations')], level=0)",
+          "ImportFrom(module='contextlib', names=[alias(name='contextmanager')], level=0)",
+          "ImportFrom(module='dataclasses', names=[alias(name='asdict')], level=0)",
+          "ImportFrom(module='deli720w', names=[alias(name='api')], level=0)",
+          "ImportFrom(module='deli720w.medicine_label', names=[alias(name='MedicineIdentity')], level=0)",
+          "ImportFrom(module='http.server', names=[alias(name='ThreadingHTTPServer')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)"
+        ],
+        "calls": [
+          "(_ for _ in ()).throw",
+          "MedicineIdentity",
+          "OSError",
+          "ThreadingHTTPServer",
+          "api.ApiState",
+          "api._load_token",
+          "api._parse_print_request",
+          "api.init_token_file",
+          "api.make_handler",
+          "api.sha256",
+          "api.sha256(job).hexdigest",
+          "asdict",
+          "base64.b64decode",
+          "base64.b64decode(preview['preview_png_base64']).startswith",
+          "calls.append",
+          "connection.close",
+          "connection.endheaders",
+          "connection.getresponse",
+          "connection.putheader",
+          "connection.putrequest",
+          "first.submit",
+          "frozenset",
+          "http.client.HTTPConnection",
+          "json.dumps",
+          "json.dumps(payload).encode",
+          "json.loads",
+          "len",
+          "list",
+          "local_server",
+          "monkeypatch.setattr",
+          "pytest.fail",
+          "pytest.raises",
+          "request",
+          "response.getheader",
+          "response.read",
+          "restarted.jobs.qsize",
+          "restarted.submit",
+          "server.server_close",
+          "server.shutdown",
+          "state.jobs.join",
+          "state.jobs.qsize",
+          "state.start_worker",
+          "state.submit",
+          "str",
+          "thread.join",
+          "thread.start",
+          "threading.Thread",
+          "tmp_path.iterdir"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_experimental_guard.py",
+      "sha256": "85810c18ffe1cddeac8efac37a232875c147eeb515ebdcf4080add6237113260",
+      "gitBlob": "cfa6305628ffeda1a969510b5c0151b7a4ede49f",
+      "facts": {
+        "moduleAstSha256": "7cf9268d760edf53b59fd6081e4932fe133fbd91a61954d4ee1bf6a27d8f3502",
+        "symbols": {
+          "test_preflight_requires_exact_hash_and_private_target": {
+            "line": 14,
+            "endLine": 31,
+            "astSha256": "b698e019fd0290f98a618c62a0863e15e9618dddb2acba4ef6a230b07b9f027d"
+          },
+          "_fake_ble": {
+            "line": 34,
+            "endLine": 84,
+            "astSha256": "87ce0df9a84fb799a7b82ba37e0f5bca5b5ac0203ccc3b7ddbe023f5edc6bf4a"
+          },
+          "_fake_ble.discover": {
+            "line": 40,
+            "endLine": 42,
+            "astSha256": "a7080f4a590e0b14183e0af5caf372cc9267a52eb01f77ed6c8a5c3a1348b4fb"
+          },
+          "_fake_ble.Service": {
+            "line": 44,
+            "endLine": 46,
+            "astSha256": "465402f4a4f436e3494ed1bc85f895dfa96139518f0aa57288165d1946fb69c6"
+          },
+          "_fake_ble.Services": {
+            "line": 48,
+            "endLine": 50,
+            "astSha256": "d6ded5ddbe51a61d251fd3096bd9015a744a7ed9cc2622454c88890509cf27b1"
+          },
+          "_fake_ble.Services.__iter__": {
+            "line": 49,
+            "endLine": 50,
+            "astSha256": "b68fe95929a96a133937d2288e592d15115a6da535e8da579b1d38456050f6d5"
+          },
+          "_fake_ble.Client": {
+            "line": 52,
+            "endLine": 76,
+            "astSha256": "f86479caecf88a068a365a77000a54710585b609620426197483289b12883d9c"
+          },
+          "_fake_ble.Client.__init__": {
+            "line": 53,
+            "endLine": 57,
+            "astSha256": "5020c643c26e085bb82e47cda288ec4014823ad4af4101e51d6f832b9dbcf293"
+          },
+          "_fake_ble.Client.connect": {
+            "line": 59,
+            "endLine": 61,
+            "astSha256": "49c6aff6cae12a41d5e4b7c958d6c3a8793e43b92516d5d5dd1efc93f6fa6195"
+          },
+          "_fake_ble.Client.start_notify": {
+            "line": 63,
+            "endLine": 66,
+            "astSha256": "8b744589071884b63ab4cedfd0ffb3bf5b6eb459629d9f7e1590a1757047ce31"
+          },
+          "_fake_ble.Client.write_gatt_char": {
+            "line": 68,
+            "endLine": 72,
+            "astSha256": "2493ba8b6254067e05b87e6d93e44e41c468bfc540cd46f5cf853968a9fc4ce0"
+          },
+          "_fake_ble.Client.disconnect": {
+            "line": 74,
+            "endLine": 76,
+            "astSha256": "06210059886ce4cf004e902678d6e0fde60c16b8a0e25a5ca180776a24b81e1c"
+          },
+          "_fake_ble.fast_sleep": {
+            "line": 78,
+            "endLine": 79,
+            "astSha256": "591f7725e8db498032eb0d5c2f6b2271271c2724a8f369bad2d1ad3bc511a3a3"
+          },
+          "test_exact_service_single_job_and_disconnect": {
+            "line": 87,
+            "endLine": 100,
+            "astSha256": "4e6604e75fa6253b62eb82e657891ddc65de5b14c985b6aa8f3d08da56f2b86c"
+          },
+          "test_partial_send_is_unknown_and_never_retried": {
+            "line": 103,
+            "endLine": 115,
+            "astSha256": "3b719f0c140cf5f737d8a62f49832d6e2c5ef4329fa24eeaf170933801a1393d"
+          },
+          "test_duplicate_profile_fails_before_notify_or_write": {
+            "line": 119,
+            "endLine": 126,
+            "astSha256": "fc036758bfb21cf5c270b57f22f73b06024c6d393221287052c0b81f905b26c8"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='asyncio')])",
+          "Import(names=[alias(name='experimental_ble_job', asname='experiment')])",
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='pytest')])",
+          "Import(names=[alias(name='sys')])",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)",
+          "ImportFrom(module='types', names=[alias(name='SimpleNamespace')], level=0)"
+        ],
+        "calls": [
+          "Path",
+          "Path(__file__).resolve",
+          "RuntimeError",
+          "Service",
+          "Services",
+          "SimpleNamespace",
+          "_fake_ble",
+          "any",
+          "asyncio.run",
+          "b''.join",
+          "bytes",
+          "callback",
+          "calls.append",
+          "calls.count",
+          "experiment.JOB_PATH.read_bytes",
+          "experiment.perform",
+          "experiment.preflight",
+          "isinstance",
+          "iter",
+          "json.loads",
+          "len",
+          "monkeypatch.setattr",
+          "pytest.mark.parametrize",
+          "pytest.raises",
+          "report.write_text",
+          "report_path.read_text",
+          "str",
+          "sum",
+          "sys.path.insert",
+          "target_file.write_text"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_medicine_label.py",
+      "sha256": "7de0efcc1bbc6b5340853b44f30e14ff09524179c602f64d72247b7830850d93",
+      "gitBlob": "39ac18241117fe8d28698ab5650faa4718e63e1c",
+      "facts": {
+        "moduleAstSha256": "3d660c7e51e67673f01d6a9e4c26c3071c0f17e9bde523857b746794b27fc896",
+        "symbols": {
+          "test_landscape_preview_matches_operator_selected_physical_orientation": {
+            "line": 20,
+            "endLine": 30,
+            "astSha256": "2093b8aed2aeb7909caf2d66b86c2d1fa4bcab844add27840ba8d2d5d6df18ff"
+          },
+          "test_internal_qr_identity_and_incomplete_or_oversized_content": {
+            "line": 33,
+            "endLine": 45,
+            "astSha256": "38d4e4dbe2b58255286fc473d08fa7cb6799f32b2db4e5f4f42c2b104d50d4d1"
+          },
+          "test_long_top_lines_shrink_independently_or_identify_unprintable_field": {
+            "line": 48,
+            "endLine": 63,
+            "astSha256": "943ab8e32947ebfc1ee2cd7c297df4382cefc1d4905157e9b82dbb61937f69b3"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='pytest')])",
+          "ImportFrom(module='PIL', names=[alias(name='Image')], level=0)",
+          "ImportFrom(module='dataclasses', names=[alias(name='asdict')], level=0)",
+          "ImportFrom(module='deli720w.medicine_label', names=[alias(name='MedicineIdentity'), alias(name='render_medicine_label')], level=0)",
+          "ImportFrom(module='deli720w.raster', names=[alias(name='Label')], level=0)",
+          "ImportFrom(module='deli720w.tspl', names=[alias(name='pack_bitmap'), alias(name='serialize')], level=0)"
+        ],
+        "calls": [
+          "Label",
+          "MedicineIdentity",
+          "MedicineIdentity.from_payload",
+          "all",
+          "any",
+          "asdict",
+          "first_preview.crop",
+          "first_preview.crop((0, 0, 320, 240)).tobytes",
+          "first_preview.tobytes",
+          "pack_bitmap",
+          "physical.transpose",
+          "physical.transpose(Image.Transpose.ROTATE_180).tobytes",
+          "preview.getpixel",
+          "preview.tobytes",
+          "pytest.raises",
+          "range",
+          "render_medicine_label",
+          "second_preview.crop",
+          "second_preview.crop((0, 0, 320, 240)).tobytes",
+          "second_preview.tobytes",
+          "serialize"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_raster.py",
+      "sha256": "539a65e39460a6ffc629bd46d084cb89f4490f88013278ed8e6b016ae02164fe",
+      "gitBlob": "293b7cd6796faf985d15b243fc7a9f7741daee07",
+      "facts": {
+        "moduleAstSha256": "930a00d710cfb664f8cfd4782102dd2559620a3b6b5961e971bd0fb146152730",
+        "symbols": {
+          "test_mixed_label_is_monochrome_and_has_ink": {
+            "line": 9,
+            "endLine": 17,
+            "astSha256": "0f3dcad1f4b2aad1ee258cdf1988790a75dfb41bbf6f5b364bfb5432d9b83baf"
+          },
+          "test_invalid_input_rejected": {
+            "line": 28,
+            "endLine": 30,
+            "astSha256": "ec50637e70b8a546a8a787ad1d528d1fe134c98652b3377d637c552adb196878"
+          },
+          "test_barcode_rejects_unreadably_narrow_label": {
+            "line": 33,
+            "endLine": 35,
+            "astSha256": "bb000a15a91d99b67e5cfbd36348e778918ca190660435fb4e56f3d870fcf1a8"
+          },
+          "test_barcode_has_native_module_width_and_quiet_zones": {
+            "line": 38,
+            "endLine": 48,
+            "astSha256": "7b4607c0b88086e3f23b98e399cbe97e7f42cf348d26fb79beaf7e9a8862b739"
+          },
+          "test_30_by_50_combined_layout_keeps_ink_in_upper_32_mm": {
+            "line": 51,
+            "endLine": 57,
+            "astSha256": "85e50633b46b80e63252295daf70d3b4f54fc829fa3693b4fb656eda1d772ec7"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='pytest')])",
+          "ImportFrom(module='PIL', names=[alias(name='Image'), alias(name='ImageChops')], level=0)",
+          "ImportFrom(module='deli720w.raster', names=[alias(name='Label'), alias(name='render'), alias(name='save_preview')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)"
+        ],
+        "calls": [
+          "Image.open",
+          "ImageChops.invert",
+          "ImageChops.invert(image.convert('L')).getbbox",
+          "Label",
+          "image.convert",
+          "image.getbbox",
+          "image.getextrema",
+          "image.getpixel",
+          "len",
+          "pytest.mark.parametrize",
+          "pytest.raises",
+          "range",
+          "render",
+          "row.count",
+          "row.index",
+          "row[::-1].index",
+          "save_preview"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_safety.py",
+      "sha256": "c71db6fe6e3b4183d1f9e543e16aafad174e7ede668fc53049c0a100e4f13576",
+      "gitBlob": "07d7beee5a2e9c9a522df29e6bc1768f3c89dc7d",
+      "facts": {
+        "moduleAstSha256": "8f1b586c42855bb8780bc4ce78ab34a5918738a7a73c7eb76f0b49ad549bf99c",
+        "symbols": {
+          "test_send_fails_before_any_raster_or_ble": {
+            "line": 10,
+            "endLine": 20,
+            "astSha256": "1310c9c413a7b91aa9812d5881f9db01acbf39a1afebf299b526f9dd801ef233"
+          },
+          "test_send_fails_before_any_raster_or_ble.forbidden": {
+            "line": 11,
+            "endLine": 12,
+            "astSha256": "5296f4bf7d48c66c5853719d01f365d4aa3063879726a7f0e1466405ff9c3b11"
+          },
+          "test_scan_filters_unrelated_devices": {
+            "line": 23,
+            "endLine": 35,
+            "astSha256": "5582bab6518be741100159be8ff1aa7543656f0d50b020168a7480dce0b5b94d"
+          },
+          "test_scan_filters_unrelated_devices.discover": {
+            "line": 27,
+            "endLine": 31,
+            "astSha256": "b92ed8414775982ce7081525c303b9b268c8b2c7ddea3374fe65db85f89a2ac9"
+          },
+          "test_list_json_redacts_address": {
+            "line": 38,
+            "endLine": 49,
+            "astSha256": "78767894e4eb934bffaa69bcb4079982fc2372e19365a655934a65ae2b9f3f11"
+          },
+          "test_list_json_redacts_address.fake_scan": {
+            "line": 39,
+            "endLine": 40,
+            "astSha256": "711a9146328bc88b341f397a94f880122a4c9eadadbae58f3fbb05deb41a9a92"
+          },
+          "test_services_never_connects_to_unrelated_name": {
+            "line": 52,
+            "endLine": 66,
+            "astSha256": "2b5f9c2365426b1d71b899cfddded520e3a0336de453a0380f1262cb75578bdf"
+          },
+          "test_services_never_connects_to_unrelated_name.discover": {
+            "line": 55,
+            "endLine": 56,
+            "astSha256": "3fc598df54c150bf0d03716d4dea605c1280a3e23e0fe1294fed8c52b04e4581"
+          },
+          "test_services_never_connects_to_unrelated_name.forbidden_client": {
+            "line": 58,
+            "endLine": 60,
+            "astSha256": "28e13d70a735a8b6def813c8c1c177ef4c6744fb30cb8d8b554c5849562bc744"
+          },
+          "test_services_disconnects_and_only_enumerates_metadata": {
+            "line": 69,
+            "endLine": 100,
+            "astSha256": "642e3561792bd526a581fb0ac2516866bb40098dcf0d67e13073a69b3dce85c1"
+          },
+          "test_services_disconnects_and_only_enumerates_metadata.discover": {
+            "line": 73,
+            "endLine": 74,
+            "astSha256": "e6633d95aca0b28fe991fc79dff9dcf451a92ec6011dbc8863480ad45e92381d"
+          },
+          "test_services_disconnects_and_only_enumerates_metadata.Client": {
+            "line": 76,
+            "endLine": 93,
+            "astSha256": "c917e998ff23b569dc7e7eea12ffab704a627b9440ca16f15dc2071508e025bf"
+          },
+          "test_services_disconnects_and_only_enumerates_metadata.Client.__init__": {
+            "line": 77,
+            "endLine": 82,
+            "astSha256": "c5b54177587a5ba783531c91289073eecd739460494184ba2871ae6f3a31b126"
+          },
+          "test_services_disconnects_and_only_enumerates_metadata.Client.connect": {
+            "line": 84,
+            "endLine": 86,
+            "astSha256": "5cf3346ea9bec4b57ec10fade0af7abc6198621bef326bb2a1d0a686ab27c417"
+          },
+          "test_services_disconnects_and_only_enumerates_metadata.Client.disconnect": {
+            "line": 88,
+            "endLine": 90,
+            "astSha256": "06210059886ce4cf004e902678d6e0fde60c16b8a0e25a5ca180776a24b81e1c"
+          },
+          "test_services_disconnects_and_only_enumerates_metadata.Client.write_gatt_char": {
+            "line": 92,
+            "endLine": 93,
+            "astSha256": "8835565a0107a56211e53279e5bf7a2419d3405e00625bb8a6961c119c86a022"
+          },
+          "test_scan_timeouts_bounded": {
+            "line": 104,
+            "endLine": 108,
+            "astSha256": "c47365ac355a38dec0486d9f997fa74910f4fd86c46abca5e304af4a9755ffab"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='asyncio')])",
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='pytest')])",
+          "ImportFrom(module='deli720w', names=[alias(name='ble'), alias(name='cli')], level=0)",
+          "ImportFrom(module='types', names=[alias(name='SimpleNamespace')], level=0)"
+        ],
+        "calls": [
+          "AssertionError",
+          "SimpleNamespace",
+          "asyncio.run",
+          "ble.SeenDevice",
+          "ble.scan",
+          "ble.services",
+          "calls.append",
+          "capsys.readouterr",
+          "capsys.readouterr().err.lower",
+          "cli.main",
+          "float",
+          "json.loads",
+          "len",
+          "monkeypatch.setattr",
+          "path.exists",
+          "pytest.mark.parametrize",
+          "pytest.raises",
+          "report.read_text",
+          "str"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_transport.py",
+      "sha256": "c26a9a30db48d2e013c2654efd461997badbf7ecf1e7e0b5db82c67eb0e0cc28",
+      "gitBlob": "2ec971c39580681d3a3f2192d18d4fa7034ac6b5",
+      "facts": {
+        "moduleAstSha256": "81ef31eb1536bec19862d05d42a80c711e789616c8ee449edd5bb6153e0545dd",
+        "symbols": {
+          "test_trim_removes_only_bottom_white_rows_and_keeps_label_size": {
+            "line": 14,
+            "endLine": 28,
+            "astSha256": "0d92bc41f043d3c5985a5c99f7e0955d8215b6b737f01a8dece40daf4bd82b6e"
+          },
+          "test_send_guard_rejects_bad_hash_copies_and_size_before_scan": {
+            "line": 31,
+            "endLine": 47,
+            "astSha256": "3d7190e84b0c3f2f7cb5b96b3638f094b6c24e33e570ba3523880a7d87277d39"
+          },
+          "test_send_guard_rejects_bad_hash_copies_and_size_before_scan.forbidden": {
+            "line": 32,
+            "endLine": 33,
+            "astSha256": "7258ecf4be304170e2735ac79a80bba240e523990ba6a15096a477edd2af2310"
+          },
+          "test_cli_routes_only_fully_explicit_send": {
+            "line": 50,
+            "endLine": 66,
+            "astSha256": "bcc823a2195d143f3829d4b508923990701eab1b93f7d83073119924f52bd573"
+          },
+          "test_cli_routes_only_fully_explicit_send.fake_send": {
+            "line": 53,
+            "endLine": 55,
+            "astSha256": "8845c75d5b49c5b5a33f94d387e95dd326632034fa32fe9f01a2ed4b18b7de49"
+          },
+          "test_two_copy_single_session_with_mock_ble": {
+            "line": 69,
+            "endLine": 121,
+            "astSha256": "cd518c392e13d216621b271b561f65008bd2c6e5b4adfcf46d288e2e5a42accc"
+          },
+          "test_two_copy_single_session_with_mock_ble.discover": {
+            "line": 77,
+            "endLine": 79,
+            "astSha256": "6dd1f159b1ae4cc0cc6cf31c1b837880dd4534665b6faeeed3634c72d1dcc3b2"
+          },
+          "test_two_copy_single_session_with_mock_ble.Client": {
+            "line": 81,
+            "endLine": 103,
+            "astSha256": "7dd4e8731bb24d6fb0bd4fdfeb7d40dca9c6b34009ee8edd0932c5937de6512c"
+          },
+          "test_two_copy_single_session_with_mock_ble.Client.__init__": {
+            "line": 82,
+            "endLine": 86,
+            "astSha256": "4cee6861202dc6b3124f672dd7a22fb3546f0609cc39222e74392add6f4f5adb"
+          },
+          "test_two_copy_single_session_with_mock_ble.Client.connect": {
+            "line": 88,
+            "endLine": 90,
+            "astSha256": "49c6aff6cae12a41d5e4b7c958d6c3a8793e43b92516d5d5dd1efc93f6fa6195"
+          },
+          "test_two_copy_single_session_with_mock_ble.Client.start_notify": {
+            "line": 92,
+            "endLine": 95,
+            "astSha256": "1b7b3872d256652cca236ad32aee63693f776217863eafa713adf5fd273517bb"
+          },
+          "test_two_copy_single_session_with_mock_ble.Client.write_gatt_char": {
+            "line": 97,
+            "endLine": 99,
+            "astSha256": "178054ba804c0de378b347eb184e3cb9f226beaeff4c694700fa61074c6d840e"
+          },
+          "test_two_copy_single_session_with_mock_ble.Client.disconnect": {
+            "line": 101,
+            "endLine": 103,
+            "astSha256": "06210059886ce4cf004e902678d6e0fde60c16b8a0e25a5ca180776a24b81e1c"
+          },
+          "test_two_copy_single_session_with_mock_ble.fast_sleep": {
+            "line": 105,
+            "endLine": 106,
+            "astSha256": "591f7725e8db498032eb0d5c2f6b2271271c2724a8f369bad2d1ad3bc511a3a3"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='json')])",
+          "Import(names=[alias(name='pytest')])",
+          "ImportFrom(module='PIL', names=[alias(name='Image')], level=0)",
+          "ImportFrom(module='deli720w', names=[alias(name='cli'), alias(name='transport')], level=0)",
+          "ImportFrom(module='deli720w.raster', names=[alias(name='Label')], level=0)",
+          "ImportFrom(module='deli720w.tspl', names=[alias(name='serialize')], level=0)",
+          "ImportFrom(module='hashlib', names=[alias(name='sha256')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)",
+          "ImportFrom(module='types', names=[alias(name='SimpleNamespace')], level=0)"
+        ],
+        "calls": [
+          "AssertionError",
+          "Image.new",
+          "Label",
+          "SimpleNamespace",
+          "b''.join",
+          "bytes",
+          "callback",
+          "calls.append",
+          "calls.count",
+          "calls[0]['job'].startswith",
+          "cli.main",
+          "full.split",
+          "image.putpixel",
+          "isinstance",
+          "json.loads",
+          "len",
+          "monkeypatch.setattr",
+          "pytest.raises",
+          "report.exists",
+          "report_path.read_text",
+          "serialize",
+          "sha256",
+          "sha256(job).hexdigest",
+          "sha256(oversize).hexdigest",
+          "str",
+          "transport.send_approved_job",
+          "trimmed.split",
+          "trimmed.startswith"
+        ],
+        "relativeModules": []
+      }
+    },
+    {
+      "path": "systems/enterprise-admin/local-print-agent/tests/test_tspl.py",
+      "sha256": "3b1c9aaf6cdfa9e7d3a7c69e9e3d59cb56e7df087dec04f187c8e425f2990c61",
+      "gitBlob": "647282e43d0f84e8cd1c73515c595535f97f459a",
+      "facts": {
+        "moduleAstSha256": "4d6c5e69a1b01c00a0713273b5bac5554bac0fc4dcca1aba240fc7e9ed973d75",
+        "symbols": {
+          "test_bitmap_packing_exact_bytes_and_padding": {
+            "line": 11,
+            "endLine": 17,
+            "astSha256": "97eb19c4c0f26149478aec6d3382556d7916cf685af2d7408994edafc7cf31ea"
+          },
+          "test_tspl_byte_framing_and_no_text_injection": {
+            "line": 20,
+            "endLine": 35,
+            "astSha256": "1838989c8f559e13b28a8f4f05aa247272e1e8f835099a30d8121527648c5659"
+          },
+          "test_tspl_rejects_unsupported_dimensions": {
+            "line": 46,
+            "endLine": 48,
+            "astSha256": "bc49f9bb3d627c5b4ae8286799043b5ffa3d9c9be8f3083a651855bf6e1f9479"
+          },
+          "test_candidate_files_and_cli_send_refusal": {
+            "line": 51,
+            "endLine": 60,
+            "astSha256": "18cf17c09f6b8ea91dc71774004ebb840b331237e5f88d7c0f747dff956d3c69"
+          }
+        },
+        "imports": [
+          "Import(names=[alias(name='pytest')])",
+          "ImportFrom(module='PIL', names=[alias(name='Image')], level=0)",
+          "ImportFrom(module='deli720w.cli', names=[alias(name='main')], level=0)",
+          "ImportFrom(module='deli720w.raster', names=[alias(name='Label')], level=0)",
+          "ImportFrom(module='deli720w.tspl', names=[alias(name='pack_bitmap'), alias(name='save_candidate'), alias(name='serialize')], level=0)",
+          "ImportFrom(module='pathlib', names=[alias(name='Path')], level=0)"
+        ],
+        "calls": [
+          "Image.new",
+          "Label",
+          "blocked.exists",
+          "blocked.with_suffix",
+          "blocked.with_suffix('.tspl.bin').exists",
+          "bytes",
+          "candidate.binary.exists",
+          "candidate.binary.read_bytes",
+          "candidate.binary.read_bytes().startswith",
+          "candidate.metadata.exists",
+          "candidate.png.exists",
+          "float",
+          "image.putpixel",
+          "job.endswith",
+          "job.startswith",
+          "len",
+          "main",
+          "pack_bitmap",
+          "pytest.mark.parametrize",
+          "pytest.raises",
+          "save_candidate",
+          "serialize",
+          "str"
+        ],
+        "relativeModules": []
+      }
+    }
+  ]
+}

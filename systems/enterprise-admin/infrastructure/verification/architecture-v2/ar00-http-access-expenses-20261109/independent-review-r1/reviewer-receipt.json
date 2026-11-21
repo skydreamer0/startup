@@ -1,0 +1,100 @@
+{
+  "recordedAt": "2026-11-09T04:10:15.757208+00:00",
+  "sourceCommit": "fde524b442986a574f5d9f9e6f0fb3035dfb8d91",
+  "freeze": "7fc1ae6a50108988676fa03a38d54207f12eea7c",
+  "partialTree": "e868c0977354f986481f7cd9664c96b169d57c45",
+  "remoteApplicationHead": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+  "remoteApplicationTree": "3d18d4211946e8dc02d4780a20dfba2efe512343",
+  "packetSha256": "464317449dd9bd1d28bdf3e313702aba820b4fc16385023b0e4649122c5c060e",
+  "decision": "PASS_BOUNDED_EXPLICIT_SOURCE_SITES_ONLY",
+  "r1MappingCorrection": "RESOLVED",
+  "underlyingRequestControlledEffects": "OPEN_GAP_NOT_ENUMERATED",
+  "additionalBlockers": [],
+  "authorFilesModified": false,
+  "runtime": "v24.22.1",
+  "checks": {
+    "newSourceTests": {
+      "pass": 76,
+      "fail": 0,
+      "skip": 0
+    },
+    "planTests": {
+      "pass": 78,
+      "fail": 0,
+      "skip": 0
+    },
+    "gateTests": {
+      "pass": 17,
+      "fail": 0,
+      "skip": 0
+    },
+    "httpVerifier": "PASS_RUNTIME_NOT_RUN",
+    "originalSourceVerifier": "PASS",
+    "context": "PASS",
+    "syntax": "PASS",
+    "whitespace": "PASS",
+    "sealEntries": 33,
+    "packetEqualFiles": 34,
+    "baselineRemoteBlobMatches": 164,
+    "unchangedOriginalAuthorEvidenceFiles": 13,
+    "originalReviewerReferences": "HASH_MATCH"
+  },
+  "notRun": [
+    "Node22",
+    "actual HTTP/auth/RBAC/tenant behavior",
+    "Prisma acceptance",
+    "PostgreSQL persistence",
+    "complete nested targets",
+    "application build/lint/full suites",
+    "provider/device/store acceptance",
+    "integrated-head hosted CI",
+    "full AC01"
+  ],
+  "integration": "FIXED_ARTIFACT_ONLY_RECHECK_LATEST_REMOTE_AND_FINAL_COMBINED_HEAD",
+  "artifacts": [
+    {
+      "path": "REVIEW.md",
+      "sha256": "b1b8e920b5325b6c2ca9918cbffb10501f3c50cb821db7a88d35d28ed9ecb059"
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "92c0fd1bdf923aedb966532b78d5a1af2e4544e128df54ad946bd21c3ab47314"
+    },
+    {
+      "path": "http-tests.log",
+      "sha256": "1f9b44deb0226e419e35cd353270cb1aec9459033d2e09c561570c4b6e2db3a6"
+    },
+    {
+      "path": "http-verifier.log",
+      "sha256": "85208165f9360441a15a094eba7954055efd5d912b7c9c22c83b394e8d4ad18b"
+    },
+    {
+      "path": "source-verifier.log",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "path": "plan-tests.log",
+      "sha256": "21bb4613f2d0b9f4caa900dc5a2b6abfbc9dfa5d55ff501d026876ba69a057f2"
+    },
+    {
+      "path": "gate-tests.log",
+      "sha256": "1bee1cbb1cefc42bed71f31af364e2fdc69f47659d8f8a6f6843e033d6b8f2e7"
+    },
+    {
+      "path": "context.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "path": "seal.log",
+      "sha256": "20ac180c42384cfe04ac4a81d9aaa8aead6e1fcf1269655c5afaf57023d0e266"
+    },
+    {
+      "path": "syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

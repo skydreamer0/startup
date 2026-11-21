@@ -1,0 +1,3 @@
+PASS ast.parse scripts/architecture/verify-print-inventory.py
+PASS ast.parse scripts/architecture/test_print_inventory.py
+PASS ast.parse scripts/architecture/test_print_worker_controls.py

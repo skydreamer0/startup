@@ -1,0 +1,25 @@
+✔ all four executable/baseline inputs match the frozen integration Git blobs (2.40212ms)
+✔ live baseline does not confuse focused evidence with AR-00 completion (12.927273ms)
+✔ every one of 24 tasks rejects each non-PASS outcome as completion (73.202271ms)
+✔ every declared required check is individually necessary for completion (25.729602ms)
+✔ every task rejects wrong task, source SHA, tree, review SHA and self-review (55.879847ms)
+✔ all 512 policy combinations leave isolated engineering ready and activation blocked (303.436606ms)
+✔ each unapproved decision rejects READY even after synthetic software completion (6.704317ms)
+✔ all eight activation gates require scoped independent source-bound evidence (133.560757ms)
+✔ task and gate self-review controls change only executor, preserving reviewer identity (5.07563ms)
+✔ self-review controls kill gate-only, task-only and combined verifier mutants (25.986232ms)
+✔ completion and READY controls isolate unfinished integration and non-PASS G gates (11.107084ms)
+✔ completion and READY controls kill integration-only, G-PASS-only and combined mutants (25.351193ms)
+✔ all direct dependency edges prevent an early active successor (86.620294ms)
+✔ zero to three active workers reserve slots and a fourth active worker is rejected (3.31628ms)
+✔ all 276 task pairs obey the declared exclusive-lock boundary (763.530635ms)
+✔ the complete actual 24-task DAG can advance without deadlock using synthetic proofs only (108.5618ms)
+✔ CLI plan is deterministic and leaves all four exact source inputs unchanged (110.930953ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1883.519504

@@ -1,0 +1,6 @@
+{
+  "result": "PASS",
+  "errors": [],
+  "scope": "EIGHT_ENDPOINT_EXPLICIT_SOURCE_SITES_ONLY",
+  "runtimeAcceptance": "NOT_RUN"
+}

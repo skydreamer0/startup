@@ -1,0 +1,106 @@
+{
+  "sourceCommit": "a2849bf98ad7eb26f8f037726a6cc95efa3a2300",
+  "tree": "0c4b98cc2fd559a5a7a2fca353e4cf9f8e76c8e2",
+  "files": [
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/check-sql-map.py",
+      "sha256": "83dd9c03f34eb7282339706a370d350cc13feddd887a11b5da92fd993805d997",
+      "bytes": 2206
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-context.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695",
+      "bytes": 33
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-gate-tests.log",
+      "sha256": "39ed3ce4d51d01b1a8fe5f32dee578d0e7031ff52160e75f965b5c60f2debeff",
+      "bytes": 1724
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-lexer-probes.json",
+      "sha256": "8e8b131e75ec877a42667b6272fc6c09cee8ef64d419145894c72cba8da410d6",
+      "bytes": 2918
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-materialized-inputs-check.json",
+      "sha256": "cde8bddc638cf8e358c909b858e0c3159df21d21e694875b0b796b44d5cf23b5",
+      "bytes": 547
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-plan-tests.log",
+      "sha256": "0dd1f6afb2857f6ca3048f92ac73b6fc2f939d11f499bf42313fd397b77503d0",
+      "bytes": 5325
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-plan-verifier.json",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd",
+      "bytes": 79
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-probes.json",
+      "sha256": "52762e2891379b4b31c1e52d1c11ad83530c8fdd29d63ae6c7f06d0d6b2330fd",
+      "bytes": 3312
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-seed-tests.log",
+      "sha256": "21ce7fc11d9affbb7706f19895b1febc0b967e3e7eb1d70f837f561cece7d66c",
+      "bytes": 5256
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-sql-map-check.json",
+      "sha256": "2949d3545e08ec9250a7e97621cd4fe15ba70c8f4ec9094bd534ebbe265683e0",
+      "bytes": 5501
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-static-verifier.json",
+      "sha256": "d463e01f8309e4c9db75262e882334e06b80db6856ed93797f11da7a50f5ac2d",
+      "bytes": 259
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-tests-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-verifier-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/final-whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/initial-probes.json",
+      "sha256": "e07f6df18ded4a0a7a504be9d4b26b6bc5d36857957469d37ceef3423f476a58",
+      "bytes": 2918
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/lexer-probes.mjs",
+      "sha256": "e772d51488c9615c0cef06f719c4afc1df1e173c3792533dc19926cfdce1e7d6",
+      "bytes": 2006
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/probes.mjs",
+      "sha256": "c4e51504d7e67fbf16f9f754b0a9a99f7d607a45ec90acab800266bcb4737c24",
+      "bytes": 2338
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/review.json",
+      "sha256": "43610eaa1e7e0211dc78fe9d012b1dacee5a4b6f00592d4a329c816cd0681094",
+      "bytes": 9501
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/review.md",
+      "sha256": "1c46ab37f46d2a43c3ac539aa023d106bfeebf2d91a07cc293760a68246db71c",
+      "bytes": 4198
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-seed-migrations-20261109/independent-review/reviewed-source-subject.json",
+      "sha256": "ae292480f22ec7a3b9c0107dc65a928b7630044a85ebb8a38f54c306bcd83254",
+      "bytes": 1740
+    }
+  ]
+}

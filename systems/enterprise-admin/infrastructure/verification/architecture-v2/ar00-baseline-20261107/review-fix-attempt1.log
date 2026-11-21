@@ -1,0 +1,126 @@
+✖ checked baseline is valid and inventory source matches (29.370756ms)
+✔ current baseline stays active; no dependency is dispatched early (5.825897ms)
+✔ readiness does not mutate manifest (7.626332ms)
+✔ engineering readiness does not wait for an unrelated policy (2.685841ms)
+✔ integration dependency is separate from contract start (0.965815ms)
+✔ scheduler caps suggestions at three and respects active slots (0.705919ms)
+✔ scheduler reserves locks for suggested work as well as active work (0.992265ms)
+✔ unknown dependency rejected (6.025638ms)
+✔ self dependency rejected (3.511668ms)
+✔ cycles include integration edges (3.396707ms)
+✔ duplicate IDs rejected (3.96434ms)
+✔ missing declared overlap lock rejected (4.270695ms)
+✔ unregistered shared write collision rejected (4.270115ms)
+✔ prefix collision is segment based (0.084786ms)
+✔ path traversal rejected (2.401378ms)
+✔ absolute path rejected (3.59359ms)
+✔ wildcard scope must be expanded explicitly (2.354409ms)
+✔ shared core lock owner cannot vary (5.357891ms)
+✔ four active workers rejected (4.61347ms)
+✔ active overlapping writer rejected (3.207621ms)
+✔ active before prerequisite completion rejected (2.897645ms)
+✔ complete task without evidence rejected (2.432234ms)
+✔ author self-review is not independent acceptance (4.110398ms)
+✔ review of another SHA does not complete a check (4.407098ms)
+✔ focused pass does not set task PASS (5.124825ms)
+✔ unapproved decision cannot activate a task (5.789783ms)
+✔ policy approval requires a source (4.242033ms)
+✔ missing decision and gate rejected (3.928257ms)
+✔ unknown policy gate rejected (3.88303ms)
+✔ evidence accepts its complete executed fixture (0.198665ms)
+✔ PASS requires exit zero (0.143814ms)
+✔ PASS cannot hide dirty source (0.158355ms)
+✔ executed evidence requires artifact hash (0.217343ms)
+✔ short SHA is rejected (0.139587ms)
+✔ NOT_RUN has no pretend exit code (0.180448ms)
+✔ SKIP cannot complete required acceptance (4.326179ms)
+✔ missing source requirement owner is rejected (7.836204ms)
+✔ lost requirement row is rejected (9.104588ms)
+✔ unowned model is rejected (7.190475ms)
+✔ source fingerprint drift is rejected (11.088717ms)
+✔ CLI refuses unknown and missing options (120.317732ms)
+✖ CLI plan and verification are deterministic read-only (153.20249ms)
+✔ omitted mounted endpoint is rejected (13.11688ms)
+✔ omitted schema model is rejected (10.536265ms)
+✔ omitted runtime source fingerprint is rejected (13.638566ms)
+✔ malformed evidence ledger rejected (2.859338ms)
+✔ PASS cannot hide failed or skipped subcases (0.281018ms)
+ℹ tests 47
+ℹ suites 0
+ℹ pass 45
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 632.776101
+
+✖ failing tests:
+
+test at scripts/architecture/plan.test.mjs:12:1
+✖ checked baseline is valid and inventory source matches (29.370756ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   'source requirement mismatch R31-006',
+  +   'source requirement mismatch R31-007',
+  +   'source requirement mismatch R31-008',
+  +   'source requirement mismatch R31-009',
+  +   'source requirement mismatch R31-010',
+  +   'source requirement mismatch R31-011',
+  +   'source requirement mismatch R31-012',
+  +   'source requirement mismatch R31-013',
+  +   'source requirement mismatch R31-014',
+  +   'source requirement mismatch R31-015',
+  +   'source requirement mismatch R31-016',
+  +   'source requirement mismatch R31-017',
+  +   'source requirement mismatch R31-018',
+  +   'source requirement mismatch R31-019',
+  +   'source requirement mismatch R31-020',
+  +   'source requirement mismatch R31-021',
+  +   'source requirement mismatch R31-022',
+  +   'source requirement mismatch R31-023',
+  +   'source requirement mismatch R31-024',
+  +   'source requirement mismatch R31-025',
+  +   'source requirement mismatch R31-026',
+  +   'source requirement mismatch R31-027',
+  +   'source requirement mismatch R31-028',
+  +   'source requirement mismatch R48-001',
+  +   'source requirement mismatch R48-002',
+  +   'source requirement mismatch R48-003'
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file://<checkout>/scripts/architecture/plan.test.mjs:12:130)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'source requirement mismatch R31-006', 'source requirement mismatch R31-007', 'source requirement mismatch R31-008', 'source requirement mismatch R31-009', 'source requirement mismatch R31-010', 'source requirement mismatch R31-011', 'source requirement mismatch R31-012', 'source requirement mismatch R31-013', 'source requirement mismatch R31-014', 'source requirement mismatch R31-015', 'source requirement mismatch R31-016', 'source requirement mismatch R31-017', 'source requirement mismatch R31-018', 'source requirement mismatch R31-019', 'source requirement mismatch R31-020', 'source requirement mismatch R31-021', 'source requirement mismatch R31-022', 'source requirement mismatch R31-023', 'source requirement mismatch R31-024', 'source requirement mismatch R31-025', 'source requirement mismatch R31-026', 'source requirement mismatch R31-027', 'source requirement mismatch R31-028', 'source requirement mismatch R48-001', 'source requirement mismatch R48-002', 'source requirement mismatch R48-003' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/architecture/plan.test.mjs:53:1
+✖ CLI plan and verification are deterministic read-only (153.20249ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file://<checkout>/scripts/architecture/plan.test.mjs:53:312)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

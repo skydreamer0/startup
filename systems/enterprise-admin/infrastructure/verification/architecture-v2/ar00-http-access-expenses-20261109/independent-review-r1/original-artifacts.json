@@ -1,0 +1,77 @@
+{
+  "meaning": "Preserved original files, not relabeled as newly executed evidence.",
+  "files": [
+    {
+      "path": "REVIEW.md",
+      "sha256": "b1b8e920b5325b6c2ca9918cbffb10501f3c50cb821db7a88d35d28ed9ecb059",
+      "bytes": 4398,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "92c0fd1bdf923aedb966532b78d5a1af2e4544e128df54ad946bd21c3ab47314",
+      "bytes": 40857,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "http-tests.log",
+      "sha256": "1f9b44deb0226e419e35cd353270cb1aec9459033d2e09c561570c4b6e2db3a6",
+      "bytes": 11821,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "http-verifier.log",
+      "sha256": "85208165f9360441a15a094eba7954055efd5d912b7c9c22c83b394e8d4ad18b",
+      "bytes": 129,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "source-verifier.log",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd",
+      "bytes": 79,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "plan-tests.log",
+      "sha256": "21bb4613f2d0b9f4caa900dc5a2b6abfbc9dfa5d55ff501d026876ba69a057f2",
+      "bytes": 13297,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "gate-tests.log",
+      "sha256": "1bee1cbb1cefc42bed71f31af364e2fdc69f47659d8f8a6f6843e033d6b8f2e7",
+      "bytes": 3916,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "context.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695",
+      "bytes": 33,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "seal.log",
+      "sha256": "20ac180c42384cfe04ac4a81d9aaa8aead6e1fcf1269655c5afaf57023d0e266",
+      "bytes": 4157,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    },
+    {
+      "path": "reviewer-receipt.json",
+      "sha256": "96084391828836ec04caa3d631d6fe523898c0417c5da88ae27cf28917ca9adb",
+      "bytes": 3101,
+      "kind": "BYTE_EXACT_ORIGINAL"
+    }
+  ]
+}

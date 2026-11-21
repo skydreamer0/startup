@@ -5,6 +5,17 @@
 
 ## Current Status
 
+### Architecture v2 execution entry (2026-11-07)
+
+The [approved redesign direction in #37](https://github.com/skydreamer0/startup/issues/37#issuecomment-6700557196)
+now has a versioned [AR-00 execution baseline](infrastructure/plans/architecture-v2/README.md):
+source/writer inventory, original requirement mapping, decisions, task dependencies,
+exclusive ownership and machine-readable evidence. Use that baseline and its live
+PR readback before dispatch, rather than adding another completion checklist here.
+This is planning/tooling, not completed architecture, new business acceptance or
+store activation. The older dated checkpoint below remains historical evidence.
+
+
 **Readback: 2026-10-25 UTC, master
 [`f8c49a47`](https://github.com/skydreamer0/startup/commit/f8c49a47a5b593bc1eb4caddb63e90bc8eff2b0f).**
 This is a repository/status reconciliation, not a new test run or production

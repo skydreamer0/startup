@@ -1,0 +1,1092 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "sourceHead": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+    "sourceTree": "3d18d4211946e8dc02d4780a20dfba2efe512343"
+  },
+  "scope": {
+    "modules": [
+      "users",
+      "roles",
+      "expenses"
+    ],
+    "endpoints": 8,
+    "explicitDirectWriteSites": 15,
+    "explicitNestedWriteSites": 1,
+    "writeCountMeaning": "SYNTACTIC_CALL_SITES_NOT_EXHAUSTIVE_RUNTIME_EFFECTS",
+    "runtimeWriteTargets": "NOT_CLOSED",
+    "fullHttpAc01": "NOT_RUN",
+    "evidenceLevel": "PINNED_EXPLICIT_SOURCE_SITES_ONLY",
+    "liveActivation": "NOT_VERIFIED",
+    "appExecution": "NOT_RUN",
+    "database": "NOT_RUN",
+    "allBusinessRequirementsMapped": false
+  },
+  "sources": [
+    {
+      "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+      "sha256": "4ee60fd190bdba17170d3516cf816548cdf64023696ac1ba5f0e011f7a5c09ae"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/app.ts",
+      "sha256": "2faf0bfbc5c55a7bf949716f128a69f07593e315f6490c3b8c7460a39f204587"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/errors.ts",
+      "sha256": "58ed2880bf7efe43330f25c5fd7f8697fd5cbd4dc673fe5cd4445fd9dd3054ef"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/jwt.ts",
+      "sha256": "6ac703cd1ca49faf4edfadedabe81564cfbc6d540599e4a051b717bf8a87b714"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/password.ts",
+      "sha256": "eb20d8638432410945d15ceac823ccaec493fecbd7f9afd56fd52e29be1db3d4"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+      "sha256": "1754f7004cc25f796350b9844c6050f1b5bf156c1a425c848ff5a8c6d9b23f1c"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+      "sha256": "8e81e51175487147faa60b86187b774cb6a5ab4cbd7f5d2d09b835107eaa2695"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+      "sha256": "2d48d04f4e33270fdecc0d60572fa6e6def906d7426ac002346e2ad1379e3a29"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/lib/tenant.context.ts",
+      "sha256": "33cbf5a1ddc8f5c49c2631b496582c0beacab2a4bec44477edfdb44e6475f348"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+      "sha256": "7cb272b3fd68943fcda09abbca6352d9aa0cc5f2683f5a5101f29fe410e61072"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/error.middleware.ts",
+      "sha256": "41a17ca00b970497b45c892295180fdfb402313cc5fb7a36d0622bb94a86ec66"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+      "sha256": "5eb9c5bba95a2c430262823928ec930a1fe7c154f0d84e1073a355e3ef89a31e"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+      "sha256": "bb5514c89cc22f8e62db6935e0f735eeb96d33be86a666f8e0c902ef33d8c5db"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+      "sha256": "e58b0915b54986cda0aa463bac4978fecf8922abc0e99c556b4628dbbe11c4fd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+      "sha256": "04fa3d478cae2bebdee5b3bc6d63d20cb196d0b312f3a7c1cac6e36401217b39"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+      "sha256": "36d87997829af071bf6443cbada71e3ac74131c827f275d95595dc8dbb24da9a"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+      "sha256": "15bd05620739ccac0efbe73a5df19f610eca8146e6961f15ff19361e24ad1808"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+      "sha256": "27fffb4537077a57bac6ddb1d7380147e8b7ee3c8a9a10dcfade0b4c6f0b1767"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+      "sha256": "7d36310ccc047ddb52b528128840ac320caff90c22105c3934ec38c83136bda1"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+      "sha256": "0ce4e6272f023c9e65a0f7f9cbdbcc6c84a08a376ac664adfb9eefc10f3954bd"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.schema.ts",
+      "sha256": "3aae71578d2da228dc9a4dd6a95a0d0ec5f5a0e86bc4a05c27309f1fe9f5b2e7"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+      "sha256": "5e631bea9303c9eec81ac3d55d8e55f26737090d70434af209ad7fb4883e7d26"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+      "sha256": "05959fff37f659f341f1eed79c6d761033f2db43bf51aa457b84f69865244186"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+      "sha256": "bb216520474dbadebf4c8d9c21037e4a28569820a4713d43b1bdecb52f1ff472"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.schema.ts",
+      "sha256": "9c3a5d3cf131e5af010d300338e0d083df69566a3e19c5fbb7f3b4da858ff268"
+    },
+    {
+      "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+      "sha256": "81a99ef0df876c3146d23b7c66ce4dd0720a91187b2b316e251e95a9fc07b48a"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+      "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
+    }
+  ],
+  "shared": [
+    {
+      "id": "RATE_LIMIT",
+      "source": "systems/enterprise-admin/backend/src/middleware/rate-limit.middleware.ts",
+      "effect": "REQUEST_COUNTER_AND_RESPONSE_HEADERS; default library store not runtime-verified"
+    },
+    {
+      "id": "TENANT_CONTEXT",
+      "source": "systems/enterprise-admin/backend/src/middleware/tenant.middleware.ts",
+      "effect": "Tenant/User reads and AsyncLocalStorage context; header/JWT/default selection is characterized, not endorsed"
+    },
+    {
+      "id": "AUTH",
+      "source": "systems/enterprise-admin/backend/src/middleware/auth.middleware.ts",
+      "effect": "JWT verification and User/role/permission reads; no persistent write visible"
+    },
+    {
+      "id": "RBAC",
+      "source": "systems/enterprise-admin/backend/src/middleware/rbac.middleware.ts",
+      "effect": "Checks request permissions; denial behavior not executed"
+    },
+    {
+      "id": "VALIDATE",
+      "source": "systems/enterprise-admin/backend/src/middleware/validate.middleware.ts",
+      "effect": "Users/roles Zod parsing mutates request body; expenses has no route validate middleware"
+    },
+    {
+      "id": "PRISMA_SCOPE",
+      "source": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+      "effect": "Tenant-aware query extension; nested writes and callback-client behavior need real PG tests"
+    },
+    {
+      "id": "CHILD_MODELS",
+      "source": "systems/enterprise-admin/backend/src/lib/tenant-scoped-models.ts",
+      "effect": "UserRole and RolePermission absent from tenant-scoped model list; ownership must be tested"
+    },
+    {
+      "id": "TENANT_DATA",
+      "source": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+      "effect": "Context-derived tenant data/where builders; no independent persistent effect"
+    }
+  ],
+  "endpoints": [
+    {
+      "id": "USERS-CREATE",
+      "method": "POST",
+      "path": "/api/v1/admin/users/",
+      "group": "users",
+      "handler": "create",
+      "classification": "DB_WRITER",
+      "owner": "access",
+      "destination": [
+        "AR-04"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "create:users",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "ZOD_ROUTE_VALIDATE",
+        "runtimeVerified": false
+      },
+      "boundary": "CALLBACK_USER_AND_ROLES_THEN_SEPARATE_AUDIT",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "NO_EXPLICIT_PAYMENT_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+        "startLine": 33,
+        "endLine": 38,
+        "sha256": "1bcaacce6ee0a0cdcf36adcf5180d903c6356b4d109f4b442f0d05b997f8399c"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+        "startLine": 49,
+        "endLine": 63,
+        "sha256": "1c1280273c0754911a007439e68306e9565d4a27679c18b39148dee1dc12d8f4"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+        "startLine": 108,
+        "endLine": 150,
+        "sha256": "945fa0098cde13322da240492d932febc49be41bf29eb97a74c8ffa3e2980a94"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "user",
+          "operation": "create",
+          "receiver": "tx",
+          "nested": false,
+          "transaction": "CALLBACK_TRANSACTION",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 124,
+            "endLine": 124,
+            "sha256": "3892ff4d81a6a44fd92f68afa2d2f34bc40ecfa7bac5c8ff50da600eb7e5921b"
+          }
+        },
+        {
+          "model": "userRole",
+          "operation": "createMany",
+          "receiver": "tx",
+          "nested": false,
+          "transaction": "CALLBACK_TRANSACTION",
+          "condition": "roleIds has nonzero length",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 130,
+            "endLine": 130,
+            "sha256": "0025ada59ae2793654d5335f4e31469990de9149a44838118279fc83ecbbb16d"
+          }
+        },
+        {
+          "model": "auditLog",
+          "operation": "create",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "AFTER_CALLBACK_COMMIT",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 139,
+            "endLine": 139,
+            "sha256": "fabf72ad851ceef61da51dfdec55eea8f49e96e149b6b6c6dc346c49df518948"
+          }
+        }
+      ],
+      "requestControlledData": null,
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "USERS-CREATE: source mapping contract",
+        "declarationLine": 22,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac-validation",
+          "tenant-and-role-ownership",
+          "duplicate-email",
+          "nested-role-failure-rollback",
+          "post-commit-audit-failure"
+        ]
+      }
+    },
+    {
+      "id": "USERS-UPDATE",
+      "method": "PUT",
+      "path": "/api/v1/admin/users/:id",
+      "group": "users",
+      "handler": "update",
+      "classification": "DB_WRITER",
+      "owner": "access",
+      "destination": [
+        "AR-04"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "update:users",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "ZOD_ROUTE_VALIDATE",
+        "runtimeVerified": false
+      },
+      "boundary": "SEPARATE_USER_ROLE_REPLACEMENT_AND_AUDIT",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "NO_EXPLICIT_PAYMENT_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+        "startLine": 40,
+        "endLine": 45,
+        "sha256": "22d78e7c12855c321bf3776bb71d77d9f0a37ef4ba4cb2eca20b9ff21bd0ce89"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+        "startLine": 68,
+        "endLine": 82,
+        "sha256": "da78c30875a0b5a5d7d7234c6c0830ec4f361c24910fddd65021f9c28c03da23"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+        "startLine": 155,
+        "endLine": 193,
+        "sha256": "81b95cf02ed79c6da844e50f26f269ef1018a75cd96549ceb5b30dd1bbc35321"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "user",
+          "operation": "update",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 162,
+            "endLine": 162,
+            "sha256": "6c8ea8401760a648280af6009dfc2a0c2d4606703a19bdfdec47b09033cb49f6"
+          }
+        },
+        {
+          "model": "userRole",
+          "operation": "deleteMany",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "roleIds provided, including empty array",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 174,
+            "endLine": 174,
+            "sha256": "498ac8cef9375048f30b468728f07e01c5b2d914cfd09c4c4b092dfbe33bae71"
+          }
+        },
+        {
+          "model": "userRole",
+          "operation": "createMany",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "roleIds provided, including empty array",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 175,
+            "endLine": 175,
+            "sha256": "67c26f1385a2647d218d41dbe2fe8ef0f0079449e57d9a0a4c39f1841ab11370"
+          }
+        },
+        {
+          "model": "auditLog",
+          "operation": "create",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 181,
+            "endLine": 181,
+            "sha256": "fabf72ad851ceef61da51dfdec55eea8f49e96e149b6b6c6dc346c49df518948"
+          }
+        }
+      ],
+      "requestControlledData": null,
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "USERS-UPDATE: source mapping contract",
+        "declarationLine": 27,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac-validation",
+          "cross-tenant-user-and-role",
+          "missing-or-deleted-user",
+          "empty-role-replacement",
+          "role-or-audit-failure-partial-state"
+        ]
+      }
+    },
+    {
+      "id": "USERS-DELETE",
+      "method": "DELETE",
+      "path": "/api/v1/admin/users/:id",
+      "group": "users",
+      "handler": "delete",
+      "classification": "DB_WRITER",
+      "owner": "access",
+      "destination": [
+        "AR-04"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "delete:users",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "ZOD_ROUTE_VALIDATE",
+        "runtimeVerified": false
+      },
+      "boundary": "SOFT_DELETE_THEN_SEPARATE_AUDIT",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "NO_EXPLICIT_PAYMENT_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.routes.ts",
+        "startLine": 47,
+        "endLine": 52,
+        "sha256": "a34c08bde1c6e2e1f415a9cac3b8cf55a507eb9deb2d81d6b5200b87afbc619f"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.controller.ts",
+        "startLine": 87,
+        "endLine": 101,
+        "sha256": "06de29b32d14c76da427f9f26f052d09dbe31b66420a7e6798a494a46ce04e15"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+        "startLine": 198,
+        "endLine": 220,
+        "sha256": "3789af559d054d4f5dc57f7fceb92565561124b7e96db7afc38081dab65c4d91"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "user",
+          "operation": "update",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 203,
+            "endLine": 203,
+            "sha256": "fd1fc36c51c924260d568d4d4c8f3f6486b21fb3656cef475e44ed7aaa7086f6"
+          }
+        },
+        {
+          "model": "auditLog",
+          "operation": "create",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/users/users.service.ts",
+            "startLine": 209,
+            "endLine": 209,
+            "sha256": "fabf72ad851ceef61da51dfdec55eea8f49e96e149b6b6c6dc346c49df518948"
+          }
+        }
+      ],
+      "requestControlledData": null,
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "USERS-DELETE: source mapping contract",
+        "declarationLine": 31,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac-validation",
+          "cross-tenant-user",
+          "soft-delete-not-hard-delete",
+          "missing-or-deleted-user",
+          "post-delete-audit-failure"
+        ]
+      }
+    },
+    {
+      "id": "ROLES-CREATE",
+      "method": "POST",
+      "path": "/api/v1/admin/roles/",
+      "group": "roles",
+      "handler": "create",
+      "classification": "DB_WRITER",
+      "owner": "access",
+      "destination": [
+        "AR-04"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "create:roles",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "ZOD_ROUTE_VALIDATE",
+        "runtimeVerified": false
+      },
+      "boundary": "ONE_ROLE_CREATE_WITH_NESTED_PERMISSIONS",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "NO_EXPLICIT_PAYMENT_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+        "startLine": 16,
+        "endLine": 21,
+        "sha256": "f4020271db2e206a880a9746372d5edd6246d40cbef34a5e80903a429bb2b56c"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+        "startLine": 23,
+        "endLine": 37,
+        "sha256": "7683c2c0332090963c3ed66f05cf47db8b2fc9faa77b1c177171c7bba7b646d5"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+        "startLine": 38,
+        "endLine": 73,
+        "sha256": "496a55b0418395dd7cad5f8df644aed1678249dc98b8303a153a0c37ee4d7729"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "role",
+          "operation": "create",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+            "startLine": 47,
+            "endLine": 47,
+            "sha256": "4e4ae8ffe9e8d11ec752161c6fafb071c7e866d6825e66a63d2440fa4a53c8c9"
+          }
+        },
+        {
+          "model": "rolePermission",
+          "operation": "create",
+          "receiver": "role.rolePermissions",
+          "nested": true,
+          "transaction": "NESTED_IN_PARENT_CREATE",
+          "condition": "permissionIds provided, including empty array",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+            "startLine": 54,
+            "endLine": 56,
+            "sha256": "a1045def3b310c502a59ae9b35ea1dd64b02599ebc74bf0de9ee91c60aa98571"
+          }
+        }
+      ],
+      "requestControlledData": null,
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "ROLES-CREATE: source mapping contract",
+        "declarationLine": 34,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac-validation",
+          "tenant-scoped-name-conflict",
+          "is-system-false",
+          "invalid-nested-permission-rollback"
+        ]
+      }
+    },
+    {
+      "id": "ROLES-REPLACE",
+      "method": "PUT",
+      "path": "/api/v1/admin/roles/:id/permissions",
+      "group": "roles",
+      "handler": "updatePermissions",
+      "classification": "DB_WRITER",
+      "owner": "access",
+      "destination": [
+        "AR-04"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "update:roles",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "ZOD_ROUTE_VALIDATE",
+        "runtimeVerified": false
+      },
+      "boundary": "SEPARATE_PERMISSION_DELETE_AND_CREATE",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "NO_EXPLICIT_PAYMENT_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/roles/roles.routes.ts",
+        "startLine": 23,
+        "endLine": 28,
+        "sha256": "f7e9a9b555b2e4f6cbca62f3b0d266accd338b3e384afd720d6bf545a967a665"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/roles/roles.controller.ts",
+        "startLine": 41,
+        "endLine": 55,
+        "sha256": "796f719bfb0da7d7b05623dd481c66338f012c57096b933fc7a2de47faf50ad6"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+        "startLine": 78,
+        "endLine": 89,
+        "sha256": "13f6592e7efe8b46b374ce26d929cc97fc7ad328a972912b9544c20419f50832"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "rolePermission",
+          "operation": "deleteMany",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+            "startLine": 83,
+            "endLine": 83,
+            "sha256": "090ae72da7d6c8900541d499d5b04ff6bb5aa3b19c6e40d21ae4e3470c916197"
+          }
+        },
+        {
+          "model": "rolePermission",
+          "operation": "createMany",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/roles/roles.service.ts",
+            "startLine": 84,
+            "endLine": 84,
+            "sha256": "7378481e29e6c01aed74d20e70e8b25ed31d2dc458b08acdfb7a87d20b62bab7"
+          }
+        }
+      ],
+      "requestControlledData": null,
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "ROLES-REPLACE: source mapping contract",
+        "declarationLine": 39,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac-validation",
+          "tenant-and-system-role-policy",
+          "invalid-permission-after-delete",
+          "empty-replacement",
+          "denied-zero-writes"
+        ]
+      }
+    },
+    {
+      "id": "EXPENSES-CREATE",
+      "method": "POST",
+      "path": "/api/v1/admin/expenses/",
+      "group": "expenses",
+      "handler": "createExpense",
+      "classification": "DB_WRITER",
+      "owner": "reporting/payments",
+      "destination": [
+        "AR-08",
+        "AR-12"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "manage:reports",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "NO_ROUTE_VALIDATE_MIDDLEWARE",
+        "runtimeVerified": false
+      },
+      "boundary": "EXPLICIT_EXPENSE_CREATE_SITE_WITH_DYNAMIC_DATA",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "EXPLICIT_EXPENSE_SITE_NOT_PROVIDER_TRANSFER_OR_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+        "startLine": 13,
+        "endLine": 13,
+        "sha256": "510366dad971948cd9215da8849f3e97cb1a46b61d898dfffd1dc13532c217a3"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+        "startLine": 21,
+        "endLine": 28,
+        "sha256": "a36d265df0157ee1a5b0aabefcc9440247c209ebcaa9e787e7456932778ffb1a"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+        "startLine": 35,
+        "endLine": 48,
+        "sha256": "0b9a1f7c3b5d745162e1eca3ed423d66b1a7b00f7b537e6b697b26ec7e81f5a0"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "expense",
+          "operation": "create",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+            "startLine": 45,
+            "endLine": 45,
+            "sha256": "13800cfcbefbe9ca26830c1c85f25ab0150d7b36d109206bfecc15ae825b42c6"
+          }
+        }
+      ],
+      "requestControlledData": {
+        "status": "OPEN_GAP",
+        "kind": "REQUEST_CONTROLLED_PRISMA_DATA",
+        "targetsClosed": false,
+        "nestedRelationTargets": "NOT_ENUMERATED",
+        "additionalScalarAndOperationFields": "NOT_BOUNDED_BY_RUNTIME_SCHEMA",
+        "forwarding": "req.body -> createExpense(data) -> tenantPersistence().data(data) -> prisma.expense.create",
+        "dataBoundary": "Spread retains request keys while overwriting top-level tenantId; this does not establish accepted relation/scalar combinations or bound nested effects.",
+        "unverifiedPayloadClasses": [
+          "tenant relation input",
+          "extra scalar/operation fields",
+          "mixed relation and tenantId input"
+        ],
+        "prismaAcceptance": "NOT_RUN",
+        "httpAndPgPersistence": "NOT_RUN",
+        "evidence": "SOURCE_CHARACTERIZATION_ONLY; mocked argument forwarding is separate evidence, not persisted behavior",
+        "citations": [
+          {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+            "startLine": 13,
+            "endLine": 13,
+            "sha256": "510366dad971948cd9215da8849f3e97cb1a46b61d898dfffd1dc13532c217a3"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+            "startLine": 21,
+            "endLine": 24,
+            "sha256": "747ddaf60aec59bbb656d1b71feac6c113f6027a24b24c1d7ce7709019966f58"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+            "startLine": 35,
+            "endLine": 47,
+            "sha256": "25edb0460b685ade539a51fa4d554e5e7b41016af5967e87c45d9f94168ed7e6"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+            "startLine": 47,
+            "endLine": 53,
+            "sha256": "03cecc06f570f9ab13a487f665e96207c60d62f9e7d1b703526801b0ecd959aa"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+            "startLine": 536,
+            "endLine": 550,
+            "sha256": "4edbba2bdc0de60d808ec0b921ece80d273ca860a49c926abb5862c427e5b99f"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+            "startLine": 15,
+            "endLine": 46,
+            "sha256": "ee45a0e2a2f00ef811d08cb556524975fc72ec15d2a9ce90f7acfb16ce1a64f4"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/src/lib/tenant-persistence.ts",
+            "startLine": 20,
+            "endLine": 22,
+            "sha256": "1356498cef0f33010488de9b35e852190c3f7f7a15d5db015bbe4c7004e83d61"
+          }
+        ]
+      },
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "EXPENSES-CREATE: source mapping contract",
+        "declarationLine": 43,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac",
+          "request-field-allowlist",
+          "amount-type-period-boundaries",
+          "tenant-from-context",
+          "invalid-input-zero-writes",
+          "request-nested-tenant-relation-inputs",
+          "request-extra-scalar-and-operation-object-fields",
+          "request-tenantId-overwrite-and-mixed-shape-acceptance"
+        ]
+      }
+    },
+    {
+      "id": "EXPENSES-UPDATE",
+      "method": "PUT",
+      "path": "/api/v1/admin/expenses/:id",
+      "group": "expenses",
+      "handler": "updateExpense",
+      "classification": "DB_WRITER",
+      "owner": "reporting/payments",
+      "destination": [
+        "AR-08",
+        "AR-12"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "manage:reports",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "NO_ROUTE_VALIDATE_MIDDLEWARE",
+        "runtimeVerified": false
+      },
+      "boundary": "READ_THEN_EXPLICIT_EXPENSE_UPDATE_SITE_WITH_DYNAMIC_DATA",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "EXPLICIT_EXPENSE_SITE_NOT_PROVIDER_TRANSFER_OR_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+        "startLine": 14,
+        "endLine": 14,
+        "sha256": "74389f2fa9eab03643a92e8d79cde96e142ecb5b780e2fdecbade51598e875b7"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+        "startLine": 30,
+        "endLine": 37,
+        "sha256": "3128fe80050d82c50dcc7c1a0891cf45253d8a045c1bb6ba2bd33a53c6d3f672"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+        "startLine": 53,
+        "endLine": 70,
+        "sha256": "6a274d1ee766e0318203d4632c627f50142479a2fc838f2102a4abba6deb391e"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "expense",
+          "operation": "update",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+            "startLine": 66,
+            "endLine": 66,
+            "sha256": "53f6b125860e47d74289821c1d6c40d89c81e72dc7744fd7882d86a1f04fe926"
+          }
+        }
+      ],
+      "requestControlledData": {
+        "status": "OPEN_GAP",
+        "kind": "REQUEST_CONTROLLED_PRISMA_DATA",
+        "targetsClosed": false,
+        "nestedRelationTargets": "NOT_ENUMERATED",
+        "additionalScalarAndOperationFields": "NOT_BOUNDED_BY_RUNTIME_SCHEMA",
+        "forwarding": "req.body -> updateExpense(data) -> prisma.expense.update({ where, data })",
+        "dataBoundary": "Update extension scopes where; it does not strip or constrain data.",
+        "unverifiedPayloadClasses": [
+          "tenant.update",
+          "tenantId",
+          "amount.increment"
+        ],
+        "prismaAcceptance": "NOT_RUN",
+        "httpAndPgPersistence": "NOT_RUN",
+        "evidence": "SOURCE_CHARACTERIZATION_ONLY; mocked argument forwarding is separate evidence, not persisted behavior",
+        "citations": [
+          {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+            "startLine": 14,
+            "endLine": 14,
+            "sha256": "74389f2fa9eab03643a92e8d79cde96e142ecb5b780e2fdecbade51598e875b7"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+            "startLine": 30,
+            "endLine": 33,
+            "sha256": "0b2d155c983c915d938eae0614fd069f178c6ce994484f67276a7e3c1b41d14a"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+            "startLine": 53,
+            "endLine": 69,
+            "sha256": "aad6f3a32c70c1b8d7c9644c5f5f22f67de66f5c68e6fd42c53671238466a170"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/src/lib/prisma.ts",
+            "startLine": 54,
+            "endLine": 59,
+            "sha256": "1e1c6ae048a49844b3282f0f6481da344f892448554aba6f7ac77566998ab5c9"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+            "startLine": 536,
+            "endLine": 550,
+            "sha256": "4edbba2bdc0de60d808ec0b921ece80d273ca860a49c926abb5862c427e5b99f"
+          },
+          {
+            "path": "systems/enterprise-admin/backend/prisma/schema.prisma",
+            "startLine": 15,
+            "endLine": 46,
+            "sha256": "ee45a0e2a2f00ef811d08cb556524975fc72ec15d2a9ce90f7acfb16ce1a64f4"
+          }
+        ]
+      },
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "EXPENSES-UPDATE: source mapping contract",
+        "declarationLine": 50,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac",
+          "cross-tenant-and-not-found",
+          "field-and-tenant-allowlist",
+          "amount-period-boundaries",
+          "read-write-race",
+          "request-nested-tenant-update-targets-and-authorization",
+          "request-tenantId-reassignment",
+          "request-amount-operation-object"
+        ]
+      }
+    },
+    {
+      "id": "EXPENSES-DELETE",
+      "method": "DELETE",
+      "path": "/api/v1/admin/expenses/:id",
+      "group": "expenses",
+      "handler": "deleteExpense",
+      "classification": "DB_WRITER",
+      "owner": "reporting/payments",
+      "destination": [
+        "AR-08",
+        "AR-12"
+      ],
+      "origin": {
+        "issue": "https://github.com/skydreamer0/startup/issues/180",
+        "acceptance": "AR-00-AC01",
+        "meaning": "Inventory of existing behavior only; no original business requirement acceptance claimed"
+      },
+      "authorization": {
+        "permission": "manage:reports",
+        "auth": "authMiddleware",
+        "tenant": "setTenantContext",
+        "validation": "NO_ROUTE_VALIDATE_MIDDLEWARE",
+        "runtimeVerified": false
+      },
+      "boundary": "READ_THEN_SINGLE_HARD_EXPENSE_DELETE",
+      "businessEffects": {
+        "stock": "NO_EXPLICIT_STOCK_CALL_SITE_NOT_EFFECT_CLOSURE",
+        "payment": "EXPLICIT_EXPENSE_SITE_NOT_PROVIDER_TRANSFER_OR_EFFECT_CLOSURE",
+        "external": "NO_EXPLICIT_PROVIDER_CALL_SITE_NOT_TRANSITIVE_CLOSURE"
+      },
+      "route": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.routes.ts",
+        "startLine": 15,
+        "endLine": 15,
+        "sha256": "8a7486c6c6012090258ba5a88f3ba3348baa60547bb018c7c2bebd5834f98240"
+      },
+      "controller": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.controller.ts",
+        "startLine": 39,
+        "endLine": 46,
+        "sha256": "93322534c186691d920c4faedd315e671502a374122085b1d6a9191e0e5f592e"
+      },
+      "service": {
+        "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+        "startLine": 75,
+        "endLine": 81,
+        "sha256": "af6a674abb70e1c5367a77a452fb428cb1ce525a5b508a3fbd9c3ce01373e2b6"
+      },
+      "explicitWriteSites": [
+        {
+          "model": "expense",
+          "operation": "delete",
+          "receiver": "prisma",
+          "nested": false,
+          "transaction": "SEPARATE_PRISMA_CALL",
+          "condition": "reached after preceding guards and awaited operations",
+          "citation": {
+            "path": "systems/enterprise-admin/backend/src/modules/expenses/expenses.service.ts",
+            "startLine": 79,
+            "endLine": 79,
+            "sha256": "f6d9aa935a0ebf191ad0005a5e76e5f0a0e00807f803e4a1d0ded5104527858d"
+          }
+        }
+      ],
+      "requestControlledData": null,
+      "staticTest": {
+        "path": "scripts/architecture/http-writers-contract.test.mjs",
+        "name": "EXPENSES-DELETE: source mapping contract",
+        "declarationLine": 59,
+        "sourceSha256": "464f4aafe04e4bbc2bd9dba4a7353607d650bd21471d8537f2ab720c81be29c0",
+        "kind": "SOURCE_MAPPING_ASSERTIONS_ONLY",
+        "executionResult": "SEE_SEPARATE_RECEIPT_NOT_INFERRED_FROM_CITATION"
+      },
+      "runtimeTests": {
+        "status": "NOT_RUN",
+        "mapping": "MISSING_ENDPOINT_BEHAVIOR_EVIDENCE",
+        "citations": [],
+        "requiredCases": [
+          "auth-rbac",
+          "cross-tenant-and-not-found",
+          "hard-delete-characterization",
+          "reporting-reference-effects"
+        ]
+      }
+    }
+  ]
+}
