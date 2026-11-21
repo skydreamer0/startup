@@ -129,6 +129,8 @@ test('actual Playwright report and per-case ledgers require exactly eight passed
       tests: [{ expectedStatus: 'passed', results: [{ status: 'passed', retry: 0, duration: 30, errors: [] }] }] })) },
   ] };
   assert.equal(assertPlaywrightReceivingReport(report, ledgers, appResponses).length, 8);
+  const duplicateSave = appResponses.find(row => row.method === 'PUT' && row.url === ledgers[0].requests[0].url);
+  assert.throws(() => assertPlaywrightReceivingReport(report, ledgers, [...appResponses, duplicateSave]), /Keyboard save/);
   for (const mutate of [
     rows => { rows[6].ownerIsolation.peerId = rows[6].ownerIsolation.ownerId; },
     rows => { rows[6].requests.find(row => row.actor === 'peer' && row.method === 'PUT' && row.expectedRevision === 1).status = 200; },

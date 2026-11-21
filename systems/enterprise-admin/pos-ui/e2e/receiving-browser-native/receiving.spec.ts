@@ -6,6 +6,16 @@ async function fresh(page: Page) {
   await expect(page.getByLabel('草稿名稱')).toBeVisible();
 }
 
+async function tabFromTitleToSave(page: Page) {
+  const title = page.getByLabel('草稿名稱');
+  await title.click();
+  await expect(title).toBeFocused();
+  await page.keyboard.press('Tab');
+  const save = page.getByRole('region', { name: '草稿保存' }).getByRole('button', { name: '保存草稿', exact: true });
+  await expect(save).toBeFocused();
+  return save;
+}
+
 for (const width of [1440, 390]) test.describe(`receiving real API ${width}`, () => {
   test.use({ viewport: { width, height: 900 } });
 
@@ -26,8 +36,7 @@ for (const width of [1440, 390]) test.describe(`receiving real API ${width}`, ()
     const panel = page.getByRole('region', { name: '草稿保存' });
     for (const viewport of (width === 1440 ? [1366, 1024, width] : [width])) {
       await page.setViewportSize({ width: viewport, height: viewport === 1366 ? 768 : 900 });
-      const save = panel.getByRole('button', { name: '保存草稿', exact: true });
-      await save.focus();
+      const save = await tabFromTitleToSave(page);
       await expect(save).toBeInViewport({ ratio: 1 });
       await expect(panel).toContainText('有未保存變更');
       const rect = await panel.boundingBox(), line = await first.boundingBox();
@@ -37,7 +46,7 @@ for (const width of [1440, 390]) test.describe(`receiving real API ${width}`, ()
       if (viewport !== width) await capture(page, info, `before-save-${viewport}`);
     }
     await capture(page, info, 'before-save');
-    await page.getByRole('button', { name: '保存草稿', exact: true }).click();
+    await page.keyboard.press(width === 1440 ? 'Enter' : 'Space');
     await expect(page.getByText('草稿已保存，尚未入庫。', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: '關閉本頁草稿', exact: true }).click();
     await page.getByRole('button', { name: `真 API 十行草稿 ${width} · v1`, exact: true }).click();
@@ -60,11 +69,18 @@ for (const width of [1440, 390]) test.describe(`receiving real API ${width}`, ()
       await actual.dispose();
       await route.abort('failed');
     });
-    await page.getByRole('button', { name: '保存草稿', exact: true }).click(); await put;
-    await expect(page.getByRole('button', { name: '查回保存結果', exact: true })).toBeVisible();
+    const save = await tabFromTitleToSave(page);
+    await page.keyboard.press(width === 1440 ? 'Space' : 'Enter');
+    const savedUrl = (await put).url();
+    const recover = page.getByRole('button', { name: '查回保存結果', exact: true });
+    await expect(recover).toBeEnabled();
+    await expect(save).toBeDisabled();
+    await page.keyboard.press('Tab');
+    await expect(recover).toBeFocused();
     await capture(page, info, 'unknown-outcome');
-    const get = page.waitForRequest(request => request.method() === 'GET' && /\/receiving-drafts\/[0-9a-f-]{36}$/.test(new URL(request.url()).pathname));
-    await page.getByRole('button', { name: '查回保存結果', exact: true }).click(); await get;
+    const get = page.waitForResponse(response => response.request().method() === 'GET' && response.url() === savedUrl);
+    await page.keyboard.press(width === 1440 ? 'Enter' : 'Space');
+    expect((await get).status()).toBe(200);
     await expect(page.getByText('查回內容與本次草稿完全一致，已確認保存，沒有再次送出。', { exact: true })).toBeVisible();
     await page.reload(); await expect(page.getByLabel('草稿名稱')).toHaveValue(`失回應真 API 草稿 ${width}`);
     await expect(page.getByRole('button', { name: '保存草稿', exact: true })).toBeDisabled();
@@ -130,9 +146,19 @@ test('same-tenant peer cannot access or overwrite another owner’s saved draft'
   await harness.watchPeer(otherContext);
   const peer = await otherContext.newPage();
   await login(peer, 'peer');
+  await expect(peer.getByRole('button', { name: '新增私人草稿', exact: true })).toBeEnabled();
+  const refreshedList = peer.waitForResponse(r => r.request().method() === 'GET'
+    && new URL(r.url()).pathname === '/api/v1/admin/receiving-drafts');
   const b = await save(peer, peerTitle);
   expect(b.data.ownerId).not.toBe(owner.data.ownerId);
   expect(b.data.tenantId).toBe(owner.data.tenantId);
+  const response = await refreshedList;
+  expect(response.status()).toBe(200);
+  const { data: list } = await response.json();
+  expect(list.ownerId).toBe(b.data.ownerId);
+  expect(list.data).toEqual([expect.objectContaining({ id: b.data.id, title: peerTitle })]);
+  expect(JSON.stringify(list)).not.toContain(owner.data.id);
+  expect(JSON.stringify(list)).not.toContain(owner.data.ownerId);
   await peer.getByRole('button', { name: '關閉本頁草稿', exact: true }).click();
   await expect(peer.getByRole('button', { name: `${peerTitle} · v1`, exact: true })).toBeVisible();
   await expect(peer.getByRole('button', { name: `${ownerTitle} · v1`, exact: true })).toHaveCount(0);

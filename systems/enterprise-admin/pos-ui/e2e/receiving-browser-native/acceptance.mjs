@@ -11,11 +11,11 @@ export const expectedReceivingCases = Object.freeze([
 ]);
 export const receivingBrowserScope = Object.freeze({
   verified: Object.freeze([
-    '1440/390 create/save/reopen/history',
+    'Tab from draft title to Save before details at 1366/1024/1440/390; Enter/Space saves once, then reopen/history',
     'same-tenant second actor sees empty draft list',
     'equally privileged same-tenant peer cannot list, open, read history or overwrite another owner’s saved draft',
     'two-page same-revision CAS returns one 200 and one 409; loser choice is displayed only',
-    'lost committed response resolved by GET without retry PUT',
+    'lost committed response resolved by keyboard-activated GET without retry PUT',
     'unsaved cancellation retains the current page content; malformed draft URL is rejected',
   ]),
   notVerified: Object.freeze([
@@ -72,7 +72,11 @@ export function assertPlaywrightReceivingReport(report, ledgers, appResponses = 
     'Network ledgers must map one-to-one to the fixed viewport/title matrix');
   for (const ledger of ledgers) {
     const draftPuts = ledger.requests.filter(row => row.method === 'PUT' && new URL(row.url).pathname.includes('/receiving-drafts/'));
-    if (ledger.title === expectedReceivingCases[0].title) assert.equal(draftPuts.length, 1, 'Each ten-line journey saves one draft once');
+    if (ledger.title === expectedReceivingCases[0].title) {
+      assert.equal(draftPuts.length, 1, 'Each ten-line journey saves one draft once');
+      assert.deepEqual(appResponses.filter(row => row.method === 'PUT' && row.url === draftPuts[0].url).map(row => row.status),
+        [200], 'Keyboard save must produce exactly one successful PUT at the API');
+    }
     if (ledger.title === expectedReceivingCases[1].title) {
       assert.equal(draftPuts.length, 1, 'Lost response journey must never retry PUT');
       const put = draftPuts[0];
