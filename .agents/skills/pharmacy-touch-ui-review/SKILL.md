@@ -47,3 +47,9 @@ Use synthetic or permitted test data. Remove credentials and private data from e
 
 Report PASS, FAIL, BLOCKED and NOT RUN separately. Use N/A only for a criterion genuinely outside the agreed scope, with a reason; unavailable hardware or missing checks are not N/A. Missing, cancelled or unexpectedly skipped checks are never PASS. Installing this skill, static review or a clean screenshot does not establish UI acceptance. Repairs and publication remain limited to the authorized task.
 
+
+## Work principle
+
+Less attention taken. More value delivered.
+
+Reduce unnecessary questions and narration; deliver useful, verified results. Preserve required approvals, risk disclosures, and blocker reports. This principle does not expand authorization or override safety and project rules.

@@ -27,3 +27,9 @@ UI changes, read [pharmacy-touch-ui-review/SKILL.md](pharmacy-touch-ui-review/SK
 Keep the existing PHARMACY-OVERRIDES route authoritative. This supplements existing
 skills with workflow acceptance and pinned static references; it does not install
 Impeccable runtime tooling.
+
+## Work principle
+
+Less attention taken. More value delivered.
+
+Reduce unnecessary questions and narration; deliver useful, verified results. Preserve required approvals, risk disclosures, and blocker reports. This principle does not expand authorization or override safety and project rules.
