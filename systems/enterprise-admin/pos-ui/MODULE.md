@@ -16,7 +16,6 @@
 | ---- | ------- |
 | `src/api/` | POS API clients and request helpers. |
 | `src/components/` | POS UI components. |
-| `src/components/ui/` | Lower-level reusable UI primitives. |
 | `src/hooks/` | POS hooks. |
 | `src/lib/` | POS utilities. |
 | `src/pages/` | POS screens. |
