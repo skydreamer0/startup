@@ -33,7 +33,7 @@ Running npm scripts after installation is fine; frontend installation uses pnpm.
 
 For updates, change the owning manifest, regenerate only its canonical lock,
 then prove strict installation, audit, lint/tests/build and affected Docker images.
-Both install boundaries currently pass full audit with zero advisories; CI runs
+Audit results apply to the registry data at the time of the run. CI runs
 `npm audit --audit-level=low` and `pnpm audit --audit-level=low` without suppression.
 Dependabot manages weekly patch/minor updates for both boundaries; runtime and
 dependency major migrations require explicit compatibility review.
@@ -61,7 +61,16 @@ typescript-eslint and readdir-glob dependency paths that resolved vulnerable ver
 Prisma generation/migrations and DB-backed CSV/Excel regressions must pass.
 
 The frontend workspace overrides only minimatch 11.0.1 and follow-redirects 1.16.2
-in `pnpm-workspace.yaml`; the dependency regression suite checks their compatibility.
+in `pnpm-workspace.yaml`. Do not extend the minimatch override to the whole
+backend: legacy glob consumers rely on the older API.
+
+After both canonical installs, run `node --test scripts/dependency-security-compat.test.cjs`
+from the repository root. It exercises glob/readdir-glob matching, an ExcelJS
+workbook round trip and the actual ESLint minimatch consumers. For Admin and POS
+Axios it verifies the installed follow-redirects version and entry-point bytes;
+this offline check proves package identity, not runtime redirect behavior.
+When intentionally updating that pin, verify the official npm tarball against
+the canonical lock's integrity before recording the SHA-256 of its `index.js`.
 
 Admin used the shadcn CLI package only for its stylesheet. The original locked
 4.8.0 `dist/tailwind.css` is retained byte-for-byte at
