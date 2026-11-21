@@ -70,7 +70,7 @@
     "@rollup/rollup-darwin-arm64": "^4.64.9"
   },
   "overrides": {
-    "@prisma/config": { "deepmerge-ts": "^8.0.2" },
+    "@prisma/config": { "deepmerge-ts": "^8.0.2", "effect": "3.22.1" },
     "exceljs": { "uuid": "^11.1.1" },
     "@eslint/config-array": { "minimatch": "11.0.1" },
     "@eslint/eslintrc": { "minimatch": "11.0.1" },
