@@ -45,7 +45,7 @@ const browserOutput = path.join(output, 'browser-native');
 fs.mkdirSync(browserOutput, { recursive: false });
 const servers = [];
 let fixture, failure = null, acceptedPayload = null, mutationScope = null, browserCases = null, combinedLedger = null;
-let browserProcessReceipt = null;
+let browserProcessReceipt = null, browserLedgers = [];
 let snapshotQueryInFlight = false;
 let afterSnapshotDeadlineOutcome = null;
 const requestRows = [];
@@ -167,6 +167,7 @@ try {
   const ledgerFiles = fs.readdirSync(path.join(browserOutput, 'tests'), { recursive: true }).filter(file => String(file).endsWith('/receiving-browser-ledger.json'));
   const ledgers = ledgerFiles.map(file => JSON.parse(fs.readFileSync(path.join(browserOutput, 'tests', file), 'utf8')));
   browserCases = assertPlaywrightReceivingReport(report, ledgers, requestRows);
+  browserLedgers = ledgers;
   combinedLedger = { realLogin: true, syntheticHttp: false, fixtureJwt: false,
     unexpected: ledgers.flatMap(row => row.unexpected), forbidden: ledgers.flatMap(row => row.forbidden),
     requests: ledgers.flatMap(row => row.requests), viewports: [...new Set(ledgers.map(row => row.viewport))].sort((a,b) => b-a),
@@ -245,7 +246,7 @@ try {
       snapshotStatus.status = 'saved-after-quiescence';
       if (beforeFixtureSnapshot && fixture) {
         try {
-          mutationScope = compareReceivingBrowserSnapshots(beforeFixtureSnapshot, after, fixture, requestRows);
+          mutationScope = compareReceivingBrowserSnapshots(beforeFixtureSnapshot, after, fixture, requestRows, browserLedgers);
           write('browser-mutation-scope.json', mutationScope);
           snapshotStatus.comparison = 'passed';
         } catch (error) {
