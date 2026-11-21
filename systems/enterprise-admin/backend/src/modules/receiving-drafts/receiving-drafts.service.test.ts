@@ -16,6 +16,21 @@ it('scopes list pagination and count to both server owner and tenant',async()=>{
 it('does not disclose another owner draft',async()=>{db.receivingDraft.findFirst.mockResolvedValue(null);await expect(run(()=>Service.get(id,'actor-b'))).rejects.toMatchObject({statusCode:404});expect(db.receivingDraft.findFirst).toHaveBeenCalledWith({where:{id,tenantId:'tenant-a',ownerId:'actor-b'}});});
 it('creates a private unfinished draft and immutable first revision in one transaction',async()=>{await run(()=>Service.save(id,'actor-a',{expectedRevision:0,payload}));expect(db.receivingDraft.create).toHaveBeenCalledWith({data:{id,tenantId:'tenant-a',ownerId:'actor-a',revision:1,title:payload.title,payload}});expect(db.receivingDraftRevision.create).toHaveBeenCalledWith({data:{draftId:id,tenantId:'tenant-a',ownerId:'actor-a',revision:1,payload}});expect(db.$transaction).toHaveBeenCalledTimes(1);});
 it('updates only an exact revision belonging to the actor and tenant',async()=>{await run(()=>Service.save(id,'actor-a',{expectedRevision:4,payload}));expect(db.receivingDraft.updateMany).toHaveBeenCalledWith({where:{id,tenantId:'tenant-a',ownerId:'actor-a',revision:4},data:{revision:5,title:payload.title,payload}});});
+it('returns the saved revision and rejects replay without a second history write', async () => {
+  db.receivingDraft.updateMany.mockResolvedValueOnce({count:1}).mockResolvedValueOnce({count:0});
+  db.receivingDraft.findFirstOrThrow.mockResolvedValue({...row,revision:5});
+  const intent={expectedRevision:4,payload};
+
+  const saved=await run(()=>Service.save(id,'actor-a',intent));
+  expect(saved.revision).toBe(5);
+  await expect(run(()=>Service.save(id,'actor-a',intent))).rejects.toMatchObject({statusCode:409});
+
+  expect(db.receivingDraft.updateMany).toHaveBeenCalledTimes(2);
+  for(const [call] of db.receivingDraft.updateMany.mock.calls) {
+    expect(call.where).toEqual({id,tenantId:'tenant-a',ownerId:'actor-a',revision:4});
+  }
+  expect(db.receivingDraftRevision.create).toHaveBeenCalledExactlyOnceWith({data:{draftId:id,tenantId:'tenant-a',ownerId:'actor-a',revision:5,payload}});
+});
 it('rejects a stale revision without creating history',async()=>{db.receivingDraft.updateMany.mockResolvedValue({count:0});await expect(run(()=>Service.save(id,'actor-a',{expectedRevision:4,payload}))).rejects.toMatchObject({statusCode:409});expect(db.receivingDraftRevision.create).not.toHaveBeenCalled();});
 it('returns scoped 404 instead of revealing another owner on update',async()=>{db.receivingDraft.updateMany.mockResolvedValue({count:0});db.receivingDraft.findFirst.mockResolvedValue(null);await expect(run(()=>Service.save(id,'actor-b',{expectedRevision:4,payload}))).rejects.toMatchObject({statusCode:404});});
 it('does not replay a duplicate create after an uncertain response',async()=>{db.receivingDraft.create.mockRejectedValue({code:'P2002'});await expect(run(()=>Service.save(id,'actor-a',{expectedRevision:0,payload}))).rejects.toMatchObject({statusCode:409});expect(db.receivingDraftRevision.create).not.toHaveBeenCalled();});
