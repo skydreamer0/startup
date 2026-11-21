@@ -11,7 +11,11 @@ permissions:
 
 jobs:
   final-alpine:
-    if: github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'chore/62-argon2-compatibility-qa' || github.head_ref == 'chore/argon2-master-integration')
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (github.head_ref == 'chore/62-argon2-compatibility-qa' ||
+       github.head_ref == 'chore/argon2-master-integration' ||
+       startsWith(github.head_ref, 'dependabot/npm_and_yarn/systems/enterprise-admin/backend/'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -126,6 +130,8 @@ jobs:
           python3 - <<'PY'
           import json, os, pathlib
           root = pathlib.Path(os.environ['EVIDENCE'])
+          lock = json.loads(pathlib.Path('systems/enterprise-admin/backend/package-lock.json').read_text())
+          expected_version = lock['packages']['node_modules/argon2']['version']
           outcomes = {k: os.environ[k] for k in ['BASELINE_OUTCOME', 'MUTATIONS_OUTCOME', 'HTTP_OUTCOME']}
           (root / 'outcomes.json').write_text(json.dumps(outcomes, indent=2))
           assert all(v == 'success' for v in outcomes.values()), outcomes
@@ -135,7 +141,7 @@ jobs:
           assert len(baseline) == 1, baseline
           result = baseline[0]
           assert result['status'] == 'PASS' and result['checks'] == 9, result
-          assert result['node'].startswith('v22.') and result['alpine'] is True and result['argon2'] == '0.45.1', result
+          assert result['node'].startswith('v22.') and result['alpine'] is True and result['argon2'] == expected_version, result
           mutations = rows('mutations.log')
           assert len(mutations) == 2 and all(r['rejected'] is True for r in mutations), mutations
           assert {r['mutation'] for r in mutations} == {'password hash overwrite', 'refresh token before rejection'}, mutations
@@ -151,7 +157,7 @@ jobs:
               'checkout-replay-after-refund-preserves-original-result',
           ]
           assert http['status'] == 'PASS' and http['synthetic'] is True and http['checks'] == expected_checks, http
-          assert http['node'].startswith('v22.') and http['alpine'] is True and http['argon2'] == '0.45.1', http
+          assert http['node'].startswith('v22.') and http['alpine'] is True and http['argon2'] == expected_version, http
           assert http['head'] == os.environ['EXPECTED_HEAD'] == (root / 'head.txt').read_text().strip(), http
           assert http['tree'] == (root / 'tree.txt').read_text().strip(), http
           assert http['image'] == (root / 'image-id.txt').read_text().strip(), http
