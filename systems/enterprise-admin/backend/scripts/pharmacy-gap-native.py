@@ -72,7 +72,7 @@ def create_owned(*args):
 
 def terminate(signum, frame):
     signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGTERM})
-    raise InterruptedError('Received SIGTERM')
+    raise SystemExit('Received SIGTERM')
 
 def inspect(cid): return json.loads(docker('inspect', cid))[0]
 def save(file, value): (output/file).write_text(json.dumps(value, indent=2), encoding='utf-8')
