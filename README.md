@@ -151,3 +151,7 @@ pnpm --filter pos-ui run test:e2e checkout-flow.spec.ts checkout-recovery.spec.t
 - [架構決策 ADR](systems/enterprise-admin/infrastructure/adr/)：持久化、庫存、結帳與其他設計邊界
 - [Production Runbook](systems/enterprise-admin/infrastructure/standards/production_runbook.md)：正式遷移、部署與維護準備
 - [AGENTS.md](AGENTS.md) · [Git 工作流程](systems/enterprise-admin/infrastructure/standards/git_workflow.md)：開發與審查規則
+
+## 授權
+
+自有程式碼採 [ISC](LICENSE)。品牌、第三方程式與素材及營運資料不因本授權而一併開放；範圍、原聲明與發行檢查見 [第三方與授權範圍](THIRD_PARTY_NOTICES.md)。
