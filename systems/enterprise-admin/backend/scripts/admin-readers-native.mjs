@@ -104,7 +104,7 @@ export async function navigateReader({ page, subject, adminOrigin, expect, perio
     // A completed click/URL change can precede React replacing the previous page.
     await expect(page).toHaveURL(adminOrigin + subject.route);
     const root = page.locator('.admin-reader-page').filter({
-        has: unavailable ? page.getByRole('alert', { name: `${subject.label}讀取狀態`, exact: true })
+        has: unavailable ? page.getByRole('region', { name: `${subject.label}讀取狀態`, exact: true })
             : page.getByRole('heading', { level: 1, name: subject.heading, exact: true }),
     });
     await expect(root).toBeVisible({ timeout: readerResponseTimeoutMs });
@@ -640,6 +640,8 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     await expect(page.getByText(subject.text, { exact: subject.id !== 'cashflow' })).toHaveCount(0);
                     const hidden = async () => { await expect(page.getByText('存取被拒絕', { exact: false }).first()).toBeVisible({ timeout: readerResponseTimeoutMs }); await expect(page.getByText(subject.text, { exact: subject.id !== 'cashflow' })).toHaveCount(0); };
                     await visualState('denied', retry, hidden, deniedResponse);
+                    // Keep automatic 403 retries out of the explicit 500 retry's response window.
+                    await expect(retry()).toBeEnabled({ timeout: readerResponseTimeoutMs });
                     control.mode = 'fail500';
                     const failedBefore = nextRequestId;
                     await retry().click();

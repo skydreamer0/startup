@@ -398,9 +398,9 @@ test('acceptance rejects missing navigation, wrong target month and replay from 
 });
 
 
-test('initial unavailable entry waits for its own named alert root without filling a hidden month', async () => {
+test('initial unavailable entry waits for its own named notice region without filling a hidden month', async () => {
     const subject = { ...navigationSubjects[1], label: '毛利報表' }, adapter = navigationAdapter(subject, { noLink: true });
-    adapter.page.getByRole = (role, options) => { assert.equal(role, 'alert'); assert.equal(options.name, '毛利報表讀取狀態'); assert.equal(options.exact, true); return { name: subject.heading }; };
+    adapter.page.getByRole = (role, options) => { assert.equal(role, 'region'); assert.equal(options.name, '毛利報表讀取狀態'); assert.equal(options.exact, true); return { name: subject.heading }; };
     const receipt = await navigateReader({ ...adapter, subject, adminOrigin: 'http://127.0.0.1:12345', unavailable: true });
     assert.deepEqual(adapter.state.events, ['goto', 'url', 'heading']); assert.equal(adapter.state.fills.length, 0); assert.equal(receipt.period, null); assert.equal(receipt.heading, null);
 });

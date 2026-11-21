@@ -60,11 +60,20 @@ for (const slug of ['margin', 'sales-ranking'] as const) {
         await capture(page, info, 'initial-error');
         // Initial failures expose a query-local retry instead of the success header.
         const label = slug === 'margin' ? '毛利報表' : '銷售排行';
-        const readNotice = page.getByRole('alert', { name: `${label}讀取狀態`, exact: true });
-        await expect(readNotice).toContainText('資料尚不可用');
+        const readNotice = page.getByRole('region', { name: `${label}讀取狀態`, exact: true });
+        const message = readNotice.getByRole('alert');
+        const retry = readNotice.getByRole('button', { name: `重試${label}`, exact: true });
+        await expect(message).toContainText('資料尚不可用');
         const completed = harness.responses.length;
-        harness.handler = () => ({ status: 200, data: dataFor(slug) });
-        await readNotice.getByRole('button', { name: `重試${label}`, exact: true }).click();
+        const hold = deferred(); harness.handler = () => hold.promise;
+        await retry.click();
+        await expect(retry).toBeFocused();
+        await expect(retry).toBeDisabled();
+        await expect(retry).toHaveAttribute('aria-busy', 'true');
+        await expect(message).toContainText('資料尚不可用');
+        await expect(readNotice.getByRole('status')).toHaveText('重試中…');
+        await page.keyboard.press('Enter');
+        hold.resolve({ status: 200, data: dataFor(slug) });
         await expect.poll(() => harness.responses.length).toBe(completed + 1);
         await success(page);
         await expect(readNotice).toHaveCount(0);

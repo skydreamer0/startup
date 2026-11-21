@@ -81,6 +81,7 @@ describe('actual QueryClient report authorization recovery', () => {
                 expect(retry).toHaveFocus();
                 expect(retry).toHaveAttribute('aria-disabled', 'true');
                 expect(within(notice).getByRole('status')).toHaveTextContent('重試中…');
+                if (isTrend) expect(screen.queryByText('趨勢載入中…')).not.toBeInTheDocument();
                 for (let i = 0; i < 2; i++) {
                     fireEvent.keyDown(retry, { key: 'Enter' });
                     fireEvent.click(retry);

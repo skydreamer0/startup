@@ -123,7 +123,7 @@ export default function CashFlowPage() {
                     <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>Cash Position & Net Cash Flow Trend（估算）</h3>
                     <ReportReadNotice label="趨勢" isError={trendHasError} error={trendError}
                         hasData={trend != null} isFetching={trendIsFetching} onRetry={() => { void refetchTrend({ cancelRefetch: false }); }} />
-                    {trendIsLoading && !trend && <p role="status">趨勢載入中…</p>}
+                    {trendIsLoading && !trendHasError && <p role="status">趨勢載入中…</p>}
                     {!trendHasError && trend?.length === 0 && <p>此期間沒有趨勢資料。</p>}
                     {trend && !isReportAccessDenied(trendError) && <div style={{ width: '100%', height: '350px' }}>
                         <ResponsiveContainer>
