@@ -44,8 +44,8 @@ browser/offline acceptance. Dependabot excludes its routine patch/minor updates;
 other frontend updates and security checks remain enabled. A decoder upgrade
 requires a dedicated compatibility change rather than a manifest-only update.
 
-Vitest 4.1.11 removes the old Tinypool dependency and retains the existing test
-assertions. Axios is at least 1.20.0; Router 7.18 resolves advisories without v6
+Vitest 4.1.12 (Tinypool removed since 4.1.11) retains the existing test
+assertions. Axios is at least 1.21.1; Router 7.18.5 resolves advisories without v6
 patches and is used through the existing declarative routing APIs.
 CSV parse 7 is validated against the existing CSV/import regressions.
 Constructor mocks must use constructable functions/classes with Vitest 4.
