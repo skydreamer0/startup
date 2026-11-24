@@ -18,7 +18,11 @@ async function bounded<T>(work: Promise<T>, ms: number, message: string): Promis
 type Credentials = { email: string; password: string; secondEmail: string; secondPassword: string; peerEmail: string; peerPassword: string; productId: string };
 type Entry = { actor: 'owner' | 'peer'; method: string; url: string; api: boolean; allowed: boolean; fontStub: boolean; status?: number; expectedRevision?: number };
 export type OwnerIsolation = { ownerUrl: string; peerUrl: string; ownerId: string; peerId: string; tenantId: string };
-type Harness = { watchPeer: (context: BrowserContext) => Promise<void>; ownerIsolation: OwnerIsolation | null; requests: Entry[]; unexpected: string[]; forbidden: Entry[]; saveCalls: number; viewport: number };
+export type NavigationGuard = { phase: 'pending' | 'unknown'; action: 'back'; fromUrl: string; blockedUrl: string;
+  retainedUrl: string; dialogVisible: boolean; discardDisabled: boolean; expectedTitle: string; retainedTitle: string; saveCalls: number };
+type CasResolution = { draftUrl: string; expectedRevision: number; savedRevision: number; originalTitle: string; winnerTitle: string;
+  retainedTitle: string; reopenedTitle: string; reopenedRevision: number; history: { revision: number; title: string }[] };
+type Harness = { watchPeer: (context: BrowserContext) => Promise<void>; ownerIsolation: OwnerIsolation | null; navigationGuards: NavigationGuard[]; casResolution: CasResolution | null; requests: Entry[]; unexpected: string[]; forbidden: Entry[]; saveCalls: number; viewport: number };
 const headingSelector = 'main.receipt-draft-editor > h1';
 const headingText = '人工收貨草稿';
 
@@ -42,7 +46,7 @@ async function platformFontEvidence(page: Page, target: Locator) {
 export const test = base.extend<{ harness: Harness }>({
   harness: [async ({ page, context }, use, info) => {
     const peerContexts = new Set<BrowserContext>();
-    const state: Harness = { ownerIsolation: null, watchPeer: async peer => { peerContexts.add(peer); await watch(peer, 'peer'); }, requests: [], unexpected: [], forbidden: [], saveCalls: 0, viewport: page.viewportSize()!.width };
+    const state: Harness = { navigationGuards: [], casResolution: null, ownerIsolation: null, watchPeer: async peer => { peerContexts.add(peer); await watch(peer, 'peer'); }, requests: [], unexpected: [], forbidden: [], saveCalls: 0, viewport: page.viewportSize()!.width };
     let activeRoutes = 0;
     const watch = async (watched: BrowserContext, actor: 'owner' | 'peer') => {
       const entries = new Map<object, Entry>();
@@ -96,7 +100,7 @@ export const test = base.extend<{ harness: Harness }>({
       expect(state.unexpected, 'Browser network is limited to this built app and receiving API allowlist').toEqual([]);
       const ledgerPath = info.outputPath('receiving-browser-ledger.json');
       await writeFile(ledgerPath, JSON.stringify({ requests: state.requests, unexpected: state.unexpected, forbidden: state.forbidden,
-        viewport: state.viewport, title: info.title, titlePath: info.titlePath, retry: info.retry, saveCalls: state.saveCalls, ownerIsolation: state.ownerIsolation }), { flag: 'wx' });
+        viewport: state.viewport, title: info.title, titlePath: info.titlePath, retry: info.retry, saveCalls: state.saveCalls, ownerIsolation: state.ownerIsolation, navigationGuards: state.navigationGuards, casResolution: state.casResolution }), { flag: 'wx' });
       await info.attach('receiving-browser-ledger.json', { path: ledgerPath, contentType: 'application/json' });
     } catch (error) { cleanupError = error; }
     if (primaryError) throw primaryError;

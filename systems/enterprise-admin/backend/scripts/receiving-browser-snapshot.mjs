@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import { expectedReceivingCases } from '../../pos-ui/e2e/receiving-browser-native/acceptance.mjs';
 import { origin, draftPath } from '../../pos-ui/e2e/receiving-browser-native/fixture.mjs';
 
 const financialTables = ['orders', 'order_items', 'order_payments', 'expenses', 'product_batches', 'inventory_transactions',
@@ -73,6 +74,7 @@ export function compareReceivingBrowserSnapshots(before, after, fixture, respons
   for (const table of existingDraftRows) {
     const oldById = new Map(before[table].map(row => [rowKey(row), row]));
     const newById = new Map(after[table].map(row => [rowKey(row), row]));
+    assert.equal(newById.size, after[table].length, `${table} snapshot contains duplicate row identities`);
     for (const [id, oldRow] of oldById) assert.deepEqual(newById.get(id), oldRow, `${table} existing row was modified`);
     const additions = after[table].filter(row => !oldById.has(rowKey(row)));
     assert.ok(additions.every(row => row.tenant_id === fixture.ids.tenant && actorIds.has(row.owner_id)), `${table} has a non-fixture append`);
@@ -84,8 +86,8 @@ export function compareReceivingBrowserSnapshots(before, after, fixture, respons
 
   const drafts = after.receiving_drafts.filter(row => row.tenant_id === fixture.ids.tenant);
   const revisions = after.receiving_draft_revisions.filter(row => row.tenant_id === fixture.ids.tenant);
-  assert.equal(drafts.length, 8, 'Six original heads and two peer-isolation heads required');
-  assert.equal(revisions.length, 10, 'Eight original revisions and two peer-isolation revisions required');
+  assert.equal(drafts.length, 10, 'Eight existing heads and two Back-guard heads required');
+  assert.equal(revisions.length, 14, 'Exactly fourteen immutable revisions including two retained saves and two peer saves');
   const receipt = ledgers.find(row => row.ownerIsolation)?.ownerIsolation;
   assert.ok(receipt && fixture.peerId && fixture.peerId !== fixture.ids.allowed);
   assert.equal(receipt.tenantId, fixture.ids.tenant);
@@ -106,7 +108,7 @@ export function compareReceivingBrowserSnapshots(before, after, fixture, respons
     assert.equal(head.payload.title, title);
   }
   assert.ok(drafts.every(row => row.owner_id === (row.title === '同租戶驗收 B 私人草稿' ? fixture.peerId : fixture.ids.allowed)));
-  assert.ok(revisions.every(row => drafts.some(head => head.id === row.draft_id && head.owner_id === row.owner_id)));
+  assert.ok(revisions.every(row => drafts.some(head => head.id === row.draft_id && head.owner_id === row.owner_id)), 'Every revision must belong to its saved fixture head and owner');
   const titleRows = new Map(drafts.map(row => [row.title, row]));
   for (const width of [1440, 390]) {
     const tenLine = titleRows.get(`真 API 十行草稿 ${width}`);
@@ -114,11 +116,45 @@ export function compareReceivingBrowserSnapshots(before, after, fixture, respons
     assert.equal(tenLine.payload.lines[0].fields.productId, fixture.productId);
     assert.equal(tenLine.payload.lines[0].fields.quantity, '3'); assert.equal(tenLine.payload.lines[0].reviewed, false);
     assert.equal(titleRows.get(`失回應真 API 草稿 ${width}`)?.revision, 1);
+    assert.equal(titleRows.get(`返回鍵真 API 草稿 ${width}`)?.revision, 1);
+  }
+  for (const head of drafts) {
+    const history = revisions.filter(row => row.draft_id === head.id).sort((a, b) => a.revision - b.revision);
+    const isCas = /^CAS 真 API 勝者 [AB]$/.test(head.title);
+    assert.deepEqual(history.map(row => row.revision), isCas ? [1, 2, 3] : [1], 'Each head needs its exact immutable history');
+    assert.deepEqual(head.payload, history.at(-1).payload, 'Each head payload must equal its latest immutable revision');
+    assert.equal(head.payload.title, head.title);
+    const successfulSaves = responses.filter(row => row.method === 'PUT' && row.status === 200
+      && row.url === `http://127.0.0.1:4287/api/v1/admin/receiving-drafts/${head.id}`);
+    assert.equal(successfulSaves.length, history.length, 'Raw history must match the exact successful API saves');
   }
   const casHeads = drafts.filter(row => /^CAS 真 API 勝者 [AB]$/.test(row.title));
-  assert.equal(casHeads.length, 2); assert.ok(casHeads.every(row => row.revision === 2 && row.payload?.title === row.title));
-  const history = drafts.map(row => revisions.filter(revision => revision.draft_id === row.id).map(row => row.revision).sort());
-  assert.deepEqual(history.sort((a, b) => a.length - b.length), [[1], [1], [1], [1], [1], [1], [1, 2], [1, 2]]);
+  assert.equal(casHeads.length, 2);
+  const casLedgers = ledgers.filter(row => row.title === expectedReceivingCases[2].title);
+  assert.equal(casLedgers.length, 2, 'Require the two CAS browser receipts');
+  assert.deepEqual(casLedgers.map(row => row.viewport).sort((a, b) => a - b), [390, 1440], 'Require both CAS browser viewports');
+  const receiptHeadIds = [];
+  for (const ledger of casLedgers) {
+    const receipt = ledger.casResolution;
+    const head = casHeads.find(row => receipt?.draftUrl === `http://127.0.0.1:4287/api/v1/admin/receiving-drafts/${row.id}`);
+    assert.ok(head, 'Each CAS receipt must identify its saved fixture head');
+    receiptHeadIds.push(head.id);
+    assert.equal(head.revision, 3, 'CAS head must be revision 3');
+    assert.equal(head.title, receipt.retainedTitle, 'CAS head must match the retained browser title');
+    assert.equal(receipt.originalTitle, `CAS 真 API 草稿 ${ledger.viewport}`);
+    assert.equal(receipt.expectedRevision, 2); assert.equal(receipt.savedRevision, 3); assert.equal(receipt.reopenedRevision, 3);
+    assert.equal(receipt.reopenedTitle, head.title);
+    assert.deepEqual([receipt.winnerTitle, receipt.retainedTitle].sort(), ['CAS 真 API 勝者 A', 'CAS 真 API 勝者 B']);
+    const history = revisions.filter(row => row.draft_id === head.id).sort((a, b) => a.revision - b.revision);
+    const expectedHistory = [
+      { revision: 1, title: receipt.originalTitle }, { revision: 2, title: receipt.winnerTitle }, { revision: 3, title: receipt.retainedTitle },
+    ];
+    assert.deepEqual(receipt.history, expectedHistory, 'CAS browser history must preserve all three versions');
+    assert.deepEqual(history.map(row => ({ revision: row.revision, title: row.payload.title })), expectedHistory, 'CAS raw history must match the browser-observed original, winner and retained titles');
+    const withoutTitle = payload => Object.fromEntries(Object.entries(payload).filter(([key]) => key !== 'title'));
+    for (const row of history) assert.deepEqual(withoutTitle(row.payload), withoutTitle(head.payload), 'Only the title changes in the CAS journey');
+  }
+  assert.deepEqual(receiptHeadIds.sort(), casHeads.map(row => row.id).sort(), 'CAS browser receipts must identify distinct saved heads');
   const digests = snapshot => Object.fromEntries(Object.entries(snapshot).map(([name, rows]) => [name, {
     rows: rows.length, sha256: crypto.createHash('sha256').update(JSON.stringify(sortedRows(rows))).digest('hex'),
   }]));

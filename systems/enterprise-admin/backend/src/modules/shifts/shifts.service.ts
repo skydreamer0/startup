@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/errors';
 import { requireTenantId } from '../../lib/tenant.context';
@@ -76,15 +77,23 @@ export class ShiftService {
     if (!shift) throw new AppError(404, 'Shift not found');
     if (shift.status === 'CLOSED') throw new AppError(400, 'Shift is already closed');
 
-    return prisma.shift.update({
-      where: { id },
-      data: {
-        status: 'CLOSED',
-        closingCash: data.closingCash,
-        closedAt: new Date(),
-        notes: data.notes ?? shift.notes,
-      },
-    });
+    try {
+      // Preserve the first close even when two requests read the same open row.
+      return await prisma.shift.update({
+        where: { id, tenantId, status: shift.status },
+        data: {
+          status: 'CLOSED',
+          closingCash: data.closingCash,
+          closedAt: new Date(),
+          notes: data.notes ?? shift.notes,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new AppError(409, 'Shift changed before closing; reload and confirm');
+      }
+      throw error;
+    }
   }
 
   static async delete(id: string) {
