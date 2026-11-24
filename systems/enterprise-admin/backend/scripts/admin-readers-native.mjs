@@ -624,6 +624,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     await loaded(subject);
                     const retry = () => page.getByRole('button', { name: `重試${subject.label}`, exact: true });
                     await visualState('stale', retry, async () => { await loaded(subject); await expect(page.getByText('可能已過期', { exact: false }).first()).toBeVisible({ timeout: readerResponseTimeoutMs }); }, staleResponse);
+                    await expect(retry()).toBeEnabled({ timeout: readerResponseTimeoutMs });
                     control.mode = 'normal';
                     const staleRecoveryBefore = nextRequestId;
                     await retry().click();
@@ -650,6 +651,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                     await expect(page.getByText(subject.text, { exact: subject.id !== 'cashflow' })).toHaveCount(0);
                     await visualState('failed-retry', retry, hidden, failedResponse);
                     stage = `${subject.id} authorized recovery shared lifecycle`;
+                    await expect(retry()).toBeEnabled({ timeout: readerResponseTimeoutMs });
                     control.mode = 'normal';
                     await page.evaluate(value => localStorage.setItem('accessToken', value), tokens.readerA);
                     const recoveryBefore = nextRequestId;
@@ -667,6 +669,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                         const trend = page.getByRole('button', { name: '重試趨勢', exact: true });
                         stage = `${subject.id} authorized recovery trend visible`;
                         await expect(trend).toBeVisible({ timeout: readerResponseTimeoutMs });
+                        await expect(trend).toBeEnabled({ timeout: readerResponseTimeoutMs });
                         stage = `${subject.id} authorized recovery denied chart hidden`;
                         await expect(page.locator('.recharts-wrapper')).toHaveCount(0);
                         const trendBefore = nextRequestId;
@@ -684,6 +687,7 @@ export async function runAdminReadersNative({ db, browser, adminOrigin, signAcce
                         await expect(ranking).toBeVisible({ timeout: readerResponseTimeoutMs });
                         await expect(page.getByText('合成同名供應商', { exact: true })).toHaveCount(0);
                         await visitReaderViewports(page, async view => { await expect(page.getByText('合成同名供應商', { exact: true })).toHaveCount(0); await keyboardCapture(page, 'supplier-ranking', view.width, ranking, 'denied'); });
+                        await expect(ranking).toBeEnabled({ timeout: readerResponseTimeoutMs });
                         const rankingBefore = nextRequestId;
                         await ranking.click();
                         await outcome(subject, 200, 'readerA', rankingBefore, subject.paths[1]);

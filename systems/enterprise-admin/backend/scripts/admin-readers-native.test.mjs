@@ -711,28 +711,99 @@ test('recovery diagnostic has a real bounded hung-page wait and ignores late com
 });
 const recoverySteps = ['main click', 'main response', 'main data visible', 'main notice removed',
     'trend visible', 'denied chart hidden', 'trend click', 'trend response', 'trend notice removed'];
-function actualRecoveryTransition(failAt) {
+function actualRecoveryTransition(failAt, readiness = Promise.resolve(), mainReadiness = Promise.resolve()) {
     const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
     const start = source.indexOf('                    stage = `${subject.id} authorized recovery shared lifecycle`;');
     const end = source.indexOf('                    recoveryDiagnostic = null;', start) + '                    recoveryDiagnostic = null;'.length;
     assert.ok(start > 0 && end > start);
     const primary = Object.assign(new Error('ORIGINAL_SECRET'), { name: 'TimeoutError' });
     const calls = [];
+    const control = { mode: 'fail500' };
+    let mainReady = false, trendReady = false, authorizedActor;
     const step = async name => { calls.push(name); if (name === failAt) throw primary; };
-    const main = { click: async (...args) => { assert.deepEqual(args, []); await step('main click'); } };
-    const trend = { click: async (...args) => { assert.deepEqual(args, []); await step('trend click'); } };
-    const page = { evaluate: async () => {}, getByRole: () => trend, locator: () => 'chart' };
+    const main = { click: async (...args) => { assert.equal(mainReady, true); assert.equal(authorizedActor, 'readerA'); assert.deepEqual(args, []); await step('main click'); } };
+    const trend = { click: async (...args) => { assert.equal(trendReady, true); assert.deepEqual(args, []); await step('trend click'); } };
+    const page = { evaluate: async (_callback, actor) => { assert.equal(control.mode, 'normal'); assert.equal(actor, 'SYNTHETIC_ONLY'); authorizedActor = 'readerA'; }, getByRole: () => trend, locator: () => 'chart' };
     const expect = target => ({
+        toBeEnabled: async options => {
+            assert.deepEqual(options, { timeout: 25000 });
+            if (target === main) { assert.equal(control.mode, 'fail500'); assert.equal(authorizedActor, undefined); await mainReadiness; mainReady = true; }
+            else { assert.equal(target, trend); await readiness; trendReady = true; }
+        },
         toBeVisible: async options => { assert.deepEqual(options, { timeout: 25000 }); await step('trend visible'); },
         toHaveCount: async count => { assert.equal(count, 0); await step(target === main ? 'main notice removed' : target === trend ? 'trend notice removed' : 'denied chart hidden'); },
     });
     const run = new Function('subject', 'control', 'page', 'tokens', 'retry', 'outcome', 'loaded', 'expect',
         `return (async () => { let stage = '', recoveryDiagnostic = null; const nextRequestId = 100, contextId = 2, readerResponseTimeoutMs = 25000;
         try { ${source.slice(start, end)}; return { stage, recoveryDiagnostic }; } catch (error) { return { stage, recoveryDiagnostic, error }; } })();`);
-    return { primary, calls, run: () => run(recoverySubject, { mode: 'fail500' }, page, { readerA: 'SYNTHETIC_ONLY' }, () => main,
+    return { primary, calls, control, get authorizedActor() { return authorizedActor; }, run: () => run(recoverySubject, control, page, { readerA: 'SYNTHETIC_ONLY' }, () => main,
         async (_subject, status, actor, after, endpoint) => { assert.equal(status, 200); assert.equal(actor, 'readerA'); assert.equal(after, 100); await step(endpoint ? 'trend response' : 'main response'); },
         async () => step('main data visible'), expect) };
 }
+test('authorized recovery leaves transport and actor unchanged until automatic retry settles', async () => {
+    let release;
+    const probe = actualRecoveryTransition(null, Promise.resolve(), new Promise(resolve => { release = resolve; }));
+    const run = probe.run();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(probe.control.mode, 'fail500');
+    assert.equal(probe.authorizedActor, undefined);
+    assert.deepEqual(probe.calls, []);
+    release();
+    const result = await run;
+    assert.equal(result.error, undefined);
+    assert.equal(probe.control.mode, 'normal');
+    assert.equal(probe.authorizedActor, 'readerA');
+    assert.deepEqual(probe.calls, recoverySteps);
+});
+test('authorized recovery readiness failure cannot restore transport or install actor', async () => {
+    const probe = actualRecoveryTransition(null, Promise.resolve(), Promise.reject(new Error('still fetching')));
+    const result = await probe.run();
+    assert.equal(result.error.message, 'still fetching');
+    assert.equal(probe.control.mode, 'fail500');
+    assert.equal(probe.authorizedActor, undefined);
+    assert.deepEqual(probe.calls, []);
+});
+test('authorized trend recovery waits for enabled retry before its manual click', async () => {
+    let release;
+    const probe = actualRecoveryTransition(null, new Promise(resolve => { release = resolve; }));
+    const run = probe.run();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(probe.calls, recoverySteps.slice(0, 5));
+    release();
+    const result = await run;
+    assert.equal(result.error, undefined);
+    assert.deepEqual(probe.calls, recoverySteps);
+});
+test('authorized trend readiness failure prevents the manual trend click', async () => {
+    const probe = actualRecoveryTransition(null, Promise.reject(new Error('still fetching')));
+    const result = await probe.run();
+    assert.equal(result.error.message, 'still fetching');
+    assert.deepEqual(probe.calls, recoverySteps.slice(0, 5));
+});
+for (const failed of [false, true]) test(`stale recovery preserves fault until enabled retry: readiness failure=${failed}`, async () => {
+    const source = fs.readFileSync(new URL('./admin-readers-native.mjs', import.meta.url), 'utf8');
+    const marker = "                    await visualState('stale', retry,";
+    const start = source.indexOf('\n', source.indexOf(marker)) + 1;
+    const end = source.indexOf('                    const staleRecoveryResponse', start);
+    assert.ok(start > 0 && end > start);
+    const control = { mode: 'fail500' }, calls = [];
+    let release;
+    const readiness = new Promise(resolve => { release = resolve; });
+    const button = { async click() { assert.equal(control.mode, 'normal'); calls.push('click'); } };
+    const expect = target => ({ async toBeEnabled(options) {
+        assert.equal(target, button); assert.deepEqual(options, { timeout: 25000 });
+        assert.equal(control.mode, 'fail500'); await readiness;
+        assert.equal(control.mode, 'fail500');
+        if (failed) throw Error('still fetching');
+    } });
+    const run = new Function('control', 'retry', 'expect', `return (async () => { const readerResponseTimeoutMs = 25000, nextRequestId = 100; ${source.slice(start, end)} })();`);
+    const pending = run(control, () => button, expect);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(control.mode, 'fail500'); assert.deepEqual(calls, []);
+    release();
+    if (failed) { await assert.rejects(pending, /still fetching/); assert.equal(control.mode, 'fail500'); assert.deepEqual(calls, []); }
+    else { await pending; assert.deepEqual(calls, ['click']); }
+});
 for (const step of recoverySteps) test(`actual recovery transition identifies failed ${step} without changing the action`, async () => {
     const probe = actualRecoveryTransition(step), result = await probe.run();
     assert.equal(result.stage, `cashflow authorized recovery ${step}`);
