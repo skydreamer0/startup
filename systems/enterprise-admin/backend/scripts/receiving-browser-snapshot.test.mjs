@@ -2,22 +2,26 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { compareReceivingBrowserSnapshots, redactBusinessSnapshot } from './receiving-browser-snapshot.mjs';
 
-const fixture = { ids: { tenant: 'tenant', allowed: 'allowed', denied: 'denied' }, productId: 'product' };
-const titles = ['真 API 十行草稿 1440', '真 API 十行草稿 390', '失回應真 API 草稿 1440', '失回應真 API 草稿 390', 'CAS 真 API 勝者 A', 'CAS 真 API 勝者 B'];
+const fixture = { ids: { tenant: 'tenant', allowed: 'allowed', denied: 'denied' }, peerId: 'peer', productId: 'product' };
+const titles = ['真 API 十行草稿 1440', '真 API 十行草稿 390', '失回應真 API 草稿 1440', '失回應真 API 草稿 390', 'CAS 真 API 勝者 A', 'CAS 真 API 勝者 B', '同租戶驗收 A 私人草稿', '同租戶驗收 B 私人草稿', '返回鍵真 API 草稿 1440', '返回鍵真 API 草稿 390'];
 const payload = title => ({ title, lines: title.startsWith('真 API 十行') ? Array.from({ length: 10 }, (_, index) => ({ id: `line${index}`, reviewed: false,
   fields: { productId: index === 0 ? 'product' : '', quantity: index === 0 ? '3' : '待確認' } })) : [{ id: 'line', reviewed: false, fields: {} }] });
+const base = 'http://127.0.0.1:4287/api/v1/admin/receiving-drafts/';
+const peerLedgers = [{ ownerIsolation: { ownerUrl: base + 'draft6', peerUrl: base + 'draft7', ownerId: 'allowed', peerId: 'peer', tenantId: 'tenant' } }];
 function snapshots() {
   const before = { users: [
     { id: 'allowed', last_login_at: null, failed_login_attempts: 0, updated_at: '2026-01-01', password_hash: 'private-hash' },
     { id: 'denied', last_login_at: null, failed_login_attempts: 0, updated_at: '2026-01-01', password_hash: 'private-hash-2' },
+    { id: 'peer', last_login_at: null, failed_login_attempts: 0, updated_at: '2026-01-01' },
     { id: 'other', last_login_at: null, failed_login_attempts: 0, updated_at: '2026-01-01' },
   ], audit_logs: [{ id: 'old', user_id: 'other', action: 'OLD', resource_type: 'users', resource_id: 'other', old_value: null, new_value: null, tenant_id: 'other' }],
   receiving_drafts: [], receiving_draft_revisions: [], orders: [{ id: 'order', total: 100 }], products: [{ id: 'product', stock_quantity: 0 }], tenants: [{ id: 'tenant', slug: 'default' }] };
   const after = structuredClone(before);
   after.users[0].last_login_at = '2026-02-01'; after.users[0].updated_at = '2026-02-01';
   after.users[1].last_login_at = '2026-02-01'; after.users[1].updated_at = '2026-02-01';
+  after.users[2].last_login_at = '2026-02-01';
   after.audit_logs.push({ id: 'login', user_id: 'allowed', action: 'LOGIN', resource_type: 'users', resource_id: 'allowed', old_value: null, new_value: null, tenant_id: 'tenant' });
-  after.receiving_drafts = titles.map((title, index) => ({ id: `draft${index}`, tenant_id: 'tenant', owner_id: 'allowed', title: title.startsWith('CAS') ? title : payload(title).title,
+  after.receiving_drafts = titles.map((title, index) => ({ id: `draft${index}`, tenant_id: 'tenant', owner_id: index === 7 ? 'peer' : 'allowed', title: title.startsWith('CAS') ? title : payload(title).title,
     revision: title.startsWith('CAS') ? 3 : 1, payload: payload(title) }));
   const ledgers = [1440, 390].map((viewport, index) => {
     const draft = after.receiving_drafts[4 + index];
@@ -33,19 +37,19 @@ function snapshots() {
   after.receiving_draft_revisions = after.receiving_drafts.flatMap(row => {
     const cas = ledgers.find(ledger => ledger.casResolution.draftUrl.endsWith(`/${row.id}`))?.casResolution;
     return (cas?.history ?? [{ revision: 1, title: row.title }]).map(version => ({
-      draft_id: row.id, tenant_id: 'tenant', owner_id: 'allowed', revision: version.revision, payload: { ...row.payload, title: version.title },
+      draft_id: row.id, tenant_id: 'tenant', owner_id: row.owner_id, revision: version.revision, payload: { ...row.payload, title: version.title },
     }));
   });
   const responses = [{ endpoint: '/auth/login', status: 200, actorId: 'allowed' },
     ...after.receiving_draft_revisions.map(row => ({ method: 'PUT', status: 200,
       url: `http://127.0.0.1:4287/api/v1/admin/receiving-drafts/${row.draft_id}` }))];
-  return { before, after, responses, ledgers };
+  return { before, after, responses, ledgers: [...ledgers, ...peerLedgers] };
 }
 
 test('raw receiving snapshots allow only fixture auth bookkeeping and append-only draft/audit rows', () => {
   const { before, after, responses, ledgers } = snapshots();
   const receipt = compareReceivingBrowserSnapshots(before, after, fixture, responses, ledgers);
-  assert.equal(receipt.draftHeads.length, 6); assert.equal(receipt.draftRevisions.length, 10);
+  assert.equal(receipt.draftHeads.length, 10); assert.equal(receipt.draftRevisions.length, 14);
   assert.deepEqual(after.orders, before.orders);
   const sanitized = redactBusinessSnapshot({ users: [{ password_hash: 'secret', jwtToken: 'secret', id: 'allowed' }] });
   assert.deepEqual(sanitized, { users: [{ password_hash: '[REDACTED]', jwtToken: '[REDACTED]', id: 'allowed' }] });
@@ -61,21 +65,30 @@ test('row-level guard catches financial edits and unrelated fixture-tenant row c
   assert.throws(() => compareReceivingBrowserSnapshots(before, changedHash, fixture, responses, ledgers), /users/);
 });
 
+test('peer receipt and immutable revision must identify the same saved head and owner', () => {
+  const { before, after, responses, ledgers } = snapshots();
+  const wrongReceipt = structuredClone(ledgers);
+  wrongReceipt.at(-1).ownerIsolation.peerUrl = wrongReceipt.at(-1).ownerIsolation.ownerUrl;
+  assert.throws(() => compareReceivingBrowserSnapshots(before, after, fixture, responses, wrongReceipt));
+  after.receiving_draft_revisions.find(row => row.owner_id === 'peer').owner_id = 'allowed';
+  assert.throws(() => compareReceivingBrowserSnapshots(before, after, fixture, responses, ledgers));
+});
+
 // Keep the exact count while breaking each structural/evidence invariant: simply
-// changing the old total from eight to ten must not make these cases acceptable.
+// changing the old total from ten to fourteen must not make these cases acceptable.
 for (const [name, change, error] of [
-  ['missing CAS v3', ({ after }) => { after.receiving_draft_revisions.pop(); }, /ten immutable/],
-  ['unexpected extra revision', ({ after }) => { after.receiving_draft_revisions.push({ ...after.receiving_draft_revisions.at(-1), revision: 4 }); }, /ten immutable/],
+  ['missing CAS v3', ({ after }) => { after.receiving_draft_revisions.splice(6, 1); }, /fourteen immutable/],
+  ['unexpected extra revision', ({ after }) => { after.receiving_draft_revisions.push({ ...after.receiving_draft_revisions.at(-1), revision: 4 }); }, /fourteen immutable/],
   ['duplicate revision identity at the same total', ({ after }) => { after.receiving_draft_revisions[9] = structuredClone(after.receiving_draft_revisions[8]); }, /duplicate row identities/],
   ['wrong head revision at the same total', ({ after }) => { after.receiving_drafts[4].revision = 2; }, /CAS head must be revision 3/],
   ['rewritten original history at the same total', ({ after }) => { after.receiving_draft_revisions[4].payload.title = 'rewritten'; }, /CAS raw history/],
   ['rewritten winner history at the same total', ({ after }) => { after.receiving_draft_revisions[5].payload.title = 'rewritten'; }, /CAS raw history/],
   ['head payload differs from immutable v3', ({ after }) => { after.receiving_drafts[4].payload.lines = []; }, /head payload must equal/],
   ['unexpected historical content mutation', ({ after }) => { after.receiving_draft_revisions[4].payload.lines = []; }, /Only the title changes/],
-  ['different actor owns a revision', ({ after }) => { after.receiving_draft_revisions[4].owner_id = 'denied'; }, /allowed actor/],
+  ['different actor owns a revision', ({ after }) => { after.receiving_draft_revisions[4].owner_id = 'denied'; }, /saved fixture head and owner/],
   ['orphan revision at the same total', ({ after }) => { after.receiving_draft_revisions[4].draft_id = 'unknown'; }, /saved fixture head/],
   ['wrong history distribution at the same total', ({ after }) => { after.receiving_draft_revisions[4].draft_id = 'draft0'; after.receiving_draft_revisions[4].revision = 2; }, /exact immutable history/],
-  ['missing browser evidence', ({ ledgers }) => { ledgers.pop(); }, /two CAS browser receipts/],
+  ['missing browser evidence', ({ ledgers }) => { ledgers.splice(1, 1); }, /two CAS browser receipts/],
   ['duplicate browser viewport', ({ ledgers }) => { ledgers[1].viewport = 1440; }, /CAS browser viewports/],
   ['browser receipt for a different draft', ({ ledgers }) => { ledgers[0].casResolution.draftUrl += '-other'; }, /CAS receipt must identify/],
   ['browser receipt for different retained content', ({ ledgers }) => { ledgers[0].casResolution.retainedTitle = 'other'; }, /retained browser title/],

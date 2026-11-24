@@ -11,7 +11,7 @@ const { createRequire } = require('node:module');
   }
   const root = process.cwd(), requireBackend = createRequire(path.join(root, 'package.json'));
   const version = requireBackend('argon2/package.json').version;
-  assert.equal(version, '0.45.1');
+  assert.equal(version, requireBackend('./package-lock.json').packages['node_modules/argon2'].version);
   const fixture = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
   assert.equal(fixture.synthetic, true); assert.equal(fixture.generator.version, '0.44.0');
   assert.equal(fixture.password, 'SYNTHETIC-ONLY-藥局-compat-62!');

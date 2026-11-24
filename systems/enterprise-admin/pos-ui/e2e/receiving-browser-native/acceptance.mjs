@@ -1,25 +1,28 @@
 import assert from 'node:assert/strict';
 
+export const guardedBackTitle = 'Back is blocked during pending and unknown saves without losing the draft';
 export const expectedReceivingCases = Object.freeze([
   ...[1440, 390].flatMap(viewport => [
     { viewport, title: 'real login, ten-line save, reopen and immutable history' },
     { viewport, title: 'lost committed response resolves by GET without a second PUT' },
     { viewport, title: 'two real pages race the same revision and expose an explicit CAS choice' },
   ]),
+  { viewport: 1440, title: 'same-tenant peer cannot access or overwrite another owner’s saved draft' },
   { viewport: 1440, title: 'unsaved close cancellation retains content; malformed URL and identity are isolated' },
+  ...[1440, 390].map(viewport => ({ viewport, title: guardedBackTitle })),
 ]);
 // Conditional scope of a successful exact-source native run, never a local-control PASS.
 export const receivingBrowserScope = Object.freeze({
   verified: Object.freeze([
-    '1440/390 create/save/reopen/history',
+    'Tab from draft title to Save before details at 1366/1024/1440/390; Enter/Space saves once, then reopen/history',
     'same-tenant second actor sees empty draft list',
+    'equally privileged same-tenant peer cannot list, open, read history or overwrite another owner’s saved draft',
     'two-page CAS conflict, explicit retained next revision, reopen and unchanged versions 1/2/3',
-    'lost committed response resolved by GET without retry PUT',
+    'lost committed response resolved by keyboard-activated GET without retry PUT',
     'pending/unknown browser Back is blocked with discard disabled and draft retained',
     'unsaved cancellation retains the current page content; malformed draft URL is rejected',
   ]),
   notVerified: Object.freeze([
-    'open another actor’s saved draft or history',
     'cross-tenant browser isolation',
     'pending/unknown sidebar, query replacement and native window-close navigation',
     'read-only actor attempted PUT rejection',
@@ -44,13 +47,13 @@ export function assertPlaywrightReceivingReport(report, ledgers, appResponses = 
     assert.deepEqual(response.handlerFailures, [], 'No real API handler Promise may throw or reject');
   }
   assert.deepEqual(report.stats && { expected: report.stats.expected, unexpected: report.stats.unexpected,
-    skipped: report.stats.skipped, flaky: report.stats.flaky }, { expected: 7, unexpected: 0, skipped: 0, flaky: 0 });
+    skipped: report.stats.skipped, flaky: report.stats.flaky }, { expected: expectedReceivingCases.length, unexpected: 0, skipped: 0, flaky: 0 });
   const specs = collectSpecs(report.suites);
   const actual = [];
   for (const { spec, path } of specs) {
     const viewportSuite = path.find(title => /^receiving real API (1440|390)$/.test(title));
     const viewport = viewportSuite ? Number(viewportSuite.match(/(1440|390)$/)[1])
-      : spec.title === expectedReceivingCases[6].title ? 1440 : null;
+      : expectedReceivingCases.slice(6, 8).some(row => row.title === spec.title) ? 1440 : null;
     assert.ok(viewport, `Unexpected browser suite/title: ${path.join(' > ')} > ${spec.title}`);
     assert.equal(spec.tests?.length, 1, `Expected one Playwright test for ${spec.title}`);
     const test = spec.tests[0];
@@ -64,32 +67,38 @@ export function assertPlaywrightReceivingReport(report, ledgers, appResponses = 
     actual.push({ viewport, title: spec.title, durationMs: run.duration, status: run.status, retry: run.retry });
   }
   assert.deepEqual(actual.map(({ viewport, title }) => ({ viewport, title })).sort((a, b) => a.viewport - b.viewport || a.title.localeCompare(b.title)),
-    [...expectedReceivingCases].sort((a, b) => a.viewport - b.viewport || a.title.localeCompare(b.title)), 'Exact seven-case receiving matrix required');
-  assert.equal(ledgers.length, 7, 'Each browser case must retain its own network ledger');
+    [...expectedReceivingCases].sort((a, b) => a.viewport - b.viewport || a.title.localeCompare(b.title)), 'Exact ten-case receiving matrix required');
+  assert.equal(ledgers.length, expectedReceivingCases.length, 'Each browser case must retain its own network ledger');
   const ledgerKeys = ledgers.map(row => ({ viewport: row.viewport, title: row.title, retry: row.retry }));
   assert.deepEqual(ledgerKeys.sort((a, b) => a.viewport - b.viewport || a.title.localeCompare(b.title)),
     expectedReceivingCases.map(row => ({ ...row, retry: 0 })).sort((a, b) => a.viewport - b.viewport || a.title.localeCompare(b.title)),
     'Network ledgers must map one-to-one to the fixed viewport/title matrix');
   for (const ledger of ledgers) {
     const draftPuts = ledger.requests.filter(row => row.method === 'PUT' && new URL(row.url).pathname.includes('/receiving-drafts/'));
-    if (ledger.title === expectedReceivingCases[0].title) assert.equal(draftPuts.length, 1, 'Each ten-line journey saves one draft once');
-    if (ledger.title === expectedReceivingCases[1].title) {
+    if (ledger.title === expectedReceivingCases[0].title) {
+      assert.equal(draftPuts.length, 1, 'Each ten-line journey saves one draft once');
+      assert.deepEqual(appResponses.filter(row => row.method === 'PUT' && row.url === draftPuts[0].url).map(row => row.status),
+        [200], 'Keyboard save must produce exactly one successful PUT at the API');
+    }
+    if (ledger.title === expectedReceivingCases[1].title || ledger.title === guardedBackTitle) {
       assert.equal(draftPuts.length, 1, 'Lost response journey must never retry PUT');
       const put = draftPuts[0];
-      assert.deepEqual(ledger.navigationGuards?.map(row => row.phase), ['pending', 'unknown'], 'Both pending and unknown Back guards need native observations');
-      for (const guard of ledger.navigationGuards) {
-        assert.equal(guard.action, 'back');
-        const from = new URL(guard.fromUrl);
-        assert.equal(from.origin, 'http://127.0.0.1:4287');
-        assert.equal(from.pathname, '/receiving');
-        assert.equal(from.search, `?draft=new-${new URL(put.url).pathname.split('/').pop()}`, 'Guard observations must belong to the attempted draft');
-        assert.equal(guard.blockedUrl, guard.fromUrl, 'Blocked Back must retain the current draft URL');
-        assert.equal(guard.retainedUrl, guard.fromUrl, 'Cancel must retain the current draft URL');
-        assert.equal(guard.dialogVisible, true);
-        assert.equal(guard.discardDisabled, true, 'Pending/unknown writes cannot be discarded');
-        assert.ok(typeof guard.expectedTitle === 'string' && guard.expectedTitle.length > 0);
-        assert.equal(guard.retainedTitle, guard.expectedTitle, 'Cancel must retain the unsaved title');
-        assert.equal(guard.saveCalls, 1, 'Navigation must not submit or retry a save');
+      if (ledger.title === guardedBackTitle) {
+        assert.deepEqual(ledger.navigationGuards?.map(row => row.phase), ['pending', 'unknown'], 'Both pending and unknown Back guards need native observations');
+        for (const guard of ledger.navigationGuards) {
+          assert.equal(guard.action, 'back');
+          const from = new URL(guard.fromUrl);
+          assert.equal(from.origin, 'http://127.0.0.1:4287');
+          assert.equal(from.pathname, '/receiving');
+          assert.equal(from.search, `?draft=new-${new URL(put.url).pathname.split('/').pop()}`, 'Guard observations must belong to the attempted draft');
+          assert.equal(guard.blockedUrl, guard.fromUrl, 'Blocked Back must retain the current draft URL');
+          assert.equal(guard.retainedUrl, guard.fromUrl, 'Cancel must retain the current draft URL');
+          assert.equal(guard.dialogVisible, true);
+          assert.equal(guard.discardDisabled, true, 'Pending/unknown writes cannot be discarded');
+          assert.ok(typeof guard.expectedTitle === 'string' && guard.expectedTitle.length > 0);
+          assert.equal(guard.retainedTitle, guard.expectedTitle, 'Cancel must retain the unsaved title');
+          assert.equal(guard.saveCalls, 1, 'Navigation must not submit or retry a save');
+        }
       }
       const putIndex = ledger.requests.indexOf(put);
       assert.ok(ledger.requests.some((row, index) => index > putIndex && row.method === 'GET'
@@ -97,6 +106,27 @@ export function assertPlaywrightReceivingReport(report, ledgers, appResponses = 
         'Lost response must resolve with a successful GET readback');
       const apiPutCount = appResponses.filter(row => row.method === 'PUT' && row.url === put.url).length;
       assert.equal(apiPutCount, 1, 'The real API must receive exactly one PUT after response loss');
+    }
+    if (ledger.title === expectedReceivingCases[6].title) {
+      const receipt = ledger.ownerIsolation;
+      assert.ok(receipt?.ownerId && receipt.peerId && receipt.tenantId);
+      assert.notEqual(receipt.ownerId, receipt.peerId);
+      assert.notEqual(receipt.ownerUrl, receipt.peerUrl);
+      for (const [actor, id, url] of [['owner', receipt.ownerId, receipt.ownerUrl], ['peer', receipt.peerId, receipt.peerUrl]]) {
+        assert.ok(ledger.requests.some(row => row.actor === actor && row.method === 'POST' && row.url.endsWith('/auth/login') && row.status === 200));
+        assert.ok(appResponses.some(row => row.actorId === id && row.endpoint === '/auth/login' && row.status === 200));
+        assert.ok(draftPuts.some(row => row.actor === actor && row.url === url && row.expectedRevision === 0 && row.status === 200));
+      }
+      assert.equal(draftPuts.length, 3);
+      assert.ok(appResponses.some(row => row.actorId === receipt.peerId && row.method === 'PUT' && row.url === receipt.ownerUrl && row.status === 404));
+      assert.ok(draftPuts.some(row => row.actor === 'peer' && row.url === receipt.ownerUrl && row.expectedRevision === 1 && row.status === 404));
+      for (const suffix of ['', '/history', '/history/1']) {
+        const url = receipt.ownerUrl + suffix;
+        assert.ok(ledger.requests.some(row => row.actor === 'peer' && row.url === url && row.method === 'GET' && row.status === 404));
+        assert.ok(ledger.requests.some(row => row.actor === 'owner' && row.url === url && row.method === 'GET' && row.status === 200));
+        assert.ok(appResponses.some(row => row.actorId === receipt.peerId && row.url === url && row.method === 'GET' && row.status === 404));
+        assert.ok(appResponses.some(row => row.actorId === receipt.ownerId && row.url === url && row.method === 'GET' && row.status === 200));
+      }
     }
     if (ledger.title === expectedReceivingCases[2].title) {
       assert.equal(draftPuts.length, 4, 'CAS journey has initial save, two racing saves, and one explicitly retained next save');

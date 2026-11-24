@@ -1,4 +1,4 @@
-import { test as base, expect, type Locator, type Page, type TestInfo } from '@playwright/test';
+import { test as base, expect, type BrowserContext, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { origin, receivingRequestAllowed } from './fixture.mjs';
@@ -15,13 +15,14 @@ async function bounded<T>(work: Promise<T>, ms: number, message: string): Promis
   } finally { clearTimeout(timer!); }
 }
 
-type Credentials = { email: string; password: string; secondEmail: string; secondPassword: string; productId: string };
-type Entry = { method: string; url: string; api: boolean; allowed: boolean; fontStub: boolean; status?: number; expectedRevision?: number };
+type Credentials = { email: string; password: string; secondEmail: string; secondPassword: string; peerEmail: string; peerPassword: string; productId: string };
+type Entry = { actor: 'owner' | 'peer'; method: string; url: string; api: boolean; allowed: boolean; fontStub: boolean; status?: number; expectedRevision?: number };
+export type OwnerIsolation = { ownerUrl: string; peerUrl: string; ownerId: string; peerId: string; tenantId: string };
 export type NavigationGuard = { phase: 'pending' | 'unknown'; action: 'back'; fromUrl: string; blockedUrl: string;
   retainedUrl: string; dialogVisible: boolean; discardDisabled: boolean; expectedTitle: string; retainedTitle: string; saveCalls: number };
 type CasResolution = { draftUrl: string; expectedRevision: number; savedRevision: number; originalTitle: string; winnerTitle: string;
   retainedTitle: string; reopenedTitle: string; reopenedRevision: number; history: { revision: number; title: string }[] };
-type Harness = { requests: Entry[]; unexpected: string[]; forbidden: Entry[]; saveCalls: number; viewport: number; navigationGuards: NavigationGuard[]; casResolution: CasResolution | null };
+type Harness = { watchPeer: (context: BrowserContext) => Promise<void>; ownerIsolation: OwnerIsolation | null; navigationGuards: NavigationGuard[]; casResolution: CasResolution | null; requests: Entry[]; unexpected: string[]; forbidden: Entry[]; saveCalls: number; viewport: number };
 const headingSelector = 'main.receipt-draft-editor > h1';
 const headingText = '人工收貨草稿';
 
@@ -44,55 +45,62 @@ async function platformFontEvidence(page: Page, target: Locator) {
 
 export const test = base.extend<{ harness: Harness }>({
   harness: [async ({ page, context }, use, info) => {
-    const credentials = JSON.parse(await readFile(process.env.RECEIVING_BROWSER_CREDENTIAL_FILE!, 'utf8')) as Credentials;
-    const state: Harness = { requests: [], unexpected: [], forbidden: [], saveCalls: 0, viewport: page.viewportSize()!.width, navigationGuards: [], casResolution: null };
-    context.on('request', request => {
-      const url = new URL(request.url());
-      const api = url.pathname.startsWith('/api/');
-      const fontStub = url.hostname === 'fonts.googleapis.com' && request.method() === 'GET' && request.resourceType() === 'stylesheet';
-      const allowed = fontStub || (api ? receivingRequestAllowed(request.method(), request.url())
-        : url.origin === origin && request.method() === 'GET');
-      const entry: Entry = { method: request.method(), url: request.url(), api, allowed, fontStub };
-      if (request.method() === 'PUT' && url.pathname.startsWith('/api/v1/admin/receiving-drafts/')) {
-        const body = request.postDataJSON() as { expectedRevision?: number } | null;
-        entry.expectedRevision = body?.expectedRevision;
-      }
-      state.requests.push(entry);
-      if (!allowed) { state.forbidden.push(entry); state.unexpected.push(`${entry.method} ${url.origin}${url.pathname}`); }
-      if (request.method() === 'PUT' && url.pathname.startsWith('/api/v1/admin/receiving-drafts/')) state.saveCalls++;
-    });
-    context.on('response', response => {
-      const entry = [...state.requests].reverse().find(row => row.url === response.url() && row.status === undefined);
-      if (entry) entry.status = response.status();
-    });
+    const peerContexts = new Set<BrowserContext>();
+    const state: Harness = { navigationGuards: [], casResolution: null, ownerIsolation: null, watchPeer: async peer => { peerContexts.add(peer); await watch(peer, 'peer'); }, requests: [], unexpected: [], forbidden: [], saveCalls: 0, viewport: page.viewportSize()!.width };
     let activeRoutes = 0;
-    await context.route('**/*', async route => {
-      activeRoutes++;
-      try {
-        const url = new URL(route.request().url());
-        if (url.hostname === 'fonts.googleapis.com' && route.request().method() === 'GET' && route.request().resourceType() === 'stylesheet') {
-          await route.fulfill({ status: 200, contentType: 'text/css', body: '' }); return;
+    const watch = async (watched: BrowserContext, actor: 'owner' | 'peer') => {
+      const entries = new Map<object, Entry>();
+      watched.on('request', request => {
+        const url = new URL(request.url());
+        const api = url.pathname.startsWith('/api/');
+        const fontStub = url.hostname === 'fonts.googleapis.com' && request.method() === 'GET' && request.resourceType() === 'stylesheet';
+        const allowed = fontStub || (api ? receivingRequestAllowed(request.method(), request.url())
+          : url.origin === origin && request.method() === 'GET');
+        const entry: Entry = { actor, method: request.method(), url: request.url(), api, allowed, fontStub };
+        if (request.method() === 'PUT' && url.pathname.startsWith('/api/v1/admin/receiving-drafts/')) {
+          const body = request.postDataJSON() as { expectedRevision?: number } | null;
+          entry.expectedRevision = body?.expectedRevision;
         }
-        if (url.origin !== origin) { await route.abort(); return; }
-        if (url.pathname.startsWith('/api/')) {
-          if (!receivingRequestAllowed(route.request().method(), route.request().url())) { await route.abort(); return; }
-          await route.fallback(); return;
-        }
-        await route.fallback();
-      } finally { activeRoutes--; }
-    });
+        state.requests.push(entry); entries.set(request, entry);
+        if (!allowed) { state.forbidden.push(entry); state.unexpected.push(`${entry.method} ${url.origin}${url.pathname}`); }
+        if (request.method() === 'PUT' && url.pathname.startsWith('/api/v1/admin/receiving-drafts/')) state.saveCalls++;
+      });
+      watched.on('response', response => {
+        const entry = entries.get(response.request());
+        entries.delete(response.request());
+        if (entry) entry.status = response.status();
+      });
+      await watched.route('**/*', async route => {
+        activeRoutes++;
+        try {
+          const url = new URL(route.request().url());
+          if (url.hostname === 'fonts.googleapis.com' && route.request().method() === 'GET' && route.request().resourceType() === 'stylesheet') {
+            await route.fulfill({ status: 200, contentType: 'text/css', body: '' }); return;
+          }
+          if (url.origin !== origin) { await route.abort(); return; }
+          if (url.pathname.startsWith('/api/')) {
+            if (!receivingRequestAllowed(route.request().method(), route.request().url())) { await route.abort(); return; }
+            await route.fallback(); return;
+          }
+          await route.fallback();
+        } finally { activeRoutes--; }
+      });
+    };
+    await watch(context, 'owner');
     await page.addInitScript(() => localStorage.setItem('admin-ui-theme', 'light'));
     let primaryError: unknown, cleanupError: unknown;
     try { await use(state); } catch (error) { primaryError = error; }
     try {
+      const closedPeers = await Promise.allSettled([...peerContexts].map(peer => bounded(peer.close(), 10_000, 'Peer context close timed out')));
       await bounded(context.close(), 10_000, 'Browser context close timed out');
       const deadline = Date.now() + 5_000;
       while (activeRoutes !== 0 && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20));
       if (activeRoutes !== 0) throw new Error(`Browser context closed with ${activeRoutes} in-flight route handlers`);
+      expect(closedPeers.every(result => result.status === 'fulfilled'), 'Owned peer context must close').toBe(true);
       expect(state.unexpected, 'Browser network is limited to this built app and receiving API allowlist').toEqual([]);
       const ledgerPath = info.outputPath('receiving-browser-ledger.json');
       await writeFile(ledgerPath, JSON.stringify({ requests: state.requests, unexpected: state.unexpected, forbidden: state.forbidden,
-        viewport: state.viewport, title: info.title, titlePath: info.titlePath, retry: info.retry, saveCalls: state.saveCalls, navigationGuards: state.navigationGuards, casResolution: state.casResolution }), { flag: 'wx' });
+        viewport: state.viewport, title: info.title, titlePath: info.titlePath, retry: info.retry, saveCalls: state.saveCalls, ownerIsolation: state.ownerIsolation, navigationGuards: state.navigationGuards, casResolution: state.casResolution }), { flag: 'wx' });
       await info.attach('receiving-browser-ledger.json', { path: ledgerPath, contentType: 'application/json' });
     } catch (error) { cleanupError = error; }
     if (primaryError) throw primaryError;
@@ -104,11 +112,11 @@ export async function browserFixture(): Promise<Credentials> {
   return JSON.parse(await readFile(process.env.RECEIVING_BROWSER_CREDENTIAL_FILE!, 'utf8')) as Credentials;
 }
 
-export async function login(page: Page, actor: 'primary' | 'secondary' = 'primary') {
+export async function login(page: Page, actor: 'primary' | 'secondary' | 'peer' = 'primary') {
   const credentials = await browserFixture();
   await loginToReceiving(page, origin, {
-    email: actor === 'primary' ? credentials.email : credentials.secondEmail,
-    password: actor === 'primary' ? credentials.password : credentials.secondPassword,
+    email: actor === 'primary' ? credentials.email : actor === 'peer' ? credentials.peerEmail : credentials.secondEmail,
+    password: actor === 'primary' ? credentials.password : actor === 'peer' ? credentials.peerPassword : credentials.secondPassword,
   });
   await expect(page.getByRole('button', { name: '新增私人草稿', exact: true })).toBeVisible();
 }

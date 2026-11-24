@@ -33,7 +33,8 @@ async function main() {
     assert.equal(process.env[key], undefined, `Unexpected integration setting: ${key}`);
   }
   const requireBackend = createRequire(path.join(process.cwd(), 'package.json'));
-  assert.equal(requireBackend('argon2/package.json').version, '0.45.1');
+  const version = requireBackend('argon2/package.json').version;
+  assert.equal(version, requireBackend('./package-lock.json').packages['node_modules/argon2'].version);
   const fixture = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
   assert.equal(fixture.synthetic, true);
   assert.equal(fixture.generator.version, '0.44.0');
@@ -218,7 +219,7 @@ async function main() {
 
   return { status: 'PASS', synthetic: true, scope: 'final-image real HTTP, PostgreSQL, signed JWT, stock and money-only refund; no production account or provider transfer',
     head: process.env.EXPECTED_HEAD, tree: process.env.EXPECTED_TREE, image: process.env.EXPECTED_IMAGE,
-    node: process.version, alpine: true, argon2: '0.45.1', database: identity[0], checks,
+    node: process.version, alpine: true, argon2: version, database: identity[0], checks,
     stock: { initial: initial.product.stockQuantity, afterSale: afterSale.product.stockQuantity, afterRefund: afterRefund.product.stockQuantity },
   };
 }

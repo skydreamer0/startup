@@ -168,7 +168,7 @@ async function main(mode) {
     assert.equal(browser.status, 'passed');
     assert.equal(browser.head, identity.head); assert.equal(browser.tree, identity.tree);
     save('accepted.json', { ...identity, status: 'passed', tests, browser, cleanup: read('cleanup.json'), productionDataUsed: false });
-    console.log('Acceptance passed: ten native API/PG cases and seven bounded real-login browser cases; append-only receipt retained; owned DB removed');
+    console.log('Acceptance passed: ten native API/PG cases and ten bounded real-login browser cases; append-only receipt retained; owned DB removed');
     return;
   }
 

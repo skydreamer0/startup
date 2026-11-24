@@ -6,8 +6,9 @@ posting, permission, schema, lockfile or CI job.
 
 ## Current lifecycle increment
 
-The original seven cases and 1440/390 matrix remain. Two existing cases now
-require more evidence:
+All eight current-base cases remain, including same-tenant peer isolation and
+the keyboard save/readback paths. The CAS journey now extends through v3;
+two separate Back journeys avoid interrupting the existing keyboard-only flow:
 
 - CAS: one initial save and a concurrent 200/409 pair, then the losing page's
   explicit retain choice and one save against revision 2. Reload must show
@@ -25,7 +26,7 @@ The per-case ledger includes only synthetic draft titles, revision numbers and
 observed navigation state. It does not record login bodies or tokens. Acceptance
 rejects missing lifecycle receipts, wrong revisions, changed historical titles,
 another draft's guard observations, unexpected extra writes or missing real API
-history reads. The post-run snapshot requires six saved heads and exactly ten
+history reads. The post-run snapshot requires ten saved heads and exactly fourteen
 immutable revisions. Each CAS head and its v1/v2/v3 payloads must match the
 browser receipt and successful API saves, including the retained v3 content.
 Duplicate identities, missing/orphan revisions, different actors, rewritten
@@ -66,7 +67,7 @@ review. An offline replay of the failed run is only a regression check, not
 native acceptance. Local controls, TypeScript and test collection likewise do
 not establish browser evidence. See the PR for the current exact-head result.
 
-Opening another actor's saved draft/history, cross-tenant browser isolation and
+Cross-tenant browser isolation and
 read-only actor PUT rejection remain outside these cases. Sidebar/query changes,
 native window-close warnings, touch, Safari, zoom and store devices are also
 unverified. This does not complete formal receiving, physical returns, bins,

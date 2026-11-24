@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { expectedReceivingCases } from '../../pos-ui/e2e/receiving-browser-native/acceptance.mjs';
+import { origin, draftPath } from '../../pos-ui/e2e/receiving-browser-native/fixture.mjs';
 
 const financialTables = ['orders', 'order_items', 'order_payments', 'expenses', 'product_batches', 'inventory_transactions',
   'product_batch_changes', 'sale_batch_allocations', 'checkout_commands', 'order_number_counters'];
@@ -41,13 +42,12 @@ function assertRowsSameOutsideAllowedFields(beforeRows, afterRows, allowedIds, a
   }
 }
 
-export function compareReceivingBrowserSnapshots(before, after, fixture, responses, ledgers = []) {
+export function compareReceivingBrowserSnapshots(before, after, fixture, responses, ledgers) {
   assert.deepEqual(Object.keys(after).sort(), Object.keys(before).sort());
-  const actorIds = new Set([fixture.ids.allowed, fixture.ids.denied]);
-  const authUserIds = new Set([fixture.ids.allowed, fixture.ids.denied]);
-  assertRowsSameOutsideAllowedFields(before.users, after.users, authUserIds,
+  const actorIds = new Set([fixture.ids.allowed, fixture.ids.denied, fixture.peerId]);
+  assertRowsSameOutsideAllowedFields(before.users, after.users, actorIds,
     new Set(['last_login_at', 'failed_login_attempts', 'updated_at']), 'users');
-  for (const id of authUserIds) {
+  for (const id of actorIds) {
     const oldRow = before.users.find(row => row.id === id), row = after.users.find(value => value.id === id);
     assert.ok(row && oldRow);
     assert.equal(row.failed_login_attempts, 0, 'Only successful synthetic authentication is expected');
@@ -86,11 +86,29 @@ export function compareReceivingBrowserSnapshots(before, after, fixture, respons
 
   const drafts = after.receiving_drafts.filter(row => row.tenant_id === fixture.ids.tenant);
   const revisions = after.receiving_draft_revisions.filter(row => row.tenant_id === fixture.ids.tenant);
-  assert.equal(drafts.length, 6, 'Exactly six saved heads (three journeys at two viewports) are expected');
-  assert.ok(drafts.every(row => row.owner_id === fixture.ids.allowed), 'No other synthetic identity may own receiving drafts');
-  assert.equal(revisions.length, 10, 'Exactly ten immutable revisions are expected, including two CAS retained saves');
-  assert.ok(revisions.every(row => row.owner_id === fixture.ids.allowed), 'Every revision must belong to the allowed actor');
-  assert.ok(revisions.every(row => drafts.some(draft => draft.id === row.draft_id)), 'Every revision must belong to a saved fixture head');
+  assert.equal(drafts.length, 10, 'Eight existing heads and two Back-guard heads required');
+  assert.equal(revisions.length, 14, 'Exactly fourteen immutable revisions including two retained saves and two peer saves');
+  const receipt = ledgers.find(row => row.ownerIsolation)?.ownerIsolation;
+  assert.ok(receipt && fixture.peerId && fixture.peerId !== fixture.ids.allowed);
+  assert.equal(receipt.tenantId, fixture.ids.tenant);
+  assert.equal(receipt.ownerId, fixture.ids.allowed);
+  assert.equal(receipt.peerId, fixture.peerId);
+  for (const [title, ownerId, url] of [
+    ['同租戶驗收 A 私人草稿', fixture.ids.allowed, receipt.ownerUrl],
+    ['同租戶驗收 B 私人草稿', fixture.peerId, receipt.peerUrl],
+  ]) {
+    const head = drafts.find(row => row.title === title);
+    assert.equal(head?.owner_id, ownerId);
+    assert.equal(url, origin + draftPath + '/' + head.id);
+    assert.equal(head.revision, 1);
+    const history = revisions.filter(row => row.draft_id === head.id);
+    assert.equal(history.length, 1);
+    assert.equal(history[0].revision, 1);
+    assert.deepEqual(history[0].payload, head.payload);
+    assert.equal(head.payload.title, title);
+  }
+  assert.ok(drafts.every(row => row.owner_id === (row.title === '同租戶驗收 B 私人草稿' ? fixture.peerId : fixture.ids.allowed)));
+  assert.ok(revisions.every(row => drafts.some(head => head.id === row.draft_id && head.owner_id === row.owner_id)), 'Every revision must belong to its saved fixture head and owner');
   const titleRows = new Map(drafts.map(row => [row.title, row]));
   for (const width of [1440, 390]) {
     const tenLine = titleRows.get(`真 API 十行草稿 ${width}`);
@@ -98,6 +116,7 @@ export function compareReceivingBrowserSnapshots(before, after, fixture, respons
     assert.equal(tenLine.payload.lines[0].fields.productId, fixture.productId);
     assert.equal(tenLine.payload.lines[0].fields.quantity, '3'); assert.equal(tenLine.payload.lines[0].reviewed, false);
     assert.equal(titleRows.get(`失回應真 API 草稿 ${width}`)?.revision, 1);
+    assert.equal(titleRows.get(`返回鍵真 API 草稿 ${width}`)?.revision, 1);
   }
   for (const head of drafts) {
     const history = revisions.filter(row => row.draft_id === head.id).sort((a, b) => a.revision - b.revision);
