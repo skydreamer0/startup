@@ -56,14 +56,17 @@ describe('five-reader scoped control contracts (CSS/DOM, not native geometry)', 
             expect(style.maxWidth).toBe('100%'); expect(style.whiteSpace).toBe('normal'); expect(style.overflowWrap).toBe('anywhere');
             button.focus(); expect(document.activeElement).toBe(button);
         });
-        it(`${subject.id}: preserves disabled in-flight retry and only invokes an enabled retry`, () => {
+        it(`${subject.id}: keeps the in-flight retry focusable but non-invocable`, () => {
             state.denied = true; state.fetching = true; const mounted = mount(subject.Component);
-            const retry = within(screen.getByRole('alert', { name: `${subject.label}讀取狀態` })).getByRole('button', { name: '重試中…' });
-            expect(retry).toBeDisabled(); fireEvent.click(retry); expect(state.refetch).not.toHaveBeenCalled();
+            const retry = within(screen.getByRole('region', { name: `${subject.label}讀取狀態` })).getByRole('button', { name: `重試${subject.label}` });
+            expect(retry).toHaveAttribute('aria-disabled', 'true'); expect(retry).toHaveAttribute('aria-busy', 'true');
+            retry.focus(); expect(retry).toHaveFocus();
+            fireEvent.click(retry); expect(state.refetch).not.toHaveBeenCalled();
             expect(getComputedStyle(retry).minHeight).toBe('44px');
             state.fetching = false; mounted.rerender(<QueryClientProvider client={client}><subject.Component /></QueryClientProvider>);
             const enabled = screen.getByRole('button', { name: `重試${subject.label}` });
-            expect(enabled).toBeEnabled(); fireEvent.click(enabled); expect(state.refetch).toHaveBeenCalledTimes(1);
+            expect(enabled).toBe(retry); expect(enabled).toHaveAttribute('aria-disabled', 'false');
+            fireEvent.click(enabled); expect(state.refetch).toHaveBeenCalledExactlyOnceWith({ cancelRefetch: false });
             if (subject.id === 'suppliers') expect(screen.getByRole('button', { name: 'Add Supplier' })).toBeDisabled();
         });
     }

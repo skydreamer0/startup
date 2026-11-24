@@ -30,7 +30,7 @@ export default function StockReconciliationPage() {
         </section>
         {!permitted ? <p role="alert">存取被拒絕，請確認登入與商品讀取權限。</p> : <>
             <ReportReadNotice label="庫存對帳" isError={query.isError} error={query.error}
-                hasData={data !== undefined} isFetching={query.isFetching} onRetry={() => { void query.refetch(); }} />
+                hasData={data !== undefined} isFetching={query.isFetching} onRetry={() => { void query.refetch({ cancelRefetch: false }); }} />
             {query.isPending && <p role="status">庫存對帳載入中…</p>}
             {data && <>
                 <p role="status">本頁快照時間：{data.observedAt}；共 {data.total} 個商品。跨頁非同一快照。</p>
