@@ -1,0 +1,220 @@
+{
+  "recordedAt": "2026-11-09T04:07:52.448668+00:00",
+  "runtime": "v24.22.1",
+  "sourceCommit": "fde524b442986a574f5d9f9e6f0fb3035dfb8d91",
+  "sourceTree": "672843adc06eecdc8785d81aa9f0a3f06334ef51",
+  "identityMeaning": "Local partial materialization, not complete remote tree or GitHub CI subject.",
+  "pinnedApplicationSource": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+  "scope": "8 endpoint explicit source-site mappings: 15 direct Prisma call sites + 1 explicit nested site, NOT exhaustive runtime effects. 27 source pins; 8 source contracts + 59 verifier controls + 9 guard-removal controls.",
+  "r1Correction": {
+    "originalFreeze": "2b53acfa2bf5c74354f36c91a334a59430a33034",
+    "finding": "Request-controlled Prisma data in expense update was not explicitly represented as an unclosed target/effect path.",
+    "changes": [
+      "explicitWriteSites field and non-exhaustive count/target scope",
+      "expense update and create OPEN_GAP with source citations",
+      "nested/scalar/operation-object runtime cases remain NOT_RUN",
+      "14 added verifier negative controls and one independent dataflow-guard removal witness"
+    ],
+    "reviewerEvidence": "Original reviewer separately ran 3 mocked update forwarding probes. This author run does not rerun or claim those probes as HTTP/PG evidence.",
+    "originalReviewerReceiptSha256": "52b403bc321f7138dd3fbeb34b1fbb934122e098301974499816d1a88593b287",
+    "originalReviewerProbeSha256": "f1be7781c7adc38d03aaf1ccaba3c10320b44c5ade356f7d45fe347a3f6291df"
+  },
+  "checks": [
+    {
+      "check": "http-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "scripts/architecture/http-writers-contract.test.mjs",
+        "scripts/architecture/http-writers-verify.test.mjs",
+        "scripts/architecture/http-writers-mutation.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 76,
+        "pass": 76,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/http-tests.log",
+      "logSha256": "acf8c2c3cca2ad4eac6ab2370b9d8c85be0b554d899c0bdfcbdff87cf7c23bc5"
+    },
+    {
+      "check": "http-verifier",
+      "command": [
+        "node",
+        "scripts/architecture/http-writers-verify.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/http-verifier.log",
+      "logSha256": "85208165f9360441a15a094eba7954055efd5d912b7c9c22c83b394e8d4ad18b"
+    },
+    {
+      "check": "plan-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "scripts/architecture/plan.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 78,
+        "pass": 78,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/plan-tests.log",
+      "logSha256": "cec937dcabdfaea3d71cd11284b052ea675b4b83e99835ece16f1830a64fd9e9"
+    },
+    {
+      "check": "gate-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 17,
+        "pass": 17,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/gate-tests.log",
+      "logSha256": "f8205060e072012aff4ec8524a9e80143194a3082d5e5f0b8f5476626a69c0fa"
+    },
+    {
+      "check": "original-source-verifier",
+      "command": [
+        "node",
+        "scripts/architecture/verify-plan.mjs",
+        "--check-source"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/original-source-verifier.log",
+      "logSha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "check": "context",
+      "command": [
+        "bash",
+        "scripts/validate-agent-context.sh"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/context.log",
+      "logSha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "check": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "HEAD",
+        "--check"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/whitespace.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-contract.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-contract.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-contract.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-mutation.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-mutation.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-mutation.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-spec.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-spec.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-spec.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-verify.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-verify.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-verify.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-verify.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-verify.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author-r1/syntax-http-writers-verify.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "notRun": [
+    "Node22",
+    "actual application/HTTP/auth/tenant behavior",
+    "Prisma acceptance of request-controlled payloads",
+    "PostgreSQL persisted effects",
+    "complete nested write-target enumeration",
+    "provider/device/store acceptance",
+    "full application build/lint/suites",
+    "hosted CI for this change",
+    "full AC01"
+  ],
+  "independentReview": "R1_REVIEW_PENDING",
+  "remotePublication": "NOT_PERFORMED",
+  "release": "NO_MERGE_OR_DEPLOYMENT",
+  "history": "author/receipt.json and its logs retain the superseded initial-source results; they are not relabeled as this source."
+}

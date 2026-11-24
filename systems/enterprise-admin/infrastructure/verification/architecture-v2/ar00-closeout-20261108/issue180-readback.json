@@ -1,0 +1,25 @@
+{
+  "url": "https://github.com/skydreamer0/startup/issues/180",
+  "title": "[AR-00][P0] 架構升級執行基線、業務規則驗證表與 Agent 任務圖",
+  "issue_number": 180,
+  "body": "<!-- pharmacy-arch-v2:AR-00 -->\n總索引：#37。2026-11-07 使用者確認：仍在 build 階段，可重設程式、模組、資料模型及介面；正確業務邏輯與安全驗收必須保留。本系列是既有需求的工程執行切片，不是第二套產品 Roadmap。本票建立計畫，不代表目前程式已改善。\n\n## 來源與範圍\n唯讀基準 master `d703e416952b0e02a8241a86057d248a5c7b4662`，tree `15cf360798d2523ae155dad9c52504b783092c29`。執行前重新確認 master、工作樹、開啟 PR 與現有作者；不得依舊 Draft 標籤重做已整合成果。\n既有來源：`docs/architecture.md`、`systems/enterprise-admin/{CONTEXT.md,ROADMAP.md}`、`backend/prisma/schema.prisma`、#29/#30/#31/#37/#46/#48/#49/#137。\n新增：`systems/enterprise-admin/infrastructure/plans/architecture-v2/{manifest.json,decisions.md,requirements-map.md,source-inventory.md,evidence-schema.json}`；`scripts/architecture/{plan.mjs,verify-plan.mjs}`。既有 ROADMAP 只保留摘要與連結，不再堆疊另一份完成狀態。\n\n## 實作順序\n1. 盤點每個 HTTP/job/import/CLI 的讀寫入口、資料 owner、付款/庫存副作用、現有測試與實際啟用狀態；建立舊需求→AR 子票→測試→證據映射，#32–36 整併不等於取消。\n2. 建立業務 oracle：已確認規則、現行程式行為、已知缺陷、待決政策分開。Characterization test 不得把現有錯誤固定為需求。\n3. 政策 D01 金額精度/捨入/折扣/找零；D02 退款期間/拆分方式；D03 成本估價；D04 單位與拆零；D05 退回釋出角色；D06 Rx 存取/保存；D07 主機/裝置；D08 RPO/RTO；D09 負載門檻。未核准者用明確 TEST_ONLY profile 測試，不能默認成營運政策。只阻擋依賴的 activation gate。\n4. 建立 manifest 任務 DAG：id、issue、dependsOn、substeps、sourcePaths、newPaths、exclusiveLocks、requiredChecks、decisionGates、activationGates、status。排程器輸出 ready/blocked，不自行呼叫模型或雲端 Agent。\n5. 每票切 contract/schema→implementation→consumer cutover→integration PR；最多三名執行者、同一 schema/migration/lockfile 一名整合 owner，作者與審查者分開。工作結束寫 exact SHA/tree/commands/exit/result/artifact hashes。\n\n## 自動執行與停止邊界\nAgent 可依圖在授權工作區開發、隔離合成測試、修正、開 PR；既有合併授權須另核，不從此票推定可 merge/deploy。禁止使用正式或 ambient DB、真處方/付款、任意 reset/prune、外發訊息、真列印、自建雲端任務或放寬 CI。架構任務可繼續，政策/硬體未定標 BLOCKED_DECISION/NOT_RUN，不偽造 PASS。\n預檢既有命令：system root 的 `npm --prefix backend ci`、`pnpm install --frozen-lockfile`、`npm --prefix backend run db:generate`；build/lint/tests 依當時 scripts。DB-backed tests 必須先由專屬 harness 建立可證明持有的合成 DB；不得直接承襲 .env。本票不執行以上命令。\n\n## 驗收\n- [ ] 現有所有啟用 writer 與既有需求皆有 owner、去向和測試，沒有需求遺失。\n- [ ] manifest 無循環/不存在相依，overlap 檔案鎖可驗證；相依完成才可派工。\n- [ ] 基線 PASS/FAIL/SKIP/NOT_RUN 分列，未執行不算通過。\n- [ ] 政策未決不阻擋不相關 ready task，也不能使功能偷偷啟用。\n- [ ] 機器可讀 evidence 與 GitHub checkbox 分開；軟體完成不等於 G0–G7/實店完成。\n\n後續所有 AR 票共用本票的執行、資料保全與證據規則；此處沒有授權取消原驗收。",
+  "state": "open",
+  "user": {
+    "login": "skydreamer0",
+    "name": "skydreamer0",
+    "email": null,
+    "avatar_url": "https://avatars.githubusercontent.com/u/35623909?v=4",
+    "id": 35623909
+  },
+  "assignees": null,
+  "labels": null,
+  "milestone": null,
+  "state_reason": null,
+  "comments": 0,
+  "created_at": "2026-11-07T01:33:02Z",
+  "updated_at": "2026-11-07T01:33:02Z",
+  "closed_at": null,
+  "display_url": "https://github.com/skydreamer0/startup/issues/180",
+  "display_title": "[AR-00][P0] 架構升級執行基線、業務規則驗證表與 Agent 任務圖",
+  "observedAt": "2026-11-08T12:54:57Z"
+}

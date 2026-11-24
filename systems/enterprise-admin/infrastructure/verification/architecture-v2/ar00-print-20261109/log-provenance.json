@@ -1,0 +1,11 @@
+{
+  "initialWorkerFailure": {
+    "status": "FAIL",
+    "reason": "Harness wrapper test initially supplied stub sys, but unchanged nested import sys replaced it; fixed harness to patch sys.argv. No app fix.",
+    "originalSha256": "be48862d59e407eadf174fc29c3a6855ff15e3c083651507c979e144274581c7",
+    "publishedSha256": "2c25189b0e966e1f6c9a355208ce55c4df16f77520a0dee859d2c706a965c293",
+    "transformation": "Replace checkout absolute prefix with <checkout>; no other change.",
+    "replacements": 1
+  },
+  "acceptedLogs": "Unchanged bytes of fresh source verification runs; source-freeze binds subject."
+}

@@ -1,0 +1,29 @@
+test_duplicate_profile_stops_before_notify_and_write (__main__.TransportControls.test_duplicate_profile_stops_before_notify_and_write) ... ok
+test_existing_report_not_overwritten (__main__.TransportControls.test_existing_report_not_overwritten) ... ok
+test_guard_failures_precede_scan (__main__.TransportControls.test_guard_failures_precede_scan) ... ok
+test_notification_byte_limit (__main__.TransportControls.test_notification_byte_limit) ... ok
+test_notification_event_limit (__main__.TransportControls.test_notification_event_limit) ... ok
+test_partial_write_unknown_no_retry_and_disconnect (__main__.TransportControls.test_partial_write_unknown_no_retry_and_disconnect) ... ok
+test_two_copies_single_session_stays_unverified (__main__.TransportControls.test_two_copies_single_session_stays_unverified) ... ok
+test_wrong_name_stops_before_connect (__main__.TransportControls.test_wrong_name_stops_before_connect) ... ok
+test_attempted_byte_is_unknown (__main__.WorkerControls.test_attempted_byte_is_unknown) ... ok
+test_disabled_start_does_not_create_thread (__main__.WorkerControls.test_disabled_start_does_not_create_thread) ... ok
+test_disabled_state_still_creates_report_directory (__main__.WorkerControls.test_disabled_state_still_creates_report_directory) ... ok
+test_duplicate_and_copy_conflict_never_requeue (__main__.WorkerControls.test_duplicate_and_copy_conflict_never_requeue) ... ok
+test_enabled_start_only_requests_daemon (__main__.WorkerControls.test_enabled_start_only_requests_daemon) ... ok
+test_error_without_report_unknown_no_retry (__main__.WorkerControls.test_error_without_report_unknown_no_retry) ... ok
+test_final_persistence_failure_keeps_unknown_on_restart (__main__.WorkerControls.test_final_persistence_failure_keeps_unknown_on_restart) ... ok
+test_full_queue_no_receipt_written (__main__.WorkerControls.test_full_queue_no_receipt_written) ... ok
+test_incomplete_copies_unknown (__main__.WorkerControls.test_incomplete_copies_unknown) ... ok
+test_initial_persistence_failure_no_enqueue (__main__.WorkerControls.test_initial_persistence_failure_no_enqueue) ... ok
+test_presend_persistence_failure_never_calls_sender (__main__.WorkerControls.test_presend_persistence_failure_never_calls_sender) ... ok
+test_receipt_reserved_before_enqueue (__main__.WorkerControls.test_receipt_reserved_before_enqueue) ... ok
+test_restart_changes_queued_to_unknown_and_never_requeues (__main__.WorkerControls.test_restart_changes_queued_to_unknown_and_never_requeues) ... ok
+test_success_stays_unverified_and_one_send (__main__.WorkerControls.test_success_stays_unverified_and_one_send) ... ok
+test_zero_bytes_report_is_clean_failure (__main__.WorkerControls.test_zero_bytes_report_is_clean_failure) ... ok
+test_scan_wrapper_forwards_send_argv_without_executing_it (__main__.WrapperControls.test_scan_wrapper_forwards_send_argv_without_executing_it) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.096s
+
+OK

@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-09T00:35:55.042308+00:00",
+  "scope": "AR-00 bounded seed/startup-migration source coverage and tooling only",
+  "result": "PASS",
+  "acceptance": "NOT_RUN",
+  "runtime": "NOT_RUN",
+  "subject": {
+    "localSourceCommit": "a2849bf98ad7eb26f8f037726a6cc95efa3a2300",
+    "remoteEquivalentSourceCommit": "e9bff6c8f9ba58a0d26202c3605e0ef1f746a164",
+    "tree": "0c4b98cc2fd559a5a7a2fca353e4cf9f8e76c8e2",
+    "dirty": false,
+    "remoteBase": "b66e1f96447bbc5034110843b4349aef7ca44c4b",
+    "baseTree": "eb5d6286792df789fae0870c884980b792a3673d"
+  },
+  "environment": {
+    "node": "v24.22.1",
+    "materializedBaselineFiles": 207,
+    "completeSourceTreeLeaves": 1321,
+    "checkout": "Partial working tree with complete verified Git index, not a full checkout.",
+    "applicationDependenciesInstalled": false
+  },
+  "coverage": {
+    "seedCalls": 25,
+    "seedWriteSites": 22,
+    "seedReadSites": 2,
+    "disconnectSites": 1,
+    "nestedWriteSites": 1,
+    "migrationSqlFiles": 16,
+    "foreignKeyDeclarations": 64,
+    "entryChains": 3,
+    "sourceFingerprints": 21,
+    "referenceCitations": 5,
+    "testHarnessSourcesInspected": 14
+  },
+  "authorChecks": [
+    {
+      "id": "supplement-source",
+      "command": "node scripts/architecture/verify-seed-migrations.mjs",
+      "startedAt": "2026-11-09T00:29:42.759288+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/supplement-source.log"
+    },
+    {
+      "id": "supplement-tests",
+      "command": "node --test scripts/architecture/seed-migrations.test.mjs",
+      "startedAt": "2026-11-09T00:29:42.922360+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/supplement-tests.log",
+      "counts": {
+        "passed": 67,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0
+      }
+    },
+    {
+      "id": "plan-tests",
+      "command": "node --test scripts/architecture/plan.test.mjs",
+      "startedAt": "2026-11-09T00:29:44.213562+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/plan-tests.log",
+      "counts": {
+        "passed": 78,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0
+      }
+    },
+    {
+      "id": "gate-tests",
+      "command": "node --test systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "startedAt": "2026-11-09T00:29:45.647003+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/gate-tests.log",
+      "counts": {
+        "passed": 17,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0
+      }
+    },
+    {
+      "id": "baseline-source",
+      "command": "node scripts/architecture/verify-plan.mjs --check-source",
+      "startedAt": "2026-11-09T00:29:48.090122+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/baseline-source.log"
+    },
+    {
+      "id": "context",
+      "command": "./scripts/validate-agent-context.sh",
+      "startedAt": "2026-11-09T00:29:48.342342+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/context.log"
+    },
+    {
+      "id": "syntax-verifier",
+      "command": "node --check scripts/architecture/verify-seed-migrations.mjs",
+      "startedAt": "2026-11-09T00:29:48.479111+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/syntax-verifier.log"
+    },
+    {
+      "id": "syntax-tests",
+      "command": "node --check scripts/architecture/seed-migrations.test.mjs",
+      "startedAt": "2026-11-09T00:29:48.560538+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/syntax-tests.log"
+    },
+    {
+      "id": "whitespace",
+      "command": "git diff --check 50b3d641eb94f491e2af9376f25379ae27ff8cae a2849bf98ad7eb26f8f037726a6cc95efa3a2300",
+      "startedAt": "2026-11-09T00:29:48.800563+00:00",
+      "exitCode": 0,
+      "result": "PASS",
+      "artifact": "author/whitespace.log"
+    }
+  ],
+  "independentReview": {
+    "result": "PASS",
+    "scope": "Bounded AR-00 seed/startup-migration source and tooling review only",
+    "sourceSubject": {
+      "sha": "a2849bf98ad7eb26f8f037726a6cc95efa3a2300",
+      "tree": "0c4b98cc2fd559a5a7a2fca353e4cf9f8e76c8e2",
+      "dirty": false
+    },
+    "path": "independent-review/review.json",
+    "sha256": "43610eaa1e7e0211dc78fe9d012b1dacee5a4b6f00592d4a329c816cd0681094",
+    "counts": [
+      {
+        "suite": "seed",
+        "passed": 67,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "plan",
+        "passed": 78,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "gates",
+        "passed": 17,
+        "failed": 0,
+        "skipped": 0
+      }
+    ],
+    "unsupportedLexerFormsRejected": 20,
+    "unresolvedFindings": 0
+  },
+  "historicalFailures": [
+    {
+      "id": "R1",
+      "result": "FAIL",
+      "status": "RESOLVED",
+      "scope": "Initial verifier accepted changed readiness.ts and missing server.ts without pin changes.",
+      "artifact": "independent-review/initial-probes.json",
+      "retest": "independent-review/final-probes.json",
+      "resolution": "Expected unique reference set and byte identities, migration lock and aggregate NOT_RUN metadata now validated. No nonexistent initial suite log was reconstructed."
+    }
+  ],
+  "notRun": [
+    "seed execution",
+    "migration clean install",
+    "populated schema upgrade/backfill",
+    "rollback and interruption recovery",
+    "application startup",
+    "native PostgreSQL assertions",
+    "application/native/harness test execution",
+    "HTTP/browser/device/store acceptance",
+    "Node22 execution compatibility",
+    "hosted CI review",
+    "full AR-00 AC01 acceptance"
+  ],
+  "hostedCI": {
+    "result": "NOT_RUN",
+    "reason": "Receipt sealed before publishing its artifact head. Exact-head workflow/check status must be read from #205 separately; prior b66e1f9 success is not this head CI."
+  },
+  "canonicalLedgerUnchanged": {
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/manifest.json": "953d682851d8f6f6c414c5147ea9117894b2262d",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/evidence.json": "d1bd1ed5947b6349095cd3a0fe60776254047dba"
+  },
+  "issue180": {
+    "artifact": "issue180-readback.json",
+    "checked": 0,
+    "unchecked": 5
+  },
+  "unchangedAcceptance": {
+    "AR-00": {
+      "status": "active",
+      "verification": "NOT_RUN"
+    },
+    "AR-01": "blocked by AR-00",
+    "D01-D09": "UNAPPROVED",
+    "G0-G7": "NOT_RUN",
+    "activation": "BLOCKED"
+  },
+  "limitations": [
+    "Finite literal seed lexer and curated SQL mapping, not general TypeScript AST or SQL semantic proof.",
+    "Coordinated edits to source and semantic pins require renewed independent review. The accepted empty-assertion exploratory probe demonstrates this limit, not a rejection pass.",
+    "Existing application/native/harness test assertions were read, not executed. Owner labels are domain mappings, not new task assignments.",
+    "Full writer coverage still includes print transport/worker and HTTP test-to-effect gaps outside this slice.",
+    "No application/schema/migration/package/lock/workflow/core assembly, #204 source, policy, access, user computer, DB, device, merge or deployment changes.",
+    "Final publication adds evidence files only. This receipt pins the reviewed source; the final artifact head and its CI are recorded in the existing PR."
+  ],
+  "artifacts": [
+    {
+      "path": "README.md",
+      "sha256": "75526cab11a86356510bd2450bb520a177383d7c111ab3457a47dad3db37a35e"
+    },
+    {
+      "path": "author/author-results.json",
+      "sha256": "9c78935305b365d96b0ca75633c25b0cec48fcc02ab315acf7a6cabdf671580f"
+    },
+    {
+      "path": "author/baseline-source.log",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "path": "author/context.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "path": "author/gate-tests.log",
+      "sha256": "c155cbdd2c15638f721562382d409d4dee36ce63ed91e9545cbc5ece3da391c5"
+    },
+    {
+      "path": "author/plan-tests.log",
+      "sha256": "0a71b92e7474402deb0d197b42cfe56772fdf6da6a294b32d76dde479c5d3c5f"
+    },
+    {
+      "path": "author/source-subject.json",
+      "sha256": "ae292480f22ec7a3b9c0107dc65a928b7630044a85ebb8a38f54c306bcd83254"
+    },
+    {
+      "path": "author/supplement-source.log",
+      "sha256": "d463e01f8309e4c9db75262e882334e06b80db6856ed93797f11da7a50f5ac2d"
+    },
+    {
+      "path": "author/supplement-tests.log",
+      "sha256": "71ac662fb510a99d6620ea7588eab84544db7494b18444e3c5dee68f8f2d760f"
+    },
+    {
+      "path": "author/syntax-tests.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "author/syntax-verifier.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "author/whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "base-materialized-inputs.json",
+      "sha256": "57dfa6c2ce47198992b84286509f3155c4594cbd74103fcde51beb60845fd7d2"
+    },
+    {
+      "path": "independent-review/artifact-hashes.json",
+      "sha256": "7124b0562c4b9b69b5e2c40c2baf76cffd9e048d4cbe2f83b9ab1dd4f6efdf7b"
+    },
+    {
+      "path": "independent-review/check-sql-map.py",
+      "sha256": "83dd9c03f34eb7282339706a370d350cc13feddd887a11b5da92fd993805d997"
+    },
+    {
+      "path": "independent-review/final-context.log",
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "path": "independent-review/final-gate-tests.log",
+      "sha256": "39ed3ce4d51d01b1a8fe5f32dee578d0e7031ff52160e75f965b5c60f2debeff"
+    },
+    {
+      "path": "independent-review/final-lexer-probes.json",
+      "sha256": "8e8b131e75ec877a42667b6272fc6c09cee8ef64d419145894c72cba8da410d6"
+    },
+    {
+      "path": "independent-review/final-materialized-inputs-check.json",
+      "sha256": "cde8bddc638cf8e358c909b858e0c3159df21d21e694875b0b796b44d5cf23b5"
+    },
+    {
+      "path": "independent-review/final-plan-tests.log",
+      "sha256": "0dd1f6afb2857f6ca3048f92ac73b6fc2f939d11f499bf42313fd397b77503d0"
+    },
+    {
+      "path": "independent-review/final-plan-verifier.json",
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "path": "independent-review/final-probes.json",
+      "sha256": "52762e2891379b4b31c1e52d1c11ad83530c8fdd29d63ae6c7f06d0d6b2330fd"
+    },
+    {
+      "path": "independent-review/final-seed-tests.log",
+      "sha256": "21ce7fc11d9affbb7706f19895b1febc0b967e3e7eb1d70f837f561cece7d66c"
+    },
+    {
+      "path": "independent-review/final-sql-map-check.json",
+      "sha256": "2949d3545e08ec9250a7e97621cd4fe15ba70c8f4ec9094bd534ebbe265683e0"
+    },
+    {
+      "path": "independent-review/final-static-verifier.json",
+      "sha256": "d463e01f8309e4c9db75262e882334e06b80db6856ed93797f11da7a50f5ac2d"
+    },
+    {
+      "path": "independent-review/final-tests-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "independent-review/final-verifier-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "independent-review/final-whitespace.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "independent-review/initial-probes.json",
+      "sha256": "e07f6df18ded4a0a7a504be9d4b26b6bc5d36857957469d37ceef3423f476a58"
+    },
+    {
+      "path": "independent-review/lexer-probes.mjs",
+      "sha256": "e772d51488c9615c0cef06f719c4afc1df1e173c3792533dc19926cfdce1e7d6"
+    },
+    {
+      "path": "independent-review/probes.mjs",
+      "sha256": "c4e51504d7e67fbf16f9f754b0a9a99f7d607a45ec90acab800266bcb4737c24"
+    },
+    {
+      "path": "independent-review/review.json",
+      "sha256": "43610eaa1e7e0211dc78fe9d012b1dacee5a4b6f00592d4a329c816cd0681094"
+    },
+    {
+      "path": "independent-review/review.md",
+      "sha256": "1c46ab37f46d2a43c3ac539aa023d106bfeebf2d91a07cc293760a68246db71c"
+    },
+    {
+      "path": "independent-review/reviewed-source-subject.json",
+      "sha256": "ae292480f22ec7a3b9c0107dc65a928b7630044a85ebb8a38f54c306bcd83254"
+    },
+    {
+      "path": "issue180-readback.json",
+      "sha256": "a9e83876f0f64c5716419206735db7e65f0b8711428a56e9c07fa057f37e1df6"
+    },
+    {
+      "path": "source-tree-readback.json",
+      "sha256": "cc195e6993a83fa3337408879d54ac65eced08b1306c9fd9911ec8d70c9870e7"
+    }
+  ]
+}

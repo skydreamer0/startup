@@ -1,0 +1,17 @@
+[
+  {
+    "name": "missing root",
+    "exitCode": 1,
+    "rejectedBeforeTests": true
+  },
+  {
+    "name": "unknown option",
+    "exitCode": 1,
+    "rejectedBeforeTests": true
+  },
+  {
+    "name": "missing compiler",
+    "exitCode": 1,
+    "rejectedBeforeTests": true
+  }
+]

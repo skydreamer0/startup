@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-08T12:59:05.160662+00:00",
+  "reviewer": "independent reviewer",
+  "result": "PASS_WITH_BOUNDED_SCOPE",
+  "blockingImplementationFindings": [],
+  "subject": {
+    "localSourceCommit": "658e058f05304e9f9a03cc3d35ac299423bc9e46",
+    "tree": "79df6dc6b2e8088623291a687ae07d3ed28796e3",
+    "remoteBaselineCommit": "84d754b29332ed868f92fd3e954f90011a2d338e",
+    "remoteBaselineTree": "d31409bb8ad7c7ecaa67bafb6a633db60a33be80",
+    "materializedFiles": 243,
+    "treeLeaves": 1285,
+    "changedInputs": [
+      {
+        "path": "scripts/architecture/plan.test.mjs",
+        "mode": "100644",
+        "gitBlobSha1": "d4ff8c4ecc8584f9774424b509c8178b9231fa95",
+        "sha256": "57f227da7c0ecf13cf33c93abac6ed1f0a293a26821735ed862dcccb2b9f286d"
+      },
+      {
+        "path": "scripts/architecture/verify-plan.mjs",
+        "mode": "100644",
+        "gitBlobSha1": "c0710b7ca8c310dca6326275022d274b1a00566f",
+        "sha256": "0a2dce1320f459024b18c01aaf945cba64a27a0dba0b66fee8d8cc70f431e798"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/README.md",
+        "mode": "100644",
+        "gitBlobSha1": "6998c0f99eadc427c744d46bb0111326fa7b9527",
+        "sha256": "21b722c68abe5cc385bad9406e5b86a672369832e4f90ca6936731663147141b"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.json",
+        "mode": "100644",
+        "gitBlobSha1": "1509eaf57cef5aa699b80dbdb5542375e0768f3a",
+        "sha256": "0546cd744a8e54b06ee2883db45f8fc901ca16f05c1945870a43cec60c51de21"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.md",
+        "mode": "100644",
+        "gitBlobSha1": "fbf44e44b07582bdcf72a871904384c8bbd790d2",
+        "sha256": "89112d14ba317096b2d1d79cf8bfbd24d0a82081a05b566fdeed3c81ebec2ce7"
+      },
+      {
+        "path": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+        "mode": "100644",
+        "gitBlobSha1": "4824f4f811a65476b747b9b5077618da77d7f9bd",
+        "sha256": "5a185748f6198afe0f5770fe3fa36f4a7ec4e5458afd1848cd449dd3acf1d41a"
+      }
+    ]
+  },
+  "environment": {
+    "node": "v24.22.1",
+    "execution": "Isolated Linux copy; no dependency installation, environment loading, application, DB, container, device or external-service operation."
+  },
+  "checks": [
+    {
+      "name": "plan tests",
+      "command": "node --test scripts/architecture/plan.test.mjs",
+      "exitCode": 0,
+      "result": "PASS",
+      "passed": 78,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "gate acceptance tests",
+      "command": "node --test systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs",
+      "exitCode": 0,
+      "result": "PASS",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "source verification",
+      "command": "node scripts/architecture/verify-plan.mjs --check-source",
+      "exitCode": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "agent context",
+      "command": "./scripts/validate-agent-context.sh",
+      "exitCode": 0,
+      "result": "PASS",
+      "scope": "Materialized files tracked in an isolated temporary Git index."
+    },
+    {
+      "name": "whitespace diff",
+      "command": "git diff --check 658e058f05304e9f9a03cc3d35ac299423bc9e46^ 658e058f05304e9f9a03cc3d35ac299423bc9e46",
+      "exitCode": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "independent declaration and normalization controls",
+      "result": "PASS",
+      "checks": 64
+    },
+    {
+      "name": "independent actual-source controls",
+      "result": "PASS",
+      "cases": 11,
+      "expectedRejected": 9,
+      "equivalentAccepted": 2,
+      "scope": "For declaration changes the matching file fingerprint was refreshed, isolating CLI set comparison from raw hash drift."
+    },
+    {
+      "name": "independent guard mutation controls",
+      "result": "PASS",
+      "mutantsDetected": 6,
+      "scope": "Excluded provenance checks and author mutation harness; actual behavior assertions detected all six removals."
+    },
+    {
+      "name": "post-probe input restoration and repeat test runs",
+      "result": "PASS",
+      "allMaterializedHashesUnchanged": true,
+      "planPassed": 78,
+      "gatePassed": 17
+    },
+    {
+      "name": "baseline CLI defect diagnostic rerun",
+      "result": "EXPECTED_REJECTION_PROPERTY_FAIL_REPRODUCED",
+      "processExitCode": 1,
+      "invalidInventoriesAcceptedByOldVerifier": 3,
+      "subjectCommit": "84d754b29332ed868f92fd3e954f90011a2d338e",
+      "probeArtifact": "independent-baseline-gap-probe.mjs"
+    }
+  ],
+  "acceptanceAssessment": {
+    "AR-00-AC01": {
+      "result": "NOT_ESTABLISHED",
+      "scope": "CLI source declarations and metadata are verified, not complete writer/data-flow ownership, requirement-to-behavior mapping or all runtime effects."
+    },
+    "AR-00-AC02": {
+      "result": "BOUNDED_PASS",
+      "scope": "Declared manifest DAG rejects cycles/unknown dependencies, validates path-overlap locks, enforces direct/integration completion plus active-lock prerequisites, reserves at most three worker slots and advances the frozen synthetic DAG.",
+      "remaining": "This planner does not dispatch. New or narrowed write scopes require new lock review; actual writer completeness remains AC01."
+    },
+    "AR-00-AC03": {
+      "result": "BOUNDED_PASS_RESULT_SEPARATION",
+      "scope": "Validator rejects non-PASS completion and hidden failed/skipped/not-run counts. The reviewed draft receipt separates new PASS, historical rejection-expectation FAIL, zero skipped cases and explicit NOT_RUN Node22/application/DB/device/hosted-CI scopes.",
+      "remaining": "Do not transfer these results to another source or mark unexecuted operational scopes PASS. Final receipt command reproducibility observations are listed separately."
+    },
+    "AR-00-AC04": {
+      "result": "BOUNDED_PASS",
+      "scope": "All 512 policy combinations preserve engineering/activation separation; each unapproved decision prevents READY; all eight gates enforce the non-PASS boundary.",
+      "remaining": "Synthetic TEST_ONLY profiles are not approved policies or runtime/store activation. No application feature was operationally enabled."
+    },
+    "AR-00-AC05": {
+      "result": "BOUNDED_PASS",
+      "scope": "Task completion is separate from scoped, independently reviewed G-gate evidence and READY. Wrong source/review/task identities and self-review are rejected. Fresh #180 readback retains five unchecked acceptance items; manifest/evidence blobs and D/G/task state remain unchanged.",
+      "remaining": "Pure validation does not authenticate real-world evidence or establish device/store completion; the canonical ledger is not promoted."
+    }
+  },
+  "receiptDraftAssessment": {
+    "sha256": "9914b6af1b43b6c7d2666e37d93512bbf261bd8ab967ceec99e4328c0fec5447",
+    "status": "PASS; both command reproducibility observations resolved",
+    "artifactHashes": "All referenced result artifacts and snapshot hashes verified.",
+    "issue180": "Read independently from GitHub: open, five unchecked acceptance items, none checked.",
+    "staticCommands": "Three exact Node paths and the tracked-source comparison are now explicitly recorded.",
+    "baselineDiagnostic": "The pinned read-only probe independently reran on exact baseline bytes: three GAP_ACCEPTED outputs, exit 1 as recorded.",
+    "reviewBoundary": "Receipt reviewed before adding its reference to this independent review, avoiding circular artifact hashes."
+  },
+  "nonblockingObservations": [
+    {
+      "severity": "P3",
+      "path": "scripts/architecture/verify-plan.mjs",
+      "line": 157,
+      "finding": "The lexical heredoc guard rejects any << token before JSON parsing, including a valid exec-form argument such as node -e console.log(1 << 2).",
+      "impact": "Conservative false rejection of a future valid declaration; no present-baseline false acceptance.",
+      "recommendation": "Disclose the lexical restriction or narrow heredoc detection outside JSON argv with a focused regression test."
+    }
+  ],
+  "limitations": [
+    "Partial materialization, not a complete checkout or successful git archive. All 243 read files matched exact final-tree blobs; unmaterialized leaves were not executed or content-reviewed.",
+    "Node22, hosted CI, application, HTTP, database, hardware, store acceptance and arbitrary referenced command targets were not run.",
+    "Three curated Python entries are manually enumerated. Deleting those rows is not automatically discovered, as disclosed in candidate documentation.",
+    "Command strings and argv are inert data. This is not a Docker builder, shell interpreter or external-base-image inheritance resolver.",
+    "No manifest, evidence ledger, D01-D09, G0-G7, acceptance checkbox, author source directory or remote state was changed by this review.",
+    "No aggregate full AR-00 completion claim is made."
+  ],
+  "artifacts": [
+    {
+      "path": "independent-plan-78.log",
+      "bytes": 5310,
+      "sha256": "1641bb349c1402f126190b90bb4853b2bc3f099e6f3d64019040487f1c125fb3"
+    },
+    {
+      "path": "independent-gate-17.log",
+      "bytes": 1719,
+      "sha256": "e6bdd702114bb20383637c9515936c13511a9f63b9bf0980ad9c9311db225023"
+    },
+    {
+      "path": "independent-source-check.json",
+      "bytes": 79,
+      "sha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "path": "independent-context.log",
+      "bytes": 33,
+      "sha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "path": "independent-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "independent-cli-controls.json",
+      "bytes": 5353,
+      "sha256": "b765c7e06658e9e381b51baf77fd96ad893f3af047a6a64743b20b292d05a161"
+    },
+    {
+      "path": "independent-cli-source-controls.json",
+      "bytes": 3309,
+      "sha256": "38cbca0fb37fca3262665f3861e366e3a71af6f1b7ea9cf7b7fe7a6b848b558c"
+    },
+    {
+      "path": "independent-mutations.json",
+      "bytes": 1874,
+      "sha256": "e3fcaac7c6807fd9c964a214480c185516bae3c3cc74c81a0758b103c033faf4"
+    },
+    {
+      "path": "independent-inputs.json",
+      "bytes": 65808,
+      "sha256": "002c8d48b3b6e2e21bc31a9a463df35f306aa66f7e6f8a100be456e284f4ed91"
+    },
+    {
+      "path": "independent-baseline-gap-probe.mjs",
+      "bytes": 2023,
+      "sha256": "298ba831569b9d02077e105fb4fdc6ae7544d9b260c72303de97e1219b2850e4"
+    },
+    {
+      "path": "independent-baseline-gap.log",
+      "bytes": 300,
+      "sha256": "353605f37a3f3f92fb800eec1596f0710181837bcce0a120621a9c84d44c8ace"
+    }
+  ]
+}

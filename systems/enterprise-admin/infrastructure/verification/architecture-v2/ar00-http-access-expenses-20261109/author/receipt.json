@@ -1,0 +1,205 @@
+{
+  "recordedAt": "2026-11-09T03:57:18.612180+00:00",
+  "runtime": "v24.22.1",
+  "sourceCommit": "03decd7356779bb86e51621756c87e36728d1a82",
+  "sourceTree": "d2bd0a5ae808aa2d71360de7641500a0e58ba140",
+  "identityMeaning": "Local partial materialization, not the complete remote tree or GitHub CI subject.",
+  "pinnedRemoteHead": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+  "scope": "8 endpoint source mappings, 15 direct writes + 1 nested write, 27 application/reference pins; 8 source-contract tests + 45 verifier controls + 8 guard-removal mutation controls.",
+  "checks": [
+    {
+      "check": "http-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "scripts/architecture/http-writers-contract.test.mjs",
+        "scripts/architecture/http-writers-verify.test.mjs",
+        "scripts/architecture/http-writers-mutation.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 61,
+        "pass": 61,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-tests.log",
+      "logSha256": "5f9f6228f2217dd306379f1b55e813fc74e03cd9bd3482669996ac1f32fb4b15"
+    },
+    {
+      "check": "http-verifier",
+      "command": [
+        "node",
+        "scripts/architecture/http-writers-verify.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/http-verifier.log",
+      "logSha256": "f662ff788be0b3a4e18f971988c91425d851b1cda981f92f21741700515e60cb"
+    },
+    {
+      "check": "plan-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "scripts/architecture/plan.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 78,
+        "pass": 78,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/plan-tests.log",
+      "logSha256": "1f4df739b0b2ae25c3cca109d4454c30a58734a94702526e1f2f1c08228b8eb8"
+    },
+    {
+      "check": "gate-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 17,
+        "pass": 17,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/gate-tests.log",
+      "logSha256": "4762609ca13570ff40b1615fbec3134d8e557b2e4968304e79673dddde935a78"
+    },
+    {
+      "check": "original-source-verifier",
+      "command": [
+        "node",
+        "scripts/architecture/verify-plan.mjs",
+        "--check-source"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/original-source-verifier.log",
+      "logSha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "check": "context",
+      "command": [
+        "bash",
+        "scripts/validate-agent-context.sh"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/context.log",
+      "logSha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "check": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "HEAD",
+        "--check"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/whitespace.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-contract.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-contract.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-contract.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-mutation.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-mutation.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-mutation.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-spec.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-spec.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-spec.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-verify.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-verify.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-verify.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-verify.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-http-access-expenses-20261109/author/syntax-http-writers-verify.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "notRun": [
+    "Node22",
+    "actual application/HTTP/auth/tenant behavior",
+    "PostgreSQL",
+    "provider/device/store acceptance",
+    "full application build/lint/suites",
+    "hosted CI for this change",
+    "full AC01"
+  ],
+  "independentReview": "PENDING",
+  "remotePublication": "NOT_PERFORMED",
+  "release": "NO_MERGE_OR_DEPLOYMENT",
+  "preFreezeDevelopmentFailure": "Initial map generation used missing trailing slash for three root-route inventory keys; corrected to pinned exact route keys before accepted tests. Raw initial command output remains in task tool history, not invented here."
+}

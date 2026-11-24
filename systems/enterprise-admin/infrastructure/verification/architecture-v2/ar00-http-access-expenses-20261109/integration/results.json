@@ -1,0 +1,231 @@
+{
+  "recordedAt": "2026-11-09T04:15:38.082577+00:00",
+  "localSourceCommit": "debacdb8354b460f1df597fdc543499c08bd2b7d",
+  "completeSourceTree": "0596d76724b79e6cbe72e394031153245913f535",
+  "remoteBase": "95f3b34e5d32bc9dbe18699f5b32b44ade247b62",
+  "baseTree": "7046dd1741aeae1a82ba29f921cd84df06e3d79b",
+  "runtime": "v24.22.1",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "checks": [
+    {
+      "check": "http-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "scripts/architecture/http-writers-contract.test.mjs",
+        "scripts/architecture/http-writers-verify.test.mjs",
+        "scripts/architecture/http-writers-mutation.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 76,
+        "pass": 76,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "http-tests.log",
+      "logSha256": "dd0d4b65de9aa8b566b7422b5b152adf49232af23940896251bb9e7fb7d51245"
+    },
+    {
+      "check": "existing-node-tests",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "scripts/architecture/plan.test.mjs",
+        "scripts/architecture/seed-migrations.test.mjs",
+        "systems/enterprise-admin/infrastructure/verification/architecture-v2/ar00-closeout-20261108/gate-acceptance.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 162,
+        "pass": 162,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "log": "existing-node-tests.log",
+      "logSha256": "4ee26b66a38de4a62be53525e0069586372c22e2fc32dfab579a446a4946b3c4"
+    },
+    {
+      "check": "print-inventory-tests",
+      "command": [
+        "python3",
+        "scripts/architecture/test_print_inventory.py"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 28
+      },
+      "log": "print-inventory-tests.log",
+      "logSha256": "23348bad8e6df02140342b388caf26808631625fe5eb8c30732e1147140c0cfd"
+    },
+    {
+      "check": "print-worker-tests",
+      "command": [
+        "python3",
+        "scripts/architecture/test_print_worker_controls.py"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {
+        "tests": 24
+      },
+      "log": "print-worker-tests.log",
+      "logSha256": "3c048e4cc9727e3ba01182ca6247be11c0327aa92d847ffa6b8d422117cf8db1"
+    },
+    {
+      "check": "http-verifier",
+      "command": [
+        "node",
+        "scripts/architecture/http-writers-verify.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "http-verifier.log",
+      "logSha256": "85208165f9360441a15a094eba7954055efd5d912b7c9c22c83b394e8d4ad18b"
+    },
+    {
+      "check": "original-source-verifier",
+      "command": [
+        "node",
+        "scripts/architecture/verify-plan.mjs",
+        "--check-source"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "original-source-verifier.log",
+      "logSha256": "2aa705b30d833c5c61c7cc23bc3de5cc1ba061871f9ab6c7c4edd4d0ad126bdd"
+    },
+    {
+      "check": "seed-verifier",
+      "command": [
+        "node",
+        "scripts/architecture/verify-seed-migrations.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "seed-verifier.log",
+      "logSha256": "d463e01f8309e4c9db75262e882334e06b80db6856ed93797f11da7a50f5ac2d"
+    },
+    {
+      "check": "print-verifier",
+      "command": [
+        "python3",
+        "scripts/architecture/verify-print-inventory.py"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "print-verifier.log",
+      "logSha256": "b6754a7c676b39ebd035b0f7e423dcc2de545467d0e70af931c9bccb8a03ae1e"
+    },
+    {
+      "check": "context",
+      "command": [
+        "bash",
+        "scripts/validate-agent-context.sh"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "context.log",
+      "logSha256": "d4e9038bbe375d7c3102809484b136a408a13dd095ba1fd673f71c6a76c6e695"
+    },
+    {
+      "check": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "HEAD^",
+        "HEAD",
+        "--check"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "whitespace.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-contract.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-contract.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "syntax-http-writers-contract.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-mutation.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-mutation.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "syntax-http-writers-mutation.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-spec.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-spec.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "syntax-http-writers-spec.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-verify.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-verify.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "syntax-http-writers-verify.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check": "syntax-http-writers-verify.test.mjs",
+      "command": [
+        "node",
+        "--check",
+        "scripts/architecture/http-writers-verify.test.mjs"
+      ],
+      "exitCode": 0,
+      "result": "PASS",
+      "counts": {},
+      "log": "syntax-http-writers-verify.test.mjs.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "76 HTTP explicit-site controls + 162 existing plan/seed/gate + 52 print source/offline controls. Not full application, HTTP/PG, device or full AC01.",
+  "materialization": "Full 1399-leaf base index exactly matches remote; 271 baseline files materialized and verified. HTTP packet adds 34 byte-exact reviewed files. Local tree uses --missing-ok because unmaterialized remote blob IDs are preserved; all1433 indexed leaves checked. Not a full application checkout.",
+  "remoteEquivalentSourceCommit": "d28abc8bcaccaddf9010632c7bfdc504c40a041f",
+  "sourceTreeEqualityVerified": true,
+  "independentReviewSource": "R1 freeze7fc1ae6a50108988676fa03a38d54207f12eea7c accepted for explicit-site mapping only; same implementation files in combined source. No claim reviewer independently reran combined290."
+}

@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: all four executable/baseline inputs match the frozen integration Git blobs
+ok 1 - all four executable/baseline inputs match the frozen integration Git blobs
+  ---
+  duration_ms: 1.478634
+  type: 'test'
+  ...
+# Subtest: live baseline does not confuse focused evidence with AR-00 completion
+ok 2 - live baseline does not confuse focused evidence with AR-00 completion
+  ---
+  duration_ms: 9.986463
+  type: 'test'
+  ...
+# Subtest: every one of 24 tasks rejects each non-PASS outcome as completion
+ok 3 - every one of 24 tasks rejects each non-PASS outcome as completion
+  ---
+  duration_ms: 54.657936
+  type: 'test'
+  ...
+# Subtest: every declared required check is individually necessary for completion
+ok 4 - every declared required check is individually necessary for completion
+  ---
+  duration_ms: 27.107189
+  type: 'test'
+  ...
+# Subtest: every task rejects wrong task, source SHA, tree, review SHA and self-review
+ok 5 - every task rejects wrong task, source SHA, tree, review SHA and self-review
+  ---
+  duration_ms: 62.920823
+  type: 'test'
+  ...
+# Subtest: all 512 policy combinations leave isolated engineering ready and activation blocked
+ok 6 - all 512 policy combinations leave isolated engineering ready and activation blocked
+  ---
+  duration_ms: 250.977834
+  type: 'test'
+  ...
+# Subtest: each unapproved decision rejects READY even after synthetic software completion
+ok 7 - each unapproved decision rejects READY even after synthetic software completion
+  ---
+  duration_ms: 5.134578
+  type: 'test'
+  ...
+# Subtest: all eight activation gates require scoped independent source-bound evidence
+ok 8 - all eight activation gates require scoped independent source-bound evidence
+  ---
+  duration_ms: 112.312558
+  type: 'test'
+  ...
+# Subtest: task and gate self-review controls change only executor, preserving reviewer identity
+ok 9 - task and gate self-review controls change only executor, preserving reviewer identity
+  ---
+  duration_ms: 5.842378
+  type: 'test'
+  ...
+# Subtest: self-review controls kill gate-only, task-only and combined verifier mutants
+ok 10 - self-review controls kill gate-only, task-only and combined verifier mutants
+  ---
+  duration_ms: 32.738289
+  type: 'test'
+  ...
+# Subtest: completion and READY controls isolate unfinished integration and non-PASS G gates
+ok 11 - completion and READY controls isolate unfinished integration and non-PASS G gates
+  ---
+  duration_ms: 11.308072
+  type: 'test'
+  ...
+# Subtest: completion and READY controls kill integration-only, G-PASS-only and combined mutants
+ok 12 - completion and READY controls kill integration-only, G-PASS-only and combined mutants
+  ---
+  duration_ms: 24.747655
+  type: 'test'
+  ...
+# Subtest: all direct dependency edges prevent an early active successor
+ok 13 - all direct dependency edges prevent an early active successor
+  ---
+  duration_ms: 85.95368
+  type: 'test'
+  ...
+# Subtest: zero to three active workers reserve slots and a fourth active worker is rejected
+ok 14 - zero to three active workers reserve slots and a fourth active worker is rejected
+  ---
+  duration_ms: 3.575283
+  type: 'test'
+  ...
+# Subtest: all 276 task pairs obey the declared exclusive-lock boundary
+ok 15 - all 276 task pairs obey the declared exclusive-lock boundary
+  ---
+  duration_ms: 666.991882
+  type: 'test'
+  ...
+# Subtest: the complete actual 24-task DAG can advance without deadlock using synthetic proofs only
+ok 16 - the complete actual 24-task DAG can advance without deadlock using synthetic proofs only
+  ---
+  duration_ms: 83.890311
+  type: 'test'
+  ...
+# Subtest: CLI plan is deterministic and leaves all four exact source inputs unchanged
+ok 17 - CLI plan is deterministic and leaves all four exact source inputs unchanged
+  ---
+  duration_ms: 95.716468
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1638.688573

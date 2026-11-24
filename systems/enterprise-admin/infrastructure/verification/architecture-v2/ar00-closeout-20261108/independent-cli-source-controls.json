@@ -1,0 +1,152 @@
+[
+  {
+    "name": "remove-script",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "add-script",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "change-script",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "remove-prisma-hook",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "change-prisma-hook",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "change-docker-argv",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "add-docker-entrypoint",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "change-seed-implementation",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "source drift systems/enterprise-admin/backend/prisma/seed.ts"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": false
+  },
+  {
+    "name": "docker-structural-whitespace-equivalent",
+    "expectedResult": "PASS",
+    "observed": {
+      "result": "PASS",
+      "tasks": 24,
+      "errors": [],
+      "sourceChecked": true
+    },
+    "exitCode": 0,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "package-structural-whitespace-equivalent",
+    "expectedResult": "PASS",
+    "observed": {
+      "result": "PASS",
+      "tasks": 24,
+      "errors": [],
+      "sourceChecked": true
+    },
+    "exitCode": 0,
+    "sourceFingerprintRefreshed": true
+  },
+  {
+    "name": "docker-interior-whitespace-is-command-change",
+    "expectedResult": "FAIL",
+    "observed": {
+      "result": "FAIL",
+      "tasks": 24,
+      "errors": [
+        "CLI configured entry coverage mismatch"
+      ],
+      "sourceChecked": true
+    },
+    "exitCode": 1,
+    "sourceFingerprintRefreshed": true
+  }
+]

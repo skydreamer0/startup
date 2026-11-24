@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "reviewedAtUtc": "2026-11-09T03:54:54.950265+00:00",
+  "decision": "APPROVED_BOUNDED_SOURCE_AND_OFFLINE_SLICE_AFTER_FIXES",
+  "subject": {
+    "baseHead": "5e3d6bab7e89a1bad53dcf3a6b385947fbd9111e",
+    "baseTree": "3d18d4211946e8dc02d4780a20dfba2efe512343",
+    "binding": "Base/head/tree supplied in assignment. No remote request was made by this reviewer. All 37 base-materialized.json records were independently checked against local bytes using Git blob SHA-1 and SHA-256, with zero mismatches.",
+    "localSourceCommit": "f0ba66ecb16739a006bcc9e40e994ea509cb85ec",
+    "localSourceTree": "8492e69d90f3b808f7121d7205c49c143d940833",
+    "sourceBinding": "Verified local Git tree and all six committed file bytes against source-freeze.json; remote provenance is still parent-supplied."
+  },
+  "reviewedFiles": [
+    {
+      "path": "scripts/architecture/verify-print-inventory.py",
+      "initialSha256": "acbf77c3eaa0739dabf4014bfd4e1ee362490503ac15cd8c6cb2737f0f22ddab",
+      "finalSha256": "7d6ea85f58a342a3d9091d0d6e792f0c76c73e18572dc9d98a1020df55024529"
+    },
+    {
+      "path": "scripts/architecture/test_print_inventory.py",
+      "initialSha256": "fc8d62a0781d27b4ffe55fe9a1e93f08248fb2a1834852405290f7f16b4eb02f",
+      "finalSha256": "e7cc1180858b6b67c82633a4ba58fa655461bdad7d2ce298a47be0daee2b6d5d"
+    },
+    {
+      "path": "scripts/architecture/test_print_worker_controls.py",
+      "initialSha256": "b1bb9e501192a3b05e5d4f919a01064f8555a57cdf68f551047880bb3875b532",
+      "finalSha256": "b854d0a160db222cc859005099f5599b0286e6db46808d575f57911a55353038"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-inventory.json",
+      "initialSha256": "8401e0a99174bfc8128d4e65443a2ae7b736649385361d654045a6f6c7c8a847",
+      "finalSha256": "5b5b590253b1fea684e028342dcc1cde38f7bc8e4e6fb0faecfbebae7a7c4957"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json",
+      "initialSha256": "585ee11ce743ae0e536c6d0d3af773691244882cf567c7f4c2a170d68602a1c1",
+      "finalSha256": "e40531f05c69403c0f83e50eb7c86b18d8999ad0a7f6be741b212338dffbf36b"
+    },
+    {
+      "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-verification.md",
+      "finalSha256": "95055bbb4a3abe496b4b3c17bccad061f613a6c59606415565367ac61ac5f2fc",
+      "review": "Scope and limitations supplement read and accepted; no extra runtime acceptance claim."
+    }
+  ],
+  "initialReview": {
+    "verifier": "PASS: 28 files, 26 effects, 33 existing test references",
+    "unittest": "50 passed: 26 inventory + 24 source-derived worker/transport/wrapper tests",
+    "decision": "REQUEST_CHANGES",
+    "findings": [
+      {
+        "id": "R1",
+        "severity": "P1",
+        "path": "scripts/architecture/verify-print-inventory.py",
+        "initialLines": "22,80-96",
+        "finding": "Recursive file discovery did not exclude private runtime directories. Snapshot read their bytes before reporting inventory mismatch; InventoryTests fixture selection could also copy them. Module .gitignore and README place token/report files under private/.",
+        "syntheticProbe": {
+          "inputs": [
+            "systems/enterprise-admin/local-print-agent/private/api-token.txt",
+            "systems/enterprise-admin/local-print-agent/captures/private/transport.json"
+          ],
+          "contents": "SYNTHETIC-NONSECRET-SENTINEL",
+          "observed": "Path.read_bytes observed both synthetic files, then verify raised inventory mismatch. No real token or device file was read."
+        },
+        "resolution": "Top-down os.walk prunes private and other stated runtime directories before traversal. Read, copy and traversal spies observed zero private accesses on the corrected verifier. Added committed negative control covers both private locations."
+      },
+      {
+        "id": "R2",
+        "severity": "P2",
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json",
+        "row": "PRINT-19",
+        "finding": "Said raster._font uses a default font; actual code raises RuntimeError when no candidate exists.",
+        "resolution": "SPECS and effect map corrected to state the RuntimeError branch."
+      },
+      {
+        "id": "R3",
+        "severity": "P2",
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json",
+        "row": "PRINT-20",
+        "finding": "save_preview referenced a TSPL test that calls save_candidate, which writes its own image and does not call save_preview.",
+        "resolution": "Reference changed to test_raster.py:test_mixed_label_is_monochrome_and_has_ink, which calls save_preview directly."
+      },
+      {
+        "id": "R4",
+        "severity": "P2",
+        "path": "systems/enterprise-admin/infrastructure/plans/architecture-v2/print-effects.json",
+        "row": "PRINT-13",
+        "finding": "recent_receipts referenced a restart test that calls submit and _read_receipt, not recent_receipts.",
+        "resolution": "Reference changed to test_api.py:test_exact_hash_idempotency_and_conflict_before_queue, whose final GET status enters recent_receipts."
+      }
+    ],
+    "wordingCorrections": [
+      "AST harness is explicitly not a sandbox for arbitrary future Python code.",
+      "No network connection/listener is claimed; socket import and internal event-loop socketpairs are acknowledged."
+    ]
+  },
+  "finalVerification": {
+    "verifier": {
+      "status": "PASS",
+      "files": 28,
+      "effects": 26,
+      "testReferences": 33,
+      "uniqueExistingTestSymbols": 23,
+      "evidenceKind": "source-reference-only",
+      "originalPythonSuite": "NOT_RUN",
+      "device": "NOT_RUN",
+      "overallAC01": "NOT_RUN"
+    },
+    "unittest": {
+      "status": "PASS",
+      "testsRun": 52,
+      "inventory": 28,
+      "workerTransportWrapper": 24,
+      "stdout": "....................................................\n----------------------------------------------------------------------\nRan 52 tests in 2.520s\n\nOK\n",
+      "reproductionCommand": "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s scripts/architecture -p test_print_*.py -v",
+      "execution": "unittest.defaultTestLoader.discover with pattern test_print_*.py, TextTestRunner verbosity=1, plus process/network audit guard and Thread.start prohibition"
+    },
+    "extraSafetyObservation": {
+      "externalAuditEventsAttempted": [],
+      "socketFamiliesTypesObserved": [
+        [
+          1,
+          1
+        ]
+      ],
+      "interpretation": "Only AF_UNIX/SOCK_STREAM event-loop socketpairs observed; bind/connect/sendto/process events were forbidden and none were attempted. Real Thread.start was separately forbidden."
+    },
+    "extraIsolatedProbes": {
+      "privateFiles": "PASS: zero private reads, copies and walked private subtrees; verification still passes with both synthetic sentinels present.",
+      "metadataMutations": {
+        "activationEnabled": "REJECTED",
+        "evidenceKindRuntimeTest": "REJECTED",
+        "scopeExpanded": "REJECTED",
+        "workerEffectRemoved": "REJECTED"
+      },
+      "guardMutations": {
+        "ApiState.start_worker printing_enabled changed to True": "KILLED by disabled-worker test",
+        "send_approved_job copies guard changed to False": "KILLED by guard-before-scan test"
+      }
+    },
+    "baseIntegrity": "37 of 37 records match original Git blob and SHA-256; app source, canonical manifest and source-inventory unchanged.",
+    "localCommitBinding": "Six files differ from the supplied local baseline; committed bytes and computed Git blobs/SHA-256 exactly match the freeze."
+  },
+  "scopeLimits": [
+    "The five listed new code/JSON files and one scope-only Markdown supplement are approved as a bounded inventory/effect mapping and stdlib offline test slice.",
+    "Selected unchanged AST definitions execute with explicit stand-ins; production modules, renderer dependencies and HTTP application import/startup are not exercised.",
+    "33 references are source-reference-only, not 33 executed or independently accepted existing tests.",
+    "Original pytest, full-module/import, renderer/fonts, real HTTP/browser/production-origin, Windows, real worker-thread scheduling, physical BLE and device/store acceptance remain NOT_RUN.",
+    "scan_ble.py forwards arbitrary CLI argv, including guarded print --send; its legacy read-only docstring is not an execution restriction.",
+    "The inventory checks a reviewed snapshot. Updating both source and inventory still requires independent review; this is not whole-program semantic proof or a security sandbox.",
+    "No network, real tokens, real BLE/device, remote edits, canonical manifest/evidence edits, merge or deployment was performed by this reviewer."
+  ]
+}

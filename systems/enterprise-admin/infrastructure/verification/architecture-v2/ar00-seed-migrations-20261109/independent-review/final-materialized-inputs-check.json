@@ -1,0 +1,13 @@
+{
+  "result": "PASS",
+  "base": "b66e1f96447bbc5034110843b4349aef7ca44c4b",
+  "baseTree": "eb5d6286792df789fae0870c884980b792a3673d",
+  "materializedBaseFiles": 207,
+  "unchangedFilesVerified": 205,
+  "expectedChangedExistingDocs": [
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/README.md",
+    "systems/enterprise-admin/infrastructure/plans/architecture-v2/source-inventory.md"
+  ],
+  "unexplainedChanges": [],
+  "scope": "Materialized file byte identities only; partial checkout is not a full checkout or runtime build."
+}

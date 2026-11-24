@@ -1,0 +1,18 @@
+{
+  "head": "a8db89cb75ad2062f979c97194ba09acdcf977f9",
+  "checkId": 128979110523,
+  "name": "GitGuardian Security Checks",
+  "status": "completed",
+  "conclusion": "failure",
+  "url": "https://github.com/skydreamer0/startup/runs/128979110523",
+  "title": "1 secret uncovered!",
+  "classification": "Generic Password",
+  "sourceCommit": "d28abc8bcaccaddf9010632c7bfdc504c40a041f",
+  "file": "scripts/architecture/http-writers-spec.mjs",
+  "line": 10,
+  "incidentId": 39840072,
+  "occurrence": 311321677,
+  "scannedCommits": 10,
+  "flaggedScalar": "NOT_RECORDED",
+  "observation": "Classification and source location only. Value deliberately not printed or persisted."
+}

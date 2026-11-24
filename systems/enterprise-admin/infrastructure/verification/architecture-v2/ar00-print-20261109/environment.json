@@ -1,0 +1,12 @@
+{
+  "python": "3.12.14",
+  "node": "v24.22.1",
+  "platform": "Linux",
+  "dependencies": {
+    "pytest": "NOT_INSTALLED",
+    "bleak": "NOT_INSTALLED",
+    "qrcode": "NOT_INSTALLED",
+    "Pillow": "13.0.0",
+    "python-barcode": "NOT_INSTALLED"
+  }
+}
