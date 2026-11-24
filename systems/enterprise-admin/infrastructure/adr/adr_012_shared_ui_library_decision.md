@@ -25,7 +25,7 @@ Additional counts from the audit:
 
 - Admin pages/components have heavy class-based reuse: 157 `btn*` class references, 109 `badge*` references, 111 card-related references, and 37 table-related references.
 - POS feature files contain 58 raw `<button>` elements and 329 inline-style references in components/pages.
-- POS has local shadcn-style `components/ui/button.tsx`, `card.tsx`, and `table.tsx`, but no current imports/usages of those local primitives were found in POS source. They were later removed as unused; add primitives back when a POS feature consumes them.
+- POS has local shadcn-style `components/ui/button.tsx`, `card.tsx`, and `table.tsx`, but no current imports/usages of those local primitives were found in POS source. They were later removed as unused, followed by their `lib/utils.ts` `cn()` helper and its `@radix-ui/react-slot`, `class-variance-authority`, `clsx` and `tailwind-merge` dependencies; add primitives back when a POS feature consumes them.
 
 This means admin-ui and pos-ui both need UI consistency, but their current implementation shapes are not aligned enough to justify a shared package boundary today.
 
