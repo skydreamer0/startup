@@ -6,6 +6,16 @@ async function fresh(page: Page) {
   await expect(page.getByLabel('草稿名稱')).toBeVisible();
 }
 
+async function tabFromTitleToSave(page: Page) {
+  const title = page.getByLabel('草稿名稱');
+  await title.click();
+  await expect(title).toBeFocused();
+  await page.keyboard.press('Tab');
+  const save = page.getByRole('region', { name: '草稿保存' }).getByRole('button', { name: '保存草稿', exact: true });
+  await expect(save).toBeFocused();
+  return save;
+}
+
 for (const width of [1440, 390]) test.describe(`receiving real API ${width}`, () => {
   test.use({ viewport: { width, height: 900 } });
 
@@ -23,8 +33,20 @@ for (const width of [1440, 390]) test.describe(`receiving real API ${width}`, ()
     await expect(first.locator('legend')).toContainText('已核對');
     await first.getByLabel('實到數量', { exact: true }).fill('3');
     await expect(first.locator('legend')).toContainText('待核對');
+    const panel = page.getByRole('region', { name: '草稿保存' });
+    for (const viewport of (width === 1440 ? [1366, 1024, width] : [width])) {
+      await page.setViewportSize({ width: viewport, height: viewport === 1366 ? 768 : 900 });
+      const save = await tabFromTitleToSave(page);
+      await expect(save).toBeInViewport({ ratio: 1 });
+      await expect(panel).toContainText('有未保存變更');
+      const rect = await panel.boundingBox(), line = await first.boundingBox();
+      expect(rect!.y + rect!.height).toBeLessThanOrEqual(line!.y);
+      expect(rect!.x).toBeGreaterThanOrEqual(0);
+      expect(rect!.x + rect!.width).toBeLessThanOrEqual(viewport);
+      if (viewport !== width) await capture(page, info, `before-save-${viewport}`);
+    }
     await capture(page, info, 'before-save');
-    await page.getByRole('button', { name: '保存草稿', exact: true }).click();
+    await page.keyboard.press(width === 1440 ? 'Enter' : 'Space');
     await expect(page.getByText('草稿已保存，尚未入庫。', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: '關閉本頁草稿', exact: true }).click();
     await page.getByRole('button', { name: `真 API 十行草稿 ${width} · v1`, exact: true }).click();
@@ -47,11 +69,18 @@ for (const width of [1440, 390]) test.describe(`receiving real API ${width}`, ()
       await actual.dispose();
       await route.abort('failed');
     });
-    await page.getByRole('button', { name: '保存草稿', exact: true }).click(); await put;
-    await expect(page.getByRole('button', { name: '查回保存結果', exact: true })).toBeVisible();
+    const save = await tabFromTitleToSave(page);
+    await page.keyboard.press(width === 1440 ? 'Space' : 'Enter');
+    const savedUrl = (await put).url();
+    const recover = page.getByRole('button', { name: '查回保存結果', exact: true });
+    await expect(recover).toBeEnabled();
+    await expect(save).toBeDisabled();
+    await page.keyboard.press('Tab');
+    await expect(recover).toBeFocused();
     await capture(page, info, 'unknown-outcome');
-    const get = page.waitForRequest(request => request.method() === 'GET' && /\/receiving-drafts\/[0-9a-f-]{36}$/.test(new URL(request.url()).pathname));
-    await page.getByRole('button', { name: '查回保存結果', exact: true }).click(); await get;
+    const get = page.waitForResponse(response => response.request().method() === 'GET' && response.url() === savedUrl);
+    await page.keyboard.press(width === 1440 ? 'Enter' : 'Space');
+    expect((await get).status()).toBe(200);
     await expect(page.getByText('查回內容與本次草稿完全一致，已確認保存，沒有再次送出。', { exact: true })).toBeVisible();
     await page.reload(); await expect(page.getByLabel('草稿名稱')).toHaveValue(`失回應真 API 草稿 ${width}`);
     await expect(page.getByRole('button', { name: '保存草稿', exact: true })).toBeDisabled();
@@ -94,4 +123,82 @@ test('unsaved close cancellation retains content; malformed URL and identity are
   await page.locator('#login-submit').click(); await page.locator('a[href="/receiving"]').click();
   await expect(page.getByText('尚無已保存草稿。', { exact: true })).toBeVisible();
   await expect(page.getByText('切換身份前未保存內容', { exact: true })).toHaveCount(0);
+});
+
+test('same-tenant peer cannot access or overwrite another owner’s saved draft', async ({ page, browser, harness }) => {
+  const ownerTitle = '同租戶驗收 A 私人草稿';
+  const peerTitle = '同租戶驗收 B 私人草稿';
+  const save = async (actor: Page, title: string) => {
+    await fresh(actor);
+    await actor.getByLabel('草稿名稱').fill(title);
+    const saved = actor.waitForResponse(r => r.request().method() === 'PUT' && r.url().includes('/receiving-drafts/'));
+    await actor.getByRole('button', { name: '保存草稿', exact: true }).click();
+    const result = await saved;
+    expect(result.status()).toBe(200);
+    const { data } = await result.json();
+    await expect(actor.getByText('草稿已保存，尚未入庫。', { exact: true })).toBeVisible();
+    expect(data.revision).toBe(1);
+    return { url: result.url(), data, body: result.request().postDataJSON() };
+  };
+  await login(page);
+  const owner = await save(page, ownerTitle);
+  const otherContext = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1440, height: 900 } });
+  await harness.watchPeer(otherContext);
+  const peer = await otherContext.newPage();
+  await login(peer, 'peer');
+  await expect(peer.getByRole('button', { name: '新增私人草稿', exact: true })).toBeEnabled();
+  const refreshedList = peer.waitForResponse(r => r.request().method() === 'GET'
+    && new URL(r.url()).pathname === '/api/v1/admin/receiving-drafts');
+  const b = await save(peer, peerTitle);
+  expect(b.data.ownerId).not.toBe(owner.data.ownerId);
+  expect(b.data.tenantId).toBe(owner.data.tenantId);
+  const response = await refreshedList;
+  expect(response.status()).toBe(200);
+  const { data: list } = await response.json();
+  expect(list.ownerId).toBe(b.data.ownerId);
+  expect(list.data).toEqual([expect.objectContaining({ id: b.data.id, title: peerTitle })]);
+  expect(JSON.stringify(list)).not.toContain(owner.data.id);
+  expect(JSON.stringify(list)).not.toContain(owner.data.ownerId);
+  await peer.getByRole('button', { name: '關閉本頁草稿', exact: true }).click();
+  await expect(peer.getByRole('button', { name: `${peerTitle} · v1`, exact: true })).toBeVisible();
+  await expect(peer.getByRole('button', { name: `${ownerTitle} · v1`, exact: true })).toHaveCount(0);
+  const deepLink = new URL('/receiving', owner.url);
+  deepLink.searchParams.set('draft', owner.data.id);
+  const denied = peer.waitForResponse(r => r.request().method() === 'GET' && r.url() === owner.url);
+  await peer.goto(deepLink.href);
+  const deniedRead = await denied;
+  expect(deniedRead.status()).toBe(404);
+  expect(await deniedRead.text()).not.toContain(ownerTitle);
+  await expect(peer.getByText('草稿讀取失敗，請重試或回到清單；沒有建立替代草稿。', { exact: true })).toBeVisible();
+  await expect(peer.getByLabel('草稿名稱')).toHaveCount(0);
+  const probe = (actor: Page, url: string, body?: unknown) => actor.evaluate(async ({ url, body }) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token || new URL(url).origin !== location.origin) throw new Error('Probe requires an authenticated same-origin browser');
+    const response = await fetch(url, { method: body ? 'PUT' : 'GET',
+      headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+      body: body ? JSON.stringify(body) : undefined });
+    return { status: response.status, body: await response.json() };
+  }, { url, body });
+  for (const suffix of ['/history', '/history/1']) {
+    const result = await probe(peer, owner.url + suffix);
+    expect(result.status).toBe(404);
+    expect(JSON.stringify(result.body)).not.toContain(ownerTitle);
+    expect(result.body.data).toBeUndefined();
+  }
+  const overwrite = await probe(peer, owner.url, { ...owner.body, expectedRevision: 1,
+    payload: { ...owner.body.payload, title: '不應生效的覆寫' } });
+  expect(overwrite.status).toBe(404);
+  expect(overwrite.body.data).toBeUndefined();
+  expect(JSON.stringify(overwrite.body)).not.toContain(ownerTitle);
+  for (const suffix of ['', '/history/1']) {
+    const unchanged = await probe(page, owner.url + suffix);
+    expect(unchanged.status).toBe(200);
+    expect(unchanged.body.data.revision).toBe(1);
+    expect(unchanged.body.data.payload).toEqual(owner.data.payload);
+  }
+  const history = await probe(page, owner.url + '/history');
+  expect(history.status).toBe(200);
+  expect(history.body.data.map((version: { revision: number }) => version.revision)).toEqual([1]);
+  harness.ownerIsolation = { ownerUrl: owner.url, peerUrl: b.url, ownerId: owner.data.ownerId,
+    peerId: b.data.ownerId, tenantId: owner.data.tenantId };
 });
