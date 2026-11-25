@@ -15,7 +15,6 @@ export default defineConfig({
                     react: ['react', 'react-dom', 'react-router-dom'],
                     charts: ['recharts'],
                     query: ['@tanstack/react-query', 'axios'],
-                    ui: ['lucide-react', 'radix-ui'],
                 },
             },
         },

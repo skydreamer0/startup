@@ -77,11 +77,11 @@ that the owned database was dropped.
   reserved pacing delay is 119×550 ms = 65.45 seconds. Expected normal journey
   reads are 9 login POSTs plus two seven-route entries per context, before any
   genuine duplicate reads; 120 is a hard upper cap, not a predicted cost.
-- Only two steps are added to the existing selected SKU worker. Its 20-minute job
-  cap, all 14 jobs, four required check names, selected-child aggregation,
+- Only two steps are added to the existing selected SKU worker. At initial delivery its job cap was 20 minutes; it is now 30 minutes.
+  All 14 jobs, four required check names, selected-child aggregation,
   dependency installs, permissions and existing test commands remain unchanged.
   No manual workflow dispatch/rerun or skip token is introduced. Wall-clock cost
-  is not yet measured; the additional step may fail the unchanged overall job
+  is not yet measured; the additional step may fail the overall job
   cap if runner timing leaves insufficient room, rather than silently skipping.
 
 ## Local controls and limitations

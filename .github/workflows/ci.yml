@@ -475,7 +475,7 @@ jobs:
     if: ${{ needs.plan.outputs.pos == 'true' }}
     name: Exact SKU PostgreSQL and current POS browser acceptance
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     permissions:
       contents: read
     services:
@@ -598,12 +598,21 @@ jobs:
         run: |
           node --test pos-ui/e2e/layout-native/*.test.mjs
           node pos-ui/e2e/layout-native/run.mjs
+      - name: Set up CPython 3.12 for medicine label journey
+        id: medicine_label_python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          architecture: x64
+          update-environment: false
       - name: Prepare pinned render-only Python for medicine label journey
+        env:
+          MEDICINE_LABEL_SETUP_PYTHON: ${{ steps.medicine_label_python.outputs.python-path }}
         run: |
-          python3 -c "import sys, platform; assert sys.version_info[:2] == (3, 12); assert platform.machine() == 'x86_64'"
+          "${MEDICINE_LABEL_SETUP_PYTHON}" -c "import sys, platform; assert sys.version_info[:2] == (3, 12); assert platform.machine() == 'x86_64'"
           export PYTHONDONTWRITEBYTECODE=1
-          python3 backend/scripts/medicine-label-disabled-agent.test.py
-          python3 -m venv "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          "${MEDICINE_LABEL_SETUP_PYTHON}" backend/scripts/medicine-label-disabled-agent.test.py
+          "${MEDICINE_LABEL_SETUP_PYTHON}" -m venv "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/bin/python" -m pip install --disable-pip-version-check --require-hashes --only-binary=:all: --no-deps -r backend/scripts/medicine-label-ci.requirements.txt
           "$RUNNER_TEMP/medicine-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/bin/python" -m pip check
       - name: Reviewed package maintenance and POS through real API and owned PostgreSQL

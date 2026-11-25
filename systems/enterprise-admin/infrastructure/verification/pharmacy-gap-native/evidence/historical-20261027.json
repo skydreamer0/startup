@@ -1,0 +1,120 @@
+{
+  "scope": "Historical cloud-run evidence, not browser or whole-system acceptance",
+  "sourceHead": "d703e416952b0e02a8241a86057d248a5c7b4662",
+  "sourceTree": "15cf360798d2523ae155dad9c52504b783092c29",
+  "sourceBlobs": 305,
+  "lockSha256": "111af89c76e2d66a6c10d2ed602a614a4c3d484a323d52be6132a5cbc130acf3",
+  "testSha256": "708bffe3daf1b31d8b3693e200243adc3a36282150c6a723437a50e343c297c2",
+  "result": {
+    "success": true,
+    "numTotalTests": 2,
+    "numPassedTests": 2,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "cases": [
+    {
+      "name": "CAS retained loser next revision",
+      "status": "PASS",
+      "evidenceLayer": "real login HTTP API / PostgreSQL; no browser choice UI"
+    },
+    {
+      "name": "Initial receipts through sale/refund/general order/trace",
+      "status": "PASS",
+      "evidenceLayer": "real login HTTP API / PostgreSQL; no browser, physical return or dispatch/ack"
+    }
+  ],
+  "cas": {
+    "revisions": [
+      1,
+      2,
+      3
+    ],
+    "raceStatuses": [
+      409,
+      200
+    ],
+    "unchangedOtherTableCount": 31
+  },
+  "stock": {
+    "initialReceiptQuantity": 5,
+    "posSold": 3,
+    "generalOrderSold": 1,
+    "moneyOnlyRefundStockChange": 0,
+    "finalBalance": {
+      "product": 1,
+      "early": 0,
+      "late": 1
+    },
+    "movementCount": 4,
+    "orderCount": 2,
+    "commandCount": 1,
+    "paymentCount": 1,
+    "releaseAuditCount": 2
+  },
+  "requestCount": 23,
+  "snapshotCount": 12,
+  "cleanup": {
+    "clientAbsent": true,
+    "databaseAbsent": true,
+    "dbContainerAbsent": true,
+    "volumesAbsent": true,
+    "networkAbsent": true
+  },
+  "failureHistory": [
+    {
+      "stage": "npm original attempts",
+      "classification": "environment",
+      "error": "ETIMEDOUT then ECONNREFUSED; original proxy/CA forwarding omitted; corrected forwarding succeeded without policy changes"
+    },
+    {
+      "stage": "raw schema equality",
+      "classification": "harness",
+      "error": "Prisma formatting/attribute ordering; canonical formatter comparison passed"
+    },
+    {
+      "stage": "internal network host mapping",
+      "classification": "fixture",
+      "error": "Missing actual host mapping; Docker skips external connectivity for internal networks; replaced by two owned network peers without published ports"
+    },
+    {
+      "stage": "full runtime preparation",
+      "classification": "precondition",
+      "error": "No such image while bounded official pull still running; no DB created; continued after successful pull"
+    },
+    {
+      "stage": "Vitest config bundle",
+      "classification": "harness",
+      "error": "ENOENT /app/node_modules/.vite-temp on read-only source; changed to supported configLoader=runner; no business case had run"
+    }
+  ],
+  "limits": [
+    "CAS browser choice not run",
+    "other actor draft/history browser not run",
+    "cross-tenant browser not run",
+    "pending-outcome navigation guards browser not run",
+    "read-only actor PUT browser not run",
+    "physical return/bin receipt not implemented by this slice",
+    "dispatch acknowledgement/daily settlement/devices not run"
+  ],
+  "originalArtifactsSha256": {
+    "evidence/npm-prepare.log": "9e952dc4efacc7d372d3d1875fa1cc137530811b2c1e156f8d2366f72981d7af",
+    "evidence/npm-prepare-attempt2.log": "ec385fc105b47b93e44549b651854e911cd80740b4091bb9ee5a42cb59bf6e68",
+    "native-gap-3ee70f2e2a8442d9bebcce297a7a971f/result.json": "751162b5301d80645c1ca32b0fb67f93d38d817ae7d091c33cff8f053e3b0df8",
+    "native-gap-61217e50b31f4014aa21b33b8ff22bff/result.json": "23a115ebdd2d9af43ac6ad2225240d8aa1d1d674f5a475ef6822ac38d86f213b",
+    "native-gap-e763ce66edfd4869bdcdfdc1a0cddc3e/result.json": "21132c9b9c1db6bfce0f241a3a9896d933a6e32bb2fa442b4171bb0d393d96a4",
+    "internal-probe-1440d8f01e964f20aee30f6779f2d39f/result.json": "4c57a1ebcdfecff7b009c338cafcea35331469de6e93c54ff85bf350448fedf2",
+    "internal-test-495e01bd3352405583875d310dbd9b61/new-gap-tests.log": "77a53372f2a1a6cf77b1787fa69f0c77a54092d5c69b6c0b0d4d6f46d1bbde58",
+    "internal-test-47551e4b429140848300d5d583875f42/vitest.json": "8b4a89e6f432f9ef650bef8c0ec8454141889830443f7dc40d2293bccd317b45",
+    "internal-test-47551e4b429140848300d5d583875f42/journey.json": "12f90dc5b053eb930fdbf378ef5ff0f4a014c45df32d29c609dc2a2b627179b9",
+    "internal-test-47551e4b429140848300d5d583875f42/result.json": "8115235f5a6b582d9f926077d086e978826f5c26cf0de5ff7a124799ebbea9f9",
+    "internal-test-47551e4b429140848300d5d583875f42/source-before.json": "eb4810bd61e0e5c4e2759df0d03de4e18f28b8ac6d12008244419187bf241f58",
+    "internal-test-47551e4b429140848300d5d583875f42/source-after.json": "eb4810bd61e0e5c4e2759df0d03de4e18f28b8ac6d12008244419187bf241f58",
+    "internal-test-47551e4b429140848300d5d583875f42/ownership.json": "f7dac4dcc4bbccb0996f8fef1c350829590aa8318180b748614f3292cca27845",
+    "internal-test-47551e4b429140848300d5d583875f42/new-gap-tests.log": "c48e8787892648cf8fb0e3987a6337eb856b696a56d55d7d907dd62766b1fe78",
+    "internal-test-47551e4b429140848300d5d583875f42/migrations.log": "bfee7a3f2aa873158dbaffe5769fd3b96dc49a73e782b1a2045f47314e641c45",
+    "internal-test-47551e4b429140848300d5d583875f42/raw-snapshots-redacted.json": "b26faa04f4523f72781712e3bbc284f1b309bdb633fb697b9ef9ad9eafd17970"
+  },
+  "archiveSha256": "5744692e5b90c1cf4e1e3379cc1d2ba6c63430ae0456cfc79bc57208123e3147",
+  "archiveScope": "Original local evidence archive; no Library upload or durable remote archive claim"
+}

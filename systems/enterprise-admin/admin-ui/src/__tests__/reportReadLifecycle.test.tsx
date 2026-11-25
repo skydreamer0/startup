@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 import { useState, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthContext, type AuthContextType } from '../hooks/authContext';
 import CashFlowPage from '../pages/Reports/CashFlowPage';
@@ -43,18 +43,91 @@ afterEach(() => { expect(write).not.toHaveBeenCalled(); cleanup(); client?.clear
 
 describe('actual QueryClient report authorization recovery', () => {
     for (const subject of subjects) {
+        for (const isTrend of subject.slug === 'sales-ranking' ? [false] : [false, true]) {
+            it(`${subject.slug}: first ${isTrend ? 'trend' : 'report'} error retry retains notice, focus and busy state`, async () => {
+                let release!: () => void;
+                const held = new Promise<void>(resolve => { release = resolve; });
+                const originalGet = get.getMockImplementation()!;
+                const target = (url: string) => isTrend ? url.includes('/trend?') : !url.includes('/trend?');
+                let calls = 0;
+                get.mockImplementation(async (url: string, options: unknown) => {
+                    if (target(url)) {
+                        calls++;
+                        await held;
+                        if (calls === 1) throw { response: { status: 500 } };
+                    }
+                    return originalGet(url, options);
+                });
+                setup(subject);
+                await waitFor(() => expect(calls).toBe(1));
+                expect(screen.queryByRole('button', { name: /重試/ })).not.toBeInTheDocument();
+                await waitFor(() => expect(document.body.textContent).toContain(isTrend ? '趨勢載入中' : `Loading ${subject.slug === 'cashflow' ? 'cash flow data' : subject.slug === 'margin' ? 'margin data' : 'sales ranking'}`));
+                release();
+                const label = isTrend ? '趨勢' : subject.label;
+                const retry = await screen.findByRole('button', { name: `重試${label}` });
+                const notice = screen.getByRole('region', { name: `${label}讀取狀態` });
+                let finish!: () => void;
+                const retryHeld = new Promise<void>(resolve => { finish = resolve; });
+                get.mockImplementation(async (url: string, options: unknown) => {
+                    if (target(url)) { calls++; await retryHeld; }
+                    return originalGet(url, options);
+                });
+                retry.focus();
+                fireEvent.keyDown(retry, { key: 'Enter' });
+                fireEvent.click(retry);
+                await waitFor(() => expect(retry).toHaveAttribute('aria-busy', 'true'));
+                expect(screen.getByRole('region', { name: `${label}讀取狀態` })).toBe(notice);
+                expect(screen.getByRole('button', { name: `重試${label}` })).toBe(retry);
+                expect(retry).toHaveFocus();
+                expect(retry).toHaveAttribute('aria-disabled', 'true');
+                expect(within(notice).getByRole('status')).toHaveTextContent('重試中…');
+                if (isTrend) expect(screen.queryByText('趨勢載入中…')).not.toBeInTheDocument();
+                for (let i = 0; i < 2; i++) {
+                    fireEvent.keyDown(retry, { key: 'Enter' });
+                    fireEvent.click(retry);
+                }
+                expect(calls).toBe(2);
+                finish();
+                await waitFor(() => expect(screen.queryByRole('button', { name: `重試${label}` })).not.toBeInTheDocument());
+                expect(document.body.textContent).toContain(isTrend ? 'TREND_PRIVATE_SENTINEL' : '1,543');
+            });
+        }
+    }
+    for (const subject of subjects) {
         it(`${subject.slug}: denied cached data stays hidden after 500 and remount until authorized success`, async () => {
             setup(subject); await waitFor(() => expect(document.body.textContent).toContain('1,543'));
             status = 403; await act(async () => { await client.invalidateQueries({ queryKey: ['reports', subject.slug] }); });
             const retry = await screen.findByRole('button', { name: `重試${subject.label}` });
             expect(document.body.textContent).not.toContain('1,543');
             status = 500; fireEvent.click(retry);
-            await waitFor(() => expect(retry).toBeEnabled());
             await waitFor(() => expect(client.getQueryCache().getAll().find(query => query.queryKey[1] === subject.slug)?.state.error).toMatchObject({ response: { status: 500 } }));
             expect(document.body.textContent).not.toContain('1,543');
-            fireEvent.click(screen.getByRole('button', { name: 'Toggle report' })); fireEvent.click(screen.getByRole('button', { name: 'Toggle report' }));
-            await screen.findByRole('button', { name: `重試${subject.label}` }); expect(document.body.textContent).not.toContain('1,543');
-            status = 200; fireEvent.click(screen.getByRole('button', { name: `重試${subject.label}` }));
+            // A remount revalidates automatically; hold that read while retry is busy.
+            const originalGet = get.getMockImplementation()!;
+            const isMainReport = (url: string) => url.startsWith(`/reports/${subject.slug}?`);
+            let releaseRead!: () => void;
+            const heldRead = new Promise<void>((resolve) => { releaseRead = resolve; });
+            get.mockImplementation(async (url: string, options: unknown) => {
+                if (isMainReport(url)) await heldRead;
+                return originalGet(url, options);
+            });
+            fireEvent.click(screen.getByRole('button', { name: 'Toggle report' }));
+            fireEvent.click(screen.getByRole('button', { name: 'Toggle report' }));
+            const remountedRetry = await screen.findByRole('button', { name: `重試${subject.label}` });
+            await waitFor(() => expect(remountedRetry).toHaveAttribute('aria-disabled', 'true'));
+            const activeCalls = get.mock.calls.filter(([url]) => isMainReport(url)).length;
+            fireEvent.click(remountedRetry);
+            expect(get.mock.calls.filter(([url]) => isMainReport(url))).toHaveLength(activeCalls);
+            expect(document.body.textContent).not.toContain('1,543');
+
+            releaseRead();
+            await waitFor(() => {
+                expect(client.isFetching({ queryKey: ['reports', subject.slug] })).toBe(0);
+                expect(remountedRetry).toHaveAttribute('aria-disabled', 'false');
+            });
+            expect(document.body.textContent).not.toContain('1,543');
+            get.mockImplementation(originalGet);
+            status = 200; fireEvent.click(remountedRetry);
             await waitFor(() => expect(document.body.textContent).toContain('1,543'));
         });
         it(`${subject.slug}: ordinary 500 retains authorized data with a stale notice`, async () => {

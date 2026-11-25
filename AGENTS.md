@@ -26,6 +26,15 @@ Do not crawl source files broadly before selecting a task route. Prefer context 
 - Database model: `systems/enterprise-admin/backend/prisma/schema.prisma`
 - Engineering workflow: `systems/enterprise-admin/infrastructure/standards/`
 
+## Pharmacy requirements, design and review
+
+- **Planning:** `docs/product/PHARMACY-REQUIREMENTS.md` records user needs and acceptance criteria. The existing `systems/enterprise-admin/ROADMAP.md` and issue #37 track status; do not create a competing roadmap. Verify open upstream dependencies and exact integration head before picking the next work slice.
+- **UI work:** start at `DESIGN.md`, then read Design MASTER, owning MODULE and applicable page SPEC. Use `.agents/skills/README.md` for approved repository-local skills. Do not treat a prototype, vendor pattern or model output as permission, a product requirement or running functionality.
+- **Dispatch:** give each worker one owned area, source revision, allowed paths, excluded operations and explicit acceptance. Independent lanes can run in parallel; one owner coordinates any shared transaction, migration, service or screen. Reuse existing tickets, and reconcile changes with the current author. Do not share a writable fixture between workers.
+- **Review:** author states evidence and gaps; a different reviewer checks exact diff and artifact. For UI, check role/task flow, information hierarchy, keyboard/touch and data/transaction meaning. Escalate unclear financial, unit, approval or release policy to the owner; never pick a production default from sample data.
+- **Evidence:** record exact head/build, test data ownership, cases, results, not-run checks, cleanup and rollback. Unit, mock/SSR, real API/PostgreSQL, same-build browser and device/store gates are separate. A successful test, merge and deployment are different outcomes.
+- **Safety:** no use of store data in automated tests, no external OCR/AI for the existing local-only scope, no permissions/security/billing changes, external publishing, release or hardware operations merely because a task document mentions them. Preserve existing approval and deployment rules.
+
 ## Encoding policy
 
 This repository contains Traditional Chinese documentation. Treat all text files as UTF-8.
