@@ -56,9 +56,17 @@ Prisma stays on 6.19.3: both the client and migration CLI are runtime dependenci
 The backend container invokes its installed CLI and never downloads a new CLI
 when starting. Backend overrides are limited to Prisma config's deepmerge-ts 8.0.2
 (prototype-pollution fix) and Effect 3.22.1 (patched release), ExcelJS's uuid
-11.1.1 (CommonJS v4 API retained), and minimatch 11.0.1 under the ESLint,
+11.1.1 (CommonJS v4 API retained) and unzipper 0.12.3, glob 14.0.3 under
+archiver-utils, and minimatch 11.0.1 under the ESLint,
 typescript-eslint and readdir-glob dependency paths that resolved vulnerable versions.
 Prisma generation/migrations and DB-backed CSV/Excel regressions must pass.
+
+The archive overrides keep ExcelJS 4.4.0 and Archiver 5.3.2 unchanged while
+removing the old fstream/rimraf path. Both archiver-utils consumers use the
+synchronous glob API; this is not a global glob or minimatch upgrade. Run
+`node --test scripts/archive-dependency-compat.test.cjs` after the backend
+install to verify filtering, ExcelJS streaming round trips, archive contents
+and malformed ZIP rejection.
 
 The frontend workspace overrides only minimatch 11.0.1 and follow-redirects 1.16.2
 in `pnpm-workspace.yaml`. Do not extend the minimatch override to the whole
